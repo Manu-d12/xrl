@@ -1,0 +1,123 @@
+import { LightningElement, api, track } from 'lwc';
+import { libs } from 'c/libs';
+
+export default class dataTableItem extends LightningElement {
+	@api cfg;
+	@api row;
+	@api col;
+	@api iseditmode;
+	isBool = false;
+
+	renderedCallback() {
+		if (this.iseditmode && this.row._focus === this.col.fieldName) setTimeout((() => { this.template.querySelector('[data-id="' + this.col.fieldName + '"]').focus(); }), 100);
+		//console.log(this.col.options);
+	}
+
+	@api
+	get value() {
+		let refTmp = '<a href="/{0}" target="_blank" title="{1}">{1}</a>';
+		//console.log('type', this.col.type, this.col.fieldName)
+		let locale = libs.getGlobalVar(this.cfg).userInfo.locale;
+		//console.log(this.col.fieldName, JSON.stringify(this.row), this.row[this.col.fieldName]);
+		//this.col.fieldName
+		let row,val;
+		[row,val] = libs.getLookupRow(this.row, this.col.fieldName);
+		if (typeof(this.col._formatter) === 'function') {
+			val = this.col._formatter(row, this.col, val);
+		} else {
+			//let val = libs.getLookupValue(this.row, this.col.fieldName);
+			if (this.col.type === 'date' || this.col.type === 'datetime') {
+				//console.log(val);
+				//console.log(locale);
+				val = new Date(val).toLocaleString(locale,{
+					month : "2-digit",
+					day : "2-digit",
+					year: "numeric",
+					hour: "2-digit",
+					minute: "2-digit",
+					second: "2-digit"
+				});
+				//console.log(val);
+			}
+			if (this.col.type === 'number') {
+				val = val ? this.formatNumber(val) : null;
+			}
+
+			if (this.col.type === 'currency') {
+				val = val ? (this.formatNumber(val) + '&nbsp;' + this.getCurrencySymbol()): null;
+			}
+
+			if (this.col.type === 'reference'){
+				val = libs.formatStr(refTmp,[val, row.Name ? row.Name : 'Name issue']);
+			}
+			if (this.col.type === 'boolean'){
+				this.isBool = true;
+			}
+
+			if (this.col.isNameField === true) {
+				//console.log(this.col.fieldName, JSON.stringify(row), val);
+				val = libs.formatStr(refTmp,[row.Id, val]);
+			}
+		}
+		return val;
+		//return this.row[this.col.fieldName];
+	}
+
+	get style() {
+		let right = ['number', 'currency','date','datetime']
+		if (right.indexOf(this.col.type)  > -1) {
+			return 'slds-float_right';
+		}
+		return '';
+	}
+
+	get editValue() {
+		let row,val;
+		if (this.col.type === 'boolean'){
+			this.isBool = true;
+		}
+		[row,val] = libs.getLookupRow(this.row, this.col.fieldName);
+		return val;
+	}
+
+	formatNumber(num) {
+		const dotTemlate = ' ';
+		return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + dotTemlate).replace(/[,\.].*/,((match) => {
+			return match.replace(/ /g,'');
+		}));
+	}
+
+	inlineEdit(event) {
+		console.log(event);
+		let config = libs.getGlobalVar(this.cfg).listViewConfig;
+		console.log(config);
+		config._saveEdit(true, this.col.fieldName, this.col.isEditableBool ? event.target.checked : event.target.value);
+		console.log(config);
+	}
+	
+	inlineEditFinish(event) {
+		console.log(event.which);
+		if (event.which == 27) {
+			let config = libs.getGlobalVar(this.cfg).listViewConfig;
+			console.log(config);
+			config._saveEdit(false);
+			console.log(config);
+		}
+		if (event.which == 13) {
+			let config = libs.getGlobalVar(this.cfg).listViewConfig;
+			console.log(config);
+			config._saveEdit(true);
+			console.log(config);
+		}
+	}
+
+	getCurrencySymbol() {
+		let currency = libs.getGlobalVar(this.cfg).currency;
+		if (currency.isMultyCurrencyOrg === true) {
+			return libs.currencyMap(row.CurrencyIsoCode);
+		} else {
+			return libs.currencyMap(currency.orgCurrency);
+		}
+	}
+
+}

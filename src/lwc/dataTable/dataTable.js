@@ -1,0 +1,725 @@
+import { LightningElement, api, track } from 'lwc';
+import { libs } from 'c/libs';
+import { filterLibs } from './filterLibs';
+
+const defClass = 'slds-grid slds-grid_align-spread';
+export default class dataTable extends LightningElement {
+	@track records;
+	@track config;
+	@track groupedRecords;
+
+	@api cfg;
+
+	@api
+	getRecords() {
+		// this methood need to get data from paren component
+		console.log('length from datatable getrecords', this.cfg, this.records.length);
+		return this.records;
+	}
+	@api
+	getSelectedRecords() {
+		// this methood need to get data from paren component
+		console.log('length from datatable getrecords', this.cfg, this.records.length);
+		return this.records.filter(el => {
+			return el._isChecked === true;
+		});
+	}
+
+	@api
+	setUpdateInfo(v) {
+		this.updateInfo = v;
+	}
+	updateInfo = '';
+
+	get tableRecords() {
+
+		if (this.config.grouping && this.config.groupingParams?.field) {
+
+			let isPager = this.config.pager && (this.config.pager.pagerTop || this.config.pager.pagerBottom);
+			if (isPager) {
+				let startIndex = (this.config.pager.curPage - 1) * this.config.pager.pageSize;
+				let endIndex = (startIndex + parseInt(this.config.pager.pageSize)) < this.records.length ? (startIndex + parseInt(this.config.pager.pageSize)) : this.records.length;
+				let result = [];
+
+				for (let group of this.groupedRecords) {
+					if (startIndex > group.records[group.records.length - 1].index - 1) continue;
+					if (endIndex <= group.records[0].index - 1) break;
+					let gr = Object.assign({}, group);
+					gr.records = group.records.map(r => r);
+					if (startIndex >= gr.records[0].index) {
+						gr.records.splice(0, startIndex - gr.records[0].index + 1);
+					}					
+					if (endIndex < gr.records[gr.records.length - 1].index) {
+						gr.records.splice(endIndex - gr.records[0].index + 1);
+					}
+					result.push(gr);
+				}
+				console.log('result', JSON.parse(JSON.stringify(result)));
+
+				return result;
+			}
+			// Need for pagination;
+			return this.groupedRecords;
+		} else {
+			let isPager = this.config.pager && (this.config.pager.pagerTop || this.config.pager.pagerBottom);
+			if (isPager) {
+				let startIndex = (this.config.pager.curPage - 1) * this.config.pager.pageSize;
+				let endIndex = (startIndex + parseInt(this.config.pager.pageSize)) < this.records.length ? (startIndex + parseInt(this.config.pager.pageSize)) : this.records.length;
+				let result = [];
+				for (let i = startIndex; i < endIndex; i++) {
+					result.push(this.records[i]);
+				}
+				console.log('result', JSON.parse(JSON.stringify(result)));
+				return result;
+			}
+			// Need for pagination;
+			return this.records;
+		}
+	}
+
+	get recordInfo() {
+		let selected = this.records.filter(el => {
+			return el._isChecked === true;
+		});
+		if (selected.length !== 0) {
+			return selected.length + ' item(s) selected';
+		} else {
+			return this.records.length + ' item(s)';
+		}
+	}
+
+	get hasGrouping() {
+		return this.config.grouping === true;
+	}
+
+	get groupColspan() {
+		return this.config.colModel.filter(col => !col.isHidden).length;
+	}
+
+	_sortSequence = [];
+	/*config = {
+		colModel : []
+		records : []
+		describe : []
+	}*/
+	/*
+
+	Need to add
+	Sorting
+	filtering
+
+	*/
+
+	setGroupRecords() {
+		let result = new Map();
+		this.records.forEach(r => {
+			let groupName = r[this.config.groupingParams.field] || 'empty';
+			let group = result.has(groupName) ? result.get(groupName) : {
+				title: groupName,
+				isChecked: false,
+				isOpened: true,
+				records: []
+			};
+			group.records.push(r);
+			result.set(groupName, group);
+		});
+		result.forEach(group => {
+			let checked = true;
+			for (let rec of group.records) {
+				if (!rec._isChecked) {
+					checked = false;
+					break;
+				}
+			}
+			group.isChecked = checked;
+		});
+		result = this.config.groupingParams.order === undefined ? Array.from(result.values()) : Array.from(result.values()).sort((a, b) => {
+			if (a.title > b.title) {
+				return this.config.groupingParams.order === 'asc' ? 1 : -1;
+			} else if (a.title < b.title) {
+				return this.config.groupingParams.order === 'asc' ? -1 : 1;
+			}
+			return 0;
+		});
+		let ind = 1;
+		result.forEach(group => {
+			group.records.forEach(rec => {rec.index = ind++;})
+		});
+		this.groupedRecords = result;
+		console.log('groupedRecords', JSON.parse(JSON.stringify(this.groupedRecords)));
+	}
+
+	getGroupRecIndexes(index) {
+		for (let i = 0; i < this.groupedRecords.length; i++) {
+			for (let j = 0; j < this.groupedRecords[i].records.length; j++) {
+				if (this.groupedRecords[i].records[j].Id === this.records[index].Id) return [i, j];
+			}
+		}
+	}
+
+	connectedCallback() {
+		//super();
+		this.config = libs.getGlobalVar(this.cfg).listViewConfig;
+		
+		this.config._saveEdit = this.saveEditCallback.bind(this);
+		this.config._countFields = this.config.isShowCheckBoxes === true ? 1 : 0;
+		this.config.colModel.forEach(item => {
+			if (item.formatter !== undefined) {
+				try {
+					item._formatter = eval('(' + item.formatter + ')');
+				} catch (e) {
+					console.log('EXCEPTION', e);
+				}
+			}
+			if (item.width !== undefined) {
+				item._style = 'width: ' + item.width;
+			}
+			if (item.isHidden!==true) this.config._countFields ++;
+		});
+		//this.config.colModel = JSON.parse(JSON.stringify(this.config.colModel));
+		this.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
+		console.log('length from datatable', this.cfg, this.records.length, this.records);
+		this.initSort();
+
+		this.config.pager = {
+			pagerTop : true,
+			pagerBottom : true,
+			curPage : 1,
+			pageSize : '5',
+			pageSizeOptions : [
+				{ label: '5', value: '5' },
+				{ label: '20', value: '20' },
+				{ label: '50', value: '50' },
+				{ label: '100', value: '100' },
+				{ label: '200', value: '200' },
+			]
+		}
+		this.setNumPages(this.config.pager.pageSize);
+
+		if (this.hasGrouping) this.setGroupRecords();
+	}
+
+	saveEditCallback(isNeedSave, rowName, value) {
+		if (isNeedSave === true) {
+			if (rowName !== undefined) {
+				if (!this.config._inlineEditRow) this.config._inlineEditRow = JSON.parse(JSON.stringify(this.records[this.config._inlineEdit]));
+				this.config._inlineEditRow[rowName] = value;
+			} else {
+				let isNeedSave = this.config._inlineEditRow !== undefined && JSON.stringify(this.records[this.config._inlineEdit]) !== JSON.stringify(this.config._inlineEditRow);
+				
+				console.log('isNeedSave', isNeedSave, JSON.parse(JSON.stringify(this.config._inlineEditRow)));
+				if (isNeedSave)	{
+					this.records[this.config._inlineEdit] = JSON.parse(JSON.stringify(this.config._inlineEditRow));
+					//Need also Update a global array
+					let globalItem = libs.getGlobalVar(this.cfg).records.find(el=>{
+						return el.Id === this.config._inlineEditRow.Id;
+					})
+					Object.assign(globalItem, this.records[this.config._inlineEdit]);
+				}
+				//delete this.records[this.config._inlineEdit];
+				//delete this.config._inlineEdit;
+				this.changeRecord(this.config._inlineEditRow.Id);
+
+				this.records[this.config._inlineEdit]._isEditable = false;
+				if (this.hasGrouping) {
+					let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
+					this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
+				}
+				this.config._inlineEdit = undefined;
+				this.config._inlineEditRow = undefined;
+			}
+		} else {
+			this.records[this.config._inlineEdit]._isEditable = false;
+			if (this.hasGrouping) {
+				let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
+				this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
+			}
+			this.config._inlineEdit = undefined;
+		}
+		if (this.hasGrouping) this.setGroupRecords();
+	}
+
+	changeRecord(id) {
+		if (!this.config._changedRecords) this.config._changedRecords = [];
+		if (this.config._changedRecords.indexOf(id) === -1) this.config._changedRecords.push(id);
+	}
+
+	get rowStyle() {
+		return this.config.rowCallback ? 'cursor : pointer' : '';
+	}
+
+	selectAll(event) {
+		this.records.forEach(e => {
+			e._isChecked = event.target.checked
+		});
+		if (this.hasGrouping) {
+			this.groupedRecords.forEach(group => {
+				group.isChecked = event.target.checked;
+				group.records.forEach(rec => {
+					rec._isChecked = event.target.checked;
+				});
+			});
+		}		
+	}
+
+	toggleGroup(event) {
+		let group = this.groupedRecords.find(gr => gr.title === event.target.getAttribute('data-groupind'));
+		group.isOpened = !group.isOpened;
+	}
+
+	checkGroup(event) {
+		let group = this.groupedRecords.find(gr => gr.title === event.target.getAttribute('data-groupind'));
+		group.isChecked = !group.isChecked;
+		group.records.forEach(rec => {
+			rec._isChecked = group.isChecked;
+			let rowind = this.records.findIndex(row => row.Id === rec.Id);
+			this.records[rowind]._isChecked = group.isChecked;
+		});
+	}
+
+	checkRow(event) {
+		if (this.hasGrouping) {
+			let rowind = this.records.findIndex(row => row.Id === event.target.getAttribute('data-rowid'));
+			this.records[rowind]._isChecked = event.target.checked;
+			let groupInd = this.groupedRecords.findIndex(gr => gr.title === event.target.getAttribute('data-groupind'));
+			rowind = this.groupedRecords[groupInd].records.findIndex(row => row.Id === event.target.getAttribute('data-rowid'));
+			this.groupedRecords[groupInd].records[rowind]._isChecked = event.target.checked;
+			let checked = true;
+			for (let rec of this.groupedRecords[groupInd].records) {
+				if (!rec._isChecked) {
+					checked = false;
+					break;
+				}
+			}
+			this.groupedRecords[groupInd].isChecked = checked;
+		} else {
+			let rowind = event.target.getAttribute('data-rowind');
+			this.records[this.calcRowIndex(rowind)]._isChecked = event.target.checked;
+		}
+	}
+
+	calcRowIndex(rowId) {
+		let isPager = this.config.pager && (this.config.pager.pagerTop || this.config.pager.pagerBottom);
+		if (isPager) {
+			return parseInt(this.config.pager.pageSize) * (this.config.pager.curPage - 1) + parseInt(rowId);
+		} 
+		return parseInt(rowId);
+	}
+
+	rowCallback(event) {
+
+		let colName = event.srcElement.getAttribute('data-colname') !== null ?
+			event.srcElement.getAttribute('data-colname') :
+			event.srcElement.parentNode.getAttribute('data-colname');
+
+		if (colName === 'actions') return; // Not need process this column
+
+		let rowId = event.srcElement.getAttribute('data-rowind') != null ?
+			event.srcElement.getAttribute('data-rowind') :
+			event.srcElement.parentNode.getAttribute('data-rowind');
+
+		/*if (rowInd != null && this.cmpConfig.inlineEdit !== rowInd) {
+			//this.inlineEditRecord = JSON.parse(JSON.stringify(this.records[rowInd]));
+			this.records[this.cmpConfig.inlineEdit] = this.inlineEditRecord;
+			this.records[this.cmpConfig.inlineEdit]._isEditable = false;
+			this.cmpConfig.inlineEdit = undefined
+		}*/
+
+		if (typeof(this.config.rowCallback) === 'function') {
+			console.log('this.config.rowCallback', this.config.rowCallback);
+			this.config.rowCallback(rowId, colName);
+		}
+		let cItem = this.getColItem(colName);
+
+		if (cItem && cItem.cellCallback) {
+			cItem.cellCallback(this.calcRowIndex(rowId), colName);
+		}
+		console.log('row click', event, colName, rowId);
+	}
+
+	rowDblCallback(event) {
+		let colName = event.srcElement.getAttribute('data-colname') !== null ?
+			event.srcElement.getAttribute('data-colname') :
+			event.srcElement.parentNode.getAttribute('data-colname');
+
+		let rowInd = event.srcElement.getAttribute('data-rowind') != null ?
+			event.srcElement.getAttribute('data-rowind') :
+			event.srcElement.parentNode.getAttribute('data-rowind');
+
+		let rowId = event.srcElement.getAttribute('data-rowid') != null ?
+			event.srcElement.getAttribute('data-rowid') :
+			event.srcElement.parentNode.getAttribute('data-rowid');
+
+		let groupInd;
+		let groupRowInd;
+		if (this.hasGrouping) {
+			groupInd = this.groupedRecords.findIndex(gr => gr.title === event.target.parentNode.dataset.groupind);
+			groupRowInd = this.groupedRecords[groupInd].records.findIndex(r => r.Id === rowId);
+		}
+
+		let calculatedInd = this.hasGrouping ? this.records.findIndex(rec => rowId === rec.Id) : this.calcRowIndex(rowInd);
+
+		let cItem = this.getColItem(colName);
+		
+		if (!cItem || !cItem.isEditable) return;
+
+		if (this.config._inlineEdit !== undefined) {
+			this.records[this.config._inlineEdit]._isEditable = false;
+			if (this.hasGrouping) {
+				let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
+				this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
+			}
+		}
+		
+		if (this.getSelectedRecords().length > 1) {
+			let table = this.template.querySelector('.extRelListTable');
+			console.log(table.offsetHeight, event.y, table, event.srcElement.parentElement.parentElement.offsetTop);
+			this.config._bulkEdit = {
+				rowId : calculatedInd,
+				cItem : cItem,
+				type : cItem.type,
+				value : this.records[calculatedInd][cItem.fieldName],
+				chBoxLabel : libs.formatStr('Update {0} items', [this.getSelectedRecords().length]),
+				chBoxValue : false,
+				style: libs.formatStr("position:absolute;top:{0}px;left:{1}px", [(-table.offsetHeight + event.srcElement.parentElement.parentElement.offsetTop - (this.config.pager.pagerTop === true ? 110 : 40)), (event.x - 60)]),
+			}
+			//this.config._isBulkEdit = true;
+		} else {
+			let record = this.records[calculatedInd];
+			record._isEditable = true;
+			record._focus = colName;
+			this.config._inlineEdit = calculatedInd;
+
+			if (this.hasGrouping) {
+				this.groupedRecords[groupInd].records[groupRowInd]._isEditable = true;
+				this.groupedRecords[groupInd].records[groupRowInd]._focus = colName;
+			}
+		}
+
+		console.log('dbl click', event, colName, rowInd);
+	}
+
+	handleDropDownEvents(event) {
+		console.log('DD Event', event.detail);
+
+		let rowInd = event.detail.index;
+
+		if (typeof(this.config.rowCallback) === 'function') {
+
+			this.config.rowCallback(rowInd, 'actions', event.detail);
+		}
+	}
+
+	/*inlineEdit(event) {++
+		let colName = event.srcElement.getAttribute('data-colname') !== null ?
+			event.srcElement.getAttribute('data-colname') :
+			event.srcElement.parentNode.getAttribute('data-colname');
+
+		/*let rowInd = event.srcElement.getAttribute('data-rowind') != null ?
+			event.srcElement.getAttribute('data-rowind') :
+			event.srcElement.parentNode.getAttribute('data-rowind');
+
+		this.inlineEditRecord[colName] = event.target.value;
+		console.log(event.target.value, colName, rowInd);
+	}*/
+
+	setFilter(event) {
+		let colName = event.srcElement.getAttribute('data-id') !== null ?
+			event.srcElement.getAttribute('data-id') :
+			event.srcElement.parentNode.getAttribute('data-id');
+		let cItem = this.getColItem(colName);
+		let table = this.template.querySelector('.extRelListTable');
+
+		if (cItem) {
+			console.log('cItem', cItem);
+			this.config._isFilterOptions = this.config._isFilterOptions && this.config._isFilterOptions.fieldName === colName ?
+				undefined :
+				{
+					fieldName: colName,
+					style: libs.formatStr("position:absolute;top:{0}px;left:{1}px", [(-table.offsetHeight + 20 - (this.config.pager.pagerTop === true ? 40 : 0)), (event.x - 52)]),
+					type: cItem.type,
+					cItem : cItem,
+					filterStrFocus: true,
+					filterStr: cItem._filterStr,
+					isShowStr : cItem.options === undefined,
+					isShowClearBtn: (cItem._filterStr && cItem._filterStr.length > 0),
+					//filterOption: cItem._filterOption ? cItem._filterOption : 'cn',
+					filterOptions: filterLibs[cItem.type + 'FilterActions'] 
+						? filterLibs[cItem.type + 'FilterActions']()
+						: [
+							{ label: 'Contains', value: 'cn' },
+							{ label: 'Is Equal', value: 'eq' },
+							{ label: 'Not Is Equal', value: 'neq' },
+						]
+
+				};
+			this.config._isFilterOptions.filterOption = cItem._filterOption ? cItem._filterOption : 'cn';
+			this.config._isFilterOptions.filterStr = cItem._filterStr;
+			this.config._isFilterOptions.filterStrTo = cItem._filterStrTo;
+			this.config._isFilterOptions.isShowStr = cItem.options === undefined;
+			this.config._isFilterOptions.isShowToStr = this.config._isFilterOptions.filterOption === 'rg';
+			this.config._isFilterOptions.isShowClearBtn = (cItem._filterStr && cItem._filterStr.length > 0)
+
+			setTimeout((() => { 
+				if (this.template.querySelector('[data-id="filterStr"]')) {
+					this.template.querySelector('[data-id="filterStr"]').focus();
+					if (this.config._isFilterOptions.isShowClearBtn) this.template.querySelector('[data-id="filterStr"]').classList.add('hideIcon');
+				} 
+			}), 100);
+		}
+
+	}
+
+	getColItem(colName) {
+		return this.config.colModel.find(e => {
+			return e.fieldName === colName
+		});
+	}
+
+	searchClear(event) {
+		this.config._isFilterOptions.filterStr = '';
+		this.config._isFilterOptions.filterStrTo = '';
+		this.config._isFilterOptions.isShowClearBtn = false;
+		this.config._isFilterOptions.filterOption = undefined;
+		//setTimeout((() => { this.template.querySelector('[data-id="filterStr"]').focus(); }), 100);
+		this.searchFinish({which : 13})
+	}
+
+	searchOnChange(event) {
+		let fieldName = event.srcElement.getAttribute('data-id');
+		if (fieldName === 'saveFilter') {
+			this.searchFinish({which : 13});
+			return;
+		} 
+		if (this.config._isFilterOptions.isShowStr) {
+			this.config._isFilterOptions[fieldName] = event.detail.value;
+		} else {
+			this.config._isFilterOptions[fieldName] = event.detail;
+		}
+		this.config._isFilterOptions.isShowClearBtn = this.config._isFilterOptions.filterStr.length > 0 || (this.config._isFilterOptions.filterStrTo && this.config._isFilterOptions.filterStrTo.length > 0);
+		if (this.config._isFilterOptions.isShowClearBtn === false ) this.config._isFilterOptions.filterOption = undefined;
+		else event.target.classList.add('hideIcon');
+	}
+
+	searchFinish(event) {
+		if (event.which == 27) {
+			this.config._isFilterOptions = undefined;
+		}
+		if (event.which == 13) {
+			let isNeedRefilter = false;
+			let cItem = this.getColItem(this.config._isFilterOptions.fieldName);
+			if (cItem) {
+				isNeedRefilter = (cItem._filterStr !== this.config._isFilterOptions.filterStr || (this.config._isFilterOptions.isUnary && cItem._filterOption !==this.config._isFilterOptions.filterOption));
+				cItem._filterStr = this.config._isFilterOptions.filterStr;
+				cItem._filterStrTo = this.config._isFilterOptions.filterStrTo;
+				cItem._filterOption = this.config._isFilterOptions.filterOption;
+				cItem._filterVariant = cItem._filterOption || cItem._filterStr && cItem._filterStr.length > 0 ? 'warning' : '';
+				cItem._filterCondition = (cItem._filterStr && cItem._filterStr.length > 0) ? (filterLibs[cItem.type + 'FilterActions'](cItem._filterOption).label + ' "' + cItem._filterStr) +'"': '';
+				cItem._filterStrLastChangeDate = cItem._filterOption ? new Date().getTime() : undefined;				
+			}
+			this.config._isFilterOptions = undefined;
+			if (isNeedRefilter) {
+				this.filterTable();
+				console.log('column', JSON.stringify(cItem));
+			}
+
+		}
+	}
+
+	getFilters() {
+		return  this.config.colModel.filter( e=>  {
+			return (e._filterStrLastChangeDate !== undefined )
+		}).sort((a, b)=> {
+			return (a._filterStrLastChangeDate > b._filterStrLastChangeDate) 
+				? 1
+				: (a._filterStrLastChangeDate < b._filterStrLastChangeDate)
+					? -1
+					: 0;
+		});
+	}
+
+	searchOperationChange(event) {
+		this.config._isFilterOptions.filterOption = event.target.value;
+		this.config._isFilterOptions.isUnary = this.config._isFilterOptions.filterOptions.find(item => {return event.target.value === item.value}).isUnary;
+		this.config._isFilterOptions.isShowToStr = this.config._isFilterOptions.filterOption === 'rg';
+		this.config._isFilterOptions.isShowStr = !this.config._isFilterOptions.isUnary && !this.config._isFilterOptions.options;
+		if (this.config._isFilterOptions.isUnary) this.config._isFilterOptions.isShowClearBtn = true;
+	}
+
+	popupClose(event) {
+		let node = event.srcElement.getAttribute('data-depend');
+		this.config[node] = undefined;
+	}
+
+	filterTable() {
+		let filters = this.getFilters();
+		if (filters.length == 0) {
+			console.log('Need reset filters');
+			this.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
+		} else {
+			console.log('Need filter by', filters.length);
+			let allRecords = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
+			filters.forEach( filter => {
+				console.log('filter', JSON.parse(JSON.stringify(filter)));
+				if (!filterLibs[filter.type + '__filter']) {
+					console.error('Filter does not support for type', filter.type);
+					return this.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
+				} else {
+					allRecords = allRecords.filter(record=> {
+						return filterLibs[filter.type + '__filter'](filter, record);
+					})
+				}
+			});
+			this.records = allRecords;
+		}
+		this.setNumPages(this.config.pager.pageSize);
+		
+		if (this.hasGrouping) this.setGroupRecords();
+	}
+
+
+	initSort() {
+		this.config.colModel.forEach((e, index) => { // unsorted -> asc -> desc
+			if (e.isSortable === true && e.isASCSort !== undefined) {
+				e._sortIcon = e.isASCSort === true ? 'utility:arrowdown' : 'utility:arrowup';
+				this.records = libs.sortRecords(this.records, e.type === 'reference' ? e.fieldName + '.Name' : e.fieldName, e.isASCSort);
+			} else {
+				e._sortIcon = undefined;
+				e.isASCSort = undefined;
+			}
+		});
+	}
+
+	changeSort(event) {
+		let fieldName = event.srcElement.getAttribute('data-id') !== null ?
+			event.srcElement.getAttribute('data-id') :
+			event.srcElement.parentNode.getAttribute('data-id');
+
+		if (event.ctrlKey) { // sort by column sequence	
+
+			let col = this.config.colModel.find(e => {return e.fieldName === fieldName && e.isSortable;});
+			if (!col) return;
+			if (this._sortSequence.includes(fieldName)) {
+				this._sortSequence.splice(this._sortSequence.indexOf(fieldName), 1);
+			}
+			if (this.hasGrouping && fieldName === this.config.groupingParams.field) {
+				this.config.groupingParams.order = this.config.groupingParams.order ? 'desc' : this.config.groupingParams.order === 'desc' ? undefined : 'asc';
+			} else {
+				this._sortSequence.push(fieldName);
+				this.sortSequence();
+			}
+
+		} else { // sort by single column
+
+			this._sortSequence = [];
+			this.config.colModel.forEach((e, index) => { // unsorted -> asc -> desc
+				if (fieldName === e.fieldName && e.isSortable === true && e.isASCSort !== false) {
+					e.isASCSort = e.isASCSort === undefined;
+					e._sortIcon = e.isASCSort ? 'utility:arrowdown' : 'utility:arrowup';
+					if (this.hasGrouping && fieldName === this.config.groupingParams.field) this.config.groupingParams.order = e.isASCSort ? 'asc' : 'desc';
+					else this.records = libs.sortRecords(this.records, e.type === 'reference' ? e.fieldName + '.Name' : e.fieldName, e.isASCSort);
+				} else {
+					e._sortIcon = undefined;
+					e.isASCSort = undefined;
+					if (this.hasGrouping && fieldName === this.config.groupingParams.field) undefined;
+				}
+			});
+		}
+		if (this.hasGrouping) this.setGroupRecords();
+	}
+
+	sortSequence() {
+		if (this._sortSequence.length === 1) {
+			this.config.colModel.forEach((e, index) => {
+				if (this._sortSequence[0] !== e.fieldName) {
+					e._sortIcon = undefined;
+					e.isASCSort = undefined;
+				}				
+			});
+		}
+		let col = this.config.colModel.find(e => {return e.fieldName === this._sortSequence[this._sortSequence.length - 1];});
+		if (col.isASCSort !== false) {
+			col.isASCSort = col.isASCSort === undefined;
+			col._sortIcon = col.isASCSort ? 'utility:arrowdown' : 'utility:arrowup';
+		} else {
+			col._sortIcon = undefined;
+			col.isASCSort = undefined;
+			this._sortSequence.pop();
+		}
+		for (let i = this._sortSequence.length - 1; i >= 0; i--) {
+			let col = this.config.colModel.find(e => {return e.fieldName === this._sortSequence[i];});
+			this.records = libs.sortRecords(this.records, col.type === 'reference' ? col.fieldName + '.Name' : col.fieldName, col.isASCSort);
+		}
+	}
+	setNumPages(value) {
+		this.config.pager.numPages = (this.records.length % parseInt(value) > 0) ? Math.floor(this.records.length / parseInt(value)) + 1 : Math.floor(this.records.length / parseInt(value))
+	}
+
+	handleEventPager(event) {
+		let fieldsValue = [':pagerCurPage',':pagerPageSize'];
+		let fieldName = event.srcElement.getAttribute('data-id');
+		if (fieldsValue.indexOf(fieldName) > -1) {
+			let value = event.srcElement.value;
+			if (fieldName === ':pagerPageSize') {
+				this.config.pager.curPage = 1,
+				this.config.pager.pageSize = value;
+				
+				this.setNumPages(value);
+			}
+			if (fieldName === ':pagerCurPage') {
+				
+				this.config.pager.curPage = value;
+				if (value < 1) this.config.pager.curPage = 1;
+				if (value > this.config.pager.numPages) this.config.pager.curPage = this.config.pager.numPages;
+			}
+			console.log(value);
+			return;
+		}
+		switch (fieldName) {
+			case ':pagerFirst': 
+				this.config.pager.curPage = 1;
+				break;
+			case ':pagerLast' : 
+				this.config.pager.curPage = this.config.pager.numPages;
+				break;
+			case ':pagerNext' : 
+				this.config.pager.curPage += this.config.pager.curPage < this.config.pager.numPages ? 1 : 0;
+				break;
+			case ':pagerPrev' : 
+				this.config.pager.curPage -= this.config.pager.curPage > 1 ? 1 : 0;
+		}
+		console.log(fieldName);
+	}
+
+	handleEventBulk() {
+		function changeItem(that, item, fieldName, value) {
+			
+			let origItem = origRecords.find(elem => {return elem.Id === item.Id});
+			item[fieldName] = value;
+			origItem[fieldName] = value;
+			that.changeRecord(item.Id);
+		}
+		function getValue(cItem, value) {
+			return value[cItem.isEditableBool ? 'checked' : 'value'];
+		}
+		let value = this.template.querySelector('[data-id="origValue"]');
+		let chBox = this.template.querySelector('[data-id="isAll"]');
+		let origRecords = libs.getGlobalVar(this.cfg).records;
+
+		console.log('chBox.checked', chBox.checked);
+		if (chBox.checked === false) {
+			console.log('One item');
+			changeItem(this, this.records[this.config._bulkEdit.rowId], this.config._bulkEdit.cItem.fieldName, getValue(this.config._bulkEdit.cItem, value));
+		} else {
+			console.log('More then One item');
+			this.getSelectedRecords().forEach((item) => {
+				changeItem(this, item, this.config._bulkEdit.cItem.fieldName, getValue(this.config._bulkEdit.cItem, value));
+			});
+		}
+		console.log('Bulk Edit', getValue(this.config._bulkEdit.cItem, value), chBox.checked);
+		this.config._bulkEdit = undefined;
+
+		if (this.hasGrouping) this.setGroupRecords();
+	}
+
+}

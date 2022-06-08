@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata" fqn="extRelList">
+    <apiVersion>53.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__RecordPage</target>
+        <target>lightning__HomePage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage">
+            <property required="true" name="ApiName" type="String" label="Related List" description="Choose Needed RelatedList." datasource="apex://getRelListsPicklist"/>
+            <property required="true" name="name" type="String" label="Uniq name" description="Enter uniq name of RelatedList." />
+            <!--property required="false" name="mField1" type="String" label="Mandatory field 1" description="Mandatory field 1" datasource="apex://getSobjFields"/-->
+            <!--property required="false" name="AddCondition" type="String" label="Addtitional Condition for WHERE cause" description="Please provide additional condition. Must starts from AND or OR"/-->
+            <property required="false" name="defaultListView" type="String" label="List view name" description="Please provide default list view name."/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>
