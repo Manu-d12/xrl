@@ -162,15 +162,17 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			if (e.label === undefined) e.label = describe.label;
 			if (e.type === undefined) e.type = describe.type;
 			e.isNameField = describe && describe.nameField === true;
+			if (e.type === 'picklist') {
+				e.options = [];
+				describe.picklistValues.forEach(field => {
+					e.options.push(
+						{ label: field.label, value: field.value }
+					)
+				});
+			}
 			if (e.isEditable && describe.updateable) {
 				if (e.type === 'picklist') {
 					e.isEditableAsPicklist = true;
-					e.options = [];
-					describe.picklistValues.forEach(field => {
-						e.options.push(
-							{ label: field.label, value: field.value }
-						)
-					});
 					console.log('picklist', e);
 				} else if (e.type === 'boolean') {
 					e.isEditableBool = true;
