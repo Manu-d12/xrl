@@ -17,6 +17,9 @@ global with sharing class infrastructure {
 				when 'getConfig' {
 					resultMethod = getConfig(data);
 				}
+				when 'getTemplate' {
+					resultMethod = getTemplate(data);
+				}
 				when 'query' {
 					resultMethod = getQuery(data);
 				}
@@ -117,7 +120,7 @@ global with sharing class infrastructure {
 
 		list<map<string, object>> listViews = new list<map<string, object>>{};
 
-		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c FROM extRelListConfig__c WHERE sObjApiName__c=:sObjApiName AND relFieldApiName__c=:relField AND (CreatedById =:userInfo.getUserID() OR isAdminConfig__c=TRUE) AND Is_Active__c = TRUE ORDER BY isAdminConfig__c DESC, listViewName__c ASC LIMIT 20];
+		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c FROM extRelListConfig__c WHERE sObjApiName__c=:sObjApiName AND relFieldApiName__c=:relField AND (CreatedById =:userInfo.getUserID() OR isAdminConfig__c=TRUE) AND Is_Active__c = TRUE AND RecordType.Name = 'Config' ORDER BY isAdminConfig__c DESC, listViewName__c ASC LIMIT 20];
 		for (integer i = 0; i < lst.size(); i++) {
 			extRelListConfig__c item = lst[i];
 			map<string, object> view = new map<string, object>{
@@ -166,6 +169,9 @@ global with sharing class infrastructure {
 			? (isAdminAccess ? 'Admin' : null)
 			: listViewLabel;
 		boolean isAdminConf = listViewName == '_admin' ? isAdminAccess : listViewAdmin;
+
+		RecordType rt = [select Id from RecordType where Name = 'Config' and SobjectType = 'extRelListConfig__c' limit 1];
+
 		extRelListConfig__c listView = new extRelListConfig__c(
 			listViewName__c = listViewName,
 			listViewLabel__c = listViewLabel,
@@ -173,7 +179,8 @@ global with sharing class infrastructure {
 			relFieldApiName__c = relField,
 			isAdminConfig__c = isAdminConf,
 			JSON__c = config,
-			uniqKey__c = sObjApiName + ':' + relField + ':' + isAdminConf + ':' + (string.isBlank(listViewName) ? '' : listViewName)
+			uniqKey__c = sObjApiName + ':' + relField + ':' + isAdminConf + ':' + (string.isBlank(listViewName) ? '' : listViewName),
+			RecordTypeId = rt.Id
 		);
 		upsert listView uniqKey__c;
 		return data;
@@ -244,6 +251,19 @@ global with sharing class infrastructure {
 		return new map<string, string> {
 			'lbl_globalSearch' => label.lbl_globalSearch
 		};
+	}
+
+	private static map<string, object> getTemplate(map < string, object > data) {
+
+		String templateId = (string) data.get('templateId');
+		map<string, object> result = new map<string, object>{};
+
+		extRelListConfig__c config = [SELECT Id, JSON__c FROM extRelListConfig__c WHERE Id = :templateId limit 1];
+
+		result.put('baseConfig', config.JSON__c);
+
+		System.debug('result ' + result);
+		return result;
 	}
 
 	global enum exceptionType {

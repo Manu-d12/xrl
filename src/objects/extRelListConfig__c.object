@@ -263,4 +263,14 @@
         <filterScope>Everything</filterScope>
         <label>All</label>
     </listViews>
+    <recordTypes>
+        <fullName>Config</fullName>
+        <active>true</active>
+        <label>Config</label>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Template</fullName>
+        <active>true</active>
+        <label>Template</label>
+    </recordTypes>
 </CustomObject>

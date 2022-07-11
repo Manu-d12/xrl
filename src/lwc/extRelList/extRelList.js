@@ -15,6 +15,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	@api recordId;
 	@api defaultListView;	
 	@api configuration;
+	@api addTemplate;
 
 	@track config = {};
 	@track localConfig = {};
@@ -101,11 +102,57 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		console.log('adminConfig', adminConfig);
 		console.log('userConfig', userConfig);
 
-		if (userConfig.colModel === undefined) {
+		if (userConfig.colModel === undefined && this.addTemplate !== undefined) {
+			let templateFields = [];
+
+			//getting the selected template JSON and saving it as config
+
+			libs.remoteAction(this, 'getTemplate', { templateId: this.AddTemplate, callback: ((nodeName, templateData) => {
+
+				JSON.parse(templateData[nodeName].baseConfig).colModel.forEach((el)=>{
+
+					templateFields.push(libs.colModelItem(el.fieldName));
+
+				});
+
+				userConfig.colModel = templateFields;
+
+				
+
+				libs.remoteAction(this, 'saveListView', { 
+
+					config: JSON.stringify(userConfig.colModel), 
+
+					listViewName: '', 
+
+					listViewLabel: '', 
+
+					sObjApiName: this.config.sObjApiName, 
+
+					relField: this.config.relField, 
+
+				callback: ()=>{
+
+					console.log("saved");
+
+					this.getRecords(cmd,data,adminConfig,userConfig);
+
+				} });
+
+			})
+
+		 });
+
+		}else{
 			userConfig.colModel = [{
 				"fieldName" : "Id"
 			}];
+			this.getRecords(cmd,data,adminConfig,userConfig);
 		}
+
+	}
+
+	getRecords(cmd,data,adminConfig,userConfig){
 
 		let mergedConfig = {};
 		Object.assign(mergedConfig, userConfig);
