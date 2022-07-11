@@ -10,8 +10,8 @@ global with sharing class infrastructure {
 		recordId = (string) data.get('recordId');
 		try {
 
-			extRelListUsers__c cfg = extRelListUsers__c.getInstance();
-			if (cfg!= null) isAdminAccess = cfg.isAdminAccess__c == true;
+			list < PermissionSetAssignment > permission = [SELECT Id FROM PermissionSetAssignment WHERE AssigneeId = :UserInfo.getUserId() AND PermissionSet.Name = 'XRL_Admin'];
+			if (permission.size() != 0) isAdminAccess = true;
 
 			switch on cmd {
 				when 'getConfig' {
@@ -31,6 +31,12 @@ global with sharing class infrastructure {
 				}
 				when 'requestFeature' {
 					resultMethod = requestFeature(data);
+				}
+				when 'invokeAction' {
+					resultMethod = invokeAction(data);
+				}
+				when 'getCustomLabels' {
+					resultMethod = getCustomLabels();
 				}
 				when
 				else {
@@ -219,6 +225,25 @@ global with sharing class infrastructure {
 			result.put('error', error);
 		}
 		return result;
+	}
+
+	private static object invokeAction(map < string, object > data) {
+		string name = (string) data.get('name');
+		list < object > recordIdList = (list < object >) data.get('recordIdList');
+
+		map < string, object > params = new map < string, object >();
+		if (recordIdList != null) params.put('recordIdList', recordIdList);
+
+		Flow.Interview flow = Flow.Interview.createInterview(name, params);
+  		flow.start();
+		String result = (String) flow.getVariableValue('result');
+
+		return result;
+	}
+	private static map<string, string> getCustomLabels(){
+		return new map<string, string> {
+			'lbl_globalSearch' => label.lbl_globalSearch
+		};
 	}
 
 	global enum exceptionType {

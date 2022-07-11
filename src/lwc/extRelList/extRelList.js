@@ -10,22 +10,23 @@ import { loadScript, loadStyle } from 'lightning/platformResourceLoader';
 
 export default class extRelList extends NavigationMixin(LightningElement) {
 
-	@api ApiName;
-	//@api AddCondition;
+	@api apiName;
 	@api name;
-	//@api mField1;
 	@api recordId;
-	@api defaultListView;
+	@api defaultListView;	
+	@api configuration;
 
 	@track config = {};
 	@track localConfig = {};
 	@track listViews = [];
+	LABELS = {};
 
 	@track showDialog = false;
 	@track dialogCfg;
 
 	constructor() {
-		super()
+		super();
+		libs.remoteAction(this, 'getCustomLabels', {callback: this.setCustomLabels.bind(this) });
 		Promise.all([
 			loadStyle(this, resource + '/css/extRelList.css'),
 			loadScript(this, resource + '/js/xlsx.full.min.js'),
@@ -47,8 +48,14 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		this.loadCfg(true);
 	}
 
+	setCustomLabels(cmd, data) {
+		console.log('CustomLabes are loaded', data[cmd]);
+		this.config.LABELS = data[cmd];
+	}
+
 	loadCfg(isInit) {
-		let apiNames = this.ApiName.split(':');
+		let apiNames = this.apiName.split(':');
+		console.log(apiNames);
 		this.localConfig = {};
 
 		let cfg = libs.loadConfig(this.name);
@@ -77,33 +84,38 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let listViewName = isInit && this.defaultListView !== undefined ? this.defaultListView : (!isInit && this.name !== undefined ? this.name : undefined);
 		console.log(this.defaultListView);
 		console.log(listViewName);
-		libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: listViewName, callback: this.loadRecords.bind(this) });
+		if (this.configuration) {
+			this.setConfig('getConfigResult', this.configuration);
+		} else {
+			libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: listViewName, callback: this.setConfig.bind(this) });
+		}
 	}
 
-	loadRecords(cmd, data) {
+	setConfig(cmd, data) {
+		console.log(cmd, JSON.parse(JSON.stringify(data)), JSON.parse(JSON.stringify(data[cmd])));
 		libs.getGlobalVar(this.name).userInfo = data.userInfo;
 
-		data[cmd].baseConfig = (data[cmd].baseConfig) ? JSON.parse(data[cmd].baseConfig) : {};
-		data[cmd].userConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig) : {};
+		let adminConfig = (data[cmd].baseConfig) ? JSON.parse(data[cmd].baseConfig) : {};
+		let userConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig) : {};
 
-		console.log('data[cmd].baseConfig', data[cmd].baseConfig);
-		console.log('data[cmd].userConfig', data[cmd].userConfig);
+		console.log('adminConfig', adminConfig);
+		console.log('userConfig', userConfig);
 
-		if (data[cmd].userConfig.colModel === undefined) {
-			data[cmd].userConfig.colModel = [{
+		if (userConfig.colModel === undefined) {
+			userConfig.colModel = [{
 				"fieldName" : "Id"
 			}];
 		}
 
 		let mergedConfig = {};
-		Object.assign(mergedConfig, data[cmd].userConfig);
+		Object.assign(mergedConfig, userConfig);
 		mergedConfig.colModel = [];
 
 		let baseColMap = new Map();
-		data[cmd].baseConfig?.colModel?.forEach(col => {
+		adminConfig?.colModel?.forEach(col => {
 			baseColMap.set(col.fieldName, col);
 		});
-		data[cmd].userConfig?.colModel?.forEach(col => {
+		userConfig?.colModel?.forEach(col => {
 			if (baseColMap.has(col.fieldName)) {
 				let mergedCol = Object.assign(baseColMap.get(col.fieldName), col);
 				mergedConfig.colModel.push(mergedCol);
@@ -137,7 +149,14 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			this.config.fields.push(e.fieldName);
 			if (e.locked) this.config.lockedFields.push(e.fieldName);
 		});
+		
+		// Temporary
+		this.config.isGlobalSearch=true;
 
+		this.loadRecords();		
+	}
+
+	loadRecords() {
 		libs.remoteAction(this, 'query', {
 			isNeedDescribe: true,
 			sObjApiName: this.config.sObjApiName,
@@ -149,7 +168,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				console.log('length', data[nodeName].records);
 				
 				libs.getGlobalVar(this.name).records = data[nodeName].records.length > 0 ? data[nodeName].records : undefined;
+				console.log(JSON.parse(JSON.stringify(this.config.records)));
 				this.config.records = libs.getGlobalVar(this.name).records;
+				console.log(JSON.parse(JSON.stringify(this.config.records)));
 				console.log('loadRecords', libs.getGlobalVar(this.name));
 				this.generateColModel();
 			})
@@ -189,6 +210,10 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		return 'Count of changed records ' + this.config.listViewConfig._changedRecords.length;
 	}
 
+	get hasDynamicActions() {
+		return this.config?.listViewConfig?.dynamicActions !== undefined;
+	}
+
 	resetChangedRecords() {
 		this.template.querySelector('c-Data-Table').setUpdateInfo('• ' + this.config.listViewConfig._changedRecords.length + ' item(s) updated');
 		setTimeout((() => { this.template.querySelector('c-Data-Table').setUpdateInfo(''); }), 3000);
@@ -198,11 +223,12 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	handleEvent(event) {
 		let val = event.target.getAttribute('data-id');
 		console.log(val);
+		if (val === 'globalSearch') this.handleGlobalSearch(event);
 		if (val.startsWith('cfg:')) this.handleEventCfg(event);
 		if (val.startsWith('dialog:')) this.handleEventDialog(event);
 		if (val.startsWith(':refresh')) {
 			//libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.localConfig.listViewName, callback: this.loadRecords });
-			libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.config?.listView?.name, callback: this.loadRecords });
+			libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.config?.listView?.name, callback: this.setConfig });
 		}
 
 		if (val.startsWith(':action_')) this.handleEventActions(event, val);
@@ -307,7 +333,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			"listViewConfig": JSON.parse(JSON.stringify(this.config?.listViewConfig)),
 			"listViewName": this.config?.listView?.name,
 			"listViewLabel": this.config?.listView?.label,
-			"listViewAdmin": this.config?.listView?.isAdminConfig
+			"listViewAdmin": this.config?.listView?.isAdminConfig ?? false
 		};
 	}
 
@@ -385,16 +411,22 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 		if (val === 'dialog:saveAsFinish') {
 			console.log('SaveAs Finish', this.config.dialog.listViewName);
+			console.log(JSON.parse(JSON.stringify(this.config.dialog)));
 			//
 
 			libs.remoteAction(this, 'saveListView', { config: this.prepareConfigForSave(), listViewName: this.config.dialog.listViewName, listViewLabel: this.config.dialog.listViewLabel, sObjApiName: this.config.sObjApiName, relField: this.config.relField, addCondition: /*this.AddCondition*/this.config.dialog.listViewConfig.addCondition, listViewAdmin: this.config.dialog.listViewAdmin, callback: this.saveListView });
 
 		}
 		if (val === 'dialog:save') {
-			console.log(this.config.dialog.selectedFields, JSON.stringify(this.config.dialog.listViewConfig));
+			console.log(JSON.parse(JSON.stringify(this.config.dialog)));
+			console.log(JSON.parse(JSON.stringify(this.config.dialog.selectedFields)), JSON.parse(JSON.stringify(this.config.dialog.listViewConfig)));
+			if (this.config.dialog.listViewName) {
+				libs.remoteAction(this, 'saveListView', { config: this.prepareConfigForSave(), listViewName: this.config.dialog.listViewName, listViewLabel: this.config.dialog.listViewLabel, sObjApiName: this.config.sObjApiName, relField: this.config.relField, addCondition: /*this.AddCondition*/this.config.dialog.listViewConfig.addCondition, listViewAdmin: this.config.dialog.listViewAdmin, callback: this.saveListView });
+			} else {
+				this.config.dialog.saveAs = true;
+			}
 
-			libs.remoteAction(this, 'saveListView', { config: this.prepareConfigForSave(), listViewName: this.config.dialog.listViewName, listViewLabel: this.config.dialog.listViewLabel, sObjApiName: this.config.sObjApiName, relField: this.config.relField, addCondition: /*this.AddCondition*/this.config.dialog.listViewConfig.addCondition, listViewAdmin: this.config.dialog.listViewAdmin, callback: this.saveListView });
-
+			
 			/*this.config.fields = this.config.dialog.selectedFields;
 			
 			this.config.tableData = undefined;
@@ -405,6 +437,22 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			libs.remoteAction(this, 'query', {isNeedDescribe : true, sObjApiName: this.config.sObjApiName, relField : this.config.relField, addCondition : this.AddCondition, fields: this.config.fields, callback : this.loadRecords});*/
 		}
 	}
+
+	handleGlobalSearch(event) {
+		const isEnterKey = event.keyCode === 13;
+        if (isEnterKey) {
+            this.config.queryTerm = event.target.value;
+			// Need run search on table
+        }
+		console.log()
+	}
+
+	handleGlobalSearchClear(event) {
+		if (!event.target.value.length) {
+			this.config.queryTerm = undefined
+		}
+	}
+
 	prepareConfigForSave() {
 		let tmp = JSON.parse(JSON.stringify(this.config.dialog.listViewConfig));
 		for (let key in tmp) {
@@ -420,19 +468,21 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			variant: 'success'
 		});
 		this.dispatchEvent(event);
-		this.config.listView.name = data[nodeName].listViewName;
-		console.log(this.ApiName);
+		console.log(nodeName, JSON.parse(JSON.stringify(data)));
+		if (this.config.listView) this.config.listView.name = data[nodeName].listViewName;
+		console.log(this.apiName);
 		console.log(JSON.parse(JSON.stringify(this.localConfig)));
-		libs.saveConfig(this.ApiName, this.localConfig);
+		libs.saveConfig(this.apiName, this.localConfig);
 		this.config.dialog = undefined;
 		this.config.records = undefined;
-		libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.config?.listView?.name, callback: this.loadRecords });
+		libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.config?.listView?.name, callback: this.setConfig });
 	}
 
 	handleEventActions(event, val) {
 		if (val.startsWith(':action_export')) this.handleEventExport(event);
 		if (val.startsWith(':action_delete')) {
 			let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
+			// wrong - shouldnt call loadrecords with delete results
 			libs.remoteAction(this, 'delRecords', { records: records, sObjApiName: this.config.sObjApiName, callback: this.loadRecords });
 		}
 
@@ -452,6 +502,34 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					defaultFieldValues: encodeDefaultFieldValues(defValue)
 				}
 			});
+		}
+
+		if (val.startsWith(':action_dynamic')) {			
+			let action = this.config.listViewConfig.dynamicActions[event.target.dataset.index];			
+			let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
+
+			let recordIdList;
+			if (action.input === 'recordId' && records.length !== 0) recordIdList = records.map(rec => rec.Id);
+			
+			libs.remoteAction(this, 'invokeAction', { name: action.name, recordIdList: recordIdList, callback: (cmd, data) => {
+				console.log(cmd, data);
+				let res = JSON.parse(data.invokeActionResult);
+				if (res.isSuccess) {
+					const event = new ShowToastEvent({
+						title: 'Success',
+						message: res.message ? res.message : (action.label + ' execution finished'),
+						variant: 'success'
+					});
+					this.dispatchEvent(event);
+				} else {
+					const event = new ShowToastEvent({
+						title: 'Error',
+						message: res.message ? res.message : (action.label + ' execution failed'),
+						variant: 'error'
+					});
+					this.dispatchEvent(event);
+				}				
+			}});
 		}
 	}
 
@@ -528,5 +606,4 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		XLSX.utils.book_append_sheet(wb, ws, this.config.sObjLabel);
 		XLSX.writeFile(wb, this.config.sObjLabel + '.xlsx', { cellStyles: true, WTF: 1 });
 	}
-
 }
