@@ -107,7 +107,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 			//getting the selected template JSON and saving it as config
 
-			libs.remoteAction(this, 'getTemplate', { templateId: this.AddTemplate, callback: ((nodeName, templateData) => {
+			libs.remoteAction(this, 'getTemplate', { templateId: this.addTemplate, callback: ((nodeName, templateData) => {
 
 				JSON.parse(templateData[nodeName].baseConfig).colModel.forEach((el)=>{
 
