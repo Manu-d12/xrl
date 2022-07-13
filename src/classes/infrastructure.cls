@@ -55,9 +55,18 @@ global with sharing class infrastructure {
 		}
 		result.put(cmd + 'Result', resultMethod);
 
+		User userDetails = [SELECT Id, Name, Profile.Name, UserRole.Name FROM User where Id=:userinfo.getUserId()]; 
+		list < PermissionSetAssignment > permissionSets = [SELECT Id,PermissionSet.Name FROM PermissionSetAssignment WHERE AssigneeId = :UserInfo.getUserId()];
+		List<Group> publicGroups = getGroupsForUser(userinfo.getUserId());
+		System.debug(publicGroups);
+
 		result.put('userInfo', new map<string, object>{
 			'locale' => userInfo.getLocale().replaceAll('_','-').replace('-EURO',''),
-			'isAdminAccess' => isAdminAccess
+			'isAdminAccess' => isAdminAccess,
+			'profileName' => userDetails.Profile.Name,
+			'roleName' => userDetails.UserRole.Name,
+			'publicGroups' => publicGroups,
+			'permissionSets' => permissionSets
 		});
 		//result.put('log', log);
 		return result;
@@ -264,6 +273,36 @@ global with sharing class infrastructure {
 
 		System.debug('result ' + result);
 		return result;
+	}
+
+	public static Group[] getGroupsForUser(Id userId){
+
+		Set<Id> groupIds = getGroupsForIds(new Set<Id>{userId});
+		return [SELECT Id, Name FROM Group WHERE Id IN: groupIds];
+
+	}
+
+	public static Set<Id> getGroupsForIds(Set<Id> userOrGroupIds){
+
+		Set<Id> groupIds = new Set<Id>();
+		Set<Id> nestedGroupIds = new Set<Id>();
+
+		list<GroupMember> records = [SELECT Id, GroupId, UserOrGroupId FROM GroupMember WHERE UserOrGroupId =: userOrGroupIds AND UserOrGroupId != null AND Group.Type = 'Regular'];
+
+		for (GroupMember record:records){
+			if (!(record.UserOrGroupId + '').startsWith('005')){
+				nestedGroupIds.add(record.UserOrGroupId);   
+			}
+			else{
+				groupIds.add(record.GroupId);
+			}
+		}
+
+		if (nestedGroupIds.size() > 0){
+			groupIds.addAll(getGroupsForIds(nestedGroupIds));
+		}
+
+		return groupIds;
 	}
 
 	global enum exceptionType {
