@@ -721,5 +721,9 @@ export default class dataTable extends LightningElement {
 
 		if (this.hasGrouping) this.setGroupRecords();
 	}
+	@api
+	updateView(){
+		this.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
+	}
 
 }
