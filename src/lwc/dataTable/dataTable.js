@@ -160,6 +160,7 @@ export default class dataTable extends LightningElement {
 	connectedCallback() {
 		//super();
 		this.config = libs.getGlobalVar(this.cfg).listViewConfig;
+		this.config.LABELS = libs.getGlobalVar(this.cfg).LABELS;
 		
 		this.config._saveEdit = this.saveEditCallback.bind(this);
 		this.config._countFields = this.config.isShowCheckBoxes === true ? 1 : 0;
