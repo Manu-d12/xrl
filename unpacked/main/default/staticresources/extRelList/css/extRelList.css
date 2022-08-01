@@ -1,0 +1,26 @@
+.relListSetting textarea {
+	min-height:150px !important;
+}
+.relListSetting .slds-modal__content, .extRelListTable lightning-calendar, .extRelListTable lightning-basecombobox_basecombobox {
+	overflow: initial;
+}
+
+.extRelListSearch label.slds-form-element__label, .extRelListSearch legend, .extRelListTable label.slds-form-element__label, .extRelListTable legend{
+	display:none !important;
+}
+
+.extRelListTable .slds-table_fixed-layout tbody {
+    transform: none !important;
+}
+
+.hideIcon .slds-icon-utility-down {
+	display: none;
+}
+
+.groupRow {
+	background-color: #e5f0fa;
+}
+
+.groupRow:focus {
+	background-color: #91c4ec;
+}

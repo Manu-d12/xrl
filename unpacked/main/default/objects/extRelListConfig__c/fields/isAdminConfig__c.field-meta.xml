@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>isAdminConfig__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Is this config made by Admin</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Is this config made by Admin</inlineHelpText>
+    <label>isAdminConfig</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>
