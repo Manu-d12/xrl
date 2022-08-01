@@ -3,8 +3,6 @@ public class packageTest {
 
     @TestSetup
     static void setupData() {
-        extRelListUsers__c extu = new extRelListUsers__c(isAdminAccess__c = true);
-        insert extu;
         extRelListConfig__c extc = new extRelListConfig__c(sObjApiName__c = 'Case', relFieldApiName__c = 'AccountId', isAdminConfig__c = true, JSON__c = '{}', listViewName__c = '_admin', uniqKey__c = 'Case:AccountId:true:_admin');
         insert extc;
         Account acc = new Account(Name = 'test acc');

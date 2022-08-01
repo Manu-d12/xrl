@@ -16,7 +16,6 @@
         <members>extRelListConfig__c.relFieldApiName__c</members>
         <members>extRelListConfig__c.sObjApiName__c</members>
         <members>extRelListConfig__c.uniqKey__c</members>
-        <members>extRelListUsers__c.isAdminAccess__c</members>
         <name>CustomField</name>
     </types>
     <types>
