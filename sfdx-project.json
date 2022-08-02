@@ -8,7 +8,7 @@
             "versionDescription": "Initial release",
             "versionNumber": "1.0.1.NEXT",
             "definitionFile": "config/scratch-org-def.json",
-			"ancestorId" : "04t8d000000lEWZAA2"
+            "ancestorId": "04t8d000000lEWZAA2"
         }
     ],
     "namespace": "XRL",
@@ -17,6 +17,7 @@
     "packageAliases": {
         "Extended Related List": "0Ho8d000000GmmCCAS",
         "Extended Related List@1.0.0-1": "04t8d000000lEWPAA2",
-        "Extended Related List@1.0.0-2": "04t8d000000lEWZAA2"
+        "Extended Related List@1.0.0-2": "04t8d000000lEWZAA2",
+        "Extended Related List@1.0.1-1": "04t8d000000lEWeAAM"
     }
 }
