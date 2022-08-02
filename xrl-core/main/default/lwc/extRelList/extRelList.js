@@ -229,6 +229,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			let describe = this.config.describe[e.fieldName];
 			if (e.label === undefined) e.label = describe.label;
 			if (e.type === undefined) e.type = describe.type;
+			e.updateable = describe.updateable;
 			e.isNameField = describe && describe.nameField === true;
 			if (e.type === 'picklist') {
 				e.options = [];

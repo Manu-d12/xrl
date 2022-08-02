@@ -33,6 +33,7 @@ export default class extRelListSettings extends LightningElement {
 		let tmp = libs.colModelItem();
 
 		for (let item in tmp) {
+			if(!fieldParams.updateable && item === 'isEditable') continue;
 			let defValue = (item === 'fieldName') 
 				? this.config.dialog.field 
 				: fieldParams[item] === undefined
