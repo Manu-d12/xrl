@@ -102,7 +102,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		console.log('adminConfig', adminConfig);
 		console.log('userConfig', userConfig);
 
-		if (userConfig.colModel === undefined && this.addTemplate !== undefined) {
+		if (userConfig.colModel === undefined && this.addTemplate !== undefined && this.addTemplate !== 'None') {
 			let templateFields = [];
 
 			//getting the selected template JSON and saving it as config

@@ -15,6 +15,10 @@ global with sharing class getRelTemplates extends VisualEditor.DynamicPickList{
 		List<extRelListConfig__c> allTemplates = [SELECT Id,name, RecordType.Id
         FROM extRelListConfig__c where RecordType.Name = 'Template'];
 
+		picklistValues.addRow(
+                new VisualEditor.DataRow('None', 'None')
+            );
+
 		VisualEditor.DynamicPickListRows picklistValues = new VisualEditor.DynamicPickListRows();
 		for (extRelListConfig__c template: allTemplates) {
 			picklistValues.addRow(
