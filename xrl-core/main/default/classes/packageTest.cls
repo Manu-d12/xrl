@@ -119,4 +119,26 @@ public class packageTest {
         System.assertNotEquals(null, row);
         System.assertNotEquals(null, rows);
     }
+    @isTest
+    public static void testGetRelTemplates() {
+        VisualEditor.DesignTimePageContext ctx = new VisualEditor.DesignTimePageContext();
+        ctx.entityName = 'Account';
+        getRelTemplates grp = new getRelTemplates(ctx);
+        test.startTest();
+        VisualEditor.DataRow row = grp.getDefaultValue();
+        VisualEditor.DynamicPickListRows rows = grp.getValues();
+        test.stopTest();
+        System.assertNotEquals(null, row);
+        System.assertNotEquals(null, rows);
+    }
+    @isTest
+    public static void testGetCustomLabels() {
+        map < string, object > data = new map < string, object > ();
+        data.put('sObjApiName', 'Case');
+        data.put('relField', 'AccountId');
+        test.startTest();
+        map < string, object > res = infrastructure.dispatcherAura('getCustomLabels', data);
+        test.stopTest();
+        System.assertEquals(true, res.size()>0);
+    }
 }
