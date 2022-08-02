@@ -16,3 +16,14 @@ The `sfdx-project.json` file contains useful configuration information for your 
 - [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
 - [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
 - [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
+
+
+https://login.salesforce.com/packaging/installPackage.apexp?p0=04t8d000000lEWPAA2 - version 1.0.0
+/packaging/installPackage.apexp?p0=04t8d000000lEWZAA2
+
+
+How to create a package version
+sfdx force:package:version:create -p 0Ho8d000000GmmCCAS --installationkey v1.0.0 --wait 10 --codecoverage// where 0Ho8d000000GmmCCAS - package Id
+
+make a release package version
+sfdx force:package:version:promote -p [04t8d000000lEWPAA2] - package version Id
