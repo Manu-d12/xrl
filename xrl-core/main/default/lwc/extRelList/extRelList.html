@@ -1,4 +1,4 @@
-<template>
+<template if:true={config.LABELS}>
 	<lightning-card variant="narrow" title={config.sObjLabel} icon-name={config.iconName}>
 		<div class="slds-grid slds-grid_align-end slds-p-around_x-small">
 			<div class="slds-m-left_xx-small"  if:true={config.isGlobalSearch}>
