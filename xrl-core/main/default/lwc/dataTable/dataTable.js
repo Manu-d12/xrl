@@ -160,7 +160,7 @@ export default class dataTable extends LightningElement {
 	connectedCallback() {
 		//super();
 		this.config = libs.getGlobalVar(this.cfg).listViewConfig;
-		console.log(JSON.parse(JSON.stringify(this.config.colModel)));
+		console.log('Config', JSON.parse(JSON.stringify(this.config)));
 		this.config.LABELS = libs.getGlobalVar(this.cfg).LABELS;
 		
 		this.config._saveEdit = this.saveEditCallback.bind(this);
@@ -190,19 +190,22 @@ export default class dataTable extends LightningElement {
 		this.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
 		console.log('length from datatable', this.cfg, this.records.length, this.records);
 		this.initSort();
+		console.log('PAGER', this.config.pager);
 
-		this.config.pager = {
-			pagerTop : true,
-			pagerBottom : true,
-			curPage : 1,
-			pageSize : '20',
-			pageSizeOptions : [
-				{ label: '5', value: '5' },
-				{ label: '20', value: '20' },
-				{ label: '50', value: '50' },
-				{ label: '100', value: '100' },
-				{ label: '200', value: '200' },
-			]
+		if (this.config.pager === undefined) {
+			this.config.pager = {
+				pagerTop : true,
+				pagerBottom : true,
+				curPage : 1,
+				pageSize : '20',
+				pageSizeOptions : [
+					{ label: '5', value: '5' },
+					{ label: '20', value: '20' },
+					{ label: '50', value: '50' },
+					{ label: '100', value: '100' },
+					{ label: '200', value: '200' },
+				]
+			}
 		}
 		this.setNumPages(this.config.pager.pageSize);
 

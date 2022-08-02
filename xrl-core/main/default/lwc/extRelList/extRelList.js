@@ -359,7 +359,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		for (let col of this.config.listViewConfig.colModel) {
 			lockedOptions.push({ label: col.label, value: col.fieldName });
 		}
-		this.config.listViewConfig.isShowCheckBoxes = true;
+		//this.config.listViewConfig.isShowCheckBoxes = true;
 		this.config.dialog = {
 			"title": this.config.userInfo.isAdminAccess === true ? 'List View Configuration' : 'Select Fields to Display',
 			"variant": variant,
@@ -427,11 +427,38 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 			if (field) {
 				field[param] = value;
+				console.log('in if');
 			} else {
 				field = { 'fieldName': this.config.dialog.field };
 				field[param] = value;
+				console.log('in else');
 				this.config.dialog.listViewConfig.colModel.push(field);
 			}
+		}
+		if (val === 'dialog:setTableParam') {
+			
+
+			let param = event.target.getAttribute('data-param');
+			let type = event.target.getAttribute('data-type');
+			let value = (type === 'checkbox') ? event.target.checked : event.target.value;
+			console.log(type, param, value);
+
+			this.config.dialog.listViewConfig[param] = value;
+
+			console.log('saving table params', param, this.config.dialog.listViewConfig[param]);
+		}
+		if (val === 'dialog:setPagerParam') {
+			
+
+			let param = event.target.getAttribute('data-param');
+			let type = event.target.getAttribute('data-type');
+			let value = (type === 'checkbox') ? event.target.checked : event.target.value;
+
+			console.log(type, param, value);
+
+			this.config.dialog.listViewConfig.pager[param] = value;
+
+			console.log('saving table params', param, this.config.dialog.listViewConfig[param]);
 		}
 		if (val === 'dialog:setAddCondition') {
 			this.config.dialog.listViewConfig.addCondition = event.detail.value;
@@ -500,7 +527,6 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			}
 			this.template.querySelector('c-Data-Table').updateView();
         }
-		console.log()
 	}
 
 	handleGlobalSearchClear(event) {

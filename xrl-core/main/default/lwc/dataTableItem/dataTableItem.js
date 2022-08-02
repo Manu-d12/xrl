@@ -78,7 +78,6 @@ export default class dataTableItem extends LightningElement {
 			[row,val] = libs.getLookupRow(this.row, this.col.fieldName);
 			value += this.col._uStyle(row, this.col, val);
 		}
-		console.log('uStyle', value, typeof(this.col._uStyle), JSON.stringify(this.col));
 		return value;
 	}
 

@@ -35,7 +35,6 @@ export default class extRelListSettings extends LightningElement {
 		let tmp = libs.colModelItem();
 
 		for (let item in tmp) {
-			console.log('fieldParams', describe[this.config.dialog.field]);
 			if(!describe[this.config.dialog.field].updateable && item === 'isEditable') continue;
 			let defValue = (item === 'fieldName') 
 				? this.config.dialog.field 
@@ -60,22 +59,12 @@ export default class extRelListSettings extends LightningElement {
 	get tableItem() {
 		let result = [];
 
-		/*if (this.config.dialog.field === undefined) {return result};
-
-		let fieldParams = this.config.dialog.listViewConfig.colModel.find( e=>{
-			return e.fieldName === this.config.dialog.field;
-		});
-
-		if (!fieldParams) fieldParams = {}*/
-
 		let tmp = libs.tableItem();
 
 		for (let item in tmp) {
-			let defValue = ''/*(item === 'fieldName') 
-				? this.config.dialog.field 
-				: fieldParams[item] === undefined
-					? tmp[item].defValue
-					: fieldParams[item];*/
+			let defValue = item in this.config.dialog.listViewConfig 
+				? this.config.dialog.listViewConfig[item]
+				: tmp[item].defValue;
 			result.push({
 				"paramName" : item,
 				"type" : tmp[item].type,
@@ -84,7 +73,8 @@ export default class extRelListSettings extends LightningElement {
 				"tooltip" : tmp[item].tooltip,
 				//"isDisabled" : (item === 'fieldName'),
 				"value" : defValue,
-				"isChecked" : (tmp[item].type === 'checkbox') ? defValue : undefined
+				"isChecked" : (tmp[item].type === 'checkbox') ? defValue : undefined,
+				"cmd": tmp[item].cmd
 			})
 		}
 		console.log(result);

@@ -159,23 +159,49 @@ export let libs = {
 	},
 	tableItem: function() {
 		let defParams = {
-			"isShowCheckbox": {
+			"isShowNumeration" : {
 				"defValue": true,
-				"type": "boolean",
-				"label": "isShowCheckbox",
-				"tooltip": "Add checkbox column to table"
+				"type": "checkbox",
+				"label": "Is need show numeration?",
+				"tooltip": "Add Numeration column to table",
+				"cmd" : "dialog:setTableParam"
+			},
+			"isShowCheckBoxes": {
+				"defValue": true,
+				"type": "checkbox",
+				"label": "Is need show checkboxes?",
+				"tooltip": "Add checkbox column to table",
+				"cmd" : "dialog:setTableParam",
+			},
+			"isGlobalSearch": {
+				"defValue": true,
+				"type": "checkbox",
+				"label": "Is show global search for a table?",
+				"tooltip": "Show/Hide global table search",
+				"cmd" : "dialog:setTableParam",
+			},
+			"pagerTop" : {
+				"defValue": true,
+				"type": "checkbox",
+				"label": "Is show pagination on the top?",
+				"tooltip": "Show/Hide top pager",
+				"cmd" : "dialog:setPagerParam"
+			},
+			"pagerBottom" : {
+				"defValue": false,
+				"type": "checkbox",
+				"label": "Is show pagination on the bottom?",
+				"tooltip": "Show/Hide bottom pager",
+				"cmd" : "dialog:setPagerParam",
 			},
 			"rowCss": {
 				"type": "function",
 				"label": "rowCss",
-				"tooltip": "Change style by data"
-			},
-			"isGlobalSearch": {
-				"defValue": true,
-				"type": "boolean",
-				"label": "Is show global search for a table",
-				"tooltip": "Show/Hide global table search"
+				"tooltip": "Change style by data",
+				"cmd" : "dialog:setTableParam"
 			}
+			
+			
 		}
 		return defParams;
 	},
