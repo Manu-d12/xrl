@@ -94,45 +94,55 @@ export let libs = {
 				"label": "Field Api Name",
 				"tooltip": "You can use different constructions like a 'Account.Name' or '(SELECT Id FROM Accounts WHERE CreatedDate=TODAY)' "
 			},
-			'label': {
+			"label": {
 				"type": "text",
 				"label": "Field Label",
 				"tooltip": "If You want to use label from describe, please leave this field empty"
 			},
-			'formatter': {
+			"formatter": {
 				"type": "function",
-				"params": "(value)",
+				"params": "(row, col, val)",
 				"label": "Custom function for formatting"
 			},
-			'isHidden': {
+			"uStyle": {
+				"type": "function",
+				"params": "(row, col, val)",
+				"label": "Custom function for style"
+			},
+			"isHidden": {
 				"defValue": false,
 				"type": "checkbox",
-				"label": "Hide column in a grid"
+				"label": "Is column Hidden?"
 			},
-			'isFilterable': {
+			"isFilterable": {
 				"defValue": true,
 				"type": "checkbox",
-				"label": "Can filter column"
+				"label": "Is column Filterable?"
 			},
-			'isSortable': {
+			"isSortable": {
 				"defValue": true,
 				"type": "checkbox",
-				"label": "Can sort column or not"
+				"label": "Is column Sortable?"
 			},
-			'isEditable': {
+			"isEditable": {
 				"defValue": false,
 				"type": "checkbox",
-				"label" : "isEditable",
+				"label": "Is column Editable?"
+			},
+			/*'isEditable': {
+				"defValue": false,
+				"type": "checkbox",
+				"label" : "Is column Editable?",
 				"tooltip": "Can edit column or not"
-			},
-			'isEditableMethod': {
+			},*/
+			/*'isEditableMethod': {
 				"defValue": false,
 				"type": "function",
 				"params": "(value)",
 				"label" : "isEditable Method",
 				"tooltip": "Can edit column or not method. We can implement dynamic properties"
-			},
-			'width': {
+			},*/
+			"width": {
 				"type": "string",
 				"label" : "Width",
 				"tooltip": "You can user % or px for definition. Ex: 20px or 5%"
@@ -155,10 +165,16 @@ export let libs = {
 				"label": "isShowCheckbox",
 				"tooltip": "Add checkbox column to table"
 			},
-			'rowCss': {
+			"rowCss": {
 				"type": "function",
 				"label": "rowCss",
 				"tooltip": "Change style by data"
+			},
+			"isGlobalSearch": {
+				"defValue": true,
+				"type": "boolean",
+				"label": "Is show global search for a table",
+				"tooltip": "Show/Hide global table search"
 			}
 		}
 		return defParams;

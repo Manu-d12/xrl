@@ -160,13 +160,23 @@ export default class dataTable extends LightningElement {
 	connectedCallback() {
 		//super();
 		this.config = libs.getGlobalVar(this.cfg).listViewConfig;
+		console.log(JSON.parse(JSON.stringify(this.config.colModel)));
+		this.config.LABELS = libs.getGlobalVar(this.cfg).LABELS;
 		
 		this.config._saveEdit = this.saveEditCallback.bind(this);
 		this.config._countFields = this.config.isShowCheckBoxes === true ? 1 : 0;
+		console.log(JSON.parse(JSON.stringify(this.config.colModel)));
 		this.config.colModel.forEach(item => {
 			if (item.formatter !== undefined) {
 				try {
 					item._formatter = eval('(' + item.formatter + ')');
+				} catch (e) {
+					console.log('EXCEPTION', e);
+				}
+			}
+			if (item.uStyle !== undefined) {
+				try {
+					item._uStyle = eval('(' + item.uStyle + ')');
 				} catch (e) {
 					console.log('EXCEPTION', e);
 				}
@@ -185,7 +195,7 @@ export default class dataTable extends LightningElement {
 			pagerTop : true,
 			pagerBottom : true,
 			curPage : 1,
-			pageSize : '5',
+			pageSize : '20',
 			pageSizeOptions : [
 				{ label: '5', value: '5' },
 				{ label: '20', value: '20' },
@@ -349,6 +359,8 @@ export default class dataTable extends LightningElement {
 		let rowId = event.srcElement.getAttribute('data-rowid') != null ?
 			event.srcElement.getAttribute('data-rowid') :
 			event.srcElement.parentNode.getAttribute('data-rowid');
+		
+		console.log(rowInd + ' ' + rowId);
 
 		let groupInd;
 		let groupRowInd;
@@ -431,7 +443,14 @@ export default class dataTable extends LightningElement {
 		let table = this.template.querySelector('.extRelListTable');
 
 		if (cItem) {
-			console.log('cItem', cItem);
+			console.log('cItem', cItem.type);
+			if(cItem.type === 'boolean'){
+				cItem.options = [
+					{label:'All',value:'All'},
+					{label:'True',value:'True'},
+					{label:'False',value:'False'}
+				];
+			}
 			this.config._isFilterOptions = this.config._isFilterOptions && this.config._isFilterOptions.fieldName === colName ?
 				undefined :
 				{
@@ -509,6 +528,7 @@ export default class dataTable extends LightningElement {
 			let isNeedRefilter = false;
 			let cItem = this.getColItem(this.config._isFilterOptions.fieldName);
 			if (cItem) {
+				console.log('column', JSON.stringify(cItem));
 				isNeedRefilter = (cItem._filterStr !== this.config._isFilterOptions.filterStr || (this.config._isFilterOptions.isUnary && cItem._filterOption !==this.config._isFilterOptions.filterOption));
 				cItem._filterStr = this.config._isFilterOptions.filterStr;
 				cItem._filterStrTo = this.config._isFilterOptions.filterStrTo;

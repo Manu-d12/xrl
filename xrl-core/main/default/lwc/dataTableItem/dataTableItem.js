@@ -71,6 +71,18 @@ export default class dataTableItem extends LightningElement {
 		return '';
 	}
 
+	get uStyle() {
+		let value='';//float:inherit; width:100%;
+		if (typeof(this.col._uStyle) === 'function') {
+			let row,val;
+			[row,val] = libs.getLookupRow(this.row, this.col.fieldName);
+			value += this.col._uStyle(row, this.col, val);
+		}
+		console.log('uStyle', value, typeof(this.col._uStyle), JSON.stringify(this.col));
+		return value;
+	}
+
+
 	get editValue() {
 		let row,val;
 		if (this.col.type === 'boolean'){
@@ -114,7 +126,7 @@ export default class dataTableItem extends LightningElement {
 	getCurrencySymbol() {
 		let currency = libs.getGlobalVar(this.cfg).currency;
 		if (currency.isMultyCurrencyOrg === true) {
-			return libs.currencyMap(row.CurrencyIsoCode);
+			return libs.currencyMap(this.row.CurrencyIsoCode);
 		} else {
 			return libs.currencyMap(currency.orgCurrency);
 		}
