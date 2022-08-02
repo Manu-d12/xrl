@@ -120,33 +120,24 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				
 
 				libs.remoteAction(this, 'saveListView', { 
-
 					config: JSON.stringify(userConfig.colModel), 
-
 					listViewName: '', 
-
 					listViewLabel: '', 
-
 					sObjApiName: this.config.sObjApiName, 
-
 					relField: this.config.relField, 
-
 				callback: ()=>{
-
 					console.log("saved");
-
 					this.getRecords(cmd,data,adminConfig,userConfig);
-
 				} });
-
 			})
-
 		 });
 
-		}else{
+		}else if (userConfig.colModel === undefined){
 			userConfig.colModel = [{
 				"fieldName" : "Id"
 			}];
+			this.getRecords(cmd,data,adminConfig,userConfig);
+		} else {
 			this.getRecords(cmd,data,adminConfig,userConfig);
 		}
 
