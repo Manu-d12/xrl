@@ -21,6 +21,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	@track localConfig = {};
 	@track listViews = [];
 	LABELS = {};
+	allRecords = [];
 
 	@track showDialog = false;
 	@track dialogCfg;
@@ -208,6 +209,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				libs.getGlobalVar(this.name).records = data[nodeName].records.length > 0 ? data[nodeName].records : undefined;
 				console.log(JSON.parse(JSON.stringify(this.config.records)));
 				this.config.records = libs.getGlobalVar(this.name).records;
+				this.allRecords = this.config.records;
 				console.log(JSON.parse(JSON.stringify(this.config.records)));
 				console.log('loadRecords', libs.getGlobalVar(this.name));
 				this.generateColModel();
@@ -481,13 +483,31 @@ export default class extRelList extends NavigationMixin(LightningElement) {
         if (isEnterKey) {
             this.config.queryTerm = event.target.value;
 			// Need run search on table
+			if(this.config.queryTerm !== ''){
+				let searchableRecords = JSON.parse(JSON.stringify(this.allRecords));
+				const searchResults = new Set();
+				searchableRecords.forEach((el) => {
+					for(let key in el) {
+						if(el[key].toLowerCase().indexOf(this.config.queryTerm.toLowerCase())!=-1) {
+							searchResults.add(el);
+						}
+					}
+				});
+				libs.getGlobalVar(this.name).records = [...searchResults];
+				this.config.records = libs.getGlobalVar(this.name).records;
+			}else{
+				libs.getGlobalVar(this.name).records = this.allRecords;
+			}
+			this.template.querySelector('c-Data-Table').updateView();
         }
 		console.log()
 	}
 
 	handleGlobalSearchClear(event) {
 		if (!event.target.value.length) {
-			this.config.queryTerm = undefined
+			this.config.queryTerm = undefined;
+			libs.getGlobalVar(this.name).records = this.allRecords;
+			this.template.querySelector('c-Data-Table').updateView();
 		}
 	}
 
