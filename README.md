@@ -23,7 +23,7 @@ https://login.salesforce.com/packaging/installPackage.apexp?p0=04t8d000000lEWPAA
 
 
 How to create a package version
-sfdx force:package:version:create -p 0Ho8d000000GmmCCAS --installationkey v1.0.0 --wait 10 --codecoverage// where 0Ho8d000000GmmCCAS - package Id
+sfdx force:package:version:create -p 0Ho8d000000GmmCCAS --wait 10 --codecoverage --installationkeybypass // where 0Ho8d000000GmmCCAS - package Id
 
 make a release package version
 sfdx force:package:version:promote -p [04t8d000000lEWPAA2] - package version Id

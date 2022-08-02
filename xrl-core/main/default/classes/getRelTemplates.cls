@@ -12,10 +12,16 @@ global with sharing class getRelTemplates extends VisualEditor.DynamicPickList{
 	}
 
     global override VisualEditor.DynamicPickListRows getValues() {
-		List<extRelListConfig__c> allTemplates = [SELECT Id,name, RecordType.Id
-        FROM extRelListConfig__c where RecordType.Name = 'Template'];
+		List<extRelListConfig__c> allTemplates = [
+			SELECT Id,name, RecordType.Id
+	        FROM extRelListConfig__c 
+			WHERE RecordType.Name = 'Template'
+		];
 
 		VisualEditor.DynamicPickListRows picklistValues = new VisualEditor.DynamicPickListRows();
+		picklistValues.addRow(
+                new VisualEditor.DataRow('None', null)
+            );
 		for (extRelListConfig__c template: allTemplates) {
 			picklistValues.addRow(
                 new VisualEditor.DataRow(template.Name, (string)template.Id)
