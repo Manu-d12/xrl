@@ -170,7 +170,7 @@ global with sharing class infrastructure {
 			: listViewLabel;
 		boolean isAdminConf = listViewName == '_admin' ? isAdminAccess : listViewAdmin;
 
-		RecordType rt = [select Id from RecordType where Name = 'Config' and SobjectType = 'extRelListConfig__c' limit 1];
+		RecordType rt = [SELECT Id FROM RecordType WHERE Name = 'Config' AND (SobjectType ='extRelListConfig__c' OR SobjectType ='XRL__extRelListConfig__c') limit 1];
 
 		extRelListConfig__c listView = new extRelListConfig__c(
 			listViewName__c = listViewName,
