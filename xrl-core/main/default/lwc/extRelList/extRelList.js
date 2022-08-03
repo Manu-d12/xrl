@@ -509,6 +509,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 	handleGlobalSearch(event) {
 		const isEnterKey = event.keyCode === 13;
+		if(event.target.value.length == 0){
+			libs.getGlobalVar(this.name).records = this.allRecords;
+			this.template.querySelector('c-Data-Table').updateView();
+			return;
+		}
         if (isEnterKey) {
             this.config.queryTerm = event.target.value;
 			// Need run search on table
@@ -529,6 +534,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			}
 			this.template.querySelector('c-Data-Table').updateView();
         }
+		
 	}
 
 	handleGlobalSearchClear(event) {
