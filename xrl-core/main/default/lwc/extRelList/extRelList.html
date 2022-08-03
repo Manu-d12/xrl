@@ -1,5 +1,5 @@
 <template>
-	<lightning-card variant="narrow" title={config.sObjLabel} icon-name={config.iconName} if:true={config._LABELS}>
+	<lightning-card title={config.sObjLabel} icon-name={config.iconName} if:true={config._LABELS} class=" slds-card_boundary" style="padding:5px; display:block">
 		<div class="slds-grid slds-grid_align-end slds-p-around_x-small">
 			<div class="slds-m-left_xx-small"  if:true={config.listViewConfig}>
 				<div onkeyup={handleEvent} if:true={config.listViewConfig.isGlobalSearch}>
