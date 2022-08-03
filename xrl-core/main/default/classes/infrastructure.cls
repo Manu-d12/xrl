@@ -55,9 +55,18 @@ global with sharing class infrastructure {
 		}
 		result.put(cmd + 'Result', resultMethod);
 
+		User userDetails = [SELECT Id, Name, Profile.Name, UserRole.Name FROM User where Id=:userinfo.getUserId()]; 
+		list < PermissionSetAssignment > permissionSets = [SELECT Id,PermissionSet.Name FROM PermissionSetAssignment WHERE AssigneeId = :UserInfo.getUserId()];
+		List<Group> publicGroups = getGroupsForUser(userinfo.getUserId());
+		System.debug(publicGroups);
+
 		result.put('userInfo', new map<string, object>{
 			'locale' => userInfo.getLocale().replaceAll('_','-').replace('-EURO',''),
-			'isAdminAccess' => isAdminAccess
+			'isAdminAccess' => isAdminAccess,
+			'profileName' => userDetails.Profile.Name,
+			'roleName' => userDetails.UserRole.Name,
+			'publicGroups' => publicGroups,
+			'permissionSets' => permissionSets
 		});
 		//result.put('log', log);
 		return result;
@@ -93,12 +102,19 @@ global with sharing class infrastructure {
 			fields.add('CurrencyIsoCode');
 		}
 
+		// if(String.isBlank(recordId)){
+		// 	recordId = '0015i000008dvp5AAA';
+		// }
+
+		System.debug('recordId' + addCondition);
+
 		string SOQL = 'SELECT {fields} FROM {sObjApiName} WHERE {relField}=\'{recordId}\' {addCondition}'.
 		replaceAll('\\{sObjApiName\\}', sObjApiName).
 		replaceAll('\\{relField\\}', relField).
 		replaceAll('\\{recordId\\}', recordId).
 		replaceAll('\\{addCondition\\}', addCondition).
 		replaceAll('\\{fields\\}', string.join(new list < string > (soqlFields), ','));
+
 
 		//if (string.isBlank(SOQL)) throw new core.appException(null, string.format(core.appLabels.get('errCmdParams'), new string[]{'executeAnon','apexCode'}), core.ExceptionType.API);
 		system.debug(LoggingLevel.Error, 'SOQL ' + SOQL);
@@ -249,7 +265,57 @@ global with sharing class infrastructure {
 	}
 	private static map<string, string> getCustomLabels(){
 		return new map<string, string> {
-			'lbl_globalSearch' => label.lbl_globalSearch
+			'altTxt_collapse' => label.altTxt_collapse,
+			'altTxt_clearInput' => label.altTxt_clearInput,
+			'altTxt_delete' => label.altTxt_delete,
+			'altTxt_dynamic' => label.altTxt_dynamic,
+			'altTxt_export' => label.altTxt_export,
+			'altTxt_expand' => label.altTxt_expand,
+			'altTxt_editColumn' => label.altTxt_editColumn,
+			'altTxt_loading' => label.altTxt_loading,
+			'altTxt_refreshListView' => label.altTxt_refreshListView,
+			'altTxt_requestAFeature' => label.altTxt_requestAFeature,
+			'altTxt_settings' => label.altTxt_settings,
+			'altTxt_save' => label.altTxt_save,
+			'altTxt_saveFilter' => label.altTxt_saveFilter,
+			'errMsg_recordsNotFound' => label.errMsg_recordsNotFound,
+			'hlpTxt_additionalConditionText' => label.hlpTxt_additionalConditionText,
+			'hlpTxt_selectYourPreferredFields' => label.hlpTxt_selectYourPreferredFields,
+			'hlpTxt_selectYourLockedFields' => label.hlpTxt_selectYourLockedFields,
+			'lbl_additionalConditionForWhereClause' => label.lbl_additionalConditionForWhereClause,
+			'lbl_chooseField' => label.lbl_chooseField,
+			'lbl_cancel' => label.lbl_cancel,
+			'lbl_chooseOperation' => label.lbl_chooseOperation,
+			'lbl_enterListViewName' => label.lbl_enterListViewName,
+			'lbl_enterListViewLabel' => label.lbl_enterListViewLabel,
+			'lbl_fieldSelection' => label.lbl_fieldSelection,
+			'lbl_fieldSettings' => label.lbl_fieldSettings,
+			'lbl_globalSearch' => label.lbl_globalSearch,
+			'lbl_lockedFields' => label.lbl_lockedFields,
+			'lbl_tableSettings' => label.lbl_tableSettings,
+			'lbl_typeHere' => label.lbl_typeHere,
+			'lbl_selected' => label.lbl_selected,
+			'lbl_selectFields' => label.lbl_selectFields,
+			'lbl_selectLockedFields' => label.lbl_selectLockedFields,
+			'lbl_save' => label.lbl_save,
+			'lbl_saveAs' => label.lbl_saveAs,
+			'title_close' => label.title_close,
+			'title_clear' => label.title_clear,
+			'title_collapse' => label.title_collapse,
+			'title_delete' => label.title_delete,
+			'title_export' => label.title_export,
+			'title_expand' => label.title_expand,
+			'title_editColumn' => label.title_editColumn,
+			'title_new' =>label.title_new,
+			'title_requestAFeature' => label.title_requestAFeature,
+			'title_refresh' => label.title_refresh,
+			'title_saveFilter' => label.title_saveFilter,
+			'title_sortColumn' => label.title_sortColumn,
+			'title_saveSelectedFields' => label.title_saveSelectedFields,
+			'title_youCanDefineAllParametersForFields' => label.title_youCanDefineAllParametersForFields,
+			'title_youCanDefineAllGeneralTableParameters' => label.title_youCanDefineAllGeneralTableParameters,
+			'srcLbl_available' => label.srcLbl_available,
+			'srcLbl_optional' => label.srcLbl_optional
 		};
 	}
 
@@ -264,6 +330,36 @@ global with sharing class infrastructure {
 
 		System.debug('result ' + result);
 		return result;
+	}
+
+	public static Group[] getGroupsForUser(Id userId){
+
+		Set<Id> groupIds = getGroupsForIds(new Set<Id>{userId});
+		return [SELECT Id, Name FROM Group WHERE Id IN: groupIds];
+
+	}
+
+	public static Set<Id> getGroupsForIds(Set<Id> userOrGroupIds){
+
+		Set<Id> groupIds = new Set<Id>();
+		Set<Id> nestedGroupIds = new Set<Id>();
+
+		list<GroupMember> records = [SELECT Id, GroupId, UserOrGroupId FROM GroupMember WHERE UserOrGroupId =: userOrGroupIds AND UserOrGroupId != null AND Group.Type = 'Regular'];
+
+		for (GroupMember record:records){
+			if (!(record.UserOrGroupId + '').startsWith('005')){
+				nestedGroupIds.add(record.UserOrGroupId);   
+			}
+			else{
+				groupIds.add(record.GroupId);
+			}
+		}
+
+		if (nestedGroupIds.size() > 0){
+			groupIds.addAll(getGroupsForIds(nestedGroupIds));
+		}
+
+		return groupIds;
 	}
 
 	global enum exceptionType {
