@@ -49,7 +49,8 @@ export default class extRelListSettings extends LightningElement {
 				"tooltip" : tmp[item].tooltip,
 				//"isDisabled" : (item === 'fieldName'),
 				"value" : defValue,
-				"isChecked" : (tmp[item].type === 'checkbox') ? defValue : undefined
+				"isChecked" : (tmp[item].type === 'checkbox') ? defValue : undefined,
+				"placeHolder" : tmp[item].placeHolder
 			})
 		}
 		console.log(result);
@@ -74,7 +75,8 @@ export default class extRelListSettings extends LightningElement {
 				//"isDisabled" : (item === 'fieldName'),
 				"value" : defValue,
 				"isChecked" : (tmp[item].type === 'checkbox') ? defValue : undefined,
-				"cmd": tmp[item].cmd
+				"cmd": tmp[item].cmd,
+				"placeHolder" : tmp[item].placeHolder
 			})
 		}
 		console.log(result);

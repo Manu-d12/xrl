@@ -26,7 +26,7 @@
 
 							<template if:true={config.dialog.field} for:each={colModelItem} for:item="param" for:index="index">
 								<lightning-input if:false={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} type={param.type} label={param.label} disabled={param.isDisabled} value={param.value} data-id="dialog:setFieldParam" data-param={param.paramName} data-type={param.type} checked={param.isChecked} onchange={config.dialog.handleEvent}></lightning-input>
-								<lightning-textarea if:true={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} data-type={param.type} label={param.label} value={param.value} data-id="dialog:setFieldParam" data-param={param.paramName} onchange={config.dialog.handleEvent}></lightning-textarea>
+								<lightning-textarea if:true={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} data-type={param.type} label={param.label} value={param.value} data-id="dialog:setFieldParam" data-param={param.paramName} onchange={config.dialog.handleEvent} placeholder={param.placeHolder}></lightning-textarea>
 							</template>		
 						</p>
 					</lightning-tab>

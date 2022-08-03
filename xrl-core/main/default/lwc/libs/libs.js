@@ -97,17 +97,19 @@ export let libs = {
 			"label": {
 				"type": "text",
 				"label": "Field Label",
-				"tooltip": "If You want to use label from describe, please leave this field empty"
+				"tooltip": "If You want to use label from describe, please leave this field empty. In this case label will be displayed in user language"
 			},
 			"formatter": {
 				"type": "function",
 				"params": "(row, col, val)",
-				"label": "Custom function for formatting"
+				"label": "Custom function for formatting",
+				"placeHolder" : "example : \n\nfunction(row, col, val) { \n\treturn val;\n }"
 			},
 			"uStyle": {
 				"type": "function",
 				"params": "(row, col, val)",
-				"label": "Custom function for style"
+				"label": "Custom function for style",
+				"placeHolder" : "example : \n\nfunction(row, col, val) { \n\treturn \"background-color:#FF0000\";\n }"
 			},
 			"isHidden": {
 				"defValue": false,
