@@ -27,3 +27,7 @@ sfdx force:package:version:create -p 0Ho8d000000GmmCCAS --wait 10 --codecoverage
 
 make a release package version
 sfdx force:package:version:promote -p [04t8d000000lEWPAA2] - package version Id
+
+
+for create a new minor version with a new components, or if need delete components. In this case need update a "versionNumber" inside sfdx-project.json
+sfdx force:package:version:create -p 0Ho8d000000GmmCCAS --wait 10 --codecoverage --installationkeybypass --skipancestorcheck
