@@ -94,6 +94,9 @@ export let filterLibs = {
 	int__filter(filter, record) {
         return filterLibs.number__filter(filter, record);
     },
+	double__filter(filter, record) {
+        return filterLibs.number__filter(filter, record);
+    },
 	boolean__filter(filter, record) {
 		let value = this.getValue(filter, record);
         if (!value) return false;
@@ -260,6 +263,10 @@ export let filterLibs = {
 	currencyFilterActions(key) {
         return filterLibs.numberFilterActions(key);
 	},
+	doubleFilterActions(key) {
+        return filterLibs.numberFilterActions(key);
+	},
+	
 	intFilterActions(key) {
         return filterLibs.numberFilterActions(key);
 	},
