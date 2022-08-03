@@ -587,8 +587,9 @@ export default class dataTable extends LightningElement {
 		this.config._isFilterOptions.filterOption = event.target.value;
 		this.config._isFilterOptions.isUnary = this.config._isFilterOptions.filterOptions.find(item => {return event.target.value === item.value}).isUnary;
 		this.config._isFilterOptions.isShowToStr = this.config._isFilterOptions.filterOption === 'rg';
-		this.config._isFilterOptions.isShowStr = !this.config._isFilterOptions.isUnary && !this.config._isFilterOptions.options;
+		this.config._isFilterOptions.isShowStr = !this.config._isFilterOptions.isUnary && !this.config._isFilterOptions.cItem.options;
 		if (this.config._isFilterOptions.isUnary) this.config._isFilterOptions.isShowClearBtn = true;
+		console.log('change operator', this.config._isFilterOptions);
 	}
 
 	popupClose(event) {

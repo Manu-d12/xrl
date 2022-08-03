@@ -64,11 +64,14 @@ export default class dataTableItem extends LightningElement {
 	}
 
 	get style() {
-		let right = ['number', 'currency','date','datetime']
+		
+		let right = ['number', 'currency','date','datetime','int'];
+		let val='';
 		if (right.indexOf(this.col.type)  > -1) {
-			return 'slds-float_right';
+			val = 'slds-float_right';
 		}
-		return '';
+		//console.log('getStyle', this.col.fieldName, this.col.type, val, right.indexOf(this.col.type));
+		return val;
 	}
 
 	get uStyle() {

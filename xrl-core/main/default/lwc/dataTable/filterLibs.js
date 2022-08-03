@@ -33,13 +33,13 @@ export let filterLibs = {
 				return filter._filterStr.find(v => {return value.toLowerCase().includes(v.toLowerCase());});				
 			case 'ncn': 
 				return !filter._filterStr.find(v => {return value.toLowerCase().includes(v.toLowerCase());});	
-			case 'bn': 
+			/*case 'bn': 
 				return filter._filterStr.find(v => {return value.toLowerCase().startsWith(v.toLowerCase());});
 			case 'nbn': 
 				return !filter._filterStr.find(v => {return value.toLowerCase().startsWith(v.toLowerCase());});
 			case 'ed': 
 				return filter._filterStr.find(v => {return value.toLowerCase().endsWith(v.toLowerCase());});
-			case 'ned': 
+			case 'ned': */
 				return !filter._filterStr.find(v => {return value.toLowerCase().endsWith(v.toLowerCase());});	
 			case 'eq':
 				return filter._filterStr.find(v => {return value.toLowerCase() === v.toLowerCase();});
@@ -89,6 +89,9 @@ export let filterLibs = {
 		}
 	},
 	currency__filter(filter, record) {
+        return filterLibs.number__filter(filter, record);
+    },
+	int__filter(filter, record) {
         return filterLibs.number__filter(filter, record);
     },
 	boolean__filter(filter, record) {
@@ -209,6 +212,20 @@ export let filterLibs = {
 			? actions.find( el => { return el.value === key})
 			: actions;
 	},
+
+	picklistFilterActions(key) {
+		const actions = [
+			{ label: 'Contains', value: 'cn' },
+			{ label: 'Does not contain', value: 'ncn' },
+			{ label: 'Is Equal', value: 'eq' },
+			{ label: 'Not Is Equal', value: 'neq' },
+			{ label: 'Is empty', value: 'em', isUnary : true},
+			{ label: 'Not Is empty', value: 'nem', isUnary : true}
+		]
+        return (key) 
+			? actions.find( el => { return el.value === key})
+			: actions;
+	},
 	booleanFilterActions(key) {
 		const actions = [
 			{ label: 'Is Equal', value: 'eq' },
@@ -236,14 +253,15 @@ export let filterLibs = {
 			? actions.find( el => { return el.value === key})
 			: actions;
 	},
+
 	datetimeFilterActions(key) {
         return filterLibs.dateFilterActions(key);
 	},
 	currencyFilterActions(key) {
         return filterLibs.numberFilterActions(key);
 	},
-	picklistFilterActions(key) {
-        return filterLibs.stringFilterActions(key);
+	intFilterActions(key) {
+        return filterLibs.numberFilterActions(key);
 	},
 
 	getValue(filter, record) {

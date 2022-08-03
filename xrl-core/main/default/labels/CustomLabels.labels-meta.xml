@@ -6,7 +6,7 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_globalSearch</shortDescription>
-        <value>Global Search</value>
+        <value>Global Search. Hit "Enter" for search</value>
     </labels>
     <labels>
         <fullName>altTxt_clearInput</fullName>
