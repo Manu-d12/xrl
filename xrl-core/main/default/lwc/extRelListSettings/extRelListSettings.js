@@ -65,6 +65,7 @@ export default class extRelListSettings extends LightningElement {
 		for (let item in tmp) {
 			let defValue = item in this.config.dialog.listViewConfig 
 				? this.config.dialog.listViewConfig[item]
+				: item in this.config.dialog.listViewConfig.pager ? this.config.dialog.listViewConfig.pager[item] 
 				: tmp[item].defValue;
 			result.push({
 				"paramName" : item,

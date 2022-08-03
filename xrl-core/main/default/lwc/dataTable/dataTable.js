@@ -35,8 +35,19 @@ export default class dataTable extends LightningElement {
 
 		if (this.config.grouping && this.config.groupingParams?.field) {
 
-			let isPager = this.config.pager && (this.config.pager.pagerTop || this.config.pager.pagerBottom);
-			if (isPager) {
+			let isPager = this.config.pager;
+			if(!this.config.pager.pagerTop && !this.config.pager.pagerBottom){
+				let startIndex = 0;
+				let endIndex = this.records.length > 200 ? 200 : this.records.length;
+				let result = [];
+				for (let i = startIndex; i < endIndex; i++) {
+					result.push(this.records[i]);
+				}
+				this.displayedItemCount = this.recordInfo+ ' Showing only '+ endIndex  +' item(s)';
+				console.log('result', JSON.parse(JSON.stringify(result)));
+				return result;
+			}
+			else if (isPager) {
 				let startIndex = (this.config.pager.curPage - 1) * this.config.pager.pageSize;
 				let endIndex = (startIndex + parseInt(this.config.pager.pageSize)) < this.records.length ? (startIndex + parseInt(this.config.pager.pageSize)) : this.records.length;
 				let result = [];
@@ -61,8 +72,19 @@ export default class dataTable extends LightningElement {
 			// Need for pagination;
 			return this.groupedRecords;
 		} else {
-			let isPager = this.config.pager && (this.config.pager.pagerTop || this.config.pager.pagerBottom);
-			if (isPager) {
+			let isPager = this.config.pager;
+			if(!this.config.pager.pagerTop && !this.config.pager.pagerBottom){
+				let startIndex = 0;
+				let endIndex = this.records.length > 200 ? 200 : this.records.length;
+				let result = [];
+				for (let i = startIndex; i < endIndex; i++) {
+					result.push(this.records[i]);
+				}
+				this.displayedItemCount = this.recordInfo+ ' Showing only '+ endIndex  +' item(s)';
+				console.log('result', JSON.parse(JSON.stringify(result)));
+				return result;
+			}
+			else if (isPager) {
 				let startIndex = (this.config.pager.curPage - 1) * this.config.pager.pageSize;
 				let endIndex = (startIndex + parseInt(this.config.pager.pageSize)) < this.records.length ? (startIndex + parseInt(this.config.pager.pageSize)) : this.records.length;
 				let result = [];
