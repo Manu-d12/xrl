@@ -29,17 +29,25 @@ export default class dataTableItem extends LightningElement {
 			if (this.col.type === 'date' || this.col.type === 'datetime') {
 				//console.log(val);
 				//console.log(locale);
-				val = new Date(val).toLocaleString(locale,{
-					month : "2-digit",
-					day : "2-digit",
-					year: "numeric",
-					hour: "2-digit",
-					minute: "2-digit",
-					second: "2-digit"
-				});
+				if (val!== undefined && val !=='' && val!==null) {
+					val = new Date(val).toLocaleString(locale,{
+						month : "2-digit",
+						day : "2-digit",
+						year: "numeric",
+						hour: "2-digit",
+						minute: "2-digit",
+						second: "2-digit"
+					});
+				}
 				//console.log(val);
 			}
 			if (this.col.type === 'number') {
+				val = val ? this.formatNumber(val) : null;
+			}
+			if (this.col.type === 'double') {
+				val = val ? this.formatNumber(val) : null;
+			}
+			if (this.col.type === 'int') {
 				val = val ? this.formatNumber(val) : null;
 			}
 
