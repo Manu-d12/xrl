@@ -163,6 +163,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				mergedConfig.colModel.push(col);
 			}
 		});
+		mergedConfig.pager = adminConfig.pager;
 		mergedConfig.colModel.push(...Array.from(baseColMap.values()));
 		console.log('mergedConfig', mergedConfig);
 

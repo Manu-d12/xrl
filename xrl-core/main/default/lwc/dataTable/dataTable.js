@@ -695,6 +695,7 @@ export default class dataTable extends LightningElement {
 				if (value < 1) this.config.pager.curPage = 1;
 				if (value > this.config.pager.numPages) this.config.pager.curPage = this.config.pager.numPages;
 			}
+			this.config.pager.pageSize = value;
 			console.log(value);
 			return;
 		}
