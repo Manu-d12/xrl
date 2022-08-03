@@ -108,7 +108,7 @@
 			</tbody>
 			
 		</table>
-		<div if:true={config.pager.pagerTop} class="slds-align_absolute-center slds-m-around_xx-small">
+		<div if:true={config.pager.pagerBottom} class="slds-align_absolute-center slds-m-around_xx-small">
 			<lightning-button-icon variant="brand" size="small" data-id=":pagerFirst" onclick={handleEventPager} icon-name="utility:arrow_left"></lightning-button-icon>&nbsp;
 			<lightning-button-icon variant="brand" size="small" data-id=":pagerPrev" onclick={handleEventPager} icon-name="utility:chevronleft"></lightning-button-icon>&nbsp;&nbsp;
 			Page&nbsp;<lightning-input variant="label-hidden" data-id=":pagerCurPage" onchange={handleEventPager} type="number" value={config.pager.curPage} style="width:40px"></lightning-input>&nbsp;of {config.pager.numPages}&nbsp;&nbsp;
