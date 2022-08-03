@@ -1,7 +1,38 @@
 export let filterLibs = {
+
     string__filter(filter, record) {
 		let value = this.getValue(filter, record);
         if (!value) return false;
+		switch (filter._filterOption) {
+			case 'cn':
+				return value.toLowerCase().includes(filter._filterStr.toLowerCase());
+			case 'ncn': 
+				return value.toLowerCase().indexOf(filter._filterStr.toLowerCase()) === -1;
+			case 'bn': 
+				return value.toLowerCase().startsWith(filter._filterStr.toLowerCase()) === true;
+			case 'nbn': 
+				return value.toLowerCase().startsWith(filter._filterStr.toLowerCase()) === false;
+			case 'ed': 
+				return value.toLowerCase().endsWith(filter._filterStr.toLowerCase()) === true;
+			case 'ned': 
+				return value.toLowerCase().endsWith(filter._filterStr.toLowerCase()) === false;	
+			case 'eq':
+				return value.toLowerCase() === filter._filterStr.toLowerCase();
+			case 'neq':
+				return value.toLowerCase() !== filter._filterStr.toLowerCase();
+			case 'em': 
+				return value === null || value == undefined;
+			case 'nem': 
+				return value !== null && value !== undefined;	
+		}
+    },
+	reference__filter(filter, record) {
+		
+		let value = this.getValue(filter, record);
+		console.log('referece filter', filter, record, value);
+        if (!value) return false;
+		
+
 		switch (filter._filterOption) {
 			case 'cn':
 				return value.toLowerCase().includes(filter._filterStr.toLowerCase());
@@ -271,9 +302,26 @@ export let filterLibs = {
         return filterLibs.numberFilterActions(key);
 	},
 
+	referenceFilterActions(key) {
+        return filterLibs.stringFilterActions(key);
+	},
+
 	getValue(filter, record) {
+		function getRefField(field) {
+			let fName = field.endsWith('Id') 
+				? field.replace(/Id$/,'')
+				: field.endsWith('__c')
+					? field.replace(/__c$/,'__r')
+					: '';
+			console.log('record[field].Name', record[fName].Name, record, field, fName);
+			return record[fName].Name;
+		}
 		let formatter = filter.formatter ? eval('(' + filter.formatter + ')') : null;
-		return formatter && typeof formatter === 'function' ? formatter(record, filter, record[filter.fieldName]) : record[filter.fieldName];
+		let value = filter.type !== "reference"
+			? record[filter.fieldName]
+			: getRefField(filter.fieldName);
+
+		return formatter && typeof formatter === 'function' ? formatter(record, filter, record[filter.fieldName]) : value ;
 	}
 
 }
