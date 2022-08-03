@@ -1,9 +1,9 @@
 <template>
-	<lightning-card variant="narrow" title={config.sObjLabel} icon-name={config.iconName} if:true={config.LABELS}>
+	<lightning-card variant="narrow" title={config.sObjLabel} icon-name={config.iconName} if:true={config._LABELS}>
 		<div class="slds-grid slds-grid_align-end slds-p-around_x-small">
-			<div class="slds-m-left_xx-small"  if:true={config.isGlobalSearch}>
-				<div onkeyup={handleEvent}>
-					<lightning-input name="enter-search" variant="label-hidden" value={config.queryTerm} placeholder={config.LABELS.lbl_globalSearch} type="search" data-id="globalSearch" oncommit={handleGlobalSearchClear}></lightning-input>
+			<div class="slds-m-left_xx-small"  if:true={config.listViewConfig}>
+				<div onkeyup={handleEvent} if:true={config.listViewConfig.isGlobalSearch}>
+					<lightning-input name="enter-search" variant="label-hidden" value={config.queryTerm} placeholder={config._LABELS.lbl_globalSearch} type="search" data-id="globalSearch" oncommit={handleGlobalSearchClear}></lightning-input>
 				</div>
 				
 			</div>
@@ -12,32 +12,32 @@
 			</div>
 			<div class="slds-m-left_xx-small forceListViewSettingsMenu">					
 				<span>
-					<lightning-button-icon icon-name="utility:delete" alternative-text={config.LABELS.altTxt_delete} title={config.LABELS.title_delete} data-id=":action_delete" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
-					<lightning-button-icon icon-name="utility:internal_share" alternative-text={config.LABELS.altTxt_export} title={config.LABELS.title_export} data-id=":action_export" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
+					<lightning-button-icon icon-name="utility:delete" alternative-text={config._LABELS.altTxt_delete} title={config._LABELS.title_delete} data-id=":action_delete" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
+					<lightning-button-icon icon-name="utility:internal_share" alternative-text={config._LABELS.altTxt_export} title={config._LABELS.title_export} data-id=":action_export" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
 					<lightning-button-icon icon-name="utility:new"  alternative-text="Refresh List View" title="New" data-id=":action_new" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
 				</span>
 				<span if:true={config.listViewConfig}>
-					<lightning-button-icon if:true={config.listViewConfig._changedRecords} icon-name="utility:save"  variant="brand" alternative-text={config.LABELS.altTxt_save} title={changedRecords} data-id=":save" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
+					<lightning-button-icon if:true={config.listViewConfig._changedRecords} icon-name="utility:save"  variant="brand" alternative-text={config._LABELS.altTxt_save} title={changedRecords} data-id=":save" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
 				</span>
-				<lightning-button-icon icon-name="utility:refresh"  alternative-text={config.LABELS.altTxt_refreshListView} title={config.LABELS.title_refresh} data-id=":refresh" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
-				<lightning-button-icon icon-name="utility:email" alternative-text={config.LABELS.altTxt_requestAFeature} title={config.LABELS.title_requestAFeature} data-id=":request_open" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>				
+				<lightning-button-icon icon-name="utility:refresh"  alternative-text={config._LABELS.altTxt_refreshListView} title={config._LABELS.title_refresh} data-id=":refresh" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
+				<lightning-button-icon icon-name="utility:email" alternative-text={config._LABELS.altTxt_requestAFeature} title={config._LABELS.title_requestAFeature} data-id=":request_open" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>				
 				
-				<lightning-button-menu if:true={hasDynamicActions} alternative-text={config.LABELS.altTxt_dynamic} variant="border-filled" icon-name="utility:play" class="slds-p-horizontal_xx-small" menu-alignment="right">
+				<lightning-button-menu if:true={hasDynamicActions} alternative-text={config._LABELS.altTxt_dynamic} variant="border-filled" icon-name="utility:play" class="slds-p-horizontal_xx-small" menu-alignment="right">
 					<template for:each={config.listViewConfig.dynamicActions} for:item="action" for:index="index">
 						<lightning-menu-item key={action.name} data-id=":action_dynamic" data-index={index} label={action.label} prefix-icon-name="utility:multi_select_checkbox" onclick={handleEvent}></lightning-menu-item>
 					</template>					
 				</lightning-button-menu>
 
-				<lightning-button-menu alternative-text={config.LABELS.altTxt_settings} variant="border-filled" icon-name="utility:settings" class="slds-p-horizontal_xx-small" menu-alignment="right">
-					<lightning-menu-item data-id="cfg:setFields" label={config.LABELS.lbl_selectFields} prefix-icon-name="utility:multi_select_checkbox" onclick={handleEvent}></lightning-menu-item>
+				<lightning-button-menu alternative-text={config._LABELS.altTxt_settings} variant="border-filled" icon-name="utility:settings" class="slds-p-horizontal_xx-small" menu-alignment="right">
+					<lightning-menu-item data-id="cfg:setFields" label={config._LABELS.lbl_selectFields} prefix-icon-name="utility:multi_select_checkbox" onclick={handleEvent}></lightning-menu-item>
 				</lightning-button-menu>
 			</div>
 		</div>
 		<c-Data-Table if:true={config.records} style="width:100%; height:inherit" data-ind={config.sObjApiName} cfg={name}></c-Data-Table>
-		<p if:false={config.records} class="slds-card__footer"><b>{config.LABELS.errMsg_recordsNotFound}</b></p>
+		<p if:false={config.records} class="slds-card__footer"><b>{config._LABELS.errMsg_recordsNotFound}</b></p>
 
 		<div if:true={config.isSpinner} class="spinner">
-			<lightning-spinner size="medium" variant="brand" alternative-text={config.LABELS.altTxt_loading}></lightning-spinner>
+			<lightning-spinner size="medium" variant="brand" alternative-text={config._LABELS.altTxt_loading}></lightning-spinner>
 		</div>
 	</lightning-card>
 

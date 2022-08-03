@@ -52,7 +52,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 	setCustomLabels(cmd, data) {
 		console.log('CustomLabes are loaded', data[cmd]);
-		this.config.LABELS = data[cmd];
+		this.config._LABELS = data[cmd];
 	}
 
 	loadCfg(isInit) {
@@ -163,7 +163,6 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				mergedConfig.colModel.push(col);
 			}
 		});
-		mergedConfig.pager = adminConfig.pager;
 		mergedConfig.colModel.push(...Array.from(baseColMap.values()));
 		console.log('mergedConfig', mergedConfig);
 
@@ -191,8 +190,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		});
 		
 		// Temporary
-		this.config.isGlobalSearch=true;
+		//this.config.isGlobalSearch=true;
 
+		console.log('this.config', this.config);
 		this.loadRecords();		
 	}
 
@@ -520,10 +520,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			// Need run search on table
 			if(this.config.queryTerm !== ''){
 				let searchableRecords = JSON.parse(JSON.stringify(this.allRecords));
+				let searchTerm = this.config.queryTerm.toLowerCase();
 				const searchResults = new Set();
 				searchableRecords.forEach((el) => {
 					for(let key in el) {
-						if(el[key] && el[key].toLowerCase().indexOf(this.config.queryTerm.toLowerCase())!=-1) {
+						if(el[key] && el[key].toString().toLowerCase().indexOf(searchTerm)!=-1) {
 							searchResults.add(el);
 						}
 					}
@@ -535,7 +536,6 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			}
 			this.template.querySelector('c-Data-Table').updateView();
         }
-		
 	}
 
 	handleGlobalSearchClear(event) {

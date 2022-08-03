@@ -38,10 +38,10 @@
 								<span data-id={hItem.fieldName} class="slds-th__action slds-text-link_reset" href="javascript:void(0);" role="button" onclick={changeSort} style="width:100%">
 									<span class="slds-truncate" data-id={hItem.fieldName} title={hItem.label}>{hItem.label}</span>
 									<span if:true={hItem.isSortable} data-id={hItem.fieldName} class="slds-col_bump-left">
-										<lightning-icon data-id={hItem.fieldName} if:true={hItem._sortIcon} icon-name={hItem._sortIcon} size="xx-small" title={config.LABELS.title_sortColumn}></lightning-icon>
+										<lightning-icon data-id={hItem.fieldName} if:true={hItem._sortIcon} icon-name={hItem._sortIcon} size="xx-small" title={config._LABELS.title_sortColumn}></lightning-icon>
 									</span>
 								</span>
-								<lightning-icon if:true={hItem.isEditable} data-id={hItem.fieldName} icon-name="utility:edit" size="xx-small" alternative-text={config.LABELS.altTxt_editColumn} title={config.LABELS.title_editColumn}>&nbsp;</lightning-icon>
+								<lightning-icon if:true={hItem.isEditable} data-id={hItem.fieldName} icon-name="utility:edit" size="xx-small" alternative-text={config._LABELS.altTxt_editColumn} title={config._LABELS.title_editColumn}>&nbsp;</lightning-icon>
 
 							</span>
 						</th>
@@ -76,8 +76,8 @@
 				<template if:true={hasGrouping} for:each={tableRecords} for:item="group">
 					<tr key={group.title} class="groupRow" data-groupind={group.title}>
 						<td scope="col" style="width: 2rem;" class="toggle">
-							<lightning-button-icon if:true={group.isOpened} icon-name="utility:dash"  variant="bare" alternative-text={config.LABELS.altTxt_collapse} title={config.LABELS.title_collapse} onclick={toggleGroup} data-groupind={group.title}></lightning-button-icon>
-							<lightning-button-icon if:false={group.isOpened} icon-name="utility:add"  variant="bare" alternative-text={config.LABELS.altTxt_expand} title={config.LABELS.title_expand} onclick={toggleGroup} data-groupind={group.title}></lightning-button-icon>
+							<lightning-button-icon if:true={group.isOpened} icon-name="utility:dash"  variant="bare" alternative-text={config._LABELS.altTxt_collapse} title={config._LABELS.title_collapse} onclick={toggleGroup} data-groupind={group.title}></lightning-button-icon>
+							<lightning-button-icon if:false={group.isOpened} icon-name="utility:add"  variant="bare" alternative-text={config._LABELS.altTxt_expand} title={config._LABELS.title_expand} onclick={toggleGroup} data-groupind={group.title}></lightning-button-icon>
 						</td>
 						<td scope="col" if:true={config.isShowCheckBoxes} style="width: 2rem;" data-groupind={group.title}>
 							<lightning-input type="checkbox" data-groupind={group.title} onchange={checkGroup} checked={group.isChecked}></lightning-input>
@@ -108,7 +108,7 @@
 			</tbody>
 			
 		</table>
-		<div if:true={config.pager.pagerTop} class="slds-align_absolute-center slds-m-around_xx-small">
+		<div if:true={config.pager.pagerBottom} class="slds-align_absolute-center slds-m-around_xx-small">
 			<lightning-button-icon variant="brand" size="small" data-id=":pagerFirst" onclick={handleEventPager} icon-name="utility:arrow_left"></lightning-button-icon>&nbsp;
 			<lightning-button-icon variant="brand" size="small" data-id=":pagerPrev" onclick={handleEventPager} icon-name="utility:chevronleft"></lightning-button-icon>&nbsp;&nbsp;
 			Page&nbsp;<lightning-input variant="label-hidden" data-id=":pagerCurPage" onchange={handleEventPager} type="number" value={config.pager.curPage} style="width:40px"></lightning-input>&nbsp;of {config.pager.numPages}&nbsp;&nbsp;
@@ -125,17 +125,17 @@
 			<lightning-button-icon icon-name="utility:close" variant="border-filled" class="slds-m-left_xx-small slds-button slds-button_icon slds-modal__close" data-id="dialog:close" data-depend="_isFilterOptions" onclick={popupClose}></lightning-button-icon>
 
 			<div class="slds-popover__body slds-grid" onkeyup={searchFinish}>
-				<lightning-combobox placeholder={config.LABELS.lbl_chooseOperation} value={config._isFilterOptions.filterOption} data-id="filterOperation" onchange={searchOperationChange} options={config._isFilterOptions.filterOptions} class="slds-p-horizontal_xx-small" style="width:100%"></lightning-combobox>
+				<lightning-combobox placeholder={config._LABELS.lbl_chooseOperation} value={config._isFilterOptions.filterOption} data-id="filterOperation" onchange={searchOperationChange} options={config._isFilterOptions.filterOptions} class="slds-p-horizontal_xx-small" style="width:100%"></lightning-combobox>
 				<lightning-input if:true={config._isFilterOptions.isShowStr} type={config._isFilterOptions.type} onchange={searchOnChange} value={config._isFilterOptions.filterStr} tabindex="0" data-id="filterStr" class="slds-p-horizontal_xx-small"></lightning-input>
 				<!--lightning-combobox if:false={config._isFilterOptions.isShowStr} placeholder="Choose operation" onchange={searchOnChange} 
 					value={config._isFilterOptions.filterStr} data-id="filterStr" options={config._isFilterOptions.cItem.options} class="slds-p-horizontal_xx-small">
 				</lightning-combobox-->
-				<c-multiselect if:false={config._isFilterOptions.isShowStr} placeholder={config.LABELS.lbl_chooseOperation} onchange={searchOnChange} value={config._isFilterOptions.filterStr} data-id="filterStr" options={config._isFilterOptions.cItem.options} class="slds-p-horizontal_xx-small"></c-multiselect>
+				<c-multiselect if:false={config._isFilterOptions.isShowStr} placeholder={config._LABELS.lbl_chooseOperation} onchange={searchOnChange} value={config._isFilterOptions.filterStr} data-id="filterStr" options={config._isFilterOptions.cItem.options} class="slds-p-horizontal_xx-small"></c-multiselect>
 				<lightning-input if:true={config._isFilterOptions.isShowToStr} type={config._isFilterOptions.type} onchange={searchOnChange} value={config._isFilterOptions.filterStrTo}  data-id="filterStrTo" class="slds-p-horizontal_xx-small"></lightning-input>
 				
-				<lightning-button-icon icon-name="utility:save" class="slds-m-left_xx-small" alternative-text={config.LABELS.altTxt_saveFilter} title={config.LABELS.title_saveFilter} data-id="saveFilter" onclick={searchOnChange}></lightning-button-icon>
+				<lightning-button-icon icon-name="utility:save" class="slds-m-left_xx-small" alternative-text={config._LABELS.altTxt_saveFilter} title={config._LABELS.title_saveFilter} data-id="saveFilter" onclick={searchOnChange}></lightning-button-icon>
 				<div if:true={config._isFilterOptions.isShowClearBtn} style="display: inline; right: 58px; top: 12px;position: absolute;">
-					<lightning-button-icon  variant="bare" icon-name="utility:clear"  class="slds-m-left_xx-small" style="padding-top:5px" alternative-text={config.LABELS.altTxt_clearInput} title={config.LABELS.title_clear} onclick={searchClear}></lightning-button-icon>
+					<lightning-button-icon  variant="bare" icon-name="utility:clear"  class="slds-m-left_xx-small" style="padding-top:5px" alternative-text={config._LABELS.altTxt_clearInput} title={config._LABELS.title_clear} onclick={searchClear}></lightning-button-icon>
 				</div>
 			</div>
 		</div>
@@ -149,7 +149,7 @@
 			<div class="slds-popover__body slds-grid">
 				<div class="slds-grid slds-wrap">
 					<div class="slds-col slds-size_1-of-1"> 
-						<lightning-combobox if:true={config._bulkEdit.cItem.isEditableAsPicklist} placeholder={config.LABELS.lbl_chooseOperation} value={config._bulkEdit.value} data-id="origValue" options={config._bulkEdit.cItem.options} class="slds-p-horizontal_xx-small" style="width:100%"></lightning-combobox>
+						<lightning-combobox if:true={config._bulkEdit.cItem.isEditableAsPicklist} placeholder={config._LABELS.lbl_chooseOperation} value={config._bulkEdit.value} data-id="origValue" options={config._bulkEdit.cItem.options} class="slds-p-horizontal_xx-small" style="width:100%"></lightning-combobox>
 						<lightning-input if:true={config._bulkEdit.cItem.isEditableRegular} type={config._bulkEdit.type} value={config._bulkEdit.value} tabindex="0" data-id="origValue" style="width:100%"></lightning-input>
 						<lightning-input type="checkbox" if:true={config._bulkEdit.cItem.isEditableBool} checked={config._bulkEdit.value} data-id="origValue"> </lightning-input>
 					</div>

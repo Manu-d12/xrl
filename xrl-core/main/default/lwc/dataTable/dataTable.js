@@ -183,7 +183,7 @@ export default class dataTable extends LightningElement {
 		//super();
 		this.config = libs.getGlobalVar(this.cfg).listViewConfig;
 		console.log('Config', JSON.parse(JSON.stringify(this.config)));
-		this.config.LABELS = libs.getGlobalVar(this.cfg).LABELS;
+		this.config._LABELS = libs.getGlobalVar(this.cfg)._LABELS;
 		
 		this.config._saveEdit = this.saveEditCallback.bind(this);
 		this.config._countFields = this.config.isShowCheckBoxes === true ? 1 : 0;
