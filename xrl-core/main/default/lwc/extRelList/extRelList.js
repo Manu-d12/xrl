@@ -523,7 +523,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				const searchResults = new Set();
 				searchableRecords.forEach((el) => {
 					for(let key in el) {
-						if(el[key].toLowerCase().indexOf(this.config.queryTerm.toLowerCase())!=-1) {
+						if(el[key] && el[key].toLowerCase().indexOf(this.config.queryTerm.toLowerCase())!=-1) {
 							searchResults.add(el);
 						}
 					}
