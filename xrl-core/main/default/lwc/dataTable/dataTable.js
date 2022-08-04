@@ -240,21 +240,20 @@ export default class dataTable extends LightningElement {
 				if (!this.config._inlineEditRow) this.config._inlineEditRow = JSON.parse(JSON.stringify(this.records[this.config._inlineEdit]));
 				this.config._inlineEditRow[rowName] = value;
 			} else {
-				let isNeedSave = this.config._inlineEditRow !== undefined && JSON.stringify(this.records[this.config._inlineEdit]) !== JSON.stringify(this.config._inlineEditRow);
-				
-				console.log('isNeedSave', isNeedSave, JSON.parse(JSON.stringify(this.config._inlineEditRow)));
-				if (isNeedSave)	{
+				let isNeedSaveData = this.config._inlineEditRow !== undefined && JSON.stringify(this.records[this.config._inlineEdit]) !== JSON.stringify(this.config._inlineEditRow);
+
+				if (isNeedSaveData)	{
 					this.records[this.config._inlineEdit] = JSON.parse(JSON.stringify(this.config._inlineEditRow));
 					//Need also Update a global array
 					let globalItem = libs.getGlobalVar(this.cfg).records.find(el=>{
 						return el.Id === this.config._inlineEditRow.Id;
 					})
 					Object.assign(globalItem, this.records[this.config._inlineEdit]);
+					this.changeRecord(this.config._inlineEditRow.Id);
 				}
 				//delete this.records[this.config._inlineEdit];
 				//delete this.config._inlineEdit;
-				this.changeRecord(this.config._inlineEditRow.Id);
-
+				
 				this.records[this.config._inlineEdit]._isEditable = false;
 				if (this.hasGrouping) {
 					let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
