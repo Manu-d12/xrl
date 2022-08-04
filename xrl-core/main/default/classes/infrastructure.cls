@@ -78,6 +78,7 @@ global with sharing class infrastructure {
 		string relField = (string) data.get('relField');
 		string addCondition = (string) data.get('addCondition');
 		string listViewName = (string) data.get('listViewName');
+		string SQL = (string) data.get('SQL');
 
 		boolean isNeedDescribe = (boolean) data.get('isNeedDescribe') == true;
 		set <string> fields = (set<string>) JSON.deserialize(JSON.serialize(data.get('fields')), set<string>.class);
@@ -102,25 +103,24 @@ global with sharing class infrastructure {
 			fields.add('CurrencyIsoCode');
 		}
 
-		// if(String.isBlank(recordId)){
-		// 	recordId = '0015i000008dvp5AAA';
-		// }
+		string SOQL = (relField!=null) 
+			? 'SELECT {fields} FROM {sObjApiName} WHERE {relField}=\'{recordId}\' {addCondition}'.replaceAll('\\{relField\\}', relField!= null ? relField : '').replaceAll('\\{recordId\\}', recordId)
+			: 'SELECT {fields} FROM {sObjApiName} {addCondition}';
+		
 
-		System.debug('recordId' + addCondition);
+		system.debug(LoggingLevel.Error, SOQL);
 
-		string SOQL = 'SELECT {fields} FROM {sObjApiName} WHERE {relField}=\'{recordId}\' {addCondition}'.
-		replaceAll('\\{sObjApiName\\}', sObjApiName).
-		replaceAll('\\{relField\\}', relField).
-		replaceAll('\\{recordId\\}', recordId).
-		replaceAll('\\{addCondition\\}', addCondition).
-		replaceAll('\\{fields\\}', string.join(new list < string > (soqlFields), ','));
-
+		SOQL = SOQL.replaceAll('\\{sObjApiName\\}', sObjApiName!=null ? sObjApiName : '');
+		SOQL = SOQL.replaceAll('\\{addCondition\\}', addCondition != null ? addCondition : '');
+		SOQL = SOQL.replaceAll('\\{fields\\}', soqlFields!=null ? string.join(new list < string > (soqlFields), ',') : '');
 
 		//if (string.isBlank(SOQL)) throw new core.appException(null, string.format(core.appLabels.get('errCmdParams'), new string[]{'executeAnon','apexCode'}), core.ExceptionType.API);
 		system.debug(LoggingLevel.Error, 'SOQL ' + SOQL);
 
-		result.put('records', database.query(SOQL));
 		result.put('SOQL', SOQL);
+		
+		result.put('records', database.query(SOQL));
+		
 		//result.put('config', getConfig(sObjApiName, relField, listViewName));
 		return result;
 		//https://salesforce.stackexchange.com/questions/116688/lightning-get-sobject-tab-icon

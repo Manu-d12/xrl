@@ -235,7 +235,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				});
 			}
 			if (e.isEditable && describe.updateable) {
-				if (e.type === 'picklist') {
+				if (e.type === 'picklist' || e.type === 'reference') {
 					e.isEditableAsPicklist = true;
 					console.log('picklist', e);
 				} else if (e.type === 'boolean') {

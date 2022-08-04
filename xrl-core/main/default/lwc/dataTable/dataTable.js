@@ -409,7 +409,26 @@ export default class dataTable extends LightningElement {
 		
 		if (this.getSelectedRecords().length > 1) {
 			let table = this.template.querySelector('.extRelListTable');
-			console.log(table.offsetHeight, event.y, table, event.srcElement.parentElement.parentElement.offsetTop);
+			console.log('bulk', table.offsetHeight, event.y, table, event.srcElement.parentElement.parentElement.offsetTop, this.config);
+
+			if (cItem.type === 'reference' && cItem.options === undefined) {
+				let describe = libs.getGlobalVar(this.cfg).describe[cItem.fieldName];
+				libs.remoteAction(this, 'query', {
+					isNeedDescribe: false,
+					sObjApiName: describe.referenceTo[0],
+					fields: ['Id', 'Name'],
+					callback: ((nodeName, data) => {
+						console.log('length', data[nodeName].records);
+						cItem.options = [];
+						data[nodeName].records.forEach(e => {
+							cItem.options.push({label: e.Name, value: e.Id});
+							
+						});
+
+						console.log('cItem', col.options, libs.getGlobalVar(this.cfg));
+					})
+				});
+			}
 			this.config._bulkEdit = {
 				rowId : calculatedInd,
 				cItem : cItem,
