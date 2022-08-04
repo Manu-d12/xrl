@@ -662,7 +662,9 @@ export default class dataTable extends LightningElement {
 					e.isASCSort = e.isASCSort === undefined;
 					e._sortIcon = e.isASCSort ? 'utility:arrowdown' : 'utility:arrowup';
 					if (this.hasGrouping && fieldName === this.config.groupingParams.field) this.config.groupingParams.order = e.isASCSort ? 'asc' : 'desc';
-					else this.records = libs.sortRecords(this.records, e.type === 'reference' ? e.fieldName + '.Name' : e.fieldName, e.isASCSort);
+					else {
+						this.records = libs.sortRecords(this.records, e.type === 'reference' ? 'Name' : e.fieldName, e.isASCSort, e.type === 'reference' ? e.fieldName.slice(0,-2) : '');
+					}
 				} else {
 					e._sortIcon = undefined;
 					e.isASCSort = undefined;

@@ -21,10 +21,17 @@ export let libs = {
 		if (typeof(value) !== 'string') value = JSON.stringify(value);
 		localStorage.setItem(uniqKey, value);
 	},
-	sortRecords: function(records, fieldName, isASCSort) {
-		let keyValue = (a) => {
-			return a[fieldName];
-		};
+	sortRecords: function(records, fieldName, isASCSort, referenceField) {
+		let keyValue;
+		if(referenceField){
+			keyValue = (a) => {
+				return a[referenceField][fieldName];
+			};
+		}else{
+			keyValue = (a) => {
+				return a[fieldName];
+			};
+		}
 
 		let isReverse = isASCSort ? 1 : -1;
 
