@@ -56,7 +56,7 @@ export default class dataTableItem extends LightningElement {
 			}
 
 			if (this.col.type === 'reference'){
-				val = libs.formatStr(refTmp,[val, row.Name ? row.Name : 'Name issue']);
+				val = libs.formatStr(refTmp,[val, row.Name ? row.Name : 'Invalid Name']);
 			}
 			if (this.col.type === 'boolean'){
 				this.isBool = true;

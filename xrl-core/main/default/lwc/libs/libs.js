@@ -74,6 +74,9 @@ export let libs = {
 				if (fields[i].endsWith('Id')) {
 					row = obj[fields[i].replace(/Id/, '')];
 				}
+				if (fields[i].endsWith('__c')) {
+					row = obj[fields[i].replace(/__c/, '__r')];
+				}
 			}
 			obj = obj[fields[i]];
 		}
