@@ -356,6 +356,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let variant = this.config.userInfo.isAdminAccess === true ? 'error' : 'shade'; // shade, error, warning, info, confirm
 		let fields = [];
 		for (let key in this.config.describe) {
+			if (this.config.describe[key].type === 'reference') {
+				fields.push({ label: this.config.describe[key].relationshipName + ' > ', value: this.config.describe[key].relationshipName, refObj : this.config.describe[key].referenceTo[0] });	
+			}
 			fields.push({ label: this.config.describe[key].label, value: this.config.describe[key].name });
 		}
 		let lockedOptions = [];
@@ -431,12 +434,12 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			if (field) {
 				field[param] = value;
 				console.log('in if');
-			} else {
+			} /*else {
 				field = { 'fieldName': this.config.dialog.field };
 				field[param] = value;
 				console.log('in else');
 				this.config.dialog.listViewConfig.colModel.push(field);
-			}
+			}*/ //we will return this part in case that we will have a fieldPiecker component
 		}
 		if (val === 'dialog:setTableParam') {
 			

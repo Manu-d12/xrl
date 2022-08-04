@@ -46,14 +46,14 @@ export default class extRelListSettings extends LightningElement {
 				"type" : tmp[item].type,
 				"label" : tmp[item].label,
 				"isTextArea" : (tmp[item].type === 'function'),
-				"tooltip" : tmp[item].tooltip,
-				//"isDisabled" : (item === 'fieldName'),
+				"tooltip" : (item === 'fieldName') ? tmp[item].tooltip + '\n' + '.Field Type:' + fieldParams.type : tmp[item].tooltip,
+				"isDisabled" : (item === 'fieldName'),
 				"value" : defValue,
 				"isChecked" : (tmp[item].type === 'checkbox') ? defValue : undefined,
 				"placeHolder" : tmp[item].placeHolder
 			})
 		}
-		console.log(result);
+		console.log(result, describe[this.config.dialog.field]);
 		return result;
 	}
 

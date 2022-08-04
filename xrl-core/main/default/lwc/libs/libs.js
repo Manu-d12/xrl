@@ -134,12 +134,16 @@ export let libs = {
 				"type": "checkbox",
 				"label": "Is column Editable?"
 			},
-			/*'isEditable': {
+			"isWrapable": {
 				"defValue": false,
 				"type": "checkbox",
-				"label" : "Is column Editable?",
-				"tooltip": "Can edit column or not"
-			},*/
+				"label": "Is need wrap column?"
+			},
+			"isClipable": {
+				"defValue": false,
+				"type": "checkbox",
+				"label": "Is need clip?"
+			},
 			/*'isEditableMethod': {
 				"defValue": false,
 				"type": "function",
@@ -198,6 +202,13 @@ export let libs = {
 				"label": "Is show pagination on the bottom?",
 				"tooltip": "Show/Hide bottom pager",
 				"cmd" : "dialog:setPagerParam",
+			},
+			"saveChunkSize" : {
+				"defValue": 200,
+				"type": "string",
+				"label": "What is the chunk size for save action?",
+				"tooltip": "Number of records in chunk",
+				"cmd" : "dialog:setTableParam",
 			},
 			"rowCss": {
 				"type": "function",
