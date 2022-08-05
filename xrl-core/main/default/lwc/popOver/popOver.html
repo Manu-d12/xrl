@@ -1,0 +1,16 @@
+<template>
+    <div class="slds-popover slds-popover_tooltip slds-nubbin_bottom-left" role="tooltip" id="help" style="position:absolute;top:-4px;left:35px">
+        <template if:true={ranger} >
+            <div class="slds-popover__body">
+            <lightning-record-view-form
+                    record-id={ranger}
+                    object-api-name="Account">
+                <div class="potato slds-box" style={boxClass}>
+                    <lightning-output-field field-name="Name">
+                    </lightning-output-field>
+                    </div>
+            </lightning-record-view-form>
+        </div>
+        </template>
+    </div>
+</template>

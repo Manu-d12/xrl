@@ -17,7 +17,7 @@
 			</div>
 			<div class="slds-col slds-size_1-of-3"></div>
 		</div>
-		
+		<!-- <c-pop-Over myranger={ranger}></c-pop-Over> -->
 		<table role="grid" if:true={tableRecords} class="slds-table slds-table_bordered slds-table_col-bordered slds-table_striped extRelList" style="table-layout: fixed;">
 			<thead>
 				<tr class="slds-line-height_reset">
@@ -51,7 +51,8 @@
 			</thead>
 			<tbody class="extRelListTable">
 				<template if:false={hasGrouping} for:each={tableRecords} for:item="dItem" for:index="index">
-					<tr key={dItem.Id} class={dItem._rowCss} style={rowStyle} data-rowind={dItem.Id}>
+					
+					<tr key={dItem.Id} class={dItem._rowCss} style={rowStyle} data-rowind={dItem.Id} onmouseout={hideData} onmouseover={showData} data-rangerid={dItem.Id}>
 						<td scope="col" if:true={config.isShowNumeration} style="width: 2rem;" data-rowind={index} class="slds-row-number slds-grid slds-float_right">					
 						</td>
 						<td scope="col" if:true={config.isShowCheckBoxes} style="width: 2rem;" data-rowind={index}>
@@ -167,6 +168,5 @@
 			
 		</div>
 	</div>
-	
 
 </template>
