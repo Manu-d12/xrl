@@ -422,10 +422,8 @@ export default class dataTable extends LightningElement {
 						cItem.options = [];
 						data[nodeName].records.forEach(e => {
 							cItem.options.push({label: e.Name, value: e.Id});
-							
 						});
-
-						console.log('cItem', col.options, libs.getGlobalVar(this.cfg));
+						cItem.refNodeOptions = data[nodeName].records; 
 					})
 				});
 			}
@@ -440,6 +438,7 @@ export default class dataTable extends LightningElement {
 			}
 			//this.config._isBulkEdit = true;
 		} else {
+			// Need get all visible references fields and get data for thise fields
 			let record = this.records[calculatedInd];
 			record._isEditable = true;
 			record._focus = colName;
@@ -759,28 +758,48 @@ export default class dataTable extends LightningElement {
 	}
 
 	handleEventBulk() {
-		function changeItem(that, item, fieldName, value) {
+		function changeItem(that, item, fieldName, v, refNode, refNodeValue) {
+			
 			
 			let origItem = origRecords.find(elem => {return elem.Id === item.Id});
-			item[fieldName] = value;
-			origItem[fieldName] = value;
+			item[fieldName] = v;
+			origItem[fieldName] = v;
+			if (refNode !== undefined) {
+				console.log('REFERENCE', refNode, refNodeValue);
+				item[refNode] = refNodeValue;
+				origItem[refNode] = refNodeValue;
+			}
+			
 			that.changeRecord(item.Id);
 		}
-		function getValue(cItem, value) {
-			return value[cItem.isEditableBool ? 'checked' : 'value'];
+		function getValue(cItem, v) {
+			return v[cItem.isEditableBool ? 'checked' : 'value'];
 		}
+
+		let describe = libs.getGlobalVar(this.cfg).describe[this.config._bulkEdit.cItem.fieldName];
 		let value = this.template.querySelector('[data-id="origValue"]');
 		let chBox = this.template.querySelector('[data-id="isAll"]');
 		let origRecords = libs.getGlobalVar(this.cfg).records;
+		let refNode = describe.relationshipName;
+		let refNodeValue;
 
-		console.log('chBox.checked', chBox.checked);
+		console.log('chBox.checked', chBox.checked, this.config._bulkEdit);
+		
+		if (describe.type === 'reference') {
+
+			refNodeValue = this.config._bulkEdit.cItem.refNodeOptions.find( elem =>{
+				return elem.Id === value.value;
+			});
+
+			console.log('this.config._bulkEdit.cItem', refNode, refNodeValue, value.value, this.config._bulkEdit.cItem.options);
+		}
 		if (chBox.checked === false) {
 			console.log('One item');
-			changeItem(this, this.records[this.config._bulkEdit.rowId], this.config._bulkEdit.cItem.fieldName, getValue(this.config._bulkEdit.cItem, value));
+			changeItem(this, this.records[this.config._bulkEdit.rowId], this.config._bulkEdit.cItem.fieldName, getValue(this.config._bulkEdit.cItem, value), refNode, refNodeValue);
 		} else {
 			console.log('More then One item');
 			this.getSelectedRecords().forEach((item) => {
-				changeItem(this, item, this.config._bulkEdit.cItem.fieldName, getValue(this.config._bulkEdit.cItem, value));
+				changeItem(this, item, this.config._bulkEdit.cItem.fieldName, getValue(this.config._bulkEdit.cItem, value),refNode, refNodeValue);
 			});
 		}
 		console.log('Bulk Edit', getValue(this.config._bulkEdit.cItem, value), chBox.checked);
