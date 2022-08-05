@@ -130,14 +130,12 @@ export let filterLibs = {
     },
 	boolean__filter(filter, record) {
 		let value = this.getValue(filter, record);
-        if (!value) return false;
-		console.log('showing:' + typeof filter._filterStr);
+        // if (value === null) return false;
 		switch (filter._filterOption) {
 			case 'eq': 
-				console.log(JSON.parse(JSON.stringify(filter._filterStr)));
-				return Boolean(value) === Boolean(filter._filterStr[0]);
+				return filter._filterStr.find((el =>  el ===  value.toString())) !== undefined;
 			case 'neq': 
-				return value !== Boolean(filter._filterStr);
+				return filter._filterStr.find((el =>  el ===  value.toString())) === undefined;
 			case 'em': 
 				return value === null || value == undefined;
 			case 'nem': 
