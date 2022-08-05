@@ -320,7 +320,7 @@ export let filterLibs = {
 		let value = filter.type !== "reference"
 			? record[filter.fieldName]
 			: getRefField(filter.fieldName);
-
+		console.log(value);
 		return formatter && typeof formatter === 'function' ? formatter(record, filter, record[filter.fieldName]) : value ;
 	}
 

@@ -612,11 +612,16 @@ export default class dataTable extends LightningElement {
 					return this.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
 				} else {
 					allRecords = allRecords.filter(record=> {
-						return filterLibs[filter.type + '__filter'](filter, record);
+						if(filter.type === 'reference' && record[(filter.fieldName).slice(0,-2)]){
+							return filterLibs[filter.type + '__filter'](filter, record);
+						}else{
+							return filterLibs[filter.type + '__filter'](filter, record);
+						}
 					})
+					this.records = allRecords;
 				}
 			});
-			this.records = allRecords;
+			
 		}
 		this.setNumPages(this.config.pager.pageSize);
 		
