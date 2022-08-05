@@ -210,6 +210,10 @@ export default class dataTable extends LightningElement {
 		});
 		//this.config.colModel = JSON.parse(JSON.stringify(this.config.colModel));
 		this.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
+		let sl = 0;
+		this.records.forEach((el) =>{
+			el.sl = sl += 1;
+		});
 		console.log('length from datatable', this.cfg, this.records.length, this.records);
 		this.initSort();
 		console.log('PAGER', this.config.pager);
