@@ -553,7 +553,8 @@ export default class dataTable extends LightningElement {
 			let cItem = this.getColItem(this.config._isFilterOptions.fieldName);
 			if (cItem) {
 				console.log('column', JSON.stringify(cItem));
-				isNeedRefilter = (cItem._filterStr !== this.config._isFilterOptions.filterStr || (this.config._isFilterOptions.isUnary && cItem._filterOption !==this.config._isFilterOptions.filterOption));
+				isNeedRefilter = ((cItem._filterStr !== this.config._isFilterOptions.filterStr) || (this.config._isFilterOptions.isUnary && cItem._filterOption !==this.config._isFilterOptions.filterOption));
+				if(isNeedRefilter === undefined) isNeedRefilter = true;
 				cItem._filterStr = this.config._isFilterOptions.filterStr;
 				cItem._filterStrTo = this.config._isFilterOptions.filterStrTo;
 				cItem._filterOption = this.config._isFilterOptions.filterOption;
