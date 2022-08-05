@@ -571,7 +571,8 @@ export default class dataTable extends LightningElement {
 			let cItem = this.getColItem(this.config._isFilterOptions.fieldName);
 			if (cItem) {
 				console.log('column', JSON.stringify(cItem));
-				isNeedRefilter = (cItem._filterStr !== this.config._isFilterOptions.filterStr || (this.config._isFilterOptions.isUnary && cItem._filterOption !==this.config._isFilterOptions.filterOption));
+				isNeedRefilter = ((cItem._filterStr !== this.config._isFilterOptions.filterStr) || (this.config._isFilterOptions.isUnary && cItem._filterOption !==this.config._isFilterOptions.filterOption));
+				if(isNeedRefilter === undefined) isNeedRefilter = true;
 				cItem._filterStr = this.config._isFilterOptions.filterStr;
 				cItem._filterStrTo = this.config._isFilterOptions.filterStrTo;
 				cItem._filterOption = this.config._isFilterOptions.filterOption;
@@ -629,11 +630,16 @@ export default class dataTable extends LightningElement {
 					return this.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
 				} else {
 					allRecords = allRecords.filter(record=> {
-						return filterLibs[filter.type + '__filter'](filter, record);
+						if(filter.type === 'reference' && record[(filter.fieldName).slice(0,-2)]){
+							return filterLibs[filter.type + '__filter'](filter, record);
+						}else{
+							return filterLibs[filter.type + '__filter'](filter, record);
+						}
 					})
+					this.records = allRecords;
 				}
 			});
-			this.records = allRecords;
+			
 		}
 		this.setNumPages(this.config.pager.pageSize);
 		
