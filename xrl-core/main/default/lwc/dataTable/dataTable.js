@@ -1,9 +1,10 @@
 import { LightningElement, api, track } from 'lwc';
 import { libs } from 'c/libs';
 import { filterLibs } from './filterLibs';
+import { NavigationMixin } from "lightning/navigation"
 
 const defClass = 'slds-grid slds-grid_align-spread';
-export default class dataTable extends LightningElement {
+export default class dataTable extends NavigationMixin(LightningElement) {
 	@track records;
 	@track config;
 	@track groupedRecords;
@@ -810,6 +811,19 @@ export default class dataTable extends LightningElement {
 	@api
 	updateView(){
 		this.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
+	}
+
+	handleEventStandardEdit(event){
+		let val = event.target.getAttribute('data-recordind');
+		console.log(val);
+		this[NavigationMixin.Navigate]({
+			type: 'standard__objectPage',
+			attributes: {
+				recordId: val, // pass the record id here.
+				objectApiName: libs.getGlobalVar(this.cfg).sObjApiName,
+				actionName: 'view',
+			}
+		});
 	}
 
 }
