@@ -372,7 +372,7 @@ global with sharing class infrastructure {
 	 * @return  Map<String,String>    Map of properties about the icon to be consumed by the front end.
 	 *                                Right now, returns values for keys: iconStyle,iconURL
 	 */
-	global static Map<String,String> retrieveIconForObject(String sObjectName) {    
+	private static Map<String,String> retrieveIconForObject(String sObjectName) {    
 		String iconStyle;
 		String iconURL;
 		String iconTag;
