@@ -52,7 +52,7 @@
 			<tbody class="extRelListTable">
 				<template if:false={hasGrouping} for:each={tableRecords} for:item="dItem" for:index="index">
 					<tr key={dItem.Id} class={dItem._rowCss} style={rowStyle} data-rowind={dItem.Id}>
-						<td scope="col" if:true={config.isShowNumeration} style="width: 2rem;" data-rowind={index} class="slds-row-number slds-grid slds-float_right">					
+						<td scope="col" if:true={config.isShowNumeration} style="width: 2rem;" data-rowind={index} class="slds-row-number slds-grid slds-float_right">{index}				
 						</td>
 						<td scope="col" if:true={config.isShowCheckBoxes} style="width: 2rem;" data-rowind={index}>
 							<lightning-input type="checkbox" data-rowind={index} onchange={checkRow} checked={dItem._isChecked}></lightning-input>
@@ -149,7 +149,10 @@
 			<div class="slds-popover__body slds-grid">
 				<div class="slds-grid slds-wrap">
 					<div class="slds-col slds-size_1-of-1"> 
-						<lightning-combobox if:true={config._bulkEdit.cItem.isEditableAsPicklist} placeholder={config._LABELS.lbl_chooseOperation} value={config._bulkEdit.value} data-id="origValue" options={config._bulkEdit.cItem.options} class="slds-p-horizontal_xx-small" style="width:100%"></lightning-combobox>
+						<!--<lightning-combobox if:true={config._bulkEdit.cItem.isEditableAsPicklist} placeholder={config._LABELS.lbl_chooseOperation} value={config._bulkEdit.value} data-id="origValue" options={config._bulkEdit.cItem.options} class="slds-p-horizontal_xx-small" style="width:100%"></lightning-combobox>-->
+						
+						         <c-multiselect if:true={config._bulkEdit.cItem.isEditableAsPicklist} placeholder={config._LABELS.lbl_chooseOperation} value={config._bulkEdit.value} data-id="origValue" onchange={searchOnChange} options={config._bulkEdit.cItem.options} class="slds-p-horizontal_xx-small" style="width:100%"></c-multiselect>
+
 						<lightning-input if:true={config._bulkEdit.cItem.isEditableRegular} type={config._bulkEdit.type} value={config._bulkEdit.value} tabindex="0" data-id="origValue" style="width:100%"></lightning-input>
 						<lightning-input type="checkbox" if:true={config._bulkEdit.cItem.isEditableBool} checked={config._bulkEdit.value} data-id="origValue"> </lightning-input>
 					</div>
