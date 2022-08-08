@@ -488,9 +488,8 @@ export default class dataTable extends LightningElement {
 			console.log('cItem', cItem.type);
 			if(cItem.type === 'boolean'){
 				cItem.options = [
-					{label:'All',value:'All'},
-					{label:'True',value:'True'},
-					{label:'False',value:'False'}
+					{label:'True',value:'true'},
+					{label:'False',value:'false'}
 				];
 			}
 			this.config._isFilterOptions = this.config._isFilterOptions && this.config._isFilterOptions.fieldName === colName ?
