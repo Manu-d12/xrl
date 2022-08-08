@@ -32,6 +32,9 @@ export default class dataTable extends LightningElement {
 	updateInfo = '';
 
 	get tableRecords() {
+		this.records.forEach((el,ind) =>{
+			el.sl = ind + 1;
+		});
 
 		if (this.config.grouping && this.config.groupingParams?.field) {
 
