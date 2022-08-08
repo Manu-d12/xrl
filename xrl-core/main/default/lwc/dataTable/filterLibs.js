@@ -130,12 +130,12 @@ export let filterLibs = {
     },
 	boolean__filter(filter, record) {
 		let value = this.getValue(filter, record);
-        if (!value) return false;
+        // if (value === null) return false;
 		switch (filter._filterOption) {
 			case 'eq': 
-				return value === Boolean(filter._filterStr);
+				return filter._filterStr.find((el =>  el ===  value.toString())) !== undefined;
 			case 'neq': 
-				return value !== Boolean(filter._filterStr);
+				return filter._filterStr.find((el =>  el ===  value.toString())) === undefined;
 			case 'em': 
 				return value === null || value == undefined;
 			case 'nem': 
@@ -320,7 +320,7 @@ export let filterLibs = {
 		let value = filter.type !== "reference"
 			? record[filter.fieldName]
 			: getRefField(filter.fieldName);
-
+		console.log(value);
 		return formatter && typeof formatter === 'function' ? formatter(record, filter, record[filter.fieldName]) : value ;
 	}
 
