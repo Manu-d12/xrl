@@ -210,6 +210,13 @@ export let libs = {
 				"tooltip": "Show/Hide bottom pager",
 				"cmd" : "dialog:setPagerParam",
 			},
+			"showStandardEdit" : {
+				"defValue": false,
+				"type": "checkbox",
+				"label": "Show standard edit(it will replace inline editing)?",
+				"tooltip": "Show/Hide bottom pager",
+				"cmd" : "dialog:setTableParam",
+			},
 			"saveChunkSize" : {
 				"defValue": 200,
 				"type": "string",

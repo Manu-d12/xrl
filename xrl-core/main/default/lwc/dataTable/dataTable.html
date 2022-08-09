@@ -25,10 +25,6 @@
 						<div class="">
 						</div>
 					</th>
-					<th scope="col" if:true={config.isShowNumeration} style="width: 2rem;">
-						<div class="">
-						</div>
-					</th>
 					<th scope="col" if:true={config.isShowCheckBoxes} style="width: 2rem;">
 						<div class="">
 							<lightning-input type="checkbox" name="selectAll" onchange={selectAll}></lightning-input>
@@ -59,9 +55,6 @@
 					<tr key={dItem.Id} class={dItem._rowCss} style={rowStyle} data-rowind={dItem.Id} onmouseout={hideData} onmouseover={showData} data-rangerid={dItem.Id}>
 						<td scope="col" if:true={config.isShowNumeration} style="width: 2rem;" data-rowind={index} class="slds-row-number slds-grid slds-float_right">					
 						</td>
-						<td scope="col" style="width: 2rem;" data-rowind={index}>
-							<lightning-button-icon icon-name="utility:new"  alternative-text="Refresh List View" title="New" data-id=":action_edit" data-recordind={dItem.Id} onclick={handleEventStandardEdit}></lightning-button-icon>					
-						</td>
 						<td scope="col" if:true={config.isShowCheckBoxes} style="width: 2rem;" data-rowind={index}>
 							<lightning-input type="checkbox" data-rowind={index} onchange={checkRow} checked={dItem._isChecked}></lightning-input>
 						</td>
@@ -69,8 +62,8 @@
 							<span if:false={hItem.isActions} class="slds-grid slds-grid_align-spread">
 
 								<!--<lightning-input if:true={hItem.isEditable} type={hItem.type} field-level-help={hItem.inlineHelpText} data-rowind={index} data-colname={hItem.fieldName} onchange={inlineEdit}></lightning-input>-->
-								<c-data-Table-Item if:false={dItem._isEditable} row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} cfg={cfg} class="slds-truncate" style="width:100%"></c-data-Table-Item>
-								<c-data-Table-Item if:true={dItem._isEditable} iseditmode="true" row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} cfg={cfg} style="width:100%"></c-data-Table-Item>
+								<c-data-Table-Item if:false={dItem._isEditable} row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} data-recordind={dItem.Id} cfg={cfg} class="slds-truncate" style="width:100%"></c-data-Table-Item>
+								<c-data-Table-Item if:true={dItem._isEditable} iseditmode="true" row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} data-recordind={dItem.Id} cfg={cfg} style="width:100%"></c-data-Table-Item>
 
 							</span>
 							<span if:true={hItem.isActions} class="slds-grid slds-grid_align-spread">
