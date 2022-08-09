@@ -51,9 +51,8 @@
 			</thead>
 			<tbody class="extRelListTable">
 				<template if:false={hasGrouping} for:each={tableRecords} for:item="dItem" for:index="index">
-					
-					<tr key={dItem.Id} class={dItem._rowCss} style={rowStyle} data-rowind={dItem.Id} onmouseout={hideData} onmouseover={showData} data-rangerid={dItem.Id}>
-						<td scope="col" if:true={config.isShowNumeration} style="width: 2rem;" data-rowind={index} class="slds-row-number slds-grid slds-float_right">					
+					<tr key={dItem.Id} class={dItem._rowCss} style={rowStyle} data-rowind={dItem.Id}>
+						<td scope="col" if:true={config.isShowNumeration} style="width: 2rem;" data-rowind={index} class="slds-grid slds-float_right">{dItem.sl}					
 						</td>
 						<td scope="col" if:true={config.isShowCheckBoxes} style="width: 2rem;" data-rowind={index}>
 							<lightning-input type="checkbox" data-rowind={index} onchange={checkRow} checked={dItem._isChecked}></lightning-input>

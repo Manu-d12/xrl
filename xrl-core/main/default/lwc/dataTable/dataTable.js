@@ -52,6 +52,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	updateInfo = '';
 
 	get tableRecords() {
+		this.records.forEach((el,ind) =>{
+			el.sl = ind + 1;
+		});
 
 		if (this.config.grouping && this.config.groupingParams?.field) {
 
@@ -423,17 +426,17 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			
 			if (!cItem || !cItem.isEditable) return;
 
-			if (this.config._inlineEdit !== undefined) {
-				this.records[this.config._inlineEdit]._isEditable = false;
-				if (this.hasGrouping) {
-					let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
-					this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
-				}
+		if (this.config._inlineEdit !== undefined) {
+			this.records[this.config._inlineEdit]._isEditable = false;
+			if (this.hasGrouping) {
+				let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
+				this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
 			}
-			
-			if (this.getSelectedRecords().length > 1) {
-				let table = this.template.querySelector('.extRelListTable');
-				console.log('bulk', table.offsetHeight, event.y, table, event.srcElement.parentElement.parentElement.offsetTop, this.config);
+		}
+		
+		if (this.getSelectedRecords().length > 1) {
+			let table = this.template.querySelector('.extRelListTable');
+			console.log('bulk', table.offsetHeight, event.y, table, event.srcElement.parentElement.parentElement.offsetTop, this.config);
 
 				if (cItem.type === 'reference' && cItem.options === undefined) {
 					let describe = libs.getGlobalVar(this.cfg).describe[cItem.fieldName];
@@ -468,6 +471,50 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				record._isEditable = true;
 				record._focus = colName;
 				this.config._inlineEdit = calculatedInd;
+		if (this.config._inlineEdit !== undefined) {
+			this.records[this.config._inlineEdit]._isEditable = false;
+			if (this.hasGrouping) {
+				let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
+				this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
+			}
+		}
+		
+		if (this.getSelectedRecords().length > 1) {
+			let table = this.template.querySelector('.extRelListTable');
+			console.log('bulk', table.offsetHeight, event.y, table, event.srcElement.parentElement.parentElement.offsetTop, this.config);
+
+			if (cItem.type === 'reference' && cItem.options === undefined) {
+				let describe = libs.getGlobalVar(this.cfg).describe[cItem.fieldName];
+				libs.remoteAction(this, 'query', {
+					isNeedDescribe: false,
+					sObjApiName: describe.referenceTo[0],
+					fields: ['Id', 'Name'],
+					callback: ((nodeName, data) => {
+						console.log('length', data[nodeName].records);
+						cItem.options = [];
+						data[nodeName].records.forEach(e => {
+							cItem.options.push({label: e.Name, value: e.Id});
+						});
+						cItem.refNodeOptions = data[nodeName].records; 
+					})
+				});
+			}
+			this.config._bulkEdit = {
+				rowId : calculatedInd,
+				cItem : cItem,
+				type : cItem.type,
+				value : this.records[calculatedInd][cItem.fieldName],
+				chBoxLabel : libs.formatStr('Update {0} items', [this.getSelectedRecords().length]),
+				chBoxValue : false,
+				style: libs.formatStr("position:absolute;top:{0}px;left:{1}px", [(-table.offsetHeight + event.srcElement.parentElement.parentElement.offsetTop - (this.config.pager.pagerTop === true ? 110 : 40)), (event.x - 60)]),
+			}
+			//this.config._isBulkEdit = true;
+		} else {
+			// Need get all visible references fields and get data for thise fields
+			let record = this.records[calculatedInd];
+			record._isEditable = true;
+			record._focus = colName;
+			this.config._inlineEdit = calculatedInd;
 
 				if (this.hasGrouping) {
 					this.groupedRecords[groupInd].records[groupRowInd]._isEditable = true;
@@ -514,9 +561,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			console.log('cItem', cItem.type);
 			if(cItem.type === 'boolean'){
 				cItem.options = [
-					{label:'All',value:'All'},
-					{label:'True',value:'True'},
-					{label:'False',value:'False'}
+					{label:'True',value:'true'},
+					{label:'False',value:'false'}
 				];
 			}
 			this.config._isFilterOptions = this.config._isFilterOptions && this.config._isFilterOptions.fieldName === colName ?
@@ -597,7 +643,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			let cItem = this.getColItem(this.config._isFilterOptions.fieldName);
 			if (cItem) {
 				console.log('column', JSON.stringify(cItem));
-				isNeedRefilter = (cItem._filterStr !== this.config._isFilterOptions.filterStr || (this.config._isFilterOptions.isUnary && cItem._filterOption !==this.config._isFilterOptions.filterOption));
+				isNeedRefilter = ((cItem._filterStr !== this.config._isFilterOptions.filterStr) || (this.config._isFilterOptions.isUnary && cItem._filterOption !==this.config._isFilterOptions.filterOption));
+				if(isNeedRefilter === undefined) isNeedRefilter = true;
 				cItem._filterStr = this.config._isFilterOptions.filterStr;
 				cItem._filterStrTo = this.config._isFilterOptions.filterStrTo;
 				cItem._filterOption = this.config._isFilterOptions.filterOption;
@@ -655,11 +702,16 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					return this.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
 				} else {
 					allRecords = allRecords.filter(record=> {
-						return filterLibs[filter.type + '__filter'](filter, record);
+						if(filter.type === 'reference' && record[(filter.fieldName).slice(0,-2)]){
+							return filterLibs[filter.type + '__filter'](filter, record);
+						}else{
+							return filterLibs[filter.type + '__filter'](filter, record);
+						}
 					})
+					this.records = allRecords;
 				}
 			});
-			this.records = allRecords;
+			
 		}
 		this.setNumPages(this.config.pager.pageSize);
 		
@@ -784,28 +836,48 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 
 	handleEventBulk() {
-		function changeItem(that, item, fieldName, value) {
+		function changeItem(that, item, fieldName, v, refNode, refNodeValue) {
+			
 			
 			let origItem = origRecords.find(elem => {return elem.Id === item.Id});
-			item[fieldName] = value;
-			origItem[fieldName] = value;
+			item[fieldName] = v;
+			origItem[fieldName] = v;
+			if (refNode !== undefined) {
+				console.log('REFERENCE', refNode, refNodeValue);
+				item[refNode] = refNodeValue;
+				origItem[refNode] = refNodeValue;
+			}
+			
 			that.changeRecord(item.Id);
 		}
-		function getValue(cItem, value) {
-			return value[cItem.isEditableBool ? 'checked' : 'value'];
+		function getValue(cItem, v) {
+			return v[cItem.isEditableBool ? 'checked' : 'value'];
 		}
+
+		let describe = libs.getGlobalVar(this.cfg).describe[this.config._bulkEdit.cItem.fieldName];
 		let value = this.template.querySelector('[data-id="origValue"]');
 		let chBox = this.template.querySelector('[data-id="isAll"]');
 		let origRecords = libs.getGlobalVar(this.cfg).records;
+		let refNode = describe.relationshipName;
+		let refNodeValue;
 
-		console.log('chBox.checked', chBox.checked);
+		console.log('chBox.checked', chBox.checked, this.config._bulkEdit);
+		
+		if (describe.type === 'reference') {
+
+			refNodeValue = this.config._bulkEdit.cItem.refNodeOptions.find( elem =>{
+				return elem.Id === value.value;
+			});
+
+			console.log('this.config._bulkEdit.cItem', refNode, refNodeValue, value.value, this.config._bulkEdit.cItem.options);
+		}
 		if (chBox.checked === false) {
 			console.log('One item');
-			changeItem(this, this.records[this.config._bulkEdit.rowId], this.config._bulkEdit.cItem.fieldName, getValue(this.config._bulkEdit.cItem, value));
+			changeItem(this, this.records[this.config._bulkEdit.rowId], this.config._bulkEdit.cItem.fieldName, getValue(this.config._bulkEdit.cItem, value), refNode, refNodeValue);
 		} else {
 			console.log('More then One item');
 			this.getSelectedRecords().forEach((item) => {
-				changeItem(this, item, this.config._bulkEdit.cItem.fieldName, getValue(this.config._bulkEdit.cItem, value));
+				changeItem(this, item, this.config._bulkEdit.cItem.fieldName, getValue(this.config._bulkEdit.cItem, value),refNode, refNodeValue);
 			});
 		}
 		console.log('Bulk Edit', getValue(this.config._bulkEdit.cItem, value), chBox.checked);

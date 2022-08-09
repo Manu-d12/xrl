@@ -68,7 +68,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				"sObjApiName": apiNames[1],
 				"relField": apiNames[2],
 				//"fields": ['Id', 'LastModifiedDate'],
-				"iconName": "standard:" + apiNames[1].toLowerCase()
+				"iconName": "/img/icon/t4v35/standard/custom_120.png"
 			});
 		} else {
 			libs.setGlobalVar(this.name, {
@@ -76,7 +76,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				"sObjApiName": apiNames[1],
 				"relField": apiNames[2],
 				"fields": ['Id', 'LastModifiedDate'],
-				"iconName": "standard:" + apiNames[1].toLowerCase()
+				"iconName": "/img/icon/t4v35/standard/custom_120.png"
 			});
 		}
 		this.config = libs.getGlobalVar(this.name);
@@ -96,6 +96,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	setConfig(cmd, data) {
 		console.log(cmd, JSON.parse(JSON.stringify(data)), JSON.parse(JSON.stringify(data[cmd])));
 		libs.getGlobalVar(this.name).userInfo = data.userInfo;
+		libs.getGlobalVar(this.name).iconName = data[cmd].iconMap.iconURL;
 
 		let adminConfig = (data[cmd].baseConfig) ? JSON.parse(data[cmd].baseConfig) : {};
 		let userConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig) : {};
@@ -208,10 +209,10 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				console.log('length', data[nodeName].records);
 				
 				libs.getGlobalVar(this.name).records = data[nodeName].records.length > 0 ? data[nodeName].records : undefined;
-				console.log(JSON.parse(JSON.stringify(this.config.records)));
+				
 				this.config.records = libs.getGlobalVar(this.name).records;
 				this.allRecords = this.config.records;
-				console.log(JSON.parse(JSON.stringify(this.config.records)));
+				
 				console.log('loadRecords', libs.getGlobalVar(this.name));
 				this.generateColModel();
 			})
@@ -223,7 +224,6 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			let describe = this.config.describe[e.fieldName];
 			if (e.label === undefined) e.label = describe.label;
 			if (e.type === undefined) e.type = describe.type;
-			e.type = describe.autoNumber ? 'number' : e.type;
 			e.updateable = describe.updateable;
 			e.isNameField = describe && describe.nameField === true;
 			if (e.type === 'picklist') {
