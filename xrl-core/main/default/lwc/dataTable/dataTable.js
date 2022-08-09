@@ -32,6 +32,9 @@ export default class dataTable extends LightningElement {
 	updateInfo = '';
 
 	get tableRecords() {
+		this.records.forEach((el,ind) =>{
+			el.sl = ind + 1;
+		});
 
 		if (this.config.grouping && this.config.groupingParams?.field) {
 
@@ -488,9 +491,8 @@ export default class dataTable extends LightningElement {
 			console.log('cItem', cItem.type);
 			if(cItem.type === 'boolean'){
 				cItem.options = [
-					{label:'All',value:'All'},
-					{label:'True',value:'True'},
-					{label:'False',value:'False'}
+					{label:'True',value:'true'},
+					{label:'False',value:'false'}
 				];
 			}
 			this.config._isFilterOptions = this.config._isFilterOptions && this.config._isFilterOptions.fieldName === colName ?
