@@ -11,25 +11,6 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 	@api cfg;
 
-	@track ranger;
-	@track left;
-	@track top;
-	@track editOn = false;
-	@api recordId = '5005i00000C7jV0AAJ';
-    @api objectApiName;
-
-	showData(event){
-		this.editOn = true;
-		this.ranger = '0015i000008havgAAA';
-		console.log(event.target.getAttribute('data-rowind'));
-		this.left = event.clientX;
-		this.top=event.clientY;
-	}
-	hideData(event){
-		this.ranger = "";
-		this.editOn = false;
-	}
-
 	@api
 	getRecords() {
 		// this methood need to get data from paren component

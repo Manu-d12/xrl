@@ -599,20 +599,6 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				}
 			});
 		}
-		if (val.startsWith(':action_edit')) {
-
-			let defValue = {};
-			defValue[this.config.relField] = this.recordId;
-
-			this[NavigationMixin.Navigate]({
-				type: 'standard__objectPage',
-				attributes: {
-					recordId: '5005i00000C7jV0AAJ', // pass the record id here.
-					objectApiName: this.config.sObjApiName,
-					actionName: 'edit',
-				}
-			});
-		}
 
 		if (val.startsWith(':action_dynamic')) {			
 			let action = this.config.listViewConfig.dynamicActions[event.target.dataset.index];			
