@@ -121,6 +121,14 @@
         <value>Record(s) Not Found</value>
     </labels>
     <labels>
+        <fullName>errMsg_wrapableAndClipableCanNotBeSelectedTogether</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>errMsg_wrapableAndClipableCanNotBeSelectedTogether</shortDescription>
+        <value>Wrapable and Clipable can not be selected together</value>
+    </labels>
+    <labels>
         <fullName>hlpTxt_additionalConditionText</fullName>
         <categories>XRL</categories>
         <language>en_US</language>
