@@ -97,6 +97,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		console.log(cmd, JSON.parse(JSON.stringify(data)), JSON.parse(JSON.stringify(data[cmd])));
 		libs.getGlobalVar(this.name).userInfo = data.userInfo;
 		libs.getGlobalVar(this.name).iconName = data[cmd].iconMap.iconURL;
+		libs.getGlobalVar(this.name).iconStyle = data[cmd].iconMap.iconURL.includes('img/icon') ? 'width:32px;height:32px;background-color: #d8c760;margin: 10px;'
+		 : 'width:32px;height:32px;margin: 10px;';
 
 		let adminConfig = (data[cmd].baseConfig) ? JSON.parse(data[cmd].baseConfig) : {};
 		let userConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig) : {};

@@ -1,7 +1,7 @@
 <template>
 	<lightning-card if:true={config._LABELS} class=" slds-card_boundary" style="padding:5px; display:block">
 		<h3 slot="title">
-            <img src={config.iconName} alt={config.sObjLabel} style="width:32px;height:32px;background-color: #d8c760;margin: 10px;">
+            <img src={config.iconName} alt={config.sObjLabel} style={config.iconStyle}>
              {config.sObjLabel} 
         </h3>
 		<div class="slds-grid slds-grid_align-end slds-p-around_x-small">
