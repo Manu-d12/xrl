@@ -433,15 +433,35 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				return e.fieldName === this.config.dialog.field;
 			})
 
-			if (field) {
-				field[param] = value;
-				console.log('in if');
-			} /*else {
-				field = { 'fieldName': this.config.dialog.field };
-				field[param] = value;
-				console.log('in else');
-				this.config.dialog.listViewConfig.colModel.push(field);
-			}*/ //we will return this part in case that we will have a fieldPiecker component
+			if(param === 'isClipable' && value && field['isWrapable']){
+				field[param] = false;
+				event.target.checked = false;
+				const evt = new ShowToastEvent({
+					title: 'Error',
+					message: 'Wrapable and Clipable can not be selected together',
+					variant: 'error',
+					mode: 'dismissable'
+				});
+				this.dispatchEvent(evt);
+			}else if(param === 'isWrapable' && value && field['isClipable']){
+				field[param] = false;
+				event.target.checked = false;
+				const evt = new ShowToastEvent({
+					title: 'Error',
+					message: 'Wrapable and Clipable can not be selected together',
+					variant: 'error',
+					mode: 'dismissable'
+				});
+				this.dispatchEvent(evt);
+			}else{
+				if (field) {
+					field[param] = value;
+				} /*else {
+					field = { 'fieldName': this.config.dialog.field };
+					field[param] = value;
+					this.config.dialog.listViewConfig.colModel.push(field);
+				}*/ //we will return this part in case that we will have a fieldPiecker component
+			}
 		}
 		if (val === 'dialog:setTableParam') {
 			

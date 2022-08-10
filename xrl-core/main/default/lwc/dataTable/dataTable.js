@@ -211,6 +211,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				item._style = 'width: ' + item.width;
 			}
 			if (item.isHidden!==true) this.config._countFields ++;
+			item.wrapClass = item.isWrapable
+								? 'slds-cell-wrap'
+								: 'slds-truncate';
 		});
 		//this.config.colModel = JSON.parse(JSON.stringify(this.config.colModel));
 		this.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
