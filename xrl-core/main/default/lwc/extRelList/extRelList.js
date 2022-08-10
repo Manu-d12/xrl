@@ -438,7 +438,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				event.target.checked = false;
 				const evt = new ShowToastEvent({
 					title: 'Error',
-					message: 'Wrapable and Clipable can not be selected together',
+					message: this.config._LABELS.errMsg_wrapableAndClipableCanNotBeSelectedTogether,
 					variant: 'error',
 					mode: 'dismissable'
 				});
@@ -448,7 +448,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				event.target.checked = false;
 				const evt = new ShowToastEvent({
 					title: 'Error',
-					message: 'Wrapable and Clipable can not be selected together',
+					message: this.config._LABELS.errMsg_wrapableAndClipableCanNotBeSelectedTogether,
 					variant: 'error',
 					mode: 'dismissable'
 				});

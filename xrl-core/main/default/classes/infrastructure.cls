@@ -281,6 +281,7 @@ global with sharing class infrastructure {
 			'altTxt_save' => label.altTxt_save,
 			'altTxt_saveFilter' => label.altTxt_saveFilter,
 			'errMsg_recordsNotFound' => label.errMsg_recordsNotFound,
+			'errMsg_wrapableAndClipableCanNotBeSelectedTogether' => label.errMsg_wrapableAndClipableCanNotBeSelectedTogether,
 			'hlpTxt_additionalConditionText' => label.hlpTxt_additionalConditionText,
 			'hlpTxt_selectYourPreferredFields' => label.hlpTxt_selectYourPreferredFields,
 			'hlpTxt_selectYourLockedFields' => label.hlpTxt_selectYourLockedFields,
