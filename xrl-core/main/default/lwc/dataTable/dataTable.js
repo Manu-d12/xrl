@@ -1,9 +1,10 @@
 import { LightningElement, api, track } from 'lwc';
 import { libs } from 'c/libs';
 import { filterLibs } from './filterLibs';
+import { NavigationMixin } from "lightning/navigation"
 
 const defClass = 'slds-grid slds-grid_align-spread';
-export default class dataTable extends LightningElement {
+export default class dataTable extends NavigationMixin(LightningElement) {
 	@track records;
 	@track config;
 	@track groupedRecords;
@@ -375,33 +376,82 @@ export default class dataTable extends LightningElement {
 	}
 
 	rowDblCallback(event) {
-		let colName = event.srcElement.getAttribute('data-colname') !== null ?
-			event.srcElement.getAttribute('data-colname') :
-			event.srcElement.parentNode.getAttribute('data-colname');
+		if(this.config.showStandardEdit){
+			let val = event.target.getAttribute('data-recordind');
+			this.handleEventStandardEdit(val);
+		} else{
+			let colName = event.srcElement.getAttribute('data-colname') !== null ?
+				event.srcElement.getAttribute('data-colname') :
+				event.srcElement.parentNode.getAttribute('data-colname');
 
-		let rowInd = event.srcElement.getAttribute('data-rowind') != null ?
-			event.srcElement.getAttribute('data-rowind') :
-			event.srcElement.parentNode.getAttribute('data-rowind');
+			let rowInd = event.srcElement.getAttribute('data-rowind') != null ?
+				event.srcElement.getAttribute('data-rowind') :
+				event.srcElement.parentNode.getAttribute('data-rowind');
 
-		let rowId = event.srcElement.getAttribute('data-rowid') != null ?
-			event.srcElement.getAttribute('data-rowid') :
-			event.srcElement.parentNode.getAttribute('data-rowid');
-		
-		console.log(rowInd + ' ' + rowId);
+			let rowId = event.srcElement.getAttribute('data-rowid') != null ?
+				event.srcElement.getAttribute('data-rowid') :
+				event.srcElement.parentNode.getAttribute('data-rowid');
+			
+			console.log(rowInd + ' ' + rowId);
 
-		let groupInd;
-		let groupRowInd;
-		if (this.hasGrouping) {
-			groupInd = this.groupedRecords.findIndex(gr => gr.title === event.target.parentNode.dataset.groupind);
-			groupRowInd = this.groupedRecords[groupInd].records.findIndex(r => r.Id === rowId);
+			let groupInd;
+			let groupRowInd;
+			if (this.hasGrouping) {
+				groupInd = this.groupedRecords.findIndex(gr => gr.title === event.target.parentNode.dataset.groupind);
+				groupRowInd = this.groupedRecords[groupInd].records.findIndex(r => r.Id === rowId);
+			}
+
+			let calculatedInd = this.hasGrouping ? this.records.findIndex(rec => rowId === rec.Id) : this.calcRowIndex(rowInd);
+
+			let cItem = this.getColItem(colName);
+			
+			if (!cItem || !cItem.isEditable) return;
+
+		if (this.config._inlineEdit !== undefined) {
+			this.records[this.config._inlineEdit]._isEditable = false;
+			if (this.hasGrouping) {
+				let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
+				this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
+			}
 		}
-
-		let calculatedInd = this.hasGrouping ? this.records.findIndex(rec => rowId === rec.Id) : this.calcRowIndex(rowInd);
-
-		let cItem = this.getColItem(colName);
 		
-		if (!cItem || !cItem.isEditable) return;
+		if (this.getSelectedRecords().length > 1) {
+			let table = this.template.querySelector('.extRelListTable');
+			console.log('bulk', table.offsetHeight, event.y, table, event.srcElement.parentElement.parentElement.offsetTop, this.config);
 
+				if (cItem.type === 'reference' && cItem.options === undefined) {
+					let describe = libs.getGlobalVar(this.cfg).describe[cItem.fieldName];
+					libs.remoteAction(this, 'query', {
+						isNeedDescribe: false,
+						sObjApiName: describe.referenceTo[0],
+						fields: ['Id', 'Name'],
+						callback: ((nodeName, data) => {
+							console.log('length', data[nodeName].records);
+							cItem.options = [];
+							data[nodeName].records.forEach(e => {
+								cItem.options.push({label: e.Name, value: e.Id});
+								
+							});
+
+							console.log('cItem', col.options, libs.getGlobalVar(this.cfg));
+						})
+					});
+				}
+				this.config._bulkEdit = {
+					rowId : calculatedInd,
+					cItem : cItem,
+					type : cItem.type,
+					value : this.records[calculatedInd][cItem.fieldName],
+					chBoxLabel : libs.formatStr('Update {0} items', [this.getSelectedRecords().length]),
+					chBoxValue : false,
+					style: libs.formatStr("position:absolute;top:{0}px;left:{1}px", [(-table.offsetHeight + event.srcElement.parentElement.parentElement.offsetTop - (this.config.pager.pagerTop === true ? 110 : 40)), (event.x - 60)]),
+				}
+				//this.config._isBulkEdit = true;
+			} else {
+				let record = this.records[calculatedInd];
+				record._isEditable = true;
+				record._focus = colName;
+				this.config._inlineEdit = calculatedInd;
 		if (this.config._inlineEdit !== undefined) {
 			this.records[this.config._inlineEdit]._isEditable = false;
 			if (this.hasGrouping) {
@@ -447,9 +497,10 @@ export default class dataTable extends LightningElement {
 			record._focus = colName;
 			this.config._inlineEdit = calculatedInd;
 
-			if (this.hasGrouping) {
-				this.groupedRecords[groupInd].records[groupRowInd]._isEditable = true;
-				this.groupedRecords[groupInd].records[groupRowInd]._focus = colName;
+				if (this.hasGrouping) {
+					this.groupedRecords[groupInd].records[groupRowInd]._isEditable = true;
+					this.groupedRecords[groupInd].records[groupRowInd]._focus = colName;
+				}
 			}
 		}
 
@@ -818,6 +869,17 @@ export default class dataTable extends LightningElement {
 	@api
 	updateView(){
 		this.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
+	}
+
+	handleEventStandardEdit(recordId){
+		this[NavigationMixin.Navigate]({
+			type: 'standard__objectPage',
+			attributes: {
+				recordId: recordId, // pass the record id here.
+				objectApiName: libs.getGlobalVar(this.cfg).sObjApiName,
+				actionName: 'edit',
+			}
+		});
 	}
 
 }

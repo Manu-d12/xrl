@@ -17,7 +17,6 @@
 			</div>
 			<div class="slds-col slds-size_1-of-3"></div>
 		</div>
-		
 		<table role="grid" if:true={tableRecords} class="slds-table slds-table_bordered slds-table_col-bordered slds-table_striped extRelList" style="table-layout: fixed;">
 			<thead>
 				<tr class="slds-line-height_reset">
@@ -61,8 +60,8 @@
 							<span if:false={hItem.isActions} class="slds-grid slds-grid_align-spread">
 
 								<!--<lightning-input if:true={hItem.isEditable} type={hItem.type} field-level-help={hItem.inlineHelpText} data-rowind={index} data-colname={hItem.fieldName} onchange={inlineEdit}></lightning-input>-->
-								<c-data-Table-Item if:false={dItem._isEditable} row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} cfg={cfg} class="slds-truncate" style="width:100%"></c-data-Table-Item>
-								<c-data-Table-Item if:true={dItem._isEditable} iseditmode="true" row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} cfg={cfg} style="width:100%"></c-data-Table-Item>
+								<c-data-Table-Item if:false={dItem._isEditable} row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} data-recordind={dItem.Id} cfg={cfg} class="slds-truncate" style="width:100%"></c-data-Table-Item>
+								<c-data-Table-Item if:true={dItem._isEditable} iseditmode="true" row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} data-recordind={dItem.Id} cfg={cfg} style="width:100%"></c-data-Table-Item>
 
 							</span>
 							<span if:true={hItem.isActions} class="slds-grid slds-grid_align-spread">
@@ -167,6 +166,5 @@
 			
 		</div>
 	</div>
-	
 
 </template>
