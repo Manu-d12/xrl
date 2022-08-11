@@ -60,7 +60,7 @@
 							<span if:false={hItem.isActions} class="slds-grid slds-grid_align-spread">
 
 								<!--<lightning-input if:true={hItem.isEditable} type={hItem.type} field-level-help={hItem.inlineHelpText} data-rowind={index} data-colname={hItem.fieldName} onchange={inlineEdit}></lightning-input>-->
-								<c-data-Table-Item if:false={dItem._isEditable} row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} data-recordind={dItem.Id} cfg={cfg} class={hItem.wrapClass} style="width:100%"></c-data-Table-Item>
+								<c-data-Table-Item if:false={dItem._isEditable} row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} data-recordind={dItem.Id} cfg={cfg} class={hItem.wrapClass} style="width:100%" onmouseover={showPop} onmouseout={hidePop}></c-data-Table-Item>
 								<c-data-Table-Item if:true={dItem._isEditable} iseditmode="true" row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} data-recordind={dItem.Id} cfg={cfg} style="width:100%"></c-data-Table-Item>
 
 							</span>
@@ -165,6 +165,24 @@
 			</div>
 			
 		</div>
+	</div>
+	<div class="slds-is-relative">
+		<section if:true={showPopOver} aria-describedby="dialog-body-id-112" aria-labelledby="dialog-heading-id-117" class="slds-popover slds-nubbin_left" style={popStyle} role="dialog">
+			<div class="slds-popover__body" id="dialog-body-id-112">
+			  <div class="slds-media">
+				<div class="slds-media__body">
+				  <header class="slds-popover__header">
+					<h2 class="slds-text-heading_small" id="dialog-heading-id-117">Header title</h2>
+				  </header>
+				  	<lightning-record-form
+						record-id={recordId}
+						object-api-name={objectApiName}
+						layout-type="Full">
+					</lightning-record-form>
+				</div>
+			  </div>
+			</div>
+		  </section>
 	</div>
 
 </template>

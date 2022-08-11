@@ -11,6 +11,21 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 	@api cfg;
 
+	@track showPopOver = false;
+	@track popStyle;
+	@api recordId;
+	@api objectApiName;
+	showPop(event){
+		this.showPopOver = true;
+		this.popStyle = libs.formatStr("position:absolute;top:{0}px;left:{1}px", [(event.clientY - 900), (event.clientX - 52)]);
+		this.recordId = event.target.getAttribute('data-recordind');
+		this.objectApiName = libs.getGlobalVar(this.cfg).sObjApiName;
+		
+	}
+	hidePop(event){
+		this.showPopOver=false;
+	}
+
 	@api
 	getRecords() {
 		// this methood need to get data from paren component
