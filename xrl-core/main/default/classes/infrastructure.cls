@@ -179,6 +179,10 @@ global with sharing class infrastructure {
 		string sObjApiName = (string) data.get('sObjApiName');
 		string relField = (string) data.get('relField');
 		string config = (string) data.get('config');
+		Boolean isTemplate = false;
+		if(data.containsKey('isTemplate')){
+			isTemplate = (Boolean) data.get('isTemplate');
+		}
 
 		listViewName = string.isBlank(listViewName) 
 			? (isAdminAccess ? '_admin' : null)
@@ -189,6 +193,9 @@ global with sharing class infrastructure {
 		boolean isAdminConf = listViewName == '_admin' ? isAdminAccess : listViewAdmin;
 
 		RecordType rt = [SELECT Id FROM RecordType WHERE Name = 'Config' AND (SobjectType ='extRelListConfig__c' OR SobjectType ='XRL__extRelListConfig__c') limit 1];
+		if(isTemplate){
+			rt = [SELECT Id FROM RecordType WHERE Name = 'Template' AND (SobjectType ='extRelListConfig__c' OR SobjectType ='XRL__extRelListConfig__c') limit 1];
+		}
 
 		extRelListConfig__c listView = new extRelListConfig__c(
 			listViewName__c = listViewName,
@@ -197,10 +204,15 @@ global with sharing class infrastructure {
 			relFieldApiName__c = relField,
 			isAdminConfig__c = isAdminConf,
 			JSON__c = config,
-			uniqKey__c = sObjApiName + ':' + relField + ':' + isAdminConf + ':' + (string.isBlank(listViewName) ? '' : listViewName),
 			RecordTypeId = rt.Id
 		);
-		upsert listView uniqKey__c;
+		if(isTemplate){
+			listView.uniqKey__c = sObjApiName + ':' + relField + ':' + isAdminConf + ':' + (string.isBlank(listViewName) ? '' : listViewName + '1');
+			insert listView;
+		}else{
+			listView.uniqKey__c = sObjApiName + ':' + relField + ':' + isAdminConf + ':' + (string.isBlank(listViewName) ? '' : listViewName);
+			upsert listView uniqKey__c;
+		}
 		return data;
 	}
 

@@ -54,6 +54,9 @@
 				<span if:false={config.userInfo.isAdminAccess}>
 					<lightning-button if:false={config.dialog.saveAs} variant="brand" label={config._LABELS.lbl_saveAs} title={config._LABELS.title_saveSelectedFields} icon-name="utility:save" class="slds-m-left_x-small" data-id="dialog:saveAs" onclick={config.dialog.handleEvent}></lightning-button>
 				</span>
+				<span if:true={config.userInfo.isAdminAccess}>
+					<lightning-button if:false={config.dialog.saveAs} variant="brand" label="Save as Template" title={config._LABELS.title_saveSelectedFields} icon-name="utility:save" class="slds-m-left_x-small" data-id="dialog:saveAsTemplate" onclick={config.dialog.handleEvent}></lightning-button>
+				</span>
 				<lightning-button if:false={config.dialog.saveAs} variant="base" label={config._LABELS.lbl_cancel} title={config._LABELS.lbl_cancel} icon-name="utility:error" class="slds-m-left_x-small" data-id="dialog:close" onclick={config.dialog.handleEvent}></lightning-button>
 
 

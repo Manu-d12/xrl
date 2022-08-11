@@ -512,6 +512,13 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			libs.remoteAction(this, 'saveListView', { config: this.prepareConfigForSave(), listViewName: this.config.dialog.listViewName, listViewLabel: this.config.dialog.listViewLabel, sObjApiName: this.config.sObjApiName, relField: this.config.relField, addCondition: /*this.AddCondition*/this.config.dialog.listViewConfig.addCondition, listViewAdmin: this.config.dialog.listViewAdmin, callback: this.saveListView });
 
 		}
+		if(val === 'dialog:saveAsTemplate'){
+			if (this.config.dialog.listViewName) {
+				libs.remoteAction(this, 'saveListView', { config: this.prepareConfigForSave(), listViewName: this.config.dialog.listViewName, listViewLabel: this.config.dialog.listViewLabel, sObjApiName: this.config.sObjApiName, relField: this.config.relField, addCondition: /*this.AddCondition*/this.config.dialog.listViewConfig.addCondition, listViewAdmin: this.config.dialog.listViewAdmin,isTemplate:true, callback: this.saveListView });
+			} else {
+				this.config.dialog.saveAs = true;
+			}
+		}
 		if (val === 'dialog:save') {
 			console.log(JSON.parse(JSON.stringify(this.config.dialog)));
 			console.log(JSON.parse(JSON.stringify(this.config.dialog.selectedFields)), JSON.parse(JSON.stringify(this.config.dialog.listViewConfig)));
