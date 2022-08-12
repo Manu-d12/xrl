@@ -512,6 +512,20 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			libs.remoteAction(this, 'saveListView', { config: this.prepareConfigForSave(), listViewName: this.config.dialog.listViewName, listViewLabel: this.config.dialog.listViewLabel, sObjApiName: this.config.sObjApiName, relField: this.config.relField, addCondition: /*this.AddCondition*/this.config.dialog.listViewConfig.addCondition, listViewAdmin: this.config.dialog.listViewAdmin, callback: this.saveListView });
 
 		}
+		if (val === 'dialog:saveAsTemplateName') {
+			this.config.dialog.listViewLabel = event.target.value;
+			this.config.dialog.listViewName = event.target.value;
+		}
+		if(val === 'dialog:saveAsTemplate'){
+			this.config.dialog.saveAsTemplateDialog = true;
+		}
+		if(val === 'dialog:saveAsTemplateFinish'){
+			if (this.config.dialog.listViewName) {
+				libs.remoteAction(this, 'saveListView', { config: this.prepareConfigForSave(), listViewName: this.config.dialog.listViewName, listViewLabel: this.config.dialog.listViewLabel, sObjApiName: this.config.sObjApiName, relField: this.config.relField, addCondition: /*this.AddCondition*/this.config.dialog.listViewConfig.addCondition, listViewAdmin: this.config.dialog.listViewAdmin,isTemplate:true, callback: this.saveListView });
+			} else {
+				this.config.dialog.saveAsTemplateDialog = true;
+			}
+		}
 		if (val === 'dialog:save') {
 			console.log(JSON.parse(JSON.stringify(this.config.dialog)));
 			console.log(JSON.parse(JSON.stringify(this.config.dialog.selectedFields)), JSON.parse(JSON.stringify(this.config.dialog.listViewConfig)));

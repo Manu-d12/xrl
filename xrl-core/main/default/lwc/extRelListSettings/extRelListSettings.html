@@ -47,15 +47,25 @@
 					<lightning-input type="text" label={config._LABELS.lbl_enterListViewName} placeholder={config._LABELS.lbl_typeHere} required focus data-id="dialog:saveAsName" onchange={config.dialog.handleEvent}></lightning-input>
 					<lightning-input type="text" label={config._LABELS.lbl_enterListViewLabel} placeholder={config._LABELS.lbl_typeHere} required focus data-id="dialog:saveAsLabel" onchange={config.dialog.handleEvent}></lightning-input>
 				</div>
-				<lightning-button if:true={config.dialog.saveAs} variant="brand" label={config._LABELS.lbl_save} title={config._LABELS.lbl_save} icon-name="utility:save" class="slds-m-left_x-small" data-id="dialog:saveAsFinish" onclick={config.dialog.handleEvent}></lightning-button>
-				<lightning-button if:true={config.dialog.saveAs} variant="base" label={config._LABELS.lbl_cancel} title={config._LABELS.lbl_cancel} icon-name="utility:error" class="slds-m-left_x-small" data-id="dialog:saveAsCancel" onclick={config.dialog.handleEvent}></lightning-button>
+				<div if:true={config.dialog.saveAsTemplateDialog} class="slds-p-around_medium lgc-bg">
+					<lightning-input type="text" label="Enter Template name" placeholder={config._LABELS.lbl_typeHere} required focus data-id="dialog:saveAsTemplateName" onchange={config.dialog.handleEvent}></lightning-input>
+				</div>
+				<lightning-button if:true={config.dialog.saveAsTemplateDialog} variant="brand" label={config._LABELS.lbl_save} title={config._LABELS.lbl_save} icon-name="utility:save" class="slds-m-left_x-small" data-id="dialog:saveAsTemplateFinish" onclick={config.dialog.handleEvent}></lightning-button>
+				<lightning-button if:true={config.dialog.saveAsTemplateDialog} variant="base" label={config._LABELS.lbl_cancel} title={config._LABELS.lbl_cancel} icon-name="utility:error" class="slds-m-left_x-small" data-id="dialog:close" onclick={config.dialog.handleEvent}></lightning-button>
 
-				<lightning-button if:false={config.dialog.saveAs} variant="neutral" label={config._LABELS.lbl_save} title={config._LABELS.title_saveSelectedFields} icon-name="utility:save" class="slds-m-left_x-small" data-id="dialog:save" onclick={config.dialog.handleEvent}></lightning-button>
-				<span if:false={config.userInfo.isAdminAccess}>
-					<lightning-button if:false={config.dialog.saveAs} variant="brand" label={config._LABELS.lbl_saveAs} title={config._LABELS.title_saveSelectedFields} icon-name="utility:save" class="slds-m-left_x-small" data-id="dialog:saveAs" onclick={config.dialog.handleEvent}></lightning-button>
-				</span>
-				<lightning-button if:false={config.dialog.saveAs} variant="base" label={config._LABELS.lbl_cancel} title={config._LABELS.lbl_cancel} icon-name="utility:error" class="slds-m-left_x-small" data-id="dialog:close" onclick={config.dialog.handleEvent}></lightning-button>
+				<template if:false={config.dialog.saveAsTemplateDialog}>
+					<lightning-button if:true={config.dialog.saveAs} variant="brand" label={config._LABELS.lbl_save} title={config._LABELS.lbl_save} icon-name="utility:save" class="slds-m-left_x-small" data-id="dialog:saveAsFinish" onclick={config.dialog.handleEvent}></lightning-button>
+					<lightning-button if:true={config.dialog.saveAs} variant="base" label={config._LABELS.lbl_cancel} title={config._LABELS.lbl_cancel} icon-name="utility:error" class="slds-m-left_x-small" data-id="dialog:saveAsCancel" onclick={config.dialog.handleEvent}></lightning-button>
 
+					<lightning-button if:false={config.dialog.saveAs} variant="neutral" label={config._LABELS.lbl_save} title={config._LABELS.title_saveSelectedFields} icon-name="utility:save" class="slds-m-left_x-small" data-id="dialog:save" onclick={config.dialog.handleEvent}></lightning-button>
+					<span if:false={config.userInfo.isAdminAccess}>
+						<lightning-button if:false={config.dialog.saveAs} variant="brand" label={config._LABELS.lbl_saveAs} title={config._LABELS.title_saveSelectedFields} icon-name="utility:save" class="slds-m-left_x-small" data-id="dialog:saveAs" onclick={config.dialog.handleEvent}></lightning-button>
+					</span>
+					<lightning-button if:false={config.dialog.saveAs} variant="base" label={config._LABELS.lbl_cancel} title={config._LABELS.lbl_cancel} icon-name="utility:error" class="slds-m-left_x-small" data-id="dialog:close" onclick={config.dialog.handleEvent}></lightning-button>
+					<span if:true={config.userInfo.isAdminAccess}>
+						<lightning-button if:false={config.dialog.saveAsTemplateDialog} variant="brand" label="Save as Template" title={config._LABELS.title_saveSelectedFields} icon-name="utility:save" class="slds-m-left_x-small" data-id="dialog:saveAsTemplate" onclick={config.dialog.handleEvent}></lightning-button>
+					</span>
+				</template>
 
 				<template if:true={config.buttons} for:each={config.buttons} for:item="btn" for:index="index">
 					<lightning-button key={btn.label} variant={btn.variant} label={btn.label} data-id={btn.dataId} icon-name={btn.iconName} onclick={config.callback} class="slds-m-around_small"></lightning-button>
