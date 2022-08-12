@@ -192,9 +192,11 @@ global with sharing class infrastructure {
 			: listViewLabel;
 		boolean isAdminConf = listViewName == '_admin' ? isAdminAccess : listViewAdmin;
 
-		RecordType rt = [SELECT Id FROM RecordType WHERE Name = 'Config' AND (SobjectType ='extRelListConfig__c' OR SobjectType ='XRL__extRelListConfig__c') limit 1];
+		RecordType rt;
 		if(isTemplate){
 			rt = [SELECT Id FROM RecordType WHERE Name = 'Template' AND (SobjectType ='extRelListConfig__c' OR SobjectType ='XRL__extRelListConfig__c') limit 1];
+		}else{
+			rt = [SELECT Id FROM RecordType WHERE Name = 'Config' AND (SobjectType ='extRelListConfig__c' OR SobjectType ='XRL__extRelListConfig__c') limit 1];
 		}
 
 		extRelListConfig__c listView = new extRelListConfig__c(
@@ -207,11 +209,7 @@ global with sharing class infrastructure {
 			uniqKey__c = sObjApiName + ':' + relField + ':' + isAdminConf + ':' + (string.isBlank(listViewName) ? '' : listViewName),
 			RecordTypeId = rt.Id
 		);
-		// if(isTemplate){
-		// 	listView.uniqKey__c = sObjApiName + ':' + relField + ':' + isAdminConf + ':' + (string.isBlank(listViewName) ? '' : listViewName + '1');
-		// 	insert listView;
-		// }else{
-			
+
 		upsert listView uniqKey__c;
 		return data;
 	}
