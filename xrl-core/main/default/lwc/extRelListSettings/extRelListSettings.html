@@ -51,7 +51,7 @@
 					<lightning-input type="text" label="Enter Template name" placeholder={config._LABELS.lbl_typeHere} required focus data-id="dialog:saveAsTemplateName" onchange={config.dialog.handleEvent}></lightning-input>
 				</div>
 				<lightning-button if:true={config.dialog.saveAsTemplateDialog} variant="brand" label={config._LABELS.lbl_save} title={config._LABELS.lbl_save} icon-name="utility:save" class="slds-m-left_x-small" data-id="dialog:saveAsTemplateFinish" onclick={config.dialog.handleEvent}></lightning-button>
-				<lightning-button if:true={config.dialog.saveAsTemplateDialog} variant="base" label={config._LABELS.lbl_cancel} title={config._LABELS.lbl_cancel} icon-name="utility:error" class="slds-m-left_x-small" data-id="dialog:saveAsCancel" onclick={config.dialog.handleEvent}></lightning-button>
+				<lightning-button if:true={config.dialog.saveAsTemplateDialog} variant="base" label={config._LABELS.lbl_cancel} title={config._LABELS.lbl_cancel} icon-name="utility:error" class="slds-m-left_x-small" data-id="dialog:close" onclick={config.dialog.handleEvent}></lightning-button>
 
 				<template if:false={config.dialog.saveAsTemplateDialog}>
 					<lightning-button if:true={config.dialog.saveAs} variant="brand" label={config._LABELS.lbl_save} title={config._LABELS.lbl_save} icon-name="utility:save" class="slds-m-left_x-small" data-id="dialog:saveAsFinish" onclick={config.dialog.handleEvent}></lightning-button>
