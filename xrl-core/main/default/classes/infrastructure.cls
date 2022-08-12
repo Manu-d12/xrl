@@ -204,15 +204,15 @@ global with sharing class infrastructure {
 			relFieldApiName__c = relField,
 			isAdminConfig__c = isAdminConf,
 			JSON__c = config,
+			uniqKey__c = sObjApiName + ':' + relField + ':' + isAdminConf + ':' + (string.isBlank(listViewName) ? '' : listViewName),
 			RecordTypeId = rt.Id
 		);
-		if(isTemplate){
-			listView.uniqKey__c = sObjApiName + ':' + relField + ':' + isAdminConf + ':' + (string.isBlank(listViewName) ? '' : listViewName + '1');
-			insert listView;
-		}else{
-			listView.uniqKey__c = sObjApiName + ':' + relField + ':' + isAdminConf + ':' + (string.isBlank(listViewName) ? '' : listViewName);
-			upsert listView uniqKey__c;
-		}
+		// if(isTemplate){
+		// 	listView.uniqKey__c = sObjApiName + ':' + relField + ':' + isAdminConf + ':' + (string.isBlank(listViewName) ? '' : listViewName + '1');
+		// 	insert listView;
+		// }else{
+			
+		upsert listView uniqKey__c;
 		return data;
 	}
 
