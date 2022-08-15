@@ -508,7 +508,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		}
 	}
 
-		console.log('dbl click', event, colName, rowInd);
+		//console.log('dbl click', event, colName, rowInd);
 	}
 
 	handleDropDownEvents(event) {
