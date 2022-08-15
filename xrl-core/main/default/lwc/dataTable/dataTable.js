@@ -436,7 +436,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 								
 							});
 
-							console.log('cItem', col.options, libs.getGlobalVar(this.cfg));
+							//console.log('cItem', col.options, libs.getGlobalVar(this.cfg));
 						})
 					});
 				}
