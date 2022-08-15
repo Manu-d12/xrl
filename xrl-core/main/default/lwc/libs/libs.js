@@ -224,6 +224,13 @@ export let libs = {
 				"tooltip": "Number of records in chunk",
 				"cmd" : "dialog:setTableParam",
 			},
+			"displayOptionListSize" : {
+				"defValue": 20,
+				"type": "string",
+				"label": "What is the list size to display options?",
+				"tooltip": "Number of options to be displayed in dropdown",
+				"cmd" : "dialog:setTableParam",
+			},
 			"rowCss": {
 				"type": "function",
 				"label": "rowCss",

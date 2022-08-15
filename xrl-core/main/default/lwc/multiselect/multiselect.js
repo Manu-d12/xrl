@@ -1,4 +1,5 @@
-import { LightningElement, api } from 'lwc';
+import { LightningElement, api,track } from 'lwc';
+import { libs } from 'c/libs';
 
 export default class Multiselect extends LightningElement {
 
@@ -12,6 +13,18 @@ export default class Multiselect extends LightningElement {
     }
     @api options;
     @api placeholder;
+    @api issearchable;
+    @api cfg;
+
+    @track allOptions;
+    @track optionsCount;
+    @track configOptionsSize;
+    connectedCallback(){
+        this.allOptions = this.options;
+        this.configOptionsSize = libs.getGlobalVar(this.cfg).listViewConfig.displayOptionListSize;
+        this.options = this.allOptions.length > this.configOptionsSize ? this.options.slice(0, this.configOptionsSize) : this.options;
+        this.optionsCount = 'Showing '+ (this.allOptions.length > this.configOptionsSize ? this.configOptionsSize : this.allOptions.length) + ' of ' + this.allOptions.length + ' options';
+    }
 
     _value = [];
 
@@ -46,5 +59,16 @@ export default class Multiselect extends LightningElement {
         this.dispatchEvent(new CustomEvent("change", {
             detail: this._value
         }));
+    }
+    handleKeyUpSearch(event){
+        this.options = [];
+        let searchTerm = event.target.value.toString().toLowerCase();
+        this.allOptions.forEach((el) =>{
+            if(el["value"] && el["value"].toString().toLowerCase().indexOf(searchTerm) != -1) {
+                this.options.push(el);
+            }
+        });
+        this.optionsCount = 'Showing '+ ((this.options.length > this.configOptionsSize) ? this.configOptionsSize : this.options.length) + ' of ' + this.options.length + ' options';
+        this.options = this.options.length > this.configOptionsSize ? this.options.slice(0, this.configOptionsSize) : this.options;
     }
 }
