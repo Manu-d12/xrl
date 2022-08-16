@@ -562,11 +562,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				let searchTerm = this.config.queryTerm.toLowerCase();
 				const searchResults = new Set();
 				searchableRecords.forEach((el) => {
-					for(let key in el) {
-						if(el[key] && el[key].toString().toLowerCase().indexOf(searchTerm)!=-1) {
+						if(this.searchOnObjectValues(el,searchTerm)){
 							searchResults.add(el);
 						}
-					}
 				});
 				libs.getGlobalVar(this.name).records = [...searchResults];
 				this.config.records = libs.getGlobalVar(this.name).records;
@@ -575,6 +573,17 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			}
 			this.template.querySelector('c-Data-Table').updateView();
         }
+	}
+	searchOnObjectValues(obj,sTerm){
+		for(let key in obj){
+			if(obj[key] && typeof obj[key] === 'object'){
+				if(this.searchOnObjectValues(obj[key],sTerm)) return true;
+			}
+			else if(obj[key] && obj[key].toString().toLowerCase().indexOf(sTerm)!=-1) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	handleGlobalSearchClear(event) {
