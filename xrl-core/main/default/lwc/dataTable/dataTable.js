@@ -11,6 +11,31 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 	@api cfg;
 
+	@track showPopOver = false;
+	@track popStyle;
+	@api recordId;
+	@api objectApiName;
+	showPop(event){
+		this.showPopOver = true;
+		let hoverConstValues = {
+			5:810,
+			20:1250,
+			50:2100,
+			100:3510,
+			200:6360
+		};
+		this.popStyle = libs.formatStr("position:absolute;top:{0}px;left:{1}px", [((event.pageY - document.body.scrollTop) - hoverConstValues[this.config.pager.pageSize]), (event.clientX - 52)]);
+		this.objectApiName = event.target.getAttribute('data-colname').slice(0,-2);
+		let record = this.records.find((el) =>{
+			el.Id === event.target.getAttribute('data-recordind')
+		});
+		this.recordId = record[this.objectApiName].Id;
+		console.log(this.objectApiName);
+	}
+	hidePop(event){
+		this.showPopOver=false;
+	}
+
 	@api
 	getRecords() {
 		// this methood need to get data from paren component
@@ -214,6 +239,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			item.wrapClass = item.isWrapable
 								? 'slds-cell-wrap'
 								: 'slds-truncate';
+			item._isReference = (item.type === 'reference') ? true : false;
 		});
 		//this.config.colModel = JSON.parse(JSON.stringify(this.config.colModel));
 		this.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
