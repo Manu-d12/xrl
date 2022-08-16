@@ -239,7 +239,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			item.wrapClass = item.isWrapable
 								? 'slds-cell-wrap'
 								: 'slds-truncate';
-			item.isReference = (item.type === 'reference') ? true : false;
+			item._isReference = (item.type === 'reference') ? true : false;
 		});
 		//this.config.colModel = JSON.parse(JSON.stringify(this.config.colModel));
 		this.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
