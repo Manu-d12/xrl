@@ -16,6 +16,11 @@
                     </div>
                     <div class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid" id="5"
                         role="listbox">
+                        <div class="defaultClass" if:true={issearchable}>
+                            <input type="text" if:true={issearchable} class="slds-input slds-combobox__input slds-has-focus searchvalue" id="combobox-id-3"
+                                aria-activedescendant="option1" aria-autocomplete="list" list="listbox-id-3" aria-controls="listbox-id-3"
+                                autocomplete="off" role="textbox" placeholder="Search..." onkeyup={handleKeyUpSearch}/>
+                        </div>
                         <ul class="slds-listbox slds-listbox_vertical" role="presentation">
                             <template for:each={options} for:item="option">
                                 <li class="slds-listbox__item" data-selected="false" data-id={option.value}
@@ -36,6 +41,9 @@
                                 </li>
                             </template>
                         </ul>
+                        <div class="defaultClass">
+                            <p> {optionsCount}</p>
+                        </div>
                     </div>
                 </div>
             </div>
