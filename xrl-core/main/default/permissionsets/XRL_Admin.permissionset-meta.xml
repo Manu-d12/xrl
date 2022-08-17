@@ -44,6 +44,14 @@
         <object>extRelListConfig__c</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
+    <recordTypeVisibilities>
+        <recordType>extRelListConfig__c.Config</recordType>
+        <visible>true</visible>
+    </recordTypeVisibilities>
+    <recordTypeVisibilities>
+        <recordType>extRelListConfig__c.Template</recordType>
+        <visible>true</visible>
+    </recordTypeVisibilities>
     <tabSettings>
         <tab>extRelListConfig__c</tab>
         <visibility>Visible</visibility>
