@@ -17,9 +17,6 @@ global with sharing class infrastructure {
 				when 'getConfig' {
 					resultMethod = getConfig(data);
 				}
-				when 'getTemplate' {
-					resultMethod = getTemplate(data);
-				}
 				when 'query' {
 					resultMethod = getQuery(data);
 				}
@@ -179,10 +176,6 @@ global with sharing class infrastructure {
 		string sObjApiName = (string) data.get('sObjApiName');
 		string relField = (string) data.get('relField');
 		string config = (string) data.get('config');
-		Boolean isTemplate = false;
-		if(data.containsKey('isTemplate')){
-			isTemplate = (Boolean) data.get('isTemplate');
-		}
 
 		listViewName = string.isBlank(listViewName) 
 			? (isAdminAccess ? '_admin' : null)
@@ -192,12 +185,7 @@ global with sharing class infrastructure {
 			: listViewLabel;
 		boolean isAdminConf = listViewName == '_admin' ? isAdminAccess : listViewAdmin;
 
-		RecordType rt;
-		if(isTemplate){
-			rt = [SELECT Id FROM RecordType WHERE Name = 'Template' AND (SobjectType ='extRelListConfig__c' OR SobjectType ='XRL__extRelListConfig__c') limit 1];
-		}else{
-			rt = [SELECT Id FROM RecordType WHERE Name = 'Config' AND (SobjectType ='extRelListConfig__c' OR SobjectType ='XRL__extRelListConfig__c') limit 1];
-		}
+		RecordType rt = [SELECT Id FROM RecordType WHERE Name = 'Config' AND (SobjectType ='extRelListConfig__c' OR SobjectType ='XRL__extRelListConfig__c') limit 1];
 
 		extRelListConfig__c listView = new extRelListConfig__c(
 			listViewName__c = listViewName,
@@ -330,19 +318,6 @@ global with sharing class infrastructure {
 			'srcLbl_available' => label.srcLbl_available,
 			'srcLbl_optional' => label.srcLbl_optional
 		};
-	}
-
-	private static map<string, object> getTemplate(map < string, object > data) {
-
-		String templateId = (string) data.get('templateId');
-		map<string, object> result = new map<string, object>{};
-
-		extRelListConfig__c config = [SELECT Id, JSON__c FROM extRelListConfig__c WHERE Id = :templateId limit 1];
-
-		result.put('baseConfig', config.JSON__c);
-
-		System.debug('result ' + result);
-		return result;
 	}
 
 	public static Group[] getGroupsForUser(Id userId){
