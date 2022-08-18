@@ -28,7 +28,6 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 	constructor() {
 		super();
-		libs.remoteAction(this, 'getCustomLabels', {callback: this.setCustomLabels.bind(this) });
 		Promise.all([
 			loadStyle(this, resource + '/css/extRelList.css'),
 			loadScript(this, resource + '/js/xlsx.full.min.js'),
@@ -56,6 +55,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	loadCfg(isInit) {
+		libs.remoteAction(this, 'getCustomLabels', {callback: this.setCustomLabels.bind(this) });
 		let apiNames = this.apiName.split(':');
 		console.log(apiNames);
 		this.localConfig = {};
@@ -134,6 +134,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 		this.config.listViewConfig = mergedConfig;
 		this.config.listView = data[cmd].listViews.find(v => { return v.isUserConfig;});
+		console.log(JSON.stringify(this.config.listView));
 		this.config.currency =  data[cmd].currency;
 		//if (this.config.userInfo.isAdminAccess === true) delete this.localConfig.listViewName;
 		this.config.describe = data[cmd].describe ? JSON.parse(data[cmd].describe) : {};
