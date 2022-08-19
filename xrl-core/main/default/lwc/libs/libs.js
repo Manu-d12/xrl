@@ -98,58 +98,59 @@ export let libs = {
 			}).replace(/{\d+}/g, '');
 	},
 	colModelItem: function(colModelItem) {
+		let _labels = globalVars[Object.keys(globalVars)[0]].listViewConfig._LABELS;
 		let defParams = {
 			"fieldName": {
 				"type": "text",
-				"label": "Field Api Name",
-				"tooltip": "You can use different constructions like a 'Account.Name' or '(SELECT Id FROM Accounts WHERE CreatedDate=TODAY)' "
+				"label": _labels.lbl_fieldApiName,
+				"tooltip": _labels.tooltip_fieldApiName
 			},
 			"label": {
 				"type": "text",
-				"label": "Field Label",
-				"tooltip": "If You want to use label from describe, please leave this field empty. In this case label will be displayed in user language"
+				"label": _labels.lbl_fieldLabel,
+				"tooltip": _labels.tooltip_fieldLabel
 			},
 			"formatter": {
 				"type": "function",
 				"params": "(row, col, val)",
-				"label": "Custom function for formatting",
-				"placeHolder" : "example : \n\nfunction(row, col, val) { \n\treturn val;\n }"
+				"label": _labels.lbl_customFunctionForFormatting,
+				"placeHolder" : _labels.lbl_customFunctionExample
 			},
 			"uStyle": {
 				"type": "function",
 				"params": "(row, col, val)",
-				"label": "Custom function for style",
-				"placeHolder" : "example : \n\nfunction(row, col, val) { \n\treturn \"background-color:#FF0000\";\n }"
+				"label": _labels.lbl_customFunctionForStyle,
+				"placeHolder" : _labels.lbl_customFunctionStyleExample
 			},
 			"isHidden": {
 				"defValue": false,
 				"type": "checkbox",
-				"label": "Is column Hidden?"
+				"label": _labels.lbl_isColumnHidden
 			},
 			"isFilterable": {
 				"defValue": true,
 				"type": "checkbox",
-				"label": "Is column Filterable?"
+				"label": _labels.lbl_isColumnFilterable
 			},
 			"isSortable": {
 				"defValue": true,
 				"type": "checkbox",
-				"label": "Is column Sortable?"
+				"label": _labels.lbl_isColumnSortable
 			},
 			"isEditable": {
 				"defValue": false,
 				"type": "checkbox",
-				"label": "Is column Editable?"
+				"label": _labels.lbl_isColumnEditable
 			},
 			"isWrapable": {
 				"defValue": false,
 				"type": "checkbox",
-				"label": "Is need wrap column?"
+				"label": _labels.lbl_isColumnWrapable
 			},
 			"isClipable": {
 				"defValue": false,
 				"type": "checkbox",
-				"label": "Is need clip?"
+				"label": _labels.lbl_isColumnClipable
 			},
 			/*'isEditableMethod': {
 				"defValue": false,
@@ -160,8 +161,8 @@ export let libs = {
 			},*/
 			"width": {
 				"type": "string",
-				"label" : "Width",
-				"tooltip": "You can user % or px for definition. Ex: 20px or 5%"
+				"label" : _labels.lbl_width,
+				"tooltip": _labels.tooltip_widthExample
 			}
 		};
 		if (colModelItem !== undefined) {
@@ -174,67 +175,68 @@ export let libs = {
 		} else return defParams;
 	},
 	tableItem: function() {
+		let _labels = globalVars[Object.keys(globalVars)[0]].listViewConfig._LABELS;
 		let defParams = {
 			"isShowNumeration" : {
 				"defValue": true,
 				"type": "checkbox",
-				"label": "Is need show numeration?",
-				"tooltip": "Add Numeration column to table",
+				"label": _labels.lbl_showNumeration,
+				"tooltip": _labels.tooltip_addNumerationColumnToTable,
 				"cmd" : "dialog:setTableParam"
 			},
 			"isShowCheckBoxes": {
 				"defValue": true,
 				"type": "checkbox",
-				"label": "Is need show checkboxes?",
-				"tooltip": "Add checkbox column to table",
+				"label": _labels.lbl_showCheckBoxes,
+				"tooltip": _labels.tooltip_addCheckBoxColumnToTable,
 				"cmd" : "dialog:setTableParam",
 			},
 			"isGlobalSearch": {
 				"defValue": true,
 				"type": "checkbox",
-				"label": "Is show global search for a table?",
-				"tooltip": "Show/Hide global table search",
+				"label": _labels.lbl_enableGlobalSearch,
+				"tooltip": _labels.tooltip_showGlobalTableSearch,
 				"cmd" : "dialog:setTableParam",
 			},
 			"pagerTop" : {
 				"defValue": true,
 				"type": "checkbox",
-				"label": "Is show pagination on the top?",
-				"tooltip": "Show/Hide top pager",
+				"label": _labels.lbl_enableTopPagination,
+				"tooltip": _labels.tooltip_showTopPagination,
 				"cmd" : "dialog:setPagerParam"
 			},
 			"pagerBottom" : {
 				"defValue": false,
 				"type": "checkbox",
-				"label": "Is show pagination on the bottom?",
-				"tooltip": "Show/Hide bottom pager",
+				"label": _labels.lbl_enableBottomPagination,
+				"tooltip": _labels.tooltip_showBottomPagination,
 				"cmd" : "dialog:setPagerParam",
 			},
 			"showStandardEdit" : {
 				"defValue": false,
 				"type": "checkbox",
-				"label": "Show standard edit(it will replace inline editing)?",
-				"tooltip": "Show/Hide bottom pager",
+				"label": _labels.lbl_showStandardEdit,
+				"tooltip": _labels.tooltip_replaceInlineEditWithStandardEdit,
 				"cmd" : "dialog:setTableParam",
 			},
 			"saveChunkSize" : {
 				"defValue": 200,
 				"type": "string",
-				"label": "What is the chunk size for save action?",
-				"tooltip": "Number of records in chunk",
+				"label": _labels.lbl_chunkSizeForSave,
+				"tooltip": _labels.tooltip_numbersOfRecordInChunk,
 				"cmd" : "dialog:setTableParam",
 			},
 			"displayOptionListSize" : {
 				"defValue": 20,
 				"type": "string",
-				"label": "What is the list size to display options?",
-				"tooltip": "Number of options to be displayed in dropdown",
+				"label": _labels.lbl_listSizeOptionsDropdown,
+				"tooltip": _labels.tooltip_numbersOfOptionsShown,
 				"cmd" : "dialog:setTableParam",
 			},
 			"rowCss": {
 				"type": "function",
-				"label": "rowCss",
-				"tooltip": "Change style by data",
+				"label": _labels.lbl_rowCss,
+				"tooltip": _labels.tooltip_changeRowStyleByFunction,
 				"cmd" : "dialog:setTableParam"
 			}
 			

@@ -262,15 +262,15 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 		if (val.startsWith(':request_open')) {
 			this.dialogCfg = {
-				title: 'Request a feature',
+				title: this.config._LABELS.title_reqAFeature,
 				contents: [
 					{
 						required: true,
 						isTextarea: true,
 						name: 'featureText',
 						variant: 'label-hidden',
-						placeholder: 'Please describe feature',
-						messageWhenValueMissing: 'An empty message cannot be sent'
+						placeholder: this.config._LABELS.lbl_pleaseDescribeFeature,
+						messageWhenValueMissing: this.config._LABELS.errMsg_anEmptyMsgCannotBeSent
 					}
 				],
 				buttons: [
@@ -298,7 +298,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 						if (result.requestFeatureResult.isSuccess) {
 							const toast = new ShowToastEvent({
 								title: 'Success',
-								message: 'Request was sent',
+								message: this.config._LABELS.msg_requestWasSent,
 								variant: 'success'
 							});
 							this.dispatchEvent(toast);
@@ -333,7 +333,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 		//this.config.listViewConfig.isShowCheckBoxes = true;
 		this.config.dialog = {
-			"title": this.config.userInfo.isAdminAccess === true ? 'List View Configuration' : 'Select Fields to Display',
+			"title": this.config.userInfo.isAdminAccess === true ? this.config._LABELS.title_listViewConfiguration : this.config._LABELS.title_selectFieldToDisplay,
 			"variant": variant,
 			"css": 'slds-modal__header slds-theme_{1} slds-theme_alert-texture'.replace('{1}', variant),
 			"options": libs.sortRecords(fields, 'label', true),
@@ -555,7 +555,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	saveListView(nodeName, data) {
 		const event = new ShowToastEvent({
 			title: 'success',
-			message: 'ListView was updated',
+			message: this.config._LABELS.msg_lisViewWasUpdated,
 			variant: 'success'
 		});
 		this.dispatchEvent(event);

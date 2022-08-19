@@ -6,7 +6,7 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_globalSearch</shortDescription>
-        <value>Global Search. Hit "Enter" for search</value>
+        <value>Global Search. Hit &quot;Enter&quot; for search</value>
     </labels>
     <labels>
         <fullName>altTxt_clearInput</fullName>
@@ -415,5 +415,332 @@
         <protected>false</protected>
         <shortDescription>title_youCanDefineAllParametersForFields</shortDescription>
         <value>You can define all parameters for fields</value>
+    </labels>
+    <labels>
+        <fullName>title_listViewConfiguration</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>title_listViewConfiguration</shortDescription>
+        <value>List View Configuration</value>
+    </labels>
+    <labels>
+        <fullName>title_selectFieldToDisplay</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>title_selectFieldToDisplay</shortDescription>
+        <value>Select Fields to Display</value>
+    </labels>
+    <labels>
+        <fullName>msg_lisViewWasUpdated</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>msg_lisViewWasUpdated</shortDescription>
+        <value>ListView was updated</value>
+    </labels>
+    <labels>
+        <fullName>title_reqAFeature</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>title_reqAFeature</shortDescription>
+        <value>Request a feature</value>
+    </labels>
+    <labels>
+        <fullName>lbl_pleaseDescribeFeature</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_pleaseDescribeFeature</shortDescription>
+        <value>Please describe feature</value>
+    </labels>
+    <labels>
+        <fullName>errMsg_anEmptyMsgCannotBeSent</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>errMsg_anEmptyMsgCannotBeSent</shortDescription>
+        <value>An empty message cannot be sent</value>
+    </labels>
+    <labels>
+        <fullName>msg_requestWasSent</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>msg_requestWasSent</shortDescription>
+        <value>Request Was Sent</value>
+    </labels>
+    <labels>
+        <fullName>lbl_showNumeration</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_showNumeration</shortDescription>
+        <value>Enable numeration?</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_addNumerationColumnToTable</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_addNumerationColumnToTable</shortDescription>
+        <value>Add Numeration column to table</value>
+    </labels>
+    <labels>
+        <fullName>lbl_showCheckBoxes</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_showCheckBoxes</shortDescription>
+        <value>Enable checkboxes?</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_addCheckBoxColumnToTable</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_addCheckBoxColumnToTable</shortDescription>
+        <value>Add checkbox column to table</value>
+    </labels>
+    <labels>
+        <fullName>lbl_enableGlobalSearch</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_enableGlobalSearch</shortDescription>
+        <value>Enable Global Search?</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_showGlobalTableSearch</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_showGlobalTableSearch</shortDescription>
+        <value>Show/Hide global table search</value>
+    </labels>
+    <labels>
+        <fullName>lbl_enableTopPagination</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_enableTopPagination</shortDescription>
+        <value>Enable Top Pagination?</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_showTopPagination</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_showTopPagination</shortDescription>
+        <value>Show/Hide top pagination</value>
+    </labels>
+    <labels>
+        <fullName>lbl_enableBottomPagination</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_enableBottomPagination</shortDescription>
+        <value>Enable Bottom Pagination?</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_showBottomPagination</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_showBottomPagination</shortDescription>
+        <value>Show/Hide Bottom pagination</value>
+    </labels>
+    <labels>
+        <fullName>lbl_showStandardEdit</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_showStandardEdit</shortDescription>
+        <value>Enable standard edit(it will replace inline editing)?</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_replaceInlineEditWithStandardEdit</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_replaceInlineEditWithStandardEdit</shortDescription>
+        <value>Replace inline edit with standard edit?</value>
+    </labels>
+    <labels>
+        <fullName>lbl_chunkSizeForSave</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_chunkSizeForSave</shortDescription>
+        <value>What is the chunk size for save action?</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_numbersOfRecordInChunk</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_numbersOfRecordInChunk</shortDescription>
+        <value>Number of records in chunk</value>
+    </labels>
+    <labels>
+        <fullName>lbl_listSizeOptionsDropdown</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_listSizeOptionsDropdown</shortDescription>
+        <value>What is the list size to display options?</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_numbersOfOptionsShown</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_numbersOfOptionsShown</shortDescription>
+        <value>Number of options to be displayed in dropdown</value>
+    </labels>
+    <labels>
+        <fullName>lbl_rowCss</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_rowCss</shortDescription>
+        <value>Row Css</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_changeRowStyleByFunction</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_changeRowStyleByFunction</shortDescription>
+        <value>Change Row Style by Function</value>
+    </labels>
+    <labels>
+        <fullName>lbl_fieldApiName</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_fieldApiName</shortDescription>
+        <value>Field Api Name</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_fieldApiName</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_fieldApiName</shortDescription>
+        <value>You can use different constructions like a 'Account.Name' or '(SELECT Id FROM Accounts WHERE CreatedDate=TODAY)' </value>
+    </labels>
+    <labels>
+        <fullName>lbl_fieldLabel</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_fieldLabel</shortDescription>
+        <value>Field Label</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_fieldLabel</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_fieldLabel</shortDescription>
+        <value>If You want to use label from describe, please leave this field empty. In this case label will be displayed in user language</value>
+    </labels>
+    <labels>
+        <fullName>lbl_customFunctionForFormatting</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_customFunctionForFormatting</shortDescription>
+        <value>Custom function for formatting</value>
+    </labels>
+    <labels>
+        <fullName>lbl_customFunctionExample</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_customFunctionExample</shortDescription>
+        <value>example : function(row, col, val) { return val; }</value>
+    </labels>
+    <labels>
+        <fullName>lbl_customFunctionForStyle</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_customFunctionForStyle</shortDescription>
+        <value>Custom function for style</value>
+    </labels>
+    <labels>
+        <fullName>lbl_customFunctionStyleExample</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_customFunctionStyleExample</shortDescription>
+        <value>example : function(row, col, val) { return \"background-color:#FF0000\"; }</value>
+    </labels>
+    <labels>
+        <fullName>lbl_isColumnHidden</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_isColumnHidden</shortDescription>
+        <value>Hide this column?</value>
+    </labels>
+    <labels>
+        <fullName>lbl_isColumnFilterable</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_isColumnFilterable</shortDescription>
+        <value>Is column Filterable?</value>
+    </labels>
+    <labels>
+        <fullName>lbl_isColumnSortable</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_isColumnSortable</shortDescription>
+        <value>Is column Sortable?</value>
+    </labels>
+    <labels>
+        <fullName>lbl_isColumnEditable</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_isColumnEditable</shortDescription>
+        <value>Is column Editable?</value>
+    </labels>
+    <labels>
+        <fullName>lbl_isColumnWrapable</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_isColumnWrapable</shortDescription>
+        <value>Is need wrap column?</value>
+    </labels>
+    <labels>
+        <fullName>lbl_isColumnClipable</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_isColumnClipable</shortDescription>
+        <value>Is need clip?</value>
+    </labels>
+    <labels>
+        <fullName>lbl_width</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_width</shortDescription>
+        <value>Width</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_widthExample</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_widthExample</shortDescription>
+        <value>You can user % or px for definition. Ex: 20px or 5%</value>
     </labels>
 </CustomLabels>
