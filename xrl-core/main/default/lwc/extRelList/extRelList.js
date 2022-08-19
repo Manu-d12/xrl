@@ -351,6 +351,15 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	handleEventDialog(event) {
 		let val = event.target.getAttribute('data-id');
 		if (val === 'dialog:close') this.config.dialog = undefined;
+		if(val === 'dialog:config_share'){
+			console.log(this.config.listView.id);
+			this[NavigationMixin.Navigate]({
+				type: 'standard__webPage',
+				attributes:{
+					"url": window.location.origin +"/lightning/r/extRelListConfig__c/"+ this.config.listView.id +"/recordShare"
+				},
+			});
+		}
 		if (val === 'dialog:setFields') {
 			this.config.dialog.selectedFields = event.detail.value;
 
