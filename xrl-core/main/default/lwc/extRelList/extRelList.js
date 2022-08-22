@@ -333,7 +333,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 		//this.config.listViewConfig.isShowCheckBoxes = true;
 		this.config.dialog = {
-			"title": this.config.userInfo.isAdminAccess === true ? this.config._LABELS.title_listViewConfiguration : this.config._LABELS.title_selectFieldToDisplay,
+			"title": this.config.userInfo.isAdminAccess === true ? this.config._LABELS.title_listViewConfiguration + ' ' +  this.config?.listView?.name: this.config._LABELS.title_selectFieldToDisplay + ' ' +  this.config?.listView?.name,
 			"variant": variant,
 			"css": 'slds-modal__header slds-theme_{1} slds-theme_alert-texture'.replace('{1}', variant),
 			"options": libs.sortRecords(fields, 'label', true),

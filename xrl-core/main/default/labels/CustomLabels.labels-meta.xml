@@ -422,14 +422,14 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>title_listViewConfiguration</shortDescription>
-        <value>List View Configuration</value>
+        <value>List View Configuration of</value>
     </labels>
     <labels>
         <fullName>title_selectFieldToDisplay</fullName>
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>title_selectFieldToDisplay</shortDescription>
-        <value>Select Fields to Display</value>
+        <value>Select Fields to Display of</value>
     </labels>
     <labels>
         <fullName>msg_lisViewWasUpdated</fullName>
