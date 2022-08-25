@@ -1,0 +1,36 @@
+<template>
+    <div class="slds-grid slds-grid_align-end slds-p-around_x-small">
+        <template if:true={sFilterfields} for:each={sFilterfields} for:item="field" for:index="index">
+            <div class="slds-m-left_xx-small" key={field.fieldName}>
+                <lightning-input if:true={field.inputTypeStr} type="text" label={field.label} id={field.fieldName} onfocusout={handleChange}></lightning-input>
+                <lightning-combobox if:true={field.inputTypeComboBox}
+                    name={field.fieldName}
+                    label={field.label}
+                    value={value}
+                    placeholder="Select"
+                    options={field.options}
+                    onchange={handleChange} 
+                    id={field.fieldName}>
+                </lightning-combobox>
+            </div>
+        </template>
+        <!-- <lightning-combobox
+                    name="More"
+                    label="More"
+                    value="More"
+                    placeholder="Select"
+                    options={allFields}
+                    onchange={handleFieldAddition}>
+                </lightning-combobox> -->
+        <div class="slds-form-element">
+            <label class="slds-form-element__label" for="select-01">Select Label</label>
+            <div class="slds-form-element__control">
+                <select class="slds-select" id="select-01" multiple="">
+                <option>Option One</option>
+                <option>Option Two</option>
+                <option>Option Three</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</template>
