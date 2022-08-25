@@ -154,8 +154,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		this.config.listViewConfig?.colModel?.forEach(e => {
 			let describe = this.config.describe[e.fieldName];
 			if (describe && describe.type === 'reference') {
-				this.config.fields.push(describe.relationshipName + '.Name');
-				if (e.locked) this.config.lockedFields.push(describe.relationshipName + '.Name');
+				this.config.fields.push(describe.relationshipName ? describe.relationshipName + '.Name' : e.fieldName);
+				if (e.locked) this.config.lockedFields.push(describe.relationshipName ? describe.relationshipName + '.Name' : e.fieldName);
 			}
 			this.config.fields.push(e.fieldName);
 			if (e.locked) this.config.lockedFields.push(e.fieldName);
@@ -327,9 +327,10 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let variant = this.config.userInfo.isAdminAccess === true ? 'error' : 'shade'; // shade, error, warning, info, confirm
 		let fields = [];
 		for (let key in this.config.describe) {
-			if (this.config.describe[key].type === 'reference') {
-				fields.push({ label: this.config.describe[key].relationshipName + ' > ', value: this.config.describe[key].relationshipName, refObj : this.config.describe[key].referenceTo[0] });	
-			}
+			//temporary commenting this, will implement it fully with EXREL-35
+			// if (this.config.describe[key].type === 'reference') {
+			// 	fields.push({ label: this.config.describe[key].relationshipName + ' > ', value: this.config.describe[key].relationshipName, refObj : this.config.describe[key].referenceTo[0] });	
+			// }
 			fields.push({ label: this.config.describe[key].label, value: this.config.describe[key].name });
 		}
 		let lockedOptions = [];
