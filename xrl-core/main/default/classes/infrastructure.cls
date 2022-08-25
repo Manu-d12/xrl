@@ -469,8 +469,9 @@ global with sharing class infrastructure {
 		List<String> objs = new List<String>();
 
 		for(Schema.SObjectType thisObj : gd.values()) {
-			System.debug(thisObj);
-			objs.add(String.valueOf(thisObj));
+			if(thisObj.getDescribe().isQueryable()){
+				objs.add(String.valueOf(thisObj));
+			}
 		}
 		return objs;
 	}

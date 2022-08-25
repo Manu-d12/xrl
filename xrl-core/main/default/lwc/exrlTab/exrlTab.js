@@ -14,7 +14,9 @@ export default class ExrlTab extends LightningElement {
     }
     handleSelectChange(event){   
         let selectedObj = event.target.value;
-        this.extApiName = selectedObj + ':' + selectedObj + ':';
-        this.template.querySelector('c-ext-rel-list').updateGridView(this.extApiName);
+        if(selectedObj !== ''){
+            this.extApiName = selectedObj + ':' + selectedObj + ':';
+            this.template.querySelector('c-ext-rel-list').updateGridView(this.extApiName);
+        }
     }
 }
