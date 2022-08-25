@@ -43,6 +43,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			}
 		});
 	}
+	@api 
+	updateGridView(newApiName){
+		this.apiName = newApiName;
+		this.loadCfg(true);
+	}
 
 	connectedCallback() {
 		console.log('RENDERED');
