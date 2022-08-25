@@ -8,13 +8,20 @@ export default class ServerFilter extends LightningElement {
     @api recordId;
     @track conditionMap={};
     @track allFields = [];
+    @track selectedFields = [];
+    @track isModalOpen = false;
     connectedCallback(){
         this.config = libs.getGlobalVar(this.cfg);
         this.sFilterfields = this.config.listViewConfig.colModel;
         for (let key in this.config.describe) {
 			this.allFields.push({ label: this.config.describe[key].label, value: this.config.describe[key].name });
 		}
-        console.log(JSON.parse(JSON.stringify(libs.sortRecords(this.allFields, 'label', true))));
+        for(let key in this.sFilterfields){
+            this.selectedFields.push(this.sFilterfields[key].fieldName);
+        }
+        // console.log(JSON.parse(JSON.stringify(libs.sortRecords(this.allFields, 'label', true))));
+        console.log(JSON.parse(JSON.stringify(this.allFields)));
+        console.log(JSON.parse(JSON.stringify(this.selectedFields)));
         this.setFieldTypes();
     }
     getColItem(colName) {
@@ -74,5 +81,21 @@ export default class ServerFilter extends LightningElement {
         this.sFilterfields.push(this.config.describe[event.target.value]);
         console.log(JSON.stringify(this.config.describe[event.target.value]));
         this.setFieldTypes();
+    }
+    handleChange(event) {
+        // Get the list of the "value" attribute on all the selected options
+        const selectedOptionsList = event.detail.value;
+        this.sFilterfields = [];
+        selectedOptionsList.forEach((el)=>{
+            this.sFilterfields.push(this.config.describe[el]);
+        });
+        console.log(this.sFilterfields);
+        this.setFieldTypes();
+    }
+    handleClick(event){
+        this.isModalOpen = true;
+    }
+    handleClose(event){
+        this.isModalOpen = false;
     }
 }

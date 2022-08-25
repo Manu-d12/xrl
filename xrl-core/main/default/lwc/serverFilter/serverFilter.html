@@ -22,15 +22,36 @@
                     options={allFields}
                     onchange={handleFieldAddition}>
                 </lightning-combobox> -->
-        <div class="slds-form-element">
-            <label class="slds-form-element__label" for="select-01">Select Label</label>
-            <div class="slds-form-element__control">
-                <select class="slds-select" id="select-01" multiple="">
-                <option>Option One</option>
-                <option>Option Two</option>
-                <option>Option Three</option>
-                </select>
-            </div>
-        </div>
+        <lightning-button-icon icon-name="utility:new"  alternative-text="Refresh List View" title="New" data-id=":action_new" onclick={handleClick} class="slds-p-horizontal_xx-small"></lightning-button-icon>
+        <template if:true={isModalOpen}>
+            <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse">
+                <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close"></use>
+                </svg>
+                <span class="slds-assistive-text">Cancel and close</span>
+                </button>
+                <div class="slds-modal__header">
+                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Modal header</h1>
+                </div>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <lightning-dual-listbox name="languages"
+                            label="Select Languages"
+                            source-label="Available"
+                            selected-label="Selected"
+                            field-level-help="This is a dual listbox"
+                            options={allFields}
+                            value={selectedFields}
+                            onchange={handleChange}></lightning-dual-listbox>
+                </div>
+                <div class="slds-modal__footer">
+                <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick={handleClose}>Cancel</button>
+                <button class="slds-button slds-button_brand">Save</button>
+                </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+        </template>
     </div>
 </template>
