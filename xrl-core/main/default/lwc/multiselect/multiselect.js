@@ -14,16 +14,15 @@ export default class Multiselect extends LightningElement {
     @api options;
     @api placeholder;
     @api issearchable;
-    @api cfg;
+    @api issingleselect;
+    @api configoptionssize;
 
     @track allOptions;
     @track optionsCount;
-    @track configOptionsSize;
     connectedCallback(){
         this.allOptions = this.options;
-        this.configOptionsSize = libs.getGlobalVar(this.cfg).listViewConfig.displayOptionListSize;
-        this.options = this.allOptions.length > this.configOptionsSize ? this.options.slice(0, this.configOptionsSize) : this.options;
-        this.optionsCount = 'Showing '+ (this.allOptions.length > this.configOptionsSize ? this.configOptionsSize : this.allOptions.length) + ' of ' + this.allOptions.length + ' options';
+        this.options = this.allOptions.length > this.configoptionssize ? this.options.slice(0, this.configoptionssize) : this.options;
+        this.optionsCount = 'Showing '+ (this.allOptions.length > this.configoptionssize ? this.configoptionssize : this.allOptions.length) + ' of ' + this.allOptions.length + ' options';
     }
 
     _value = [];
@@ -48,9 +47,19 @@ export default class Multiselect extends LightningElement {
 
     handleSelection(event) {
         let value = event.currentTarget.dataset.value;
-        if (this._value.includes(value)) {
+        if (this._value.includes(value) && !this.issingleselect) {
             this._value.splice(this._value.indexOf(value), 1);
-        } else {
+        } else if(this.issingleselect){
+            if(this._value.includes(value)){
+                this._value = [];
+            }else{
+                this._value = [];
+                this._value.push(value);
+            }
+            let sldsCombobox = this.template.querySelector(".slds-combobox");
+            sldsCombobox.classList.toggle("slds-is-open");
+        }
+        else {
             this._value.push(value);
         }
         event.currentTarget.firstChild.classList.toggle("slds-is-selected");
@@ -68,7 +77,7 @@ export default class Multiselect extends LightningElement {
                 this.options.push(el);
             }
         });
-        this.optionsCount = 'Showing '+ ((this.options.length > this.configOptionsSize) ? this.configOptionsSize : this.options.length) + ' of ' + this.options.length + ' options';
-        this.options = this.options.length > this.configOptionsSize ? this.options.slice(0, this.configOptionsSize) : this.options;
+        this.optionsCount = 'Showing '+ ((this.options.length > this.configoptionssize) ? this.configoptionssize : this.options.length) + ' of ' + this.options.length + ' options';
+        this.options = this.options.length > this.configoptionssize ? this.options.slice(0, this.configoptionssize) : this.options;
     }
 }

@@ -134,7 +134,7 @@
 				<!--lightning-combobox if:false={config._isFilterOptions.isShowStr} placeholder="Choose operation" onchange={searchOnChange} 
 					value={config._isFilterOptions.filterStr} data-id="filterStr" options={config._isFilterOptions.cItem.options} class="slds-p-horizontal_xx-small">
 				</lightning-combobox-->
-				<c-multiselect if:false={config._isFilterOptions.isShowStr} placeholder={config._LABELS.lbl_chooseOperation} onchange={searchOnChange} value={config._isFilterOptions.filterStr} data-id="filterStr" options={config._isFilterOptions.cItem.options} issearchable='true' cfg={cfg} class="slds-p-horizontal_xx-small"></c-multiselect>
+				<c-multiselect if:false={config._isFilterOptions.isShowStr} placeholder={config._LABELS.lbl_chooseOperation} onchange={searchOnChange} value={config._isFilterOptions.filterStr} data-id="filterStr" options={config._isFilterOptions.cItem.options} issearchable='true' configoptionssize={config.displayOptionListSize} class="slds-p-horizontal_xx-small"></c-multiselect>
 				<lightning-input if:true={config._isFilterOptions.isShowToStr} type={config._isFilterOptions.type} onchange={searchOnChange} value={config._isFilterOptions.filterStrTo}  data-id="filterStrTo" class="slds-p-horizontal_xx-small"></lightning-input>
 				
 				<lightning-button-icon icon-name="utility:save" class="slds-m-left_xx-small" alternative-text={config._LABELS.altTxt_saveFilter} title={config._LABELS.title_saveFilter} data-id="saveFilter" onclick={searchOnChange}></lightning-button-icon>
