@@ -3,7 +3,7 @@ import { libs } from 'c/libs';
 
 export default class ServerFilter extends LightningElement {
     @track config;
-    @track sFilterfields;
+    @track sFilterfields = [];
     @api cfg;
     @api recordId;
     @track conditionMap={};
@@ -12,20 +12,19 @@ export default class ServerFilter extends LightningElement {
     @track isModalOpen = false;
     connectedCallback(){
         this.config = libs.getGlobalVar(this.cfg);
-        this.sFilterfields = this.config.listViewConfig.colModel;
+        console.log(JSON.stringify(this.config.listViewConfig.serverFilters));
+        this.sFilterfields = this.config.listViewConfig.serverFilters ? this.config.listViewConfig.serverFilters : this.config.listViewConfig.colModel;
         for (let key in this.config.describe) {
 			this.allFields.push({ label: this.config.describe[key].label, value: this.config.describe[key].name });
 		}
         for(let key in this.sFilterfields){
             this.selectedFields.push(this.sFilterfields[key].fieldName);
         }
-        // console.log(JSON.parse(JSON.stringify(libs.sortRecords(this.allFields, 'label', true))));
-        console.log(JSON.parse(JSON.stringify(this.allFields)));
-        console.log(JSON.parse(JSON.stringify(this.selectedFields)));
+        libs.sortRecords(this.allFields, 'label', true);
         this.setFieldTypes();
     }
     getColItem(colName) {
-		return this.config.listViewConfig.colModel.find(e => {
+		return this.sFilterfields.find(e => {
 			return e.fieldName === colName
 		});
 	}
@@ -34,7 +33,14 @@ export default class ServerFilter extends LightningElement {
             if(element.type == 'picklist'){
                 element.inputTypeComboBox = true;
                 element.options.splice(0,0,{label:"All",value:"All"});
-            }else{
+            }else if(element.type == 'boolean'){
+                element.inputTypeComboBox = true;
+                element.options = [];
+                element.options.push({label:"All",value:"All"});
+                element.options.push({label:"True",value:"true"});
+                element.options.push({label:"False",value:"false"});
+            }
+            else{
                 element.inputTypeStr = true;
             } 
         });
@@ -67,29 +73,43 @@ export default class ServerFilter extends LightningElement {
     generateCondition(){
         let condition = '';
         for(let key in this.conditionMap){
-            if(this.getColItem(key).type === 'currency'){
+            if(this.getColItem(key).type === 'currency' || this.getColItem(key).type === 'boolean'){
                 condition += 'AND ' + key + "="+this.conditionMap[key]+" ";
-            }else{
+            }else if(this.getColItem(key).type === 'datetime'){
+                condition += 'AND ' + key + ">="+this.conditionMap[key]+"T00:01:01z AND "+ key + "<="+this.conditionMap[key]+"T23:59:59z ";
+            }
+            else{
                 condition += 'AND ' + key + "='"+this.conditionMap[key]+"' ";
             }
         }
         console.log(condition);
         return condition;
     }
-    handleFieldAddition(event){
-        console.log(event.target.value);
-        this.sFilterfields.push(this.config.describe[event.target.value]);
-        console.log(JSON.stringify(this.config.describe[event.target.value]));
-        this.setFieldTypes();
-    }
-    handleChange(event) {
-        // Get the list of the "value" attribute on all the selected options
+    handleSelectFields(event) {
         const selectedOptionsList = event.detail.value;
         this.sFilterfields = [];
-        selectedOptionsList.forEach((el)=>{
-            this.sFilterfields.push(this.config.describe[el]);
-        });
-        console.log(this.sFilterfields);
+        this.selectedFields = [];
+        selectedOptionsList.forEach(e => {
+            this.selectedFields.push(e);
+            let col = {'fieldName':e};
+			let describe = this.config.describe[e];
+            console.log(describe);
+			if (col.label === undefined) col.label = describe.label;
+			if (col.type === undefined) col.type = describe.type;
+			col.updateable = describe.updateable;
+			col.isNameField = describe && describe.nameField === true;
+			if (col.type === 'picklist') {
+				col.options = [];
+				describe.picklistValues.forEach(field => {
+					col.options.push(
+						{ label: field.label, value: field.value }
+					)
+				});
+			}
+            this.sFilterfields.push(col);
+		});
+        libs.getGlobalVar(this.cfg).listViewConfig.serverFilters = this.sFilterfields;
+        console.log(JSON.stringify(libs.getGlobalVar(this.cfg).listViewConfig.serverFilters));
         this.setFieldTypes();
     }
     handleClick(event){

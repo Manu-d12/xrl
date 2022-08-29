@@ -1,7 +1,7 @@
 <template>
-    <div class="slds-grid slds-grid_align-end slds-p-around_x-small">
+    <div class="slds-grid slds-wrap" style="padding: 5px;">
         <template if:true={sFilterfields} for:each={sFilterfields} for:item="field" for:index="index">
-            <div class="slds-m-left_xx-small" key={field.fieldName}>
+            <div class="slds-col slds-size_2-of-12" key={field.fieldName} style="padding: 2px;">
                 <lightning-input if:true={field.inputTypeStr} type="text" label={field.label} id={field.fieldName} onfocusout={handleChange}></lightning-input>
                 <lightning-combobox if:true={field.inputTypeComboBox}
                     name={field.fieldName}
@@ -14,26 +14,21 @@
                 </lightning-combobox>
             </div>
         </template>
-        <!-- <lightning-combobox
-                    name="More"
-                    label="More"
-                    value="More"
-                    placeholder="Select"
-                    options={allFields}
-                    onchange={handleFieldAddition}>
-                </lightning-combobox> -->
-        <lightning-button-icon icon-name="utility:new"  alternative-text="Refresh List View" title="New" data-id=":action_new" onclick={handleClick} class="slds-p-horizontal_xx-small"></lightning-button-icon>
+        <div class="slds-col slds-size_2-of-12" style="padding-top:3px">
+            <p>&nbsp;</p>
+            <lightning-button variant="brand" label="More" title="More" icon-name="utility:new" icon-position="right" class="slds-m-left_x-small" onclick={handleClick}></lightning-button>
+        </div>
         <template if:true={isModalOpen}>
             <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
                 <div class="slds-modal__container">
                 <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse">
                 <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
-                <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close"></use>
+                <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#close"></use>
                 </svg>
                 <span class="slds-assistive-text">Cancel and close</span>
                 </button>
                 <div class="slds-modal__header">
-                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Modal header</h1>
+                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Select field for Server Filter</h1>
                 </div>
                 <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
                     <lightning-dual-listbox name="languages"
@@ -43,11 +38,10 @@
                             field-level-help="This is a dual listbox"
                             options={allFields}
                             value={selectedFields}
-                            onchange={handleChange}></lightning-dual-listbox>
+                            onchange={handleSelectFields}></lightning-dual-listbox>
                 </div>
                 <div class="slds-modal__footer">
-                <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick={handleClose}>Cancel</button>
-                <button class="slds-button slds-button_brand">Save</button>
+                <button class="slds-button slds-button_brand" onclick={handleClose}>Save</button>
                 </div>
                 </div>
             </section>
