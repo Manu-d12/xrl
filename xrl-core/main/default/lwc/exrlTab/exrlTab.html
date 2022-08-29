@@ -2,34 +2,15 @@
     <lightning-card class="slds-card_boundary" style="padding:5px; display:block">
         <div class="slds-grid slds-gutters" style="padding:5px; display:block">
             <div class="slds-col slds-size_1-of-3">
-                <!-- <div class="slds-form-element">
-                    <label class="slds-form-element__label" for="select-01">Select an Object</label>
-                    <div class="slds-form-element__control">
-                      <div class="slds-select_container">
-                        <select class="slds-select" id="select-01" onchange={handleSelectChange}>
-                            <option value="">Select...</option>
-                            <template for:each = {objList} for:item="optionItem">
-                                <option key={optionItem} value={optionItem}>{optionItem}</option>
-                             </template>
-                        </select>
-                      </div>
-                    </div>
-                </div> -->
-                <div class="slds-grid">
-                    <div class="slds-col slds-size_11-of-12">
-                        <c-multiselect placeholder="Select an Object" onchange={selectObject} value="" data-id="filterStr" options={objList} 
-                        issearchable='true' issingleselect='true' configoptionssize="20" class="slds-p-horizontal_xx-small"></c-multiselect>
-                    </div>
-                    <div class="slds-col slds-size_1-of-12">
-                        <br>
-                        <lightning-button-icon icon-name="utility:search"  alternative-text="search" title="Search" data-id=":refresh" 
-                        onclick={handleOpenGrid} class="slds-p-horizontal_xx-small"></lightning-button-icon>
-                    </div>
-                </div>
+                <c-customselect if:false={config.isSpinner} listsize=20 onsearchclicked={handleOpenGrid} onselect={handleSelect} options={objList} selectedvalue="Account" label="Select an Object"></c-customselect>
             </div>
         </div>
+        <!-- <c-customselect onselect={handleSelect} multiselect="true" options={cOptions} selectedvalues={sOptions} label="Multi Select Combobox"></c-customselect> -->
         <template if:true={extApiName}>
             <c-ext-rel-list api-name={extApiName} name=""></c-ext-rel-list>
         </template>
+        <div if:true={config.isSpinner} class="spinner">
+            <lightning-spinner size="medium" variant="brand" alternative-text="loading"></lightning-spinner>
+        </div>
     </lightning-card>
 </template>
