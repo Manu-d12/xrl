@@ -213,6 +213,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				e.isEditable = false;
 			}
 		});
+		this.config.isServerFilter = true;
 	}
 
 	get changedRecords() {
