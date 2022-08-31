@@ -1,5 +1,6 @@
 import { LightningElement,api, track } from 'lwc';
 import { libs } from 'c/libs';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 export default class ServerFilter extends LightningElement {
     @track config;
@@ -73,13 +74,15 @@ export default class ServerFilter extends LightningElement {
     generateCondition(){
         let condition = '';
         for(let key in this.conditionMap){
-            if(this.getColItem(key).type === 'currency' || this.getColItem(key).type === 'boolean'){
+            if(this.getColItem(key).type === 'currency' || this.getColItem(key).type === 'boolean' || this.getColItem(key).type === 'double'){
                 condition += 'AND ' + key + "="+this.conditionMap[key]+" ";
             }else if(this.getColItem(key).type === 'datetime'){
                 condition += 'AND ' + key + ">="+this.conditionMap[key]+"T00:01:01z AND "+ key + "<="+this.conditionMap[key]+"T23:59:59z ";
+            }else if(this.getColItem(key).type === 'reference'){
+                condition += 'AND ' + key.slice(0,-2) + '.Name ' + " LIKE '"+this.conditionMap[key]+"' ";
             }
             else{
-                condition += 'AND ' + key + "='"+this.conditionMap[key]+"' ";
+                condition += 'AND ' + key + " LIKE '"+this.conditionMap[key]+"' ";
             }
         }
         console.log(condition);
@@ -108,14 +111,35 @@ export default class ServerFilter extends LightningElement {
 			}
             this.sFilterfields.push(col);
 		});
-        libs.getGlobalVar(this.cfg).listViewConfig.serverFilters = this.sFilterfields;
-        console.log(JSON.stringify(libs.getGlobalVar(this.cfg).listViewConfig.serverFilters));
+        this.config.listViewConfig.serverFilters = this.sFilterfields;
         this.setFieldTypes();
     }
     handleClick(event){
         this.isModalOpen = true;
     }
-    handleClose(event){
+    handleSave(event){
+        libs.remoteAction(this, 'saveListView', { config: this.prepareConfigForSave(), 
+            listViewName: this.config?.listView?.name, 
+            listViewLabel: this.config?.listView?.label, 
+            sObjApiName: this.config.sObjApiName, 
+            relField: this.config.relField, 
+            addCondition: this.config.listViewConfig.addCondition, 
+            listViewAdmin: this.config?.listView?.isAdminConfig ?? false, 
+            callback: function(){
+                const event = new ShowToastEvent({
+                    title: 'success',
+                    message: this.config._LABELS.msg_lisViewWasUpdated,
+                    variant: 'success'
+                });
+                this.dispatchEvent(event);
+            } });
         this.isModalOpen = false;
     }
+    prepareConfigForSave() {
+		let tmp = JSON.parse(JSON.stringify(this.config.listViewConfig));
+		for (let key in tmp) {
+			if (key.startsWith('_')) delete tmp[key];
+		}
+		return JSON.stringify(tmp, null, '\t')
+	}
 }
