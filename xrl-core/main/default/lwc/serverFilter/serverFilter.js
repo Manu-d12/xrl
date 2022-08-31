@@ -1,5 +1,6 @@
 import { LightningElement,api, track } from 'lwc';
 import { libs } from 'c/libs';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 export default class ServerFilter extends LightningElement {
     @track config;
@@ -13,7 +14,7 @@ export default class ServerFilter extends LightningElement {
     connectedCallback(){
         this.config = libs.getGlobalVar(this.cfg);
         console.log(JSON.stringify(this.config.listViewConfig.serverFilters));
-        this.sFilterfields = this.config.listViewConfig.colModel;
+        this.sFilterfields = this.config.listViewConfig.serverFilters ? this.config.listViewConfig.serverFilters : this.config.listViewConfig.colModel;
         for (let key in this.config.describe) {
 			this.allFields.push({ label: this.config.describe[key].label, value: this.config.describe[key].name });
 		}
@@ -110,12 +111,35 @@ export default class ServerFilter extends LightningElement {
 			}
             this.sFilterfields.push(col);
 		});
+        this.config.listViewConfig.serverFilters = this.sFilterfields;
         this.setFieldTypes();
     }
     handleClick(event){
         this.isModalOpen = true;
     }
-    handleClose(event){
+    handleSave(event){
+        libs.remoteAction(this, 'saveListView', { config: this.prepareConfigForSave(), 
+            listViewName: this.config?.listView?.name, 
+            listViewLabel: this.config?.listView?.label, 
+            sObjApiName: this.config.sObjApiName, 
+            relField: this.config.relField, 
+            addCondition: this.config.listViewConfig.addCondition, 
+            listViewAdmin: this.config?.listView?.isAdminConfig ?? false, 
+            callback: function(){
+                const event = new ShowToastEvent({
+                    title: 'success',
+                    message: this.config._LABELS.msg_lisViewWasUpdated,
+                    variant: 'success'
+                });
+                this.dispatchEvent(event);
+            } });
         this.isModalOpen = false;
     }
+    prepareConfigForSave() {
+		let tmp = JSON.parse(JSON.stringify(this.config.listViewConfig));
+		for (let key in tmp) {
+			if (key.startsWith('_')) delete tmp[key];
+		}
+		return JSON.stringify(tmp, null, '\t')
+	}
 }
