@@ -13,7 +13,7 @@ export default class ServerFilter extends LightningElement {
     connectedCallback(){
         this.config = libs.getGlobalVar(this.cfg);
         console.log(JSON.stringify(this.config.listViewConfig.serverFilters));
-        this.sFilterfields = this.config.listViewConfig.serverFilters ? this.config.listViewConfig.serverFilters : this.config.listViewConfig.colModel;
+        this.sFilterfields = this.config.listViewConfig.colModel;
         for (let key in this.config.describe) {
 			this.allFields.push({ label: this.config.describe[key].label, value: this.config.describe[key].name });
 		}
@@ -73,13 +73,15 @@ export default class ServerFilter extends LightningElement {
     generateCondition(){
         let condition = '';
         for(let key in this.conditionMap){
-            if(this.getColItem(key).type === 'currency' || this.getColItem(key).type === 'boolean'){
+            if(this.getColItem(key).type === 'currency' || this.getColItem(key).type === 'boolean' || this.getColItem(key).type === 'double'){
                 condition += 'AND ' + key + "="+this.conditionMap[key]+" ";
             }else if(this.getColItem(key).type === 'datetime'){
                 condition += 'AND ' + key + ">="+this.conditionMap[key]+"T00:01:01z AND "+ key + "<="+this.conditionMap[key]+"T23:59:59z ";
+            }else if(this.getColItem(key).type === 'reference'){
+                condition += 'AND ' + key.slice(0,-2) + '.Name ' + " LIKE '"+this.conditionMap[key]+"' ";
             }
             else{
-                condition += 'AND ' + key + "='"+this.conditionMap[key]+"' ";
+                condition += 'AND ' + key + " LIKE '"+this.conditionMap[key]+"' ";
             }
         }
         console.log(condition);
@@ -108,8 +110,6 @@ export default class ServerFilter extends LightningElement {
 			}
             this.sFilterfields.push(col);
 		});
-        libs.getGlobalVar(this.cfg).listViewConfig.serverFilters = this.sFilterfields;
-        console.log(JSON.stringify(libs.getGlobalVar(this.cfg).listViewConfig.serverFilters));
         this.setFieldTypes();
     }
     handleClick(event){
