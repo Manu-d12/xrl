@@ -2,26 +2,29 @@
     <div class="slds-grid slds-wrap" style="padding: 5px;">
         <template if:true={sFilterfields} for:each={sFilterfields} for:item="field" for:index="index">
             <div class="slds-col slds-size_2-of-12" key={field.fieldName} style="padding: 2px;">
-                <lightning-input if:true={field.inputTypeStr} type="text" label={field.label} id={field.fieldName} onfocusout={handleChange}></lightning-input>
+                <lightning-input if:true={field.inputTypeStr} type="text" label={field.label} id={field.fieldName}></lightning-input>
                 <lightning-combobox if:true={field.inputTypeComboBox}
                     name={field.fieldName}
                     label={field.label}
                     value={value}
                     placeholder="Select"
                     options={field.options}
-                    onchange={handleChange} 
                     id={field.fieldName}>
                 </lightning-combobox>
             </div>
         </template>
-        <div class="slds-col slds-size_2-of-12" style="padding-top:3px">
+        <div class="slds-col slds-size_1-of-12" style="padding-top:3px">
             <p>&nbsp;</p>
             <lightning-button variant="brand" label="More" title="More" icon-name="utility:new" icon-position="right" class="slds-m-left_x-small" onclick={handleClick}></lightning-button>
+        </div>
+        <div class="slds-col slds-size_1-of-12" style="padding-top:3px">
+            <p>&nbsp;</p>
+            <lightning-button variant="brand" label="Apply" title="Apply" class="slds-m-left_x-small" onclick={handleChange}></lightning-button>
         </div>
         <template if:true={isModalOpen}>
             <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
                 <div class="slds-modal__container">
-                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" onclick={handleModalClose}>
                 <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
                 <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#close"></use>
                 </svg>

@@ -135,6 +135,9 @@ export default class ServerFilter extends LightningElement {
             } });
         this.isModalOpen = false;
     }
+    handleModalClose(){
+        this.isModalOpen = false;
+    }
     prepareConfigForSave() {
 		let tmp = JSON.parse(JSON.stringify(this.config.listViewConfig));
 		for (let key in tmp) {
