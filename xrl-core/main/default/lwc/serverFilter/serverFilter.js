@@ -31,10 +31,12 @@ export default class ServerFilter extends LightningElement {
 	}
     setFieldTypes(){
         this.sFilterfields.forEach(element => {
-            if(element.type == 'picklist'){
+            if(element.type === 'picklist'){
                 element.inputTypeComboBox = true;
-                element.options.splice(0,0,{label:"All",value:"All"});
-            }else if(element.type == 'boolean'){
+                if(element.options[0].value !== 'All'){
+                    element.options.splice(0,0,{label:"All",value:"All"});
+                }
+            }else if(element.type === 'boolean'){
                 element.inputTypeComboBox = true;
                 element.options = [];
                 element.options.push({label:"All",value:"All"});
@@ -54,7 +56,7 @@ export default class ServerFilter extends LightningElement {
             this.conditionMap[apiName] = event.target.value;
         }
         console.log(JSON.parse(JSON.stringify(this.config)));
-        this.fetchRecords();
+        // this.fetchRecords();
     }
     fetchRecords(){
         this.config.records = undefined;
@@ -79,7 +81,10 @@ export default class ServerFilter extends LightningElement {
             }else if(this.getColItem(key).type === 'datetime'){
                 condition += 'AND ' + key + ">="+this.conditionMap[key]+"T00:01:01z AND "+ key + "<="+this.conditionMap[key]+"T23:59:59z ";
             }else if(this.getColItem(key).type === 'reference'){
-                condition += 'AND ' + key.slice(0,-2) + '.Name ' + " LIKE '"+this.conditionMap[key]+"' ";
+                condition += 'AND ' + this.config.describe[key].relationshipName + '.Name ' + " LIKE '"+this.conditionMap[key]+"' ";
+            }
+            else if(this.getColItem(key).type === 'id'){
+                condition += 'AND ' + key + "='"+this.conditionMap[key]+"' ";
             }
             else{
                 condition += 'AND ' + key + " LIKE '"+this.conditionMap[key]+"' ";
@@ -145,4 +150,9 @@ export default class ServerFilter extends LightningElement {
 		}
 		return JSON.stringify(tmp, null, '\t')
 	}
+    handleSelect(event){
+        // let apiName = (event.currentTarget.id).slice(0, -4);
+        event.target.value = event.detail.payload.value;
+        this.handleChange(event);
+    }
 }

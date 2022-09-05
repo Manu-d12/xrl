@@ -628,6 +628,16 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		//setTimeout((() => { this.template.querySelector('[data-id="filterStr"]').focus(); }), 100);
 		this.searchFinish({which : 13})
 	}
+	@track sOptions = [];
+	handleLocalFilterSelect(event){
+		console.log(event.srcElement.getAttribute('data-id'));
+		this.sOptions = [];
+		JSON.parse(JSON.stringify(event.detail.payload.values)).forEach((el)=>{
+			this.sOptions.push(el);
+		});
+		event.detail.value = this.sOptions;
+		// this.searchOnChange(event);
+	}
 
 	searchOnChange(event) {
 		let fieldName = event.srcElement.getAttribute('data-id');

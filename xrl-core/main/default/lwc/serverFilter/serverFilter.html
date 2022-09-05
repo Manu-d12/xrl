@@ -2,15 +2,17 @@
     <div class="slds-grid slds-wrap" style="padding: 5px;">
         <template if:true={sFilterfields} for:each={sFilterfields} for:item="field" for:index="index">
             <div class="slds-col slds-size_2-of-12" key={field.fieldName} style="padding: 2px;">
-                <lightning-input if:true={field.inputTypeStr} type="text" label={field.label} id={field.fieldName}></lightning-input>
-                <lightning-combobox if:true={field.inputTypeComboBox}
+                <lightning-input if:true={field.inputTypeStr} type="text" label={field.label} id={field.fieldName} onfocusout={handleChange}></lightning-input>
+                <!-- <lightning-combobox if:true={field.inputTypeComboBox}
                     name={field.fieldName}
                     label={field.label}
                     value={value}
                     placeholder="Select"
                     options={field.options}
                     id={field.fieldName}>
-                </lightning-combobox>
+                </lightning-combobox> -->
+                <c-multiselect if:true={field.inputTypeComboBox} listsize=20 onselect={handleSelect} 
+                id={field.fieldName} options={field.options} selectedvalue="" label={field.label}></c-multiselect>
             </div>
         </template>
         <div class="slds-col slds-size_1-of-12" style="padding-top:3px">
@@ -19,7 +21,7 @@
         </div>
         <div class="slds-col slds-size_1-of-12" style="padding-top:3px">
             <p>&nbsp;</p>
-            <lightning-button variant="brand" label="Apply" title="Apply" class="slds-m-left_x-small" onclick={handleChange}></lightning-button>
+            <lightning-button variant="brand" label="Apply" title="Apply" class="slds-m-left_x-small" onclick={fetchRecords}></lightning-button>
         </div>
         <template if:true={isModalOpen}>
             <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
