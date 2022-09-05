@@ -101,26 +101,34 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		 : 'width:32px;height:32px;margin: 10px;';
 
 		let adminConfig = (data[cmd].baseConfig) ? JSON.parse(data[cmd].baseConfig) : {};
-		let userConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig) : {};
+		let userConfig = (data[cmd].userConfig) ? JSON.parse(JSON.stringify(data[cmd].userConfig)) : {};
 
 		console.log('adminConfig', adminConfig);
-		console.log('userConfig', userConfig);
+		console.log('userConfig', JSON.parse(userConfig));
 
-		if (userConfig.colModel === undefined){
-			userConfig.colModel = [{
+		let dataTableConfig;
+		userConfig = JSON.parse(userConfig);
+		userConfig.forEach((el)=>{
+			if(el.cmpName === 'dataTable') {
+				dataTableConfig = el;
+			}
+		});
+
+		if (dataTableConfig.colModel === undefined){
+			dataTableConfig.colModel = [{
 				"fieldName" : "Id"
 			}];
 		} 
 
 		let mergedConfig = {};
-		Object.assign(mergedConfig, userConfig);
+		Object.assign(mergedConfig, dataTableConfig);
 		mergedConfig.colModel = [];
 
 		let baseColMap = new Map();
 		adminConfig?.colModel?.forEach(col => {
 			baseColMap.set(col.fieldName, col);
 		});
-		userConfig?.colModel?.forEach(col => {
+		dataTableConfig?.colModel?.forEach(col => {
 			if (baseColMap.has(col.fieldName)) {
 				let mergedCol = Object.assign(baseColMap.get(col.fieldName), col);
 				mergedConfig.colModel.push(mergedCol);
@@ -130,9 +138,16 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			}
 		});
 		mergedConfig.colModel.push(...Array.from(baseColMap.values()));
-		console.log('mergedConfig', mergedConfig);
+		dataTableConfig.colModel = mergedConfig.colModel;
+		// Object.assign(mergedConfig, userConfig);
+		userConfig.forEach((el)=>{
+			if(el.cmpName === 'dataTable') {
+				el = dataTableConfig;
+			}
+		});
+		console.log('mergedConfig', userConfig);
 
-		this.config.listViewConfig = mergedConfig;
+		this.config.listViewConfig = userConfig;
 		this.config.listView = data[cmd].listViews.find(v => { return v.isUserConfig;});
 		console.log(JSON.stringify(this.config.listView));
 		this.config.currency =  data[cmd].currency;
@@ -146,7 +161,13 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 		this.config.fields = [];
 		this.config.lockedFields = [];
-		this.config.listViewConfig?.colModel?.forEach(e => {
+		dataTableConfig = {};
+		userConfig.forEach((el)=>{
+			if(el.cmpName === 'dataTable') {
+				dataTableConfig = el;
+			}
+		});
+		dataTableConfig?.colModel?.forEach(e => {
 			let describe = this.config.describe[e.fieldName];
 			if (describe && describe.type === 'reference') {
 				this.config.fields.push(describe.relationshipName + '.Name');
@@ -186,7 +207,14 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	generateColModel() {
-		this.config.listViewConfig.colModel.forEach(e => {
+		console.log('list',this.config.listViewConfig);
+		let dataTableConfig = {};
+		this.config.listViewConfig.forEach((el)=>{
+			if(el.cmpName === 'dataTable') {
+				dataTableConfig = el;
+			}
+		});
+		dataTableConfig.colModel.forEach(e => {
 			let describe = this.config.describe[e.fieldName];
 			if (e.label === undefined) e.label = describe.label;
 			if (e.type === undefined) e.type = describe.type;
@@ -211,6 +239,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				}
 			} else {
 				e.isEditable = false;
+			}
+		});
+		this.config.listViewConfig.forEach((el)=>{
+			if(el.cmpName === 'dataTable') {
+				el=dataTableConfig;
 			}
 		});
 		this.config.isServerFilter = true;

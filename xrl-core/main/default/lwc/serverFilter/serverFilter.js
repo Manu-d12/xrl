@@ -10,11 +10,18 @@ export default class ServerFilter extends LightningElement {
     @track conditionMap={};
     @track allFields = [];
     @track selectedFields = [];
+    @track filterJson;
     @track isModalOpen = false;
     connectedCallback(){
         this.config = libs.getGlobalVar(this.cfg);
         console.log(JSON.stringify(this.config.listViewConfig.serverFilters));
-        this.sFilterfields = this.config.listViewConfig.serverFilters ? this.config.listViewConfig.serverFilters : this.config.listViewConfig.colModel;
+        this.config.listViewConfig.forEach((el)=>{
+			if(el.cmpName === 'serversideFilter') {
+				this.filterJson = el;
+			}
+		});
+        //need changes
+        this.sFilterfields = this.filterJson.sFilterCols ? this.filterJson.sFilterCols : this.config.listViewConfig.colModel;
         for (let key in this.config.describe) {
 			this.allFields.push({ label: this.config.describe[key].label, value: this.config.describe[key].name });
 		}
@@ -111,7 +118,12 @@ export default class ServerFilter extends LightningElement {
 			}
             this.sFilterfields.push(col);
 		});
-        this.config.listViewConfig.serverFilters = this.sFilterfields;
+        this.filterJson.SFilterCols = this.sFilterfields;
+        this.config.listViewConfig.forEach((el)=>{
+			if(el.cmpName === 'serversideFilter') {
+				el = this.filterJson.sFilterCols;
+			}
+		});
         this.setFieldTypes();
     }
     handleClick(event){
