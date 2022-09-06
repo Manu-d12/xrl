@@ -1,179 +1,74 @@
-import { LightningElement, track, api } from 'lwc';
-export default class Customselect extends LightningElement {
-    @api options;
-    @api selectedvalue;
-    @api selectedValues = [];
+import { LightningElement, api,track } from 'lwc';
+import { libs } from 'c/libs';
+
+export default class Multiselect extends LightningElement {
+
     @api label;
-    @api minChar = 2;
-    @api disabled = false;
-    @api multiselect = false;
-    @api showsearchbtn = false;
-    @track value;
-    @track values = [];
-    @track optionData;
-    @track searchString;
-    @track message;
-    @track showDropdown = false;
-    @track showOptionCount = true;
-    @track allOptions = [];
-    @api listsize;
-    @track optionLength;
-    connectedCallback() {
-        this.showDropdown = false;
-        console.log((JSON.parse(JSON.stringify(this.options))));
-        var optionData = this.options ? (JSON.parse(JSON.stringify(this.options))) : null;
-        var value = this.selectedvalue ? (JSON.parse(JSON.stringify(this.selectedvalue))) : null;
-        var values = this.selectedValues ? (JSON.parse(JSON.stringify(this.selectedValues))) : null;
-        if(value || values) {
-            var searchString;
-            var count = 0;
-            for(var i = 0; i < optionData.length; i++) {
-                if(this.multiselect) {
-                    if(values.includes(optionData[i].value)) {
-                        optionData[i].selected = true;
-                        count++;
-                    }  
-                } else {
-                    if(optionData[i].value == value) {
-                        searchString = optionData[i].label;
-                    }
-                }
-            }
-            if(this.multiselect)
-                this.searchString = count + ' Option(s) Selected';
-            else
-                this.searchString = searchString;
-        }
-        this.value = value;
-        this.values = values;
-        this.optionData = optionData.slice(0,this.listsize);
-        this.allOptions = optionData;
-        this.optionLength = this.allOptions.length;
+    @api
+    get value() {
+        return this._value;
     }
-    filterOptions(event) {
-        this.searchString = event.target.value;
-        if( this.searchString && this.searchString.length > 0 ) {
-            this.message = '';
-            let results = [];
-            if(this.searchString.length >= this.minChar) {
-                var flag = true;
-                for(var i = 0; i < this.allOptions.length; i++) {
-                    if(this.allOptions[i].label.toLowerCase().trim().startsWith(this.searchString.toLowerCase().trim())) {
-                        this.allOptions[i].isVisible = true;
-                        flag = false;
-                        results.push(this.allOptions[i]);
-                    } else {
-                        this.allOptions[i].isVisible = false;
-                    }
+    set value(v) {
+        this._value = v || [];
+    }
+    @api options;
+    @api placeholder;
+    @api issearchable;
+    @api cfg;
+
+    @track allOptions;
+    @track optionsCount;
+    @track configOptionsSize;
+    connectedCallback(){
+        this.allOptions = this.options;
+        this.configOptionsSize = 20;
+        this.options = this.allOptions.length > this.configOptionsSize ? this.options.slice(0, this.configOptionsSize) : this.options;
+        this.optionsCount = 'Showing '+ (this.allOptions.length > this.configOptionsSize ? this.configOptionsSize : this.allOptions.length) + ' of ' + this.allOptions.length + ' options';
+    }
+
+    _value = [];
+
+    get _inputValue() {
+        if (this._value.length === 0) return null;
+        else if (this._value.length === 1) return this._value[0];
+        else return this._value.length + ' options selected';
+    }
+
+    handleClick() {
+        let sldsCombobox = this.template.querySelector(".slds-combobox");
+        sldsCombobox.classList.toggle("slds-is-open");
+        if (sldsCombobox.classList.contains("slds-is-open")) {
+            this.template.querySelectorAll("li").forEach(e => {
+                if (this._value.includes(e.dataset.value)) {
+                    e.firstChild.classList.add("slds-is-selected");
                 }
-                if(flag) {
-                    this.message = "No results found for '" + this.searchString + "'";
-                }else{
-                    this.optionLength = results.length;
-                    this.optionData = results.slice(0,this.listsize);
-                }
-            }
-            this.showDropdown = true;
+            });
+        }
+    }
+
+    handleSelection(event) {
+        let value = event.currentTarget.dataset.value;
+        if (this._value.includes(value)) {
+            this._value.splice(this._value.indexOf(value), 1);
         } else {
-            this.showDropdown = false;
+            this._value.push(value);
         }
-    }
-    selectItem(event) {
-        var selectedVal = event.currentTarget.dataset.id;
-        if(selectedVal) {
-            var count = 0;
-            var options = JSON.parse(JSON.stringify(this.allOptions));
-            for(var i = 0; i < options.length; i++) {
-                if(options[i].value === selectedVal) {
-                    if(this.multiselect) {
-                        if(this.values.includes(options[i].value)) {
-                            this.values.splice(this.values.indexOf(options[i].value), 1);
-                        } else {
-                            this.values.push(options[i].value);
-                        }
-                        options[i].selected = options[i].selected ? false : true;   
-                    } else {
-                        this.value = options[i].value;
-                        this.searchString = options[i].label;
-                    }
-                }
-                if(options[i].selected) {
-                    count++;
-                }
-            }
-            this.optionData = options;
-            if(this.multiselect)
-                this.searchString = count + ' Option(s) Selected';
-            if(this.multiselect)
-                event.preventDefault();
-            else
-                this.showDropdown = false;
-        }
-    }
-    showOptions() {
-        if(this.disabled == false && this.options) {
-            this.message = '';
-            this.searchString = '';
-            var options = JSON.parse(JSON.stringify(this.allOptions));
-            for(var i = 0; i < options.length; i++) {
-                options[i].isVisible = true;
-            }
-            if(options.length > 0) {
-                this.showDropdown = true;
-            }
-            this.optionLength = options.length;
-            this.optionData = options.slice(0,this.listsize);
-        }
-    }
-    removePill(event) {
-        var value = event.currentTarget.name;
-        var count = 0;
-        var options = JSON.parse(JSON.stringify(this.optionData));
-        for(var i = 0; i < options.length; i++) {
-            if(options[i].value === value) {
-                options[i].selected = false;
-                this.values.splice(this.values.indexOf(options[i].value), 1);
-            }
-            if(options[i].selected) {
-                count++;
-            }
-        }
-        this.optionData = options;
-        if(this.multiselect)
-            this.searchString = count + ' Option(s) Selected';
-    }
-    blurEvent() {
-        var previousLabel;
-        var count = 0;
-        for(var i = 0; i < this.optionData.length; i++) {
-            if(this.optionData[i].value === this.value) {
-                previousLabel = this.optionData[i].label;
-            }
-            if(this.optionData[i].selected) {
-                count++;
-            }
-        }
-        if(this.multiselect)
-         this.searchString = count + ' Option(s) Selected';
-        else
-         this.searchString = previousLabel;
-        
-        this.showDropdown = false;
- 
-        this.dispatchEvent(new CustomEvent('select', {
-            detail: {
-                'payloadType' : 'multi-select',
-                'payload' : {
-                    'value' : this.value,
-                    'values' : this.values
-                }
-            }
+        event.currentTarget.firstChild.classList.toggle("slds-is-selected");
+        this.template.querySelector("input").focus();
+
+        this.dispatchEvent(new CustomEvent("change", {
+            detail: this._value
         }));
     }
-    iconClick(){
-        console.log('clicked');
-        this.dispatchEvent(new CustomEvent('searchclicked', {
-            detail: 'clicked'
-        }));
+    handleKeyUpSearch(event){
+        this.options = [];
+        let searchTerm = event.target.value.toString().toLowerCase();
+        this.allOptions.forEach((el) =>{
+            if(el["value"] && el["value"].toString().toLowerCase().indexOf(searchTerm) != -1) {
+                this.options.push(el);
+            }
+        });
+        this.optionsCount = 'Showing '+ ((this.options.length > this.configOptionsSize) ? this.configOptionsSize : this.options.length) + ' of ' + this.options.length + ' options';
+        this.options = this.options.length > this.configOptionsSize ? this.options.slice(0, this.configOptionsSize) : this.options;
     }
 }
