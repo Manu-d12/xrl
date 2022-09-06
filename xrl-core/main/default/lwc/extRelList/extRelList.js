@@ -25,6 +25,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 	@track showDialog = false;
 	@track dialogCfg;
+	@track dataTableConfig;
 
 	constructor() {
 		super();
@@ -107,6 +108,13 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		console.log('userConfig', JSON.parse(userConfig));
 
 		let dataTableConfig;
+		let adminDataTableConfig = adminConfig;
+		// adminConfig = JSON.parse(adminConfig);
+		// adminConfig.forEach((el)=>{
+		// 	if(el.cmpName === 'dataTable') {
+		// 		adminDataTableConfig = el;
+		// 	}
+		// });
 		userConfig = JSON.parse(userConfig);
 		userConfig.forEach((el)=>{
 			if(el.cmpName === 'dataTable') {
@@ -125,7 +133,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		mergedConfig.colModel = [];
 
 		let baseColMap = new Map();
-		adminConfig?.colModel?.forEach(col => {
+		adminDataTableConfig?.colModel?.forEach(col => {
 			baseColMap.set(col.fieldName, col);
 		});
 		dataTableConfig?.colModel?.forEach(col => {
@@ -148,6 +156,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		console.log('mergedConfig', userConfig);
 
 		this.config.listViewConfig = userConfig;
+		this.config.listViewConfig.forEach((el)=>{
+			if(el.cmpName === 'dataTable') {
+				this.dataTableConfig =  el;
+			}
+		});
 		this.config.listView = data[cmd].listViews.find(v => { return v.isUserConfig;});
 		console.log(JSON.stringify(this.config.listView));
 		this.config.currency =  data[cmd].currency;
@@ -161,13 +174,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 		this.config.fields = [];
 		this.config.lockedFields = [];
-		dataTableConfig = {};
-		userConfig.forEach((el)=>{
-			if(el.cmpName === 'dataTable') {
-				dataTableConfig = el;
-			}
-		});
-		dataTableConfig?.colModel?.forEach(e => {
+		
+		this.dataTableConfig?.colModel?.forEach(e => {
 			let describe = this.config.describe[e.fieldName];
 			if (describe && describe.type === 'reference') {
 				this.config.fields.push(describe.relationshipName + '.Name');
@@ -178,7 +186,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		});
 		
 		// Temporary
-		this.config.isGlobalSearch=dataTableConfig.isGlobalSearch;
+		this.config.isGlobalSearch=this.dataTableConfig.isGlobalSearch;
 
 		console.log('this.config', this.config);
 		this.loadRecords();		
@@ -207,14 +215,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	generateColModel() {
-		console.log('list',this.config.listViewConfig);
-		let dataTableConfig = {};
-		this.config.listViewConfig.forEach((el)=>{
-			if(el.cmpName === 'dataTable') {
-				dataTableConfig = el;
-			}
-		});
-		dataTableConfig.colModel.forEach(e => {
+		this.dataTableConfig.colModel.forEach(e => {
 			let describe = this.config.describe[e.fieldName];
 			if (e.label === undefined) e.label = describe.label;
 			if (e.type === undefined) e.type = describe.type;
@@ -243,7 +244,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		});
 		this.config.listViewConfig.forEach((el)=>{
 			if(el.cmpName === 'dataTable') {
-				el=dataTableConfig;
+				el=this.dataTableConfig;
 			}
 		});
 		this.config.isServerFilter = true;
@@ -362,13 +363,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			fields.push({ label: this.config.describe[key].label, value: this.config.describe[key].name });
 		}
 		let lockedOptions = [];
-		let dataTable;
-		this.config.listViewConfig.forEach((el)=>{
-			if(el.cmpName === 'dataTable') {
-				dataTable = el;
-			}
-		});
-		for (let col of dataTable.colModel) {
+		for (let col of this.dataTableConfig.colModel) {
 			lockedOptions.push({ label: col.label, value: col.fieldName });
 		}
 		//this.config.listViewConfig.isShowCheckBoxes = true;
@@ -382,7 +377,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			"lockedOptions": libs.sortRecords(lockedOptions, 'label', true),
 			"lockedFields": this.config.lockedFields,
 			"handleEvent": this.handleEventDialog.bind(this),
-			"listViewConfig": JSON.parse(JSON.stringify(dataTable)),
+			"listViewConfig": JSON.parse(JSON.stringify(this.dataTableConfig)),
 			"listViewName": this.config?.listView?.name,
 			"listViewLabel": this.config?.listView?.label,
 			"listViewAdmin": this.config?.listView?.isAdminConfig ?? false
@@ -399,7 +394,6 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let val = event.target.getAttribute('data-id');
 		if (val === 'dialog:close') this.config.dialog = undefined;
 		if (val === 'dialog:setFields') {
-			console.log('hi');
 			this.config.dialog.selectedFields = event.detail.value;
 
 			this.config.dialog.field = undefined;
