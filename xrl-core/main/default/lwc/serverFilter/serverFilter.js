@@ -11,17 +11,19 @@ export default class ServerFilter extends LightningElement {
     @track allFields = [];
     @track selectedFields = [];
     @track filterJson;
+    @track dataTableJson;
     @track isModalOpen = false;
     connectedCallback(){
         this.config = libs.getGlobalVar(this.cfg);
-        console.log(JSON.stringify(this.config.listViewConfig.serverFilters));
         this.config.listViewConfig.forEach((el)=>{
 			if(el.cmpName === 'serversideFilter') {
 				this.filterJson = el;
 			}
+            if(el.cmpName === 'serversideFilter') {
+				this.dataTableJson = el;
+			}
 		});
-        //need changes
-        this.sFilterfields = this.filterJson.sFilterCols ? this.filterJson.sFilterCols : this.config.listViewConfig.colModel;
+        this.sFilterfields = this.filterJson.sFilterCols ? this.filterJson.sFilterCols : this.dataTableJson.colModel;
         for (let key in this.config.describe) {
 			this.allFields.push({ label: this.config.describe[key].label, value: this.config.describe[key].name });
 		}
@@ -118,7 +120,7 @@ export default class ServerFilter extends LightningElement {
 			}
             this.sFilterfields.push(col);
 		});
-        this.filterJson.SFilterCols = this.sFilterfields;
+        this.filterJson.sFilterCols = this.sFilterfields;
         this.config.listViewConfig.forEach((el)=>{
 			if(el.cmpName === 'serversideFilter') {
 				el = this.filterJson.sFilterCols;
@@ -149,9 +151,16 @@ export default class ServerFilter extends LightningElement {
     }
     prepareConfigForSave() {
 		let tmp = JSON.parse(JSON.stringify(this.config.listViewConfig));
-		for (let key in tmp) {
-			if (key.startsWith('_')) delete tmp[key];
-		}
+        console.log(tmp);
+        tmp.forEach((el)=>{
+            for (let key in el) {
+                if (key.startsWith('_')) delete el[key];
+            }
+        });
+        console.log(tmp);
+		// for (let key in tmp) {
+		// 	if (key.startsWith('_')) delete tmp[key];
+		// }
 		return JSON.stringify(tmp, null, '\t')
 	}
 }
