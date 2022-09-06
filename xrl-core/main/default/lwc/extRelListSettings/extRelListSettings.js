@@ -4,10 +4,16 @@ import { libs } from 'c/libs'
 export default class extRelListSettings extends LightningElement {
 	@api cfg;
 	@track config;
+	@track dataTable;
 
 	connectedCallback() {
 		console.log(this.cfg);
 		this.config = libs.getGlobalVar(this.cfg);
+		this.config.listViewConfig.forEach((el)=>{
+			if(el.cmpName === 'dataTable') {
+				this.dataTable = el;
+			}
+		});
 	}
 
 	get selectedFields() {
@@ -25,8 +31,12 @@ export default class extRelListSettings extends LightningElement {
 		if (this.config.dialog.field === undefined) {return result};
 		
 		let describe = this.config.describe;
-
-		let fieldParams = this.config.dialog.listViewConfig.colModel.find( e=>{
+		// this.config.listViewConfig.forEach((el)=>{
+		// 	if(el.cmpName === 'dataTable') {
+		// 		this.dataTable = el;
+		// 	}
+		// });
+		let fieldParams = this.dataTable.colModel.find( e=>{
 			return e.fieldName === this.config.dialog.field;
 		});
 
@@ -63,9 +73,9 @@ export default class extRelListSettings extends LightningElement {
 		let tmp = libs.tableItem();
 
 		for (let item in tmp) {
-			let defValue = item in this.config.dialog.listViewConfig 
-				? this.config.dialog.listViewConfig[item]
-				: item in this.config.dialog.listViewConfig.pager ? this.config.dialog.listViewConfig.pager[item] 
+			let defValue = item in this.dataTable 
+				? this.dataTable[item]
+				: item in this.dataTable.pager ? this.dataTable.pager[item] 
 				: tmp[item].defValue;
 			result.push({
 				"paramName" : item,

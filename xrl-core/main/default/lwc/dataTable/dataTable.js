@@ -210,7 +210,13 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 	connectedCallback() {
 		//super();
-		this.config = libs.getGlobalVar(this.cfg).listViewConfig;
+		this.config = libs.getGlobalVar(this.cfg);
+		this.config.listViewConfig.forEach((el)=>{
+			if(el.cmpName === 'dataTable') {
+				this.config = el;
+			}
+		});
+		// this.config = libs.getGlobalVar(this.cfg).listViewConfig;
 		console.log('Config', JSON.parse(JSON.stringify(this.config)));
 		this.config._LABELS = libs.getGlobalVar(this.cfg)._LABELS;
 		

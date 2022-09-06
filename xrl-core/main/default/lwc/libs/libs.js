@@ -98,7 +98,7 @@ export let libs = {
 			}).replace(/{\d+}/g, '');
 	},
 	colModelItem: function(colModelItem) {
-		let _labels = globalVars[Object.keys(globalVars)[0]].listViewConfig._LABELS;
+		let _labels = globalVars[Object.keys(globalVars)[0]]._LABELS;
 		let defParams = {
 			"fieldName": {
 				"type": "text",
@@ -175,7 +175,7 @@ export let libs = {
 		} else return defParams;
 	},
 	tableItem: function() {
-		let _labels = globalVars[Object.keys(globalVars)[0]].listViewConfig._LABELS;
+		let _labels = globalVars[Object.keys(globalVars)[0]]._LABELS;
 		let defParams = {
 			"isShowNumeration" : {
 				"defValue": true,
