@@ -15,6 +15,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	@track popStyle;
 	@api recordId;
 	@api objectApiName;
+	sValues = [];
 	showPop(event){
 		this.showPopOver = true;
 		let hoverConstValues = {
@@ -634,9 +635,17 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		//setTimeout((() => { this.template.querySelector('[data-id="filterStr"]').focus(); }), 100);
 		this.searchFinish({which : 13})
 	}
+	handleLocalFilterSelect(event){
+		console.log(event.detail.payload.values);
+		event.detail.value = event.detail.payload.values;
+		this.sValues = JSON.parse(JSON.stringify(event.detail.payload.values));
+		console.log('hii',JSON.parse(JSON.stringify(event.detail.payload.values)));
+		this.searchOnChange(event);
+	}
 
 	searchOnChange(event) {
 		let fieldName = event.srcElement.getAttribute('data-id');
+		console.log(fieldName);
 		if (fieldName === 'saveFilter') {
 			this.searchFinish({which : 13});
 			return;
@@ -644,7 +653,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if (this.config._isFilterOptions.isShowStr) {
 			this.config._isFilterOptions[fieldName] = event.detail.value;
 		} else {
-			this.config._isFilterOptions[fieldName] = event.detail;
+			this.config._isFilterOptions[fieldName] = event.detail.payload ? event.detail.payload.values : event.detail;
 		}
 		this.config._isFilterOptions.isShowClearBtn = this.config._isFilterOptions.filterStr.length > 0 || (this.config._isFilterOptions.filterStrTo && this.config._isFilterOptions.filterStrTo.length > 0);
 		if (this.config._isFilterOptions.isShowClearBtn === false ) this.config._isFilterOptions.filterOption = undefined;

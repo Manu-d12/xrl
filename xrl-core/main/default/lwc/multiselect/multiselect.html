@@ -1,52 +1,48 @@
 <template>
-    <div class="slds-form-element">
-        <label if:true={label} class="slds-form-element__label">{label}</label>
-        <div class="slds-form-element__control">
-            <div class="slds-combobox_container">
-                <div aria-expanded="false" aria-haspopup="listbox"
-                    class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click" role="combobox">
-                    <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
-                        <input aria-controls="listbox-id-1" auto-complete="off" class="slds-input slds-combobox__input"
-                            data-id="combobox-id-1" onclick={handleClick} role="textbox" value={_inputValue} readonly
-                            type="text" placeholder={placeholder}>
-                        <div class="slds-input__icon-group slds-input__icon-group_right">
-                            <lightning-icon class="slds-input__icon slds-input__icon_right" icon-name="utility:down"
-                                size="xx-small"></lightning-icon>
-                        </div>
-                    </div>
-                    <div class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid" id="5"
-                        role="listbox">
-                        <div class="defaultClass" if:true={issearchable}>
-                            <input type="text" if:true={issearchable} class="slds-input slds-combobox__input slds-has-focus searchvalue" id="combobox-id-3"
-                                aria-activedescendant="option1" aria-autocomplete="list" list="listbox-id-3" aria-controls="listbox-id-3"
-                                autocomplete="off" role="textbox" placeholder="Search..." onkeyup={handleKeyUpSearch}/>
-                        </div>
-                        <ul class="slds-listbox slds-listbox_vertical" role="presentation">
-                            <template for:each={options} for:item="option">
-                                <li class="slds-listbox__item" data-selected="false" data-id={option.value}
-                                    data-value={option.value} key={option.value} role="presentation"
-                                    onclick={handleSelection}>
-                                    <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small"
-                                        role="option">
-                                        <span class="slds-media__figure">
-                                            <lightning-icon
-                                                class="slds-icon-utility-check slds-current-color slds-listbox__icon-selected slds-icon_container"
-                                                icon-name="utility:check" size="x-small">
-                                            </lightning-icon>
-                                        </span>
-                                        <span class="slds-media__body">
-                                            <span class="slds-truncate" title={option.label}>{option.label}</span>
-                                        </span>
-                                    </div>
+    
+    <template if:true={label}>
+        <label class="slds-form-element__label">{label}</label>
+    </template>
+    <div class="slds-combobox_container">
+        <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open" aria-expanded="true" aria-haspopup="listbox" role="combobox">
+            <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                <lightning-input disabled={disabled} class="inputBox" placeholder="Select an Option" onblur={blurEvent} onclick={showOptions} onkeyup={filterOptions} value={mSelectConfig.searchString} auto-complete="off" variant="label-hidden" id="combobox-id-1" ></lightning-input>
+                <lightning-icon class="slds-input__icon" icon-name="utility:down" size="x-small" alternative-text="search"></lightning-icon>
+            </div>
+            <template if:true={mSelectConfig.showDropdown}>
+                <div id="listbox-id-1" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid"><!--style="{! 'max-height:' + (8 + (v.recordCount * 40)) + 'px' }""-->
+                    <ul class="slds-listbox slds-listbox_vertical recordListBox" role="presentation">
+                        <template if:false={mSelectConfig.message} >
+                            <template for:each={mSelectConfig.optionData} for:item="option">
+                                <template if:true={option.isVisible}>
+                                    <li key={option.value} data-id={option.value} onmousedown={selectItem} class="slds-listbox__item eachItem">
+                                        <template if:true={option.selected}>
+                                            <lightning-icon icon-name="utility:check" size="x-small" alternative-text="icon" ></lightning-icon>
+                                        </template>
+                                        <span class="slds-media slds-listbox__option_entity verticalAlign slds-truncate">{option.label}</span>
+                                    </li>
+                                </template>
+                            </template>
+                            <template if:true={mSelectConfig.showOptionCount}>
+                                <li class="slds-listbox__item">
+                                    <span class="slds-media slds-listbox__option_entity verticalAlign slds-truncate">Showing {mSelectConfig.optionData.length} of {mSelectConfig.optionLength} options</span>
                                 </li>
                             </template>
-                        </ul>
-                        <div class="defaultClass">
-                            <p> {optionsCount}</p>
-                        </div>
-                    </div>
+                        </template>
+                        <template if:true={mSelectConfig.message} >
+                            <li class="slds-listbox__item">
+                                <span class="slds-media slds-listbox__option_entity verticalAlign slds-truncate">{mSelectConfig.message}</span>
+                            </li>
+                        </template>
+                    </ul>
                 </div>
-            </div>
+            </template>
         </div>
     </div>
+    <!-- Multi Select Pills -->
+    <!-- <template for:each={optionData} for:item="option">
+        <template if:true={option.selected}>
+            <lightning-pill key={option.value} class="slds-m-around_xx-small" name={option.value} label={option.label} onremove={removePill}></lightning-pill>
+        </template>
+    </template> -->
 </template>
