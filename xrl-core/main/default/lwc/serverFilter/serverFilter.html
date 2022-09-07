@@ -11,15 +11,16 @@
                     options={field.options}
                     id={field.fieldName}>
                 </lightning-combobox> -->
-                <c-customselect if:true={field.inputTypeComboBox} listsize=20 onselect={handleSelect} 
-                id={field.fieldName} options={field.options} label={field.label}></c-customselect>
+                <c-multiselect if:true={field.inputTypeComboBox} multiselect=true listsize=20 onselect={handleSelect} 
+                id={field.fieldName} options={field.options} selectedvalues={sValues} label={field.label}></c-multiselect>
+                <lightning-input if:true={field.inputTypeDate} type="date" label={field.label} id={field.fieldName} onfocusout={handleChange}></lightning-input>
             </div>
         </template>
-        <div class="slds-col slds-size_1-of-12" style="padding-top:3px">
+        <div class="slds-col slds-size_1-of-12" style="padding-top:3px;">
             <p>&nbsp;</p>
-            <lightning-button variant="brand" label="More" title="More" icon-name="utility:new" icon-position="right" class="slds-m-left_x-small" onclick={handleClick}></lightning-button>
+            <lightning-button variant="brand" label="More" title="More" class="slds-m-left_x-small" onclick={handleClick}></lightning-button>
         </div>
-        <div class="slds-col slds-size_1-of-12" style="padding-top:3px">
+        <div class="slds-col slds-size_1-of-12" style="padding-top:3px;">
             <p>&nbsp;</p>
             <lightning-button variant="brand" label="Apply" title="Apply" class="slds-m-left_x-small" onclick={fetchRecords}></lightning-button>
         </div>

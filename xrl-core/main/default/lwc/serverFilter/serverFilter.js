@@ -11,6 +11,7 @@ export default class ServerFilter extends LightningElement {
     @track allFields = [];
     @track selectedFields = [];
     @track isModalOpen = false;
+    @track sValues = [];
     connectedCallback(){
         this.config = libs.getGlobalVar(this.cfg);
         console.log(JSON.stringify(this.config.listViewConfig.serverFilters));
@@ -42,6 +43,8 @@ export default class ServerFilter extends LightningElement {
                 element.options.push({label:"All",value:"All"});
                 element.options.push({label:"True",value:"true"});
                 element.options.push({label:"False",value:"false"});
+            }else if(element.type === 'datetime' || element.type === 'date'){
+                element.inputTypeDate= true;
             }
             else{
                 element.inputTypeStr = true;
@@ -50,13 +53,14 @@ export default class ServerFilter extends LightningElement {
     }
     handleChange(event){
         let apiName = (event.currentTarget.id).slice(0, -4);
-        if(event.target.value === '' || event.target.value === "All"){
+        if(event.target.value === '' || event.target.value === "All" || event.target.value === null){
             delete this.conditionMap[apiName];
         }else{
             this.conditionMap[apiName] = event.target.value;
         }
-        console.log(JSON.parse(JSON.stringify(this.config)));
-        // this.fetchRecords();
+        if(JSON.parse(JSON.stringify(event.target.value)).includes('All')){
+            delete this.conditionMap[apiName];
+        }
     }
     fetchRecords(){
         this.config.records = undefined;
@@ -75,19 +79,42 @@ export default class ServerFilter extends LightningElement {
     }
     generateCondition(){
         let condition = '';
+        /*eslint-disable*/
         for(let key in this.conditionMap){
-            if(this.getColItem(key).type === 'currency' || this.getColItem(key).type === 'boolean' || this.getColItem(key).type === 'double'){
-                condition += 'AND ' + key + "="+this.conditionMap[key]+" ";
-            }else if(this.getColItem(key).type === 'datetime'){
-                condition += 'AND ' + key + ">="+this.conditionMap[key]+"T00:01:01z AND "+ key + "<="+this.conditionMap[key]+"T23:59:59z ";
-            }else if(this.getColItem(key).type === 'reference'){
-                condition += 'AND ' + this.config.describe[key].relationshipName + '.Name ' + " LIKE '"+this.conditionMap[key]+"' ";
-            }
-            else if(this.getColItem(key).type === 'id'){
-                condition += 'AND ' + key + "='"+this.conditionMap[key]+"' ";
-            }
-            else{
-                condition += 'AND ' + key + " LIKE '"+this.conditionMap[key]+"' ";
+            console.log(typeof this.conditionMap[key]);
+            if(typeof this.conditionMap[key] === 'object' && JSON.parse(JSON.stringify(this.conditionMap[key])).length > 1){
+                JSON.parse(JSON.stringify(this.conditionMap[key])).forEach((el,index)=>{
+                    if(index === 0){
+                        if(this.getColItem(key).type === 'boolean'){
+                            condition += 'AND ( ' + key + " = "+el+" ";
+                        }else{
+                            condition += 'AND (' + key + " LIKE '"+el+"' ";
+                        }
+                    }else{
+                        if(this.getColItem(key).type === 'boolean'){
+                            condition += 'OR ' + key + " = "+el+" ";
+                        }else{
+                            condition += 'OR ' + key + " LIKE '"+el+"' ";
+                        }
+                    }
+                });
+                condition += ')';
+            }else{
+                if(JSON.parse(JSON.stringify(this.conditionMap[key]))[0] !== undefined){
+                    if(this.getColItem(key).type === 'currency' || this.getColItem(key).type === 'boolean' || this.getColItem(key).type === 'double'){
+                        condition += 'AND ' + key + "="+this.conditionMap[key]+" ";
+                    }else if(this.getColItem(key).type === 'datetime'){
+                        condition += 'AND ' + key + ">="+this.conditionMap[key]+"T00:01:01z AND "+ key + "<="+this.conditionMap[key]+"T23:59:59z ";
+                    }else if(this.getColItem(key).type === 'reference'){
+                        condition += 'AND ' + this.config.describe[key].relationshipName + '.Name ' + " LIKE '"+this.conditionMap[key]+"' ";
+                    }
+                    else if(this.getColItem(key).type === 'id'){
+                        condition += 'AND ' + key + "='"+this.conditionMap[key]+"' ";
+                    }
+                    else{
+                        condition += 'AND ' + key + " LIKE '"+this.conditionMap[key]+"' ";
+                    }
+                }
             }
         }
         console.log(condition);
@@ -152,7 +179,7 @@ export default class ServerFilter extends LightningElement {
 	}
     handleSelect(event){
         // let apiName = (event.currentTarget.id).slice(0, -4);
-        event.target.value = event.detail.payload.value;
+        event.target.value = event.detail.payload.values;
         this.handleChange(event);
     }
 }
