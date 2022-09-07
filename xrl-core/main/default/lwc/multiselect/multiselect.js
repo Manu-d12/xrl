@@ -6,22 +6,16 @@ export default class Multiselect extends LightningElement {
     @api selectedValue;
     @api selectedvalues = [];
     @api label;
-    @api minChar = 2;
     @api disabled = false;
     @api multiselect = false;
-    @track value;
-    @track values = [];
-    @track optionData;
-    @track searchString;
-    @track message;
-    @track showDropdown = false;
-    @track showOptionCount = true;
-    @track allOptions = [];
     @api listsize;
-    @track optionLength;
+
+    @track mSelectConfig = {};
 
     connectedCallback() {
-        this.showDropdown = false;
+        this.mSelectConfig.showDropdown = false;
+        this.mSelectConfig.showOptionCount = true;
+        this.mSelectConfig.minChar = 2;
         var optionData = this.options ? (JSON.parse(JSON.stringify(this.options))) : null;
         var value = this.selectedValue ? (JSON.parse(JSON.stringify(this.selectedValue))) : null;
         var values = this.selectedvalues ? (JSON.parse(JSON.stringify(this.selectedvalues))) : null;
@@ -41,44 +35,44 @@ export default class Multiselect extends LightningElement {
                 }
             }
             if(this.multiselect)
-                this.searchString = count + ' Option(s) Selected';
+                this.mSelectConfig.searchString = count + ' Option(s) Selected';
             else
-                this.searchString = searchString;
+                this.mSelectConfig.searchString = searchString;
         }
-        this.value = value;
-        this.values = values;
-        this.optionData = optionData.slice(0,this.listsize);
-        this.allOptions = optionData;
-        this.optionLength = optionData.length;
+        this.mSelectConfig.value = value;
+        this.mSelectConfig.values = values;
+        this.mSelectConfig.optionData = optionData.slice(0,this.listsize);
+        this.mSelectConfig.allOptions = optionData;
+        this.mSelectConfig.optionLength = optionData.length;
     }
 
     filterOptions(event) {
-        this.searchString = event.target.value;
-        if( this.searchString && this.searchString.length > 0 ) {
-            this.message = '';
+        this.mSelectConfig.searchString = event.target.value;
+        if( this.mSelectConfig.searchString && this.mSelectConfig.searchString.length > 0 ) {
+            this.mSelectConfig.message = '';
             let results = [];
-            if(this.searchString.length >= this.minChar) {
+            if(this.mSelectConfig.searchString.length >= this.mSelectConfig.minChar) {
                 var flag = true;
-                for(var i = 0; i < this.allOptions.length; i++) {
-                    if(this.allOptions[i].label.toLowerCase().trim().startsWith(this.searchString.toLowerCase().trim())) {
-                        this.allOptions[i].isVisible = true;
+                for(var i = 0; i < this.mSelectConfig.allOptions.length; i++) {
+                    if(this.mSelectConfig.allOptions[i].label.toLowerCase().trim().startsWith(this.mSelectConfig.searchString.toLowerCase().trim())) {
+                        this.mSelectConfig.allOptions[i].isVisible = true;
                         flag = false;
-                        results.push(this.allOptions[i]);
+                        results.push(this.mSelectConfig.allOptions[i]);
                     } else {
-                        this.allOptions[i].isVisible = false;
+                        this.mSelectConfig.allOptions[i].isVisible = false;
                     }
                 }
                 if(flag) {
-                    this.message = "No results found for '" + this.searchString + "'";
+                    this.mSelectConfig.message = "No results found for '" + this.mSelectConfig.searchString + "'";
                 }else{
-                    this.optionLength = results.length;
-                    this.optionData = results.slice(0,this.listsize);
+                    this.mSelectConfig.optionLength = results.length;
+                    this.mSelectConfig.optionData = results.slice(0,this.listsize);
                 }
             }
-            this.showDropdown = true;
+            this.mSelectConfig.showDropdown = true;
         } else {
-            this.optionData = this.allOptions.slice(0,this.listsize);
-            this.showDropdown = false;
+            this.mSelectConfig.optionData = this.mSelectConfig.allOptions.slice(0,this.listsize);
+            this.mSelectConfig.showDropdown = false;
         }
     }
 
@@ -86,75 +80,75 @@ export default class Multiselect extends LightningElement {
         var selectedVal = event.currentTarget.dataset.id;
         if(selectedVal) {
             var count = 0;
-            var options = JSON.parse(JSON.stringify(this.optionData));
+            var options = JSON.parse(JSON.stringify(this.mSelectConfig.optionData));
             for(var i = 0; i < options.length; i++) {
                 if(options[i].value === selectedVal) {
                     if(this.multiselect) {
-                        if(this.values.includes(options[i].value)) {
-                            this.values.splice(this.values.indexOf(options[i].value), 1);
+                        if(this.mSelectConfig.values.includes(options[i].value)) {
+                            this.mSelectConfig.values.splice(this.mSelectConfig.values.indexOf(options[i].value), 1);
                         } else {
-                            this.values.push(options[i].value);
+                            this.mSelectConfig.values.push(options[i].value);
                         }
                         options[i].selected = options[i].selected ? false : true;   
                     } else {
-                        this.value = options[i].value;
-                        this.searchString = options[i].label;
+                        this.mSelectConfig.value = options[i].value;
+                        this.mSelectConfig.searchString = options[i].label;
                     }
                 }
                 if(options[i].selected) {
                     count++;
                 }
             }
-            this.optionData = options;
+            this.mSelectConfig.optionData = options;
             if(this.multiselect)
-                this.searchString = count + ' Option(s) Selected';
+                this.mSelectConfig.searchString = count + ' Option(s) Selected';
             if(this.multiselect)
                 event.preventDefault();
             else
-                this.showDropdown = false;
+                this.mSelectConfig.showDropdown = false;
         }
     }
 
     showOptions() {
         if(this.disabled == false && this.options) {
-            this.message = '';
-            this.searchString = '';
-            var options = JSON.parse(JSON.stringify(this.optionData));
+            this.mSelectConfig.message = '';
+            this.mSelectConfig.searchString = '';
+            var options = JSON.parse(JSON.stringify(this.mSelectConfig.optionData));
             for(var i = 0; i < options.length; i++) {
                 options[i].isVisible = true;
             }
             if(options.length > 0) {
-                this.showDropdown = true;
+                this.mSelectConfig.showDropdown = true;
             }
-            this.optionLength = options.length;
-            this.optionData = options.slice(0,this.listsize);
+            this.mSelectConfig.optionLength = options.length;
+            this.mSelectConfig.optionData = options.slice(0,this.listsize);
         }
 	}
 
     blurEvent() {
         var previousLabel;
         var count = 0;
-        for(var i = 0; i < this.optionData.length; i++) {
-            if(this.optionData[i].value === this.value) {
-                previousLabel = this.optionData[i].label;
+        for(var i = 0; i < this.mSelectConfig.optionData.length; i++) {
+            if(this.mSelectConfig.optionData[i].value === this.mSelectConfig.value) {
+                previousLabel = this.mSelectConfig.optionData[i].label;
             }
-            if(this.optionData[i].selected) {
+            if(this.mSelectConfig.optionData[i].selected) {
                 count++;
             }
         }
         if(this.multiselect)
-        	this.searchString = count + ' Option(s) Selected';
+            this.mSelectConfig.searchString = count + ' Option(s) Selected';
         else
-        	this.searchString = previousLabel;
+            this.mSelectConfig.searchString = previousLabel;
         
-        this.showDropdown = false;
+            this.mSelectConfig.showDropdown = false;
 
         this.dispatchEvent(new CustomEvent('select', {
             detail: {
                 'payloadType' : 'multi-select',
                 'payload' : {
-                    'value' : this.value,
-                    'values' : this.values
+                    'value' : this.mSelectConfig.value,
+                    'values' : this.mSelectConfig.values
                 }
             }
         }));
