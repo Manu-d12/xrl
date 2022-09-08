@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<LightningMessageChannel>
+    <masterLabel>AccountData</masterLabel>
+    <isExposed>true</isExposed>
+
+    <description>This is a channel which is used by LWC component to send data</description>
+        <!-- Am creating two fields that will be eventually 
+        used to send data -->
+    <lightningMessageFields>
+        <description>This is the API name in particular format</description>
+        <fieldName>apiName</fieldName>
+    </lightningMessageFields>
+    <lightningMessageFields>
+        <description>This is the name of the record</description>
+        <fieldName>name</fieldName>
+    </lightningMessageFields>
+</LightningMessageChannel>
