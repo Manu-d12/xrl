@@ -1,0 +1,8 @@
+<template>
+    <template if:true={components} for:each={components} for:item="component">
+        <c-server-Filter if:true={component.isServerFilter} key={component.key} style="width:100%; height:inherit" 
+        cfg={name} record-id={recordId}></c-server-Filter>
+        <c-Data-Table if:true={component.isDataTable} style="width:100%; height:inherit" key={component.key}
+        data-ind={config.sObjApiName} cfg={name}></c-Data-Table>
+    </template>
+</template>
