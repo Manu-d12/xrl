@@ -8,11 +8,11 @@
         <target>lightning__RecordPage</target>
         <target>lightning__HomePage</target>
     </targets>
-    <targetConfigs>
+    <!-- <targetConfigs>
         <targetConfig targets="lightning__RecordPage">
             <property required="true" name="apiName" type="String" label="Related List" description="Choose Needed RelatedList." datasource="apex://getRelListsPicklist"/>
             <property required="true" name="name" type="String" label="Uniq name" description="Enter uniq name of RelatedList."/>
             <property required="false" name="defaultListView" type="String" label="List view name" description="Please provide default list view name."/>
         </targetConfig>
-    </targetConfigs>
+    </targetConfigs> -->
 </LightningComponentBundle>
