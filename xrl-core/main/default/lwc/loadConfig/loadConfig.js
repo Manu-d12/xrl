@@ -1,9 +1,11 @@
-import { LightningElement, api, track } from 'lwc';
+import { LightningElement, api, track,wire } from 'lwc';
 import { libs } from 'c/libs';
+import {subscribe,MessageContext} from "lightning/messageService";
+import ACCOUNT_CHANNEL from "@salesforce/messageChannel/AccountDataMessageChannel__c";
 
 export default class LoadConfig extends LightningElement {
-    @api apiName;
-	@api name;
+    @track apiName;
+	@track name;
 	@api recordId;
 	@api defaultListView;	
 	@api configuration;
@@ -19,9 +21,41 @@ export default class LoadConfig extends LightningElement {
 	@track dataTableConfig;
     @track components;
 
+    @wire(MessageContext)
+  		messageContext;
+	receivedMessage;
+	subscription = null;
+    handleSubscribe() {
+		console.log("in handle subscribe");
+		console.log(this.subscription);
+		if (this.subscription) {
+		  	return;
+		}
+	
+		//4. Subscribing to the message channel
+		this.subscription = subscribe(
+		  this.messageContext,
+		  ACCOUNT_CHANNEL,
+		  (message) => {
+			this.handleMessage(message);
+		  }
+		);
+	  }
+	
+	handleMessage(message) {
+		this.receivedMessage = message ? message : "no message";
+		console.log(this.receivedMessage);
+		if(this.receivedMessage){
+			console.log(JSON.parse(this.receivedMessage.apiName));
+			this.apiName = this.receivedMessage.apiName;
+            this.name = this.receivedMessage.name;
+			this.loadCfg(true);
+		}
+	}
     connectedCallback() {
 		console.log('RENDERED');
-		this.loadCfg(true);
+        this.handleSubscribe();
+		// this.loadCfg(true);
 	}
 
 	setCustomLabels(cmd, data) {
