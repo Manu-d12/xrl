@@ -1,7 +1,10 @@
 import { LightningElement, api, track } from 'lwc';
 import { libs } from 'c/libs';
 import { filterLibs } from './filterLibs';
-import { NavigationMixin } from "lightning/navigation"
+import { NavigationMixin } from "lightning/navigation";
+
+import {subscribe,createMessageContext} from "lightning/messageService";
+import RecordChange from "@salesforce/messageChannel/RecordChange__c";
 
 const defClass = 'slds-grid slds-grid_align-spread';
 export default class dataTable extends NavigationMixin(LightningElement) {
@@ -209,8 +212,37 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		}
 	}
 
+	messageContext = createMessageContext();
+	receivedMessage;
+	subscription = null;
+    handleSubscribe() {
+		console.log("in handle subscribe");
+		console.log(this.subscription);
+		if (this.subscription) {
+		  	return;
+		}
+	
+		//4. Subscribing to the message channel
+		this.subscription = subscribe(
+		  this.messageContext,
+		  RecordChange,
+		  (message) => {
+			this.handleMessage(message);
+		  }
+		);
+	  }
+	
+	handleMessage(message) {
+		this.receivedMessage = message ? message : "no message";
+		console.log(this.receivedMessage);
+		if(this.receivedMessage){
+			this.updateView();
+		}
+	}
+
 	connectedCallback() {
 		//super();
+		this.handleSubscribe();
 		this.config = libs.getGlobalVar(this.cfg);
 		this.config.listViewConfig.forEach((el)=>{
 			if(el.cmpName === 'dataTable') {

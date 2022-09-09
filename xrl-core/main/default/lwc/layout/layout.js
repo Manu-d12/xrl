@@ -1,9 +1,9 @@
-import { LightningElement, api, track,wire } from 'lwc';
+import { LightningElement, api, track } from 'lwc';
 import { libs } from 'c/libs';
-import {subscribe,MessageContext} from "lightning/messageService";
-import ACCOUNT_CHANNEL from "@salesforce/messageChannel/AccountDataMessageChannel__c";
+import {subscribe,unsubscribe,createMessageContext} from "lightning/messageService";
+import LOAD_LAYOUT from "@salesforce/messageChannel/LayoutLoading__c";
 
-export default class LoadConfig extends LightningElement {
+export default class Layout extends LightningElement {
     @track apiName;
 	@track name;
 	@api recordId;
@@ -21,8 +21,7 @@ export default class LoadConfig extends LightningElement {
 	@track dataTableConfig;
     @track components;
 
-    @wire(MessageContext)
-  		messageContext;
+    messageContext = createMessageContext();
 	receivedMessage;
 	subscription = null;
     handleSubscribe() {
@@ -35,7 +34,7 @@ export default class LoadConfig extends LightningElement {
 		//4. Subscribing to the message channel
 		this.subscription = subscribe(
 		  this.messageContext,
-		  ACCOUNT_CHANNEL,
+		  LOAD_LAYOUT,
 		  (message) => {
 			this.handleMessage(message);
 		  }
@@ -46,7 +45,7 @@ export default class LoadConfig extends LightningElement {
 		this.receivedMessage = message ? message : "no message";
 		console.log(this.receivedMessage);
 		if(this.receivedMessage){
-			console.log(JSON.parse(this.receivedMessage.apiName));
+			// console.log(JSON.parse(this.receivedMessage.apiName));
 			this.apiName = this.receivedMessage.apiName;
             this.name = this.receivedMessage.name;
 			this.loadCfg(true);
@@ -262,4 +261,11 @@ export default class LoadConfig extends LightningElement {
             if(el.cmpName === 'serversideFilter') this.components.push({isServerFilter:true,key:'dataTable'+index});
 		});
 	}
+	unsubscribeToMessageChannel() {
+        unsubscribe(this.subscription);
+        this.subscription = null;
+    }
+	disconnectedCallback() {
+        this.unsubscribeToMessageChannel();
+    }
 }
