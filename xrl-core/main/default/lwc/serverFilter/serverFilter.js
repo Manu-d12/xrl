@@ -2,9 +2,6 @@ import { LightningElement,api, track } from 'lwc';
 import { libs } from 'c/libs';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
-import { publish, createMessageContext } from 'lightning/messageService';
-import RecordChange from "@salesforce/messageChannel/RecordChange__c";
-
 export default class ServerFilter extends LightningElement {
     @track config;
     @track sFilterfields = [];
@@ -86,20 +83,11 @@ export default class ServerFilter extends LightningElement {
 			callback: ((nodeName, data) => {  
 				libs.getGlobalVar(this.cfg).records = data[nodeName].records.length > 0 ? data[nodeName].records : undefined;
                 this.config.records = libs.getGlobalVar(this.cfg).records;
-                console.log(JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records)));
-                this.publishMessage();
+                const selectedEvent = new CustomEvent('message', { detail: {cmd:'dataTable:refresh',value:'refresh'} });
+                this.dispatchEvent(selectedEvent);
 			})
 		});
     }
-    messageContext = createMessageContext();
-
-	publishMessage() {
-		const messaage = {
-			name: "Cases"
-		};
-
-		publish(this.messageContext, RecordChange, messaage);
-	}
     generateCondition(){
         let condition = '';
         /*eslint-disable*/

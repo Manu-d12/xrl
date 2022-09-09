@@ -261,6 +261,18 @@ export default class Layout extends LightningElement {
             if(el.cmpName === 'serversideFilter') this.components.push({isServerFilter:true,key:'dataTable'+index});
 		});
 	}
+	handleChildMessage(event){
+		if(event.detail.cmd.startsWith('dataTable:')) this.handleDataTableMessage(event);
+		if(event.detail.cmd.startsWith('global:')) this.handleGlobalMessage(event);
+	}
+	handleGlobalMessage(event){
+
+	}
+	handleDataTableMessage(event){
+		if((event.detail.cmd).split(':')[1] === 'refresh'){
+			this.template.querySelector('c-Data-Table').updateView();
+		}
+	}
 	unsubscribeToMessageChannel() {
         unsubscribe(this.subscription);
         this.subscription = null;
