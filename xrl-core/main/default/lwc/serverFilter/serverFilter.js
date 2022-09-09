@@ -83,6 +83,8 @@ export default class ServerFilter extends LightningElement {
 			callback: ((nodeName, data) => {  
 				libs.getGlobalVar(this.cfg).records = data[nodeName].records.length > 0 ? data[nodeName].records : undefined;
                 this.config.records = libs.getGlobalVar(this.cfg).records;
+                const selectedEvent = new CustomEvent('message', { detail: {cmd:'dataTable:refresh',value:'refresh'} });
+                this.dispatchEvent(selectedEvent);
 			})
 		});
     }

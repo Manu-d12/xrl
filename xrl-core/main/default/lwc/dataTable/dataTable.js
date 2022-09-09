@@ -1,7 +1,7 @@
 import { LightningElement, api, track } from 'lwc';
 import { libs } from 'c/libs';
 import { filterLibs } from './filterLibs';
-import { NavigationMixin } from "lightning/navigation"
+import { NavigationMixin } from "lightning/navigation";
 
 const defClass = 'slds-grid slds-grid_align-spread';
 export default class dataTable extends NavigationMixin(LightningElement) {
@@ -208,7 +208,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			}
 		}
 	}
-
+	
 	connectedCallback() {
 		//super();
 		this.config = libs.getGlobalVar(this.cfg);
@@ -925,6 +925,11 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				actionName: 'edit',
 			}
 		});
+	}
+
+	@api
+	handleEventMessage(event){
+		if(event.detail.cmd.split(':')[1] === 'refresh') this.connectedCallback();
 	}
 
 }
