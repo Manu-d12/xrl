@@ -2,7 +2,7 @@
 <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata" fqn="loadConfig">
    <apiVersion>55.0</apiVersion>
     <isExposed>true</isExposed>
-    <masterLabel>HG - Load Config</masterLabel>
+    <masterLabel>HG - Layout</masterLabel>
     <targets>
         <target>lightning__AppPage</target>
         <target>lightning__RecordPage</target>
