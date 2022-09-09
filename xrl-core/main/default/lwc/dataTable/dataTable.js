@@ -913,7 +913,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 	@api
 	updateView(){
-		this.connectedCallback();
+		this.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
 	}
 
 	handleEventStandardEdit(recordId){
@@ -925,6 +925,11 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				actionName: 'edit',
 			}
 		});
+	}
+
+	@api
+	handleEventMessage(event){
+		if(event.detail.cmd.split(':')[1] === 'refresh') this.connectedCallback();
 	}
 
 }
