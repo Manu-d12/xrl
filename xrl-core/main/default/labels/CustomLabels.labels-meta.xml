@@ -743,4 +743,28 @@
         <shortDescription>tooltip_widthExample</shortDescription>
         <value>You can user % or px for definition. Ex: 20px or 5%</value>
     </labels>
+    <labels>
+        <fullName>lbl_selectFieldsForServerFilter</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_selectFieldsForServerFilter</shortDescription>
+        <value>Select fields for server filter</value>
+    </labels>
+    <labels>
+        <fullName>lbl_more</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_more</shortDescription>
+        <value>More</value>
+    </labels>
+    <labels>
+        <fullName>lbl_apply</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_apply</shortDescription>
+        <value>Apply</value>
+    </labels>
 </CustomLabels>
