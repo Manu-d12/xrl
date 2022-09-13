@@ -48,6 +48,29 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	connectedCallback() {
 		console.log('RENDERED');
 		this.loadCfg(true);
+		//hardcoded action bar config for now
+		this.config.actionBarConfig = [
+			{
+				"id":"action1",
+				"label": "Action 1",
+				"tip": "This is Tip Representation",
+				"callback": function(){
+					console.log('from action 1');
+				},
+				"isHidden":false,
+				"order":1
+			},
+			{
+				"id":"action2",
+				"label": "Action 2",
+				"tip": "This is Tip Representation 2",
+				"callback": function(){
+					console.log('from action 2');
+				},
+				"isHidden":false,
+				"order":2
+			}
+		];
 	}
 
 	setCustomLabels(cmd, data) {
