@@ -47,9 +47,9 @@ export default class Layout extends LightningElement {
 		console.log(this.receivedMessage);
 		if(this.receivedMessage){
 			// console.log(JSON.parse(this.receivedMessage.apiName));
-			// this.apiName = this.receivedMessage.apiName;
-            // this.name = this.receivedMessage.name;
-			this.configId = this.receivedMessage.configId;
+			this.apiName = this.receivedMessage.apiName;
+            this.name = this.receivedMessage.name;
+			// this.configId = this.receivedMessage.configId;
 			this.loadCfg(true);
 		}
 	}
@@ -95,12 +95,15 @@ export default class Layout extends LightningElement {
 		if (this.configuration) {
 			this.setConfig('getConfigResult', this.configuration);
 		} else {
-			libs.remoteAction(this, 'getConfigById', { configId: this.configId, callback: this.getWholeConfig.bind(this) });
+			libs.remoteAction(this, 'getConfigById', { configId: this.apiName, callback: this.getWholeConfig.bind(this) });
 		}
 	}
 	getWholeConfig(cmd,data){
 		console.log('my',JSON.parse(JSON.stringify(data[cmd].listViews)));
 		let jsonDetails = JSON.parse(JSON.stringify(data[cmd].listViews));
+		this.config.listViewName = jsonDetails[0].name;
+		this.config.sObjApiName = jsonDetails[0].sObjApiName;
+		this.config.relField = jsonDetails[0].relFieldName;
 		libs.remoteAction(this, 'getConfig', { sObjApiName: jsonDetails[0].sObjApiName, relField: jsonDetails[0].relFieldName, listViewName: jsonDetails[0].name, callback: this.setConfig.bind(this) });
 	}
 
@@ -207,7 +210,7 @@ export default class Layout extends LightningElement {
 			relField: this.config.relField,
 			addCondition: this.config.listViewConfig.addCondition,
 			fields: this.config.fields,
-			listViewName: this.config?.listView?.name,
+			listViewName: this.config?.listViewName,
 			callback: ((nodeName, data) => {
 				console.log('length', data[nodeName].records);
 				
