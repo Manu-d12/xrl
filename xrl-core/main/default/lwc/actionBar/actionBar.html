@@ -1,8 +1,8 @@
 <template>
     <div class="slds-grid slds-wrap" style="padding: 5px;">
         <template if:true={actionscfg} for:each={actionscfg} for:item="action" for:index="index">
-            <div class="slds-col slds-size_1-of-12" key={action.id} style="padding: 2px;">
-                <lightning-button variant="brand-outline" label={action.label} title={action.label} onclick={handleClick} class="slds-m-left_x-small"></lightning-button>
+            <div if:false={action.isHidden} class="slds-col slds-size_1-of-12" key={action.id} style="padding: 2px;">
+                <lightning-button variant="brand-outline" id={action.id} label={action.label} title={action.label} onclick={handleEventClick} class="slds-m-left_x-small"></lightning-button>
             </div>
         </template>
     </div>
