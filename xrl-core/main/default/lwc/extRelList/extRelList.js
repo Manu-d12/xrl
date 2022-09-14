@@ -25,7 +25,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 	@track showDialog = false;
 	@track dialogCfg;
-	@track dataTableConfig;
+	@track dataTableConfig = {};
 
 	constructor() {
 		super();
@@ -102,12 +102,12 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		 : 'width:32px;height:32px;margin: 10px;';
 
 		let adminConfig = (data[cmd].baseConfig) ? JSON.parse(data[cmd].baseConfig) : {};
-		let userConfig = (data[cmd].userConfig) ? JSON.parse(JSON.stringify(data[cmd].userConfig)) : {};
+		let userConfig = (data[cmd].userConfig) ? JSON.parse(JSON.stringify(data[cmd].userConfig)) : [];
 
 		console.log('adminConfig', adminConfig);
-		console.log('userConfig', JSON.parse(userConfig));
+		console.log('userConfig', userConfig);
 
-		let dataTableConfig;
+		// let dataTableConfig;
 		let adminDataTableConfig = adminConfig;
 		// adminConfig = JSON.parse(adminConfig);
 		// adminConfig.forEach((el)=>{
@@ -115,28 +115,34 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		// 		adminDataTableConfig = el;
 		// 	}
 		// });
-		userConfig = JSON.parse(userConfig);
-		userConfig.forEach((el)=>{
-			if(el.cmpName === 'dataTable') {
-				dataTableConfig = el;
-			}
-		});
+		if(userConfig.length !== 0){
+			userConfig = JSON.parse(userConfig);
+			userConfig.forEach((el)=>{
+				if(el.cmpName === 'dataTable') {
+					this.dataTableConfig = el;
+				}
+			});
+		}
+		
 
-		if (dataTableConfig.colModel === undefined){
-			dataTableConfig.colModel = [{
+		if (this.dataTableConfig.colModel === undefined){
+			// dataTableConfig = {};
+			this.dataTableConfig.cmpName = 'dataTable';
+			this.dataTableConfig.colModel = [{
 				"fieldName" : "Id"
 			}];
 		} 
+		console.log('dataTable Config: ', this.dataTableConfig.colModel);
 
 		let mergedConfig = {};
-		Object.assign(mergedConfig, dataTableConfig);
+		Object.assign(mergedConfig, this.dataTableConfig);
 		mergedConfig.colModel = [];
 
 		let baseColMap = new Map();
 		adminDataTableConfig?.colModel?.forEach(col => {
 			baseColMap.set(col.fieldName, col);
 		});
-		dataTableConfig?.colModel?.forEach(col => {
+		this.dataTableConfig?.colModel?.forEach(col => {
 			if (baseColMap.has(col.fieldName)) {
 				let mergedCol = Object.assign(baseColMap.get(col.fieldName), col);
 				mergedConfig.colModel.push(mergedCol);
@@ -146,11 +152,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			}
 		});
 		mergedConfig.colModel.push(...Array.from(baseColMap.values()));
-		dataTableConfig.colModel = mergedConfig.colModel;
+		this.dataTableConfig.colModel = mergedConfig.colModel;
 		// Object.assign(mergedConfig, userConfig);
 		userConfig.forEach((el)=>{
 			if(el.cmpName === 'dataTable') {
-				el = dataTableConfig;
+				el = this.dataTableConfig;
 			}
 		});
 		console.log('mergedConfig', userConfig);
@@ -242,11 +248,19 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				e.isEditable = false;
 			}
 		});
-		this.config.listViewConfig.forEach((el)=>{
-			if(el.cmpName === 'dataTable') {
-				el=this.dataTableConfig;
-			}
-		});
+		if(this.config.listViewConfig.length === 0){
+			this.config.listViewConfig[0]={'cmpName':'serversideFilter'};
+			this.config.listViewConfig[1] = {
+				'cmpName':'dataTable',
+				'colModel':this.dataTableConfig.colModel
+			};
+		}else{
+			this.config.listViewConfig.forEach((el)=>{
+				if(el.cmpName === 'dataTable') {
+					el=this.dataTableConfig;
+				}
+			});
+		}
 		this.config.isServerFilter = true;
 	}
 

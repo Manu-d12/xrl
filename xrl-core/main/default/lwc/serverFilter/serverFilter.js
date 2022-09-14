@@ -20,7 +20,7 @@ export default class ServerFilter extends LightningElement {
 			if(el.cmpName === 'serversideFilter') {
 				this.filterJson = el;
 			}
-            if(el.cmpName === 'serversideFilter') {
+            if(el.cmpName === 'dataTable') {
 				this.dataTableJson = el;
 			}
 		});
