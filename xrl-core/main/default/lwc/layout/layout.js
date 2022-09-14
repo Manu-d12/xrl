@@ -20,6 +20,7 @@ export default class Layout extends LightningElement {
 	@track dialogCfg;
 	@track dataTableConfig;
     @track components;
+	@track configId;
 
     messageContext = createMessageContext();
 	receivedMessage;
@@ -48,6 +49,7 @@ export default class Layout extends LightningElement {
 			// console.log(JSON.parse(this.receivedMessage.apiName));
 			this.apiName = this.receivedMessage.apiName;
             this.name = this.receivedMessage.name;
+			// this.configId = this.receivedMessage.configId;
 			this.loadCfg(true);
 		}
 	}
@@ -88,25 +90,26 @@ export default class Layout extends LightningElement {
 			});
 		}
 		this.config = libs.getGlobalVar(this.name);
-		console.log(this.name);
-		console.log(JSON.parse(JSON.stringify(this.config)));
 		
-		let listViewName = isInit && this.defaultListView !== undefined ? this.defaultListView : (!isInit && this.name !== undefined ? this.name : undefined);
-		console.log(this.defaultListView);
-		console.log(listViewName);
+
 		if (this.configuration) {
 			this.setConfig('getConfigResult', this.configuration);
 		} else {
-			libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: listViewName, callback: this.setConfig.bind(this) });
+			libs.remoteAction(this, 'getConfigById', { configId: this.apiName, callback: this.getWholeConfig.bind(this) });
 		}
+	}
+	getWholeConfig(cmd,data){
+		console.log('my',JSON.parse(JSON.stringify(data[cmd].listViews)));
+		let jsonDetails = JSON.parse(JSON.stringify(data[cmd].listViews));
+		this.config.listViewName = jsonDetails[0].name;
+		this.config.sObjApiName = jsonDetails[0].sObjApiName;
+		this.config.relField = jsonDetails[0].relFieldName;
+		libs.remoteAction(this, 'getConfig', { sObjApiName: jsonDetails[0].sObjApiName, relField: jsonDetails[0].relFieldName, listViewName: jsonDetails[0].name, callback: this.setConfig.bind(this) });
 	}
 
 	setConfig(cmd, data) {
 		console.log(cmd, JSON.parse(JSON.stringify(data)), JSON.parse(JSON.stringify(data[cmd])));
 		libs.getGlobalVar(this.name).userInfo = data.userInfo;
-		libs.getGlobalVar(this.name).iconName = data[cmd].iconMap.iconURL;
-		libs.getGlobalVar(this.name).iconStyle = data[cmd].iconMap.iconURL.includes('img/icon') ? 'width:32px;height:32px;background-color: #d8c760;margin: 10px;'
-		 : 'width:32px;height:32px;margin: 10px;';
 
 		let adminConfig = (data[cmd].baseConfig) ? JSON.parse(data[cmd].baseConfig) : {};
 		let userConfig = (data[cmd].userConfig) ? JSON.parse(JSON.stringify(data[cmd].userConfig)) : {};
@@ -207,7 +210,7 @@ export default class Layout extends LightningElement {
 			relField: this.config.relField,
 			addCondition: this.config.listViewConfig.addCondition,
 			fields: this.config.fields,
-			listViewName: this.config?.listView?.name,
+			listViewName: this.config?.listViewName,
 			callback: ((nodeName, data) => {
 				console.log('length', data[nodeName].records);
 				

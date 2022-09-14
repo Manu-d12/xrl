@@ -17,6 +17,9 @@ global with sharing class infrastructure {
 				when 'getConfig' {
 					resultMethod = getConfig(data);
 				}
+				when 'getConfigById' {
+					resultMethod = getConfigById(data);
+				}
 				when 'query' {
 					resultMethod = getQuery(data);
 				}
@@ -165,6 +168,41 @@ global with sharing class infrastructure {
 		});
 
 		result.put('iconMap',retrieveIconForObject(sObjApiName));
+
+		return result;
+	}
+	private static map<string, object> getConfigById(map < string, object > data) {
+		// string sObjApiName = (string) data.get('sObjApiName');
+		// string relField = (string) data.get('relField');
+		// string listViewName = (string) data.get('listViewName');
+		string configId = (string) data.get('configId');
+		boolean isNeedDescribe = true;
+
+		map<string, object> result = new map<string, object>{};
+
+		list<map<string, object>> listViews = new list<map<string, object>>{};
+
+		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c,sObjApiName__c,relFieldApiName__c FROM extRelListConfig__c WHERE Id = :configId LIMIT 20];
+		for (integer i = 0; i < lst.size(); i++) {
+			extRelListConfig__c item = lst[i];
+			map<string, object> view = new map<string, object>{
+				'name' => item.listViewName__c,
+				'label' => item.listViewLabel__c,
+				'isAdminConfig' => item.isAdminConfig__c,
+				'sObjApiName' => item.sObjApiName__c,
+				'relFieldName' => item.relFieldApiName__c
+			};
+			view.put('isUserConfig', true);
+			result.put('userConfig', item.JSON__c);
+			if (item.isAdminConfig__c) result.put('baseConfig', item.JSON__c);
+			listViews.add(view);
+		}
+		result.put('listViews', listViews);
+
+		result.put('currency', new map<string, object>{
+			'orgCurrency' =>  UserInfo.getDefaultCurrency(),
+			'isMultyCurrencyOrg' => UserInfo.isMultiCurrencyOrganization()
+		});
 
 		return result;
 	}
