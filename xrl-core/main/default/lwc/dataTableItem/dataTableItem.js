@@ -7,14 +7,14 @@ export default class dataTableItem extends LightningElement {
 	@api col;
 	@api iseditmode;
 	isBool = false;
-	@track dataTableCfg;
+	@track config = {};
 
 	renderedCallback() {
 		if (this.iseditmode && this.row._focus === this.col.fieldName) setTimeout((() => { this.template.querySelector('[data-id="' + this.col.fieldName + '"]').focus(); }), 100);
 		//console.log(this.col.options);
 		libs.getGlobalVar(this.cfg).listViewConfig.forEach((el)=>{
 			if(el.cmpName === 'dataTable'){
-				this.dataTableCfg = el;
+				this.config.dataTableCfg = el;
 			}
 		});
 	}
@@ -119,7 +119,7 @@ export default class dataTableItem extends LightningElement {
 		// console.log(event);
 		// let config = libs.getGlobalVar(this.cfg).listViewConfig;
 		// console.log(config);
-		this.dataTableCfg._saveEdit(true, this.col.fieldName, this.col.isEditableBool ? event.target.checked : event.target.value);
+		this.config.dataTableCfg._saveEdit(true, this.col.fieldName, this.col.isEditableBool ? event.target.checked : event.target.value);
 		// console.log(config);
 	}
 	
@@ -128,13 +128,13 @@ export default class dataTableItem extends LightningElement {
 		if (event.which == 27) {
 			// let config = libs.getGlobalVar(this.cfg).listViewConfig;
 			// console.log(config);
-			this.dataTableCfg._saveEdit(false);
+			this.config.dataTableCfg._saveEdit(false);
 			// console.log(config);
 		}
 		if (event.which == 13) {
 			// let config = libs.getGlobalVar(this.cfg).listViewConfig;
 			// console.log(config);
-			this.dataTableCfg._saveEdit(true);
+			this.config.dataTableCfg._saveEdit(true);
 			// console.log(config);
 		}
 	}
