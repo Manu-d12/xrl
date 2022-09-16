@@ -265,7 +265,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	get changedRecords() {
-		return 'Count of changed records ' + this.config.listViewConfig._changedRecords.length;
+		return 'Count of changed records ' + this.dataTableConfig._changedRecords.length;
 	}
 
 	get hasDynamicActions() {
@@ -273,9 +273,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	resetChangedRecords() {
-		this.template.querySelector('c-Data-Table').setUpdateInfo('• ' + this.config.listViewConfig._changedRecords.length + ' item(s) updated');
+		this.template.querySelector('c-Data-Table').setUpdateInfo('• ' + this.dataTableConfig._changedRecords.length + ' item(s) updated');
 		setTimeout((() => { this.template.querySelector('c-Data-Table').setUpdateInfo(''); }), 3000);
-		this.config.listViewConfig._changedRecords = undefined;
+		this.dataTableConfig._changedRecords = undefined;
 	}
 
 	handleEvent(event) {
@@ -298,7 +298,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 			let changedItems = this.template.querySelector('c-Data-Table').getRecords().filter(el => {
 				// In thiscase need merge to libs.getGlobalVar(this.name).records;
-				return this.config.listViewConfig._changedRecords.indexOf(el.Id) > -1
+				return this.dataTableConfig._changedRecords.indexOf(el.Id) > -1
 			})
 
 			//changedItems = JSON.parse(JSON.stringify(changedItems));
