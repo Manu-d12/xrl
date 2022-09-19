@@ -185,7 +185,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			isNeedDescribe: true,
 			sObjApiName: this.config.sObjApiName,
 			relField: this.config.relField,
-			addCondition: this.config.listViewConfig.addCondition,
+			addCondition: this.config.listViewConfig[0].addCondition,
 			fields: this.config.fields,
 			listViewName: this.config?.listView?.name,
 			callback: ((nodeName, data) => {
