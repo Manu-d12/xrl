@@ -51,7 +51,7 @@ public class packageTest {
         test.startTest();
         map < string, object > res = infrastructure.dispatcherAura('saveListView', data);
         test.stopTest();
-        //System.assertNotEquals(null, res.get('saveListViewResult'));
+        System.assertNotEquals(null, res.get('saveListViewResult'));
         //System.assertEquals(2, [SELECT Id FROM extRelListConfig__c].size());
     }
 

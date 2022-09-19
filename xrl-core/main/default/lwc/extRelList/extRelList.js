@@ -25,7 +25,6 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 	@track showDialog = false;
 	@track dialogCfg;
-	@track dataTableConfig;
 
 	constructor() {
 		super();
@@ -38,7 +37,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		});
 
 		window.addEventListener('beforeunload', (event) => {
-			if (this.config.listViewConfig._changedRecords) {
+			if (this.config.listViewConfig[0]._changedRecords) {
 				event.preventDefault();
 				event.returnValue = '';
 			}
@@ -125,41 +124,39 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		 : 'width:32px;height:32px;margin: 10px;';
 
 		let adminConfig = (data[cmd].baseConfig) ? JSON.parse(data[cmd].baseConfig) : {};
-		let userConfig = (data[cmd].userConfig) ? JSON.parse(JSON.stringify(data[cmd].userConfig)) : {};
+		let userConfig = (data[cmd].userConfig) ? JSON.parse(JSON.stringify(data[cmd].userConfig)) : [];
 
 		console.log('adminConfig', adminConfig);
-		console.log('userConfig', JSON.parse(userConfig));
+		console.log('userConfig', userConfig);
 
-		let dataTableConfig;
 		let adminDataTableConfig = adminConfig;
-		// adminConfig = JSON.parse(adminConfig);
-		// adminConfig.forEach((el)=>{
-		// 	if(el.cmpName === 'dataTable') {
-		// 		adminDataTableConfig = el;
-		// 	}
-		// });
-		userConfig = JSON.parse(userConfig);
-		userConfig.forEach((el)=>{
-			if(el.cmpName === 'dataTable') {
-				dataTableConfig = el;
-			}
-		});
+		if(userConfig.length !== 0){
+			userConfig = JSON.parse(userConfig);
+			userConfig.forEach((el)=>{
+				if(el.cmpName === 'dataTable') {
+					this.config.dataTableConfig = el;
+				}
+			});
+		}
+		
 
-		if (dataTableConfig.colModel === undefined){
-			dataTableConfig.colModel = [{
+		if (this.config.dataTableConfig.colModel === undefined){
+			this.config.dataTableConfig.cmpName = 'dataTable';
+			this.config.dataTableConfig.colModel = [{
 				"fieldName" : "Id"
 			}];
 		} 
+		console.log('dataTable Config: ', this.config.dataTableConfig.colModel);
 
 		let mergedConfig = {};
-		Object.assign(mergedConfig, dataTableConfig);
+		Object.assign(mergedConfig, this.config.dataTableConfig);
 		mergedConfig.colModel = [];
 
 		let baseColMap = new Map();
 		adminDataTableConfig?.colModel?.forEach(col => {
 			baseColMap.set(col.fieldName, col);
 		});
-		dataTableConfig?.colModel?.forEach(col => {
+		this.config.dataTableConfig?.colModel?.forEach(col => {
 			if (baseColMap.has(col.fieldName)) {
 				let mergedCol = Object.assign(baseColMap.get(col.fieldName), col);
 				mergedConfig.colModel.push(mergedCol);
@@ -169,21 +166,12 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			}
 		});
 		mergedConfig.colModel.push(...Array.from(baseColMap.values()));
-		dataTableConfig.colModel = mergedConfig.colModel;
+		this.config.dataTableConfig.colModel = mergedConfig.colModel;
 		// Object.assign(mergedConfig, userConfig);
-		userConfig.forEach((el)=>{
-			if(el.cmpName === 'dataTable') {
-				el = dataTableConfig;
-			}
-		});
+		userConfig[0] = this.config.dataTableConfig;
 		console.log('mergedConfig', userConfig);
 
 		this.config.listViewConfig = userConfig;
-		this.config.listViewConfig.forEach((el)=>{
-			if(el.cmpName === 'dataTable') {
-				this.dataTableConfig =  el;
-			}
-		});
 		this.config.listView = data[cmd].listViews.find(v => { return v.isUserConfig;});
 		console.log(JSON.stringify(this.config.listView));
 		this.config.currency =  data[cmd].currency;
@@ -198,7 +186,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		this.config.fields = [];
 		this.config.lockedFields = [];
 		
-		this.dataTableConfig?.colModel?.forEach(e => {
+		this.config.listViewConfig[0]?.colModel?.forEach(e => {
 			let describe = this.config.describe[e.fieldName];
 			if (describe && describe.type === 'reference') {
 				this.config.fields.push(describe.relationshipName + '.Name');
@@ -209,7 +197,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		});
 		
 		// Temporary
-		this.config.isGlobalSearch=this.dataTableConfig.isGlobalSearch;
+		this.config.isGlobalSearch=this.config.listViewConfig[0].isGlobalSearch;
 
 		console.log('this.config', this.config);
 		this.loadRecords();		
@@ -220,7 +208,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			isNeedDescribe: true,
 			sObjApiName: this.config.sObjApiName,
 			relField: this.config.relField,
-			addCondition: this.config.listViewConfig.addCondition,
+			addCondition: this.config.listViewConfig[0].addCondition,
 			fields: this.config.fields,
 			listViewName: this.config?.listView?.name,
 			callback: ((nodeName, data) => {
@@ -238,7 +226,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	generateColModel() {
-		this.dataTableConfig.colModel.forEach(e => {
+		this.config.listViewConfig[0].colModel.forEach(e => {
 			let describe = this.config.describe[e.fieldName];
 			if (e.label === undefined) e.label = describe.label;
 			if (e.type === undefined) e.type = describe.type;
@@ -265,16 +253,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				e.isEditable = false;
 			}
 		});
-		this.config.listViewConfig.forEach((el)=>{
-			if(el.cmpName === 'dataTable') {
-				el=this.dataTableConfig;
-			}
-		});
 		this.config.isServerFilter = true;
 	}
 
 	get changedRecords() {
-		return 'Count of changed records ' + this.config.listViewConfig._changedRecords.length;
+		return 'Count of changed records ' + this.config.listViewConfig[0]._changedRecords.length;
 	}
 
 	get hasDynamicActions() {
@@ -282,9 +265,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	resetChangedRecords() {
-		this.template.querySelector('c-Data-Table').setUpdateInfo('• ' + this.config.listViewConfig._changedRecords.length + ' item(s) updated');
+		this.template.querySelector('c-Data-Table').setUpdateInfo('• ' + this.config.listViewConfig[0]._changedRecords.length + ' item(s) updated');
 		setTimeout((() => { this.template.querySelector('c-Data-Table').setUpdateInfo(''); }), 3000);
-		this.config.listViewConfig._changedRecords = undefined;
+		this.config.listViewConfig[0]._changedRecords = undefined;
 	}
 
 	handleEvent(event) {
@@ -307,7 +290,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 			let changedItems = this.template.querySelector('c-Data-Table').getRecords().filter(el => {
 				// In thiscase need merge to libs.getGlobalVar(this.name).records;
-				return this.config.listViewConfig._changedRecords.indexOf(el.Id) > -1
+				return this.config.listViewConfig[0]._changedRecords.indexOf(el.Id) > -1
 			})
 
 			//changedItems = JSON.parse(JSON.stringify(changedItems));
@@ -386,7 +369,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			fields.push({ label: this.config.describe[key].label, value: this.config.describe[key].name });
 		}
 		let lockedOptions = [];
-		for (let col of this.dataTableConfig.colModel) {
+		for (let col of this.config.listViewConfig[0].colModel) {
 			lockedOptions.push({ label: col.label, value: col.fieldName });
 		}
 		//this.config.listViewConfig.isShowCheckBoxes = true;
@@ -400,7 +383,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			"lockedOptions": libs.sortRecords(lockedOptions, 'label', true),
 			"lockedFields": this.config.lockedFields,
 			"handleEvent": this.handleEventDialog.bind(this),
-			"listViewConfig": JSON.parse(JSON.stringify(this.dataTableConfig)),
+			"listViewConfig": JSON.parse(JSON.stringify(this.config.listViewConfig[0])),
 			"listViewName": this.config?.listView?.name,
 			"listViewLabel": this.config?.listView?.label,
 			"listViewAdmin": this.config?.listView?.isAdminConfig ?? false
@@ -616,7 +599,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 		console.log(tmp);
 		let cnfg = [];
-		cnfg.push(this.config.listViewConfig[0]);
+		// cnfg.push(this.config.listViewConfig[0]);
 		cnfg.push(tmp);
 		// this.config.listViewConfig.forEach((el)=>{
 		// 	if(el.cmpName == 'dataTable') {
