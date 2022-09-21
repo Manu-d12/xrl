@@ -99,6 +99,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		libs.getGlobalVar(this.name).iconName = data[cmd].iconMap.iconURL;
 		libs.getGlobalVar(this.name).iconStyle = data[cmd].iconMap.iconURL.includes('img/icon') ? 'width:32px;height:32px;background-color: #d8c760;margin: 10px;'
 		 : 'width:32px;height:32px;margin: 10px;';
+		 this.config.actionsBar = {};
 
 		let adminConfig = (data[cmd].baseConfig) ? JSON.parse(data[cmd].baseConfig) : {};
 		let userConfig = (data[cmd].userConfig) ? JSON.parse(JSON.stringify(data[cmd].userConfig)) : [];
@@ -173,9 +174,75 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			if (e.locked) this.config.lockedFields.push(e.fieldName);
 		});
 		
-		// Temporary
 		this.config.isGlobalSearch=this.config.listViewConfig[0].isGlobalSearch;
-		this.config.actions = this.config.listViewConfig[0].actions;
+		if(!this.config.listViewConfig[0].actions){
+			this.config.listViewConfig[0].actions = [
+				{
+				  "actionId": ":action_delete",
+				  "actionLabel": "Delete",
+				  "actionTip": "This is Tip Representation",
+				  "actionCallBack": "function(){\nconsole.log('');\n}",
+				  "actionIsHidden": false,
+				  "order": 1,
+				  "isCallBackEnabled": false,
+				  "actionIconName": "utility:delete"
+				},
+				{
+				  "actionId": ":action_export",
+				  "actionLabel": "Download",
+				  "actionTip": "This is Tip Representation",
+				  "actionCallBack": "function(){\nconsole.log('');\n}",
+				  "actionIsHidden": false,
+				  "order": 1,
+				  "isCallBackEnabled": false,
+				  "actionIconName": "utility:download"
+				},
+				{
+				  "actionId": ":action_new",
+				  "actionLabel": "New",
+				  "actionTip": "This is Tip Representation 2",
+				  "actionCallBack": "function(){\nconsole.log('');\n}",
+				  "actionIsHidden": false,
+				  "order": 3,
+				  "isCallBackEnabled": false,
+				  "actionIconName": "utility:new"
+				},
+				{
+				  "actionId": ":refresh",
+				  "actionLabel": "Refresh",
+				  "actionTip": "This is Tip Representation",
+				  "actionCallBack": "function(){\nconsole.log('');\n}",
+				  "actionIsHidden": false,
+				  "order": 1,
+				  "isCallBackEnabled": false,
+				  "actionIconName": "utility:refresh"
+				},
+				{
+				  "actionId": ":request_open",
+				  "actionLabel": "Request Open",
+				  "actionTip": "This is Tip Representation 2",
+				  "actionCallBack": "function(){\nconsole.log('');\n}",
+				  "actionIsHidden": false,
+				  "order": 2,
+				  "isCallBackEnabled": false,
+				  "actionIconName": "utility:email"
+				},
+				{
+				  "actionId": ":expand_view",
+				  "actionLabel": "Expand",
+				  "actionTip": "This is Tip Representation 2",
+				  "actionCallBack": "function(){\nconsole.log('');\n}",
+				  "actionIsHidden": false,
+				  "order": 2,
+				  "isCallBackEnabled": false,
+				  "actionIconName": "utility:expand"
+				}
+			  ];
+		}
+		this.config.actionsBar = {
+			'actions':this.config.listViewConfig[0].actions,
+			'_handleEvent':this.handleEvent.bind(this)
+		};
 
 		console.log('this.config', this.config);
 		this.loadRecords();		
@@ -413,6 +480,24 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if (val === 'dialog:setField') {
 			this.config.dialog.field = event.detail.value;
 		}
+		if (val === 'dialog:setAction') {
+			console.log('called',JSON.parse(JSON.stringify(event.detail)));
+			this.config.dialog.action = event.detail.value;
+		}
+		if (val === 'dialog:setActionParam') {
+			let param = event.target.getAttribute('data-param');
+			let type = event.target.getAttribute('data-type');
+			let value = (type === 'checkbox') ? event.target.checked : event.target.value;
+			console.log(type, param, value);
+
+			let field = this.config.dialog.listViewConfig.actions.find(e => {
+				return e.actionId === this.config.dialog.action;
+			})
+
+			if (field) {
+				field[param] = value;
+			}
+		}
 		if (val === 'dialog:setFieldParam') {
 			let param = event.target.getAttribute('data-param');
 			let type = event.target.getAttribute('data-type');
@@ -577,15 +662,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 		console.log(tmp);
 		let cnfg = [];
-		// cnfg.push(this.config.listViewConfig[0]);
 		cnfg.push(tmp);
-		// this.config.listViewConfig.forEach((el)=>{
-		// 	if(el.cmpName == 'dataTable') {
-		// 		el = tmp;
-		// 		console.log('called',el);
-		// 	}
-		// });
-		console.log(cnfg);
 		return JSON.stringify(cnfg, null, '\t');
 	}
 
@@ -610,8 +687,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if (val.startsWith(':action_export')) this.handleEventExport(event);
 		if (val.startsWith(':action_delete')) {
 			let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
+			console.log(records);
 			// wrong - shouldnt call loadrecords with delete results
-			libs.remoteAction(this, 'delRecords', { records: records, sObjApiName: this.config.sObjApiName, callback: this.loadRecords });
+			libs.remoteAction(this, 'delRecords', { records: records, sObjApiName: this.config.sObjApiName, callback: this.loadCfg });
 		}
 
 		if (val.startsWith(':action_new')) {

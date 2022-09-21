@@ -9,6 +9,10 @@ export default class extRelListSettings extends LightningElement {
 	connectedCallback() {
 		console.log(this.cfg);
 		this.config = libs.getGlobalVar(this.cfg);
+		this.config.dialog.allActions = [];
+		this.config.dialog.listViewConfig.actions.forEach((el)=>{
+			this.config.dialog.allActions.push({label:el.actionLabel,value:el.actionId});
+		});
 		this.config.listViewConfig.forEach((el)=>{
 			if(el.cmpName === 'dataTable') {
 				this.dataTable = el;
@@ -91,6 +95,41 @@ export default class extRelListSettings extends LightningElement {
 			})
 		}
 		console.log(result);
+		return result;
+	}
+
+	get actionItem() {
+		let result = [];
+		
+		if (this.config.dialog.action === undefined) {return result};
+		
+		let fieldParams = this.config.dialog.listViewConfig.actions.find( e=>{
+			return e.actionId === this.config.dialog.action;
+		});
+
+		if (!fieldParams) fieldParams = {}
+
+		let tmp = libs.customActions();
+
+		/* eslint-disable */
+		for (let item in tmp) {
+			let defValue = (item === 'actionId') 
+			? this.config.dialog.action 
+			: fieldParams[item] === undefined
+				? tmp[item].defValue
+				: fieldParams[item];
+			result.push({
+				"paramName" : item,
+				"type" : tmp[item].type,
+				"label" : tmp[item].label,
+				"isTextArea" : (tmp[item].type === 'function'),
+				"tooltip" : (item === 'fieldName') ? tmp[item].tooltip + '\n' + '.Field Type:' + fieldParams.type : tmp[item].tooltip,
+				"isDisabled" : (item === 'fieldName'),
+				"value" : defValue,
+				"isChecked" : (tmp[item].type === 'checkbox') ? defValue : undefined,
+				"placeHolder" : tmp[item].placeHolder
+			})
+		}
 		return result;
 	}
 

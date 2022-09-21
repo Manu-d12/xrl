@@ -17,12 +17,13 @@
 				</div>
 				<div class="slds-m-left_xx-small forceListViewSettingsMenu">					
 					<span> <!-- Need provide configuration for all those standard buttons -->
-						<lightning-button-icon icon-name="utility:delete" alternative-text={config._LABELS.altTxt_delete} title={config._LABELS.title_delete} data-id=":action_delete" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
+						<c-action-Bar if:true={config.actionsBar} actionscfg={config.actionsBar}></c-action-Bar>
+						<!-- <lightning-button-icon icon-name="utility:delete" alternative-text={config._LABELS.altTxt_delete} title={config._LABELS.title_delete} data-id=":action_delete" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
 						<lightning-button-icon icon-name="utility:download" alternative-text={config._LABELS.altTxt_export} title={config._LABELS.title_export} data-id=":action_export" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
 						<lightning-button-icon icon-name="utility:new"  alternative-text="Refresh List View" title="New" data-id=":action_new" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
 						<lightning-button-icon icon-name="utility:refresh"  alternative-text={config._LABELS.altTxt_refreshListView} title={config._LABELS.title_refresh} data-id=":refresh" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
 						<lightning-button-icon icon-name="utility:email" alternative-text={config._LABELS.altTxt_requestAFeature} title={config._LABELS.title_requestAFeature} data-id=":request_open" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
-						<lightning-button-icon icon-name="utility:expand" alternative-text={config._LABELS.altTxt_expandView} title={config._LABELS.title_expandView} data-id=":expand_view" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
+						<lightning-button-icon icon-name="utility:expand" alternative-text={config._LABELS.altTxt_expandView} title={config._LABELS.title_expandView} data-id=":expand_view" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon> -->
 					</span>
 					<span if:true={config.listViewConfig}>
 						<lightning-button-icon if:true={config.dataTableConfig._changedRecords} icon-name="utility:save"  variant="brand" alternative-text={config._LABELS.altTxt_save} title={changedRecords} data-id=":save" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
@@ -39,7 +40,6 @@
 					</lightning-button-menu>
 				</div>
 			</div>
-			<c-action-Bar if:true={config.actions} actionscfg={config.actions}></c-action-Bar>
 			<c-Data-Table if:true={config.records} style="width:100%; height:inherit" data-ind={config.sObjApiName} cfg={name}></c-Data-Table>
 			<p if:false={config.records} class="slds-card__footer"><b>{config._LABELS.errMsg_recordsNotFound}</b></p>
 

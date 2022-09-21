@@ -244,6 +244,44 @@ export let libs = {
 		}
 		return defParams;
 	},
+	customActions:function(){
+		let defParams = {
+			"actionId" : {
+				"defValue": ':idNew',
+				"type": "text",
+				"label": "Id of the action",
+				"tooltip": "Example: :expand_view"
+			},
+			"actionLabel" : {
+				"defValue":'label',
+				"type": "text",
+				"label": "Label of the action",
+				"tooltip": "Example: Full Screen"
+			},
+			"actionTip" : {
+				"defValue":'Tip Representation',
+				"type": "text",
+				"label": "Tip for the action",
+				"tooltip": "Example: This is full screen your grid"
+			},
+			"actionCallBack" : {
+				"defValue":'',
+				"type": "function",
+				"label": "Call Back function"
+			},
+			"actionIsHidden" : {
+				"defValue":false,
+				"type": "checkbox",
+				"label": "Is action hidden?"
+			},
+			"actionIconName" : {
+				"defValue":"utility:refresh",
+				"type": "text",
+				"label": "Name of the icon to be shown"
+			}
+		}
+		return defParams;
+	},
 	remoteAction: function(scope, cmd, params) {
 		scope.config.isSpinner = true;
 		let outParams = {};
