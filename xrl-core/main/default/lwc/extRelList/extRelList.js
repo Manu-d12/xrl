@@ -610,7 +610,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if (val.startsWith(':action_delete')) {
 			let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
 			// wrong - shouldnt call loadrecords with delete results
-			libs.remoteAction(this, 'delRecords', { records: records, sObjApiName: this.config.sObjApiName, callback: this.loadRecords });
+			libs.remoteAction(this, 'delRecords', { records: records, sObjApiName: this.config.sObjApiName, callback: this.loadCfg });
 		}
 
 		if (val.startsWith(':action_new')) {
@@ -684,7 +684,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let ws = {
 			'!cols': []
 		};
-		let columns = this.colModel.filter(col => { return !col.isHidden; });
+		let columns = this.config.listViewConfig[0].colModel.filter(col => { return !col.isHidden; });
 		records.forEach((rec, i) => {
 			columns.forEach((col, j) => {
 				if (i === 0) {
