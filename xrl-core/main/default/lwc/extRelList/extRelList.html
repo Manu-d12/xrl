@@ -31,7 +31,7 @@
 					
 					<lightning-button-menu if:true={hasDynamicActions} alternative-text={config._LABELS.altTxt_dynamic} variant="border-filled" icon-name="utility:play" class="slds-p-horizontal_xx-small" menu-alignment="right">
 						<template for:each={config.listViewConfig.dynamicActions} for:item="action" for:index="index">
-							<lightning-menu-item key={action.name} data-id=":action_dynamic" data-index={index} label={action.label} prefix-icon-name="utility:multi_select_checkbox" onclick={handleEvent}></lightning-menu-item>
+							<lightning-menu-item key={action.name} data-id="std:action_dynamic" data-index={index} label={action.label} prefix-icon-name="utility:multi_select_checkbox" onclick={handleEvent}></lightning-menu-item>
 						</template>					
 					</lightning-button-menu>
 

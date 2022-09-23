@@ -118,7 +118,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 		
 
-		if (this.config.dataTableConfig.colModel === undefined){
+		if (this.config.dataTableConfig === undefined){
+			this.config.dataTableConfig = {};
 			this.config.dataTableConfig.cmpName = 'dataTable';
 			this.config.dataTableConfig.colModel = [{
 				"fieldName" : "Id"
@@ -178,64 +179,58 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if(!this.config.listViewConfig[0].actions){
 			this.config.listViewConfig[0].actions = [
 				{
-				  "actionId": ":action_delete",
+				  "actionId": "std:delete",
 				  "actionLabel": "Delete",
 				  "actionTip": "This is Tip Representation",
 				  "actionCallBack": "function(){\nconsole.log('');\n}",
 				  "actionIsHidden": false,
-				  "order": 1,
-				  "isCallBackEnabled": false,
-				  "actionIconName": "utility:delete"
+				  "actionIconName": "utility:delete",
+				  "isActionStandard":true
 				},
 				{
-				  "actionId": ":action_export",
+				  "actionId": "std:export",
 				  "actionLabel": "Download",
 				  "actionTip": "This is Tip Representation",
 				  "actionCallBack": "function(){\nconsole.log('');\n}",
 				  "actionIsHidden": false,
-				  "order": 1,
-				  "isCallBackEnabled": false,
-				  "actionIconName": "utility:download"
+				  "actionIconName": "utility:download",
+				  "isActionStandard":true
 				},
 				{
-				  "actionId": ":action_new",
+				  "actionId": "std:new",
 				  "actionLabel": "New",
 				  "actionTip": "This is Tip Representation 2",
 				  "actionCallBack": "function(){\nconsole.log('');\n}",
 				  "actionIsHidden": false,
-				  "order": 3,
-				  "isCallBackEnabled": false,
-				  "actionIconName": "utility:new"
+				  "actionIconName": "utility:new",
+				  "isActionStandard":true
 				},
 				{
-				  "actionId": ":refresh",
+				  "actionId": "std:refresh",
 				  "actionLabel": "Refresh",
 				  "actionTip": "This is Tip Representation",
 				  "actionCallBack": "function(){\nconsole.log('');\n}",
 				  "actionIsHidden": false,
-				  "order": 1,
-				  "isCallBackEnabled": false,
-				  "actionIconName": "utility:refresh"
+				  "actionIconName": "utility:refresh",
+				  "isActionStandard":true
 				},
 				{
-				  "actionId": ":request_open",
+				  "actionId": "std:request_open",
 				  "actionLabel": "Request Open",
 				  "actionTip": "This is Tip Representation 2",
 				  "actionCallBack": "function(){\nconsole.log('');\n}",
 				  "actionIsHidden": false,
-				  "order": 2,
-				  "isCallBackEnabled": false,
-				  "actionIconName": "utility:email"
+				  "actionIconName": "utility:email",
+				  "isActionStandard":true
 				},
 				{
-				  "actionId": ":expand_view",
+				  "actionId": "std:expand_view",
 				  "actionLabel": "Expand",
 				  "actionTip": "This is Tip Representation 2",
 				  "actionCallBack": "function(){\nconsole.log('');\n}",
 				  "actionIsHidden": false,
-				  "order": 2,
-				  "isCallBackEnabled": false,
-				  "actionIconName": "utility:expand"
+				  "actionIconName": "utility:expand",
+				  "isActionStandard":true
 				}
 			  ];
 		}
@@ -321,12 +316,12 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if (val === 'globalSearch') this.handleGlobalSearch(event);
 		if (val.startsWith('cfg:')) this.handleEventCfg(event);
 		if (val.startsWith('dialog:')) this.handleEventDialog(event);
-		if (val.startsWith(':refresh')) {
+		if (val.startsWith('std:refresh')) {
 			//libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.localConfig.listViewName, callback: this.loadRecords });
 			libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.config?.listView?.name, callback: this.setConfig });
 		}
 
-		if (val.startsWith(':action_')) this.handleEventActions(event, val);
+		if (val.startsWith('std:')) this.handleEventActions(event, val);
 
 		if (val.startsWith(':save')) {
 
@@ -346,7 +341,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			this.name = event.target.value;
 			this.loadCfg(false);
 		}
-		if (val.startsWith(':request_open')) {
+		if (val.startsWith('std:request_open')) {
 			this.dialogCfg = {
 				title: this.config._LABELS.title_reqAFeature,
 				contents: [
@@ -684,15 +679,15 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	handleEventActions(event, val) {
-		if (val.startsWith(':action_export')) this.handleEventExport(event);
-		if (val.startsWith(':action_delete')) {
+		if (val.startsWith('std:export')) this.handleEventExport(event);
+		if (val.startsWith('std:delete')) {
 			let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
 			console.log(records);
 			// wrong - shouldnt call loadrecords with delete results
 			libs.remoteAction(this, 'delRecords', { records: records, sObjApiName: this.config.sObjApiName, callback: this.loadCfg });
 		}
 
-		if (val.startsWith(':action_new')) {
+		if (val.startsWith('std:new')) {
 
 			let defValue = {};
 			defValue[this.config.relField] = this.recordId;
@@ -710,7 +705,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			});
 		}
 
-		if (val.startsWith(':action_dynamic')) {			
+		if (val.startsWith('std:action_dynamic')) {			
 			let action = this.config.listViewConfig.dynamicActions[event.target.dataset.index];			
 			let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
 

@@ -1,5 +1,5 @@
 <template>
-    <template if:true={actionscfg.actions} for:each={actionscfg.actions} for:item="action" for:index="index">
+    <template if:true={actionscfg.actions} for:each={config.actions} for:item="action" for:index="index">
             <lightning-button-icon if:false={action.actionIsHidden} key={action.actionId} icon-name={action.actionIconName} 
             id={action.actionId} data-id={action.actionId} label={action.actionLabel} title={action.label} 
             onclick={handleEventClick} class="slds-m-left_x-small"></lightning-button-icon>

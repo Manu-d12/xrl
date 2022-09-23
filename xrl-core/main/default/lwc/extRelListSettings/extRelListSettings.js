@@ -18,6 +18,7 @@ export default class extRelListSettings extends LightningElement {
 				this.dataTable = el;
 			}
 		});
+		this.config.enableActions = ['actionTip','actionIsHidden','actionIconName','actionOrder'];
 	}
 
 	get selectedFields() {
@@ -113,6 +114,7 @@ export default class extRelListSettings extends LightningElement {
 
 		/* eslint-disable */
 		for (let item in tmp) {
+			if((tmp[item].type === 'function') && (fieldParams['isActionStandard'])) continue;
 			let defValue = (item === 'actionId') 
 			? this.config.dialog.action 
 			: fieldParams[item] === undefined
@@ -123,14 +125,25 @@ export default class extRelListSettings extends LightningElement {
 				"type" : tmp[item].type,
 				"label" : tmp[item].label,
 				"isTextArea" : (tmp[item].type === 'function'),
-				"tooltip" : (item === 'fieldName') ? tmp[item].tooltip + '\n' + '.Field Type:' + fieldParams.type : tmp[item].tooltip,
-				"isDisabled" : (item === 'fieldName'),
+				"tooltip" : tmp[item].tooltip,
+				"isDisabled" : (fieldParams['isActionStandard'] ? this.config.enableActions.includes(item) ? false : true : false),
 				"value" : defValue,
 				"isChecked" : (tmp[item].type === 'checkbox') ? defValue : undefined,
 				"placeHolder" : tmp[item].placeHolder
 			})
 		}
 		return result;
+	}
+	handleNewAction(){
+		this.config.openNewAction = true;
+	}
+	handleNewActionSave(event){
+		console.log('here');
+		// let actionId = this.template.querySelector('#newActionId').value;
+		this.config.dialog.action = event.target.value;
+		this.config.dialog.listViewConfig.actions.push({actionId:event.target.value});
+		console.log(event.target.value);
+		this.config.openNewAction = false;
 	}
 
 }

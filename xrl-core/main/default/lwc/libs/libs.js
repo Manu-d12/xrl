@@ -278,6 +278,17 @@ export let libs = {
 				"defValue":"utility:refresh",
 				"type": "text",
 				"label": "Name of the icon to be shown"
+			},
+			"actionOrder" : {
+				"defValue":"6",
+				"type": "text",
+				"label": "Order of the action",
+				"tooltip":"Use proper values like 10,20 etc."
+			},
+			"actionFlowName" : {
+				"defValue":"",
+				"type": "text",
+				"label": "Api Name of the flow(if flow needs to be executed)"
 			}
 		}
 		return defParams;
