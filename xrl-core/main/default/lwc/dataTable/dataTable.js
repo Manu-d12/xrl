@@ -913,7 +913,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 	@api
 	updateView(){
-		this.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
+		this.connectedCallback();
 	}
 
 	handleEventStandardEdit(recordId){
