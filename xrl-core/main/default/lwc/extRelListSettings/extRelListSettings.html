@@ -40,9 +40,11 @@
 						<lightning-dual-listbox data-id="dialog:setLockedFields" label={config._LABELS.lbl_selectLockedFields} source-label={config._LABELS.srcLbl_optional} selected-label={config._LABELS.lbl_lockedFields} field-level-help={config._LABELS.hlpTxt_selectYourLockedFields} options={config.dialog.lockedOptions} value={config.dialog.lockedFields} onchange={config.dialog.handleEvent} size="10"></lightning-dual-listbox>
 					</lightning-tab>
 					<lightning-tab label="Actions">
-						<lightning-button if:false={config.openNewAction} variant="brand" label="New Action" title="New Action" class="slds-m-right_x-small" onclick={handleNewAction}></lightning-button>
-						<lightning-combobox name="status" label="Select Action" placeholder="Choose Action" value={config.dialog.allActions} data-id="dialog:setAction" onchange={config.dialog.handleEvent} options={config.dialog.allActions}>
-						</lightning-combobox>
+						<template if:false={config.openNewAction}>
+							<lightning-button if:false={config.dialog.action} variant="brand" label="New Action" title="New Action" class="slds-m-right_x-small" onclick={handleNewAction}></lightning-button>
+							<lightning-combobox name="status" label="Select Action" placeholder="Choose Action" value={config.dialog.allActions} data-id="dialog:setAction" onchange={config.dialog.handleEvent} options={config.dialog.allActions}>
+							</lightning-combobox>
+						</template>
 						<template if:true={config.openNewAction}>
 							<lightning-input id="newActionId" type="text" label="Unique Action Id" onfocusout={handleNewActionSave}></lightning-input>
 							<lightning-button variant="brand" label="Save" title="Save" class="slds-m-right_x-small" onclick={handleNewActionSave}></lightning-button>

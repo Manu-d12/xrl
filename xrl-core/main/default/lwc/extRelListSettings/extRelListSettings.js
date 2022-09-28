@@ -138,8 +138,6 @@ export default class extRelListSettings extends LightningElement {
 		this.config.openNewAction = true;
 	}
 	handleNewActionSave(event){
-		console.log('here');
-		// let actionId = this.template.querySelector('#newActionId').value;
 		this.config.dialog.action = event.target.value;
 		this.config.dialog.listViewConfig.actions.push({actionId:event.target.value});
 		console.log(event.target.value);

@@ -18,7 +18,8 @@ export default class ActionBar extends LightningElement {
             }
         });
         if(actionDetails.actionFlowName){
-            window.open(window.location.origin +"/flow/"+ actionDetails.actionFlowName)
+            console.log("clicked");
+            this.actionscfg._handleEventFlow({name:actionDetails.actionFlowName,label:actionDetails.actionLabel});
         }else if(actionDetails.isActionStandard){
             this.actionscfg._handleEvent(event);
         }else{

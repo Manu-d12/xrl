@@ -253,7 +253,6 @@ export let libs = {
 				"tooltip": "Example: :expand_view"
 			},
 			"actionLabel" : {
-				"defValue":'label',
 				"type": "text",
 				"label": "Label of the action",
 				"tooltip": "Example: Full Screen"
@@ -272,15 +271,15 @@ export let libs = {
 			"actionIsHidden" : {
 				"defValue":false,
 				"type": "checkbox",
-				"label": "Is action hidden?"
+				"label": "Is action hidden?",
+				"tooltip": "Checking these will hide the button from grid"
 			},
 			"actionIconName" : {
-				"defValue":"utility:refresh",
 				"type": "text",
-				"label": "Name of the icon to be shown"
+				"label": "Name of the icon to be shown",
+				"tooltip": "If you want to show as a button keep it blank"
 			},
 			"actionOrder" : {
-				"defValue":"6",
 				"type": "text",
 				"label": "Order of the action",
 				"tooltip":"Use proper values like 10,20 etc."

@@ -101,7 +101,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		 : 'width:32px;height:32px;margin: 10px;';
 		 this.config.actionsBar = {};
 
-		let adminConfig = (data[cmd].baseConfig) ? JSON.parse(data[cmd].baseConfig) : {};
+		let adminConfig = (data[cmd].baseConfig) ? JSON.parse(data[cmd].baseConfig) : [];
 		let userConfig = (data[cmd].userConfig) ? JSON.parse(JSON.stringify(data[cmd].userConfig)) : [];
 
 		console.log('adminConfig', adminConfig);
@@ -132,7 +132,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		mergedConfig.colModel = [];
 
 		let baseColMap = new Map();
-		adminDataTableConfig?.colModel?.forEach(col => {
+		adminDataTableConfig[0]?.colModel?.forEach(col => {
 			baseColMap.set(col.fieldName, col);
 		});
 		this.config.dataTableConfig?.colModel?.forEach(col => {
@@ -185,7 +185,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				  "actionCallBack": "function(){\nconsole.log('');\n}",
 				  "actionIsHidden": false,
 				  "actionIconName": "utility:delete",
-				  "isActionStandard":true
+				  "isActionStandard":true,
+				  "actionOrder":10
 				},
 				{
 				  "actionId": "std:export",
@@ -194,7 +195,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				  "actionCallBack": "function(){\nconsole.log('');\n}",
 				  "actionIsHidden": false,
 				  "actionIconName": "utility:download",
-				  "isActionStandard":true
+				  "isActionStandard":true,
+				  "actionOrder":20
 				},
 				{
 				  "actionId": "std:new",
@@ -203,7 +205,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				  "actionCallBack": "function(){\nconsole.log('');\n}",
 				  "actionIsHidden": false,
 				  "actionIconName": "utility:new",
-				  "isActionStandard":true
+				  "isActionStandard":true,
+				  "actionOrder":30
 				},
 				{
 				  "actionId": "std:refresh",
@@ -212,7 +215,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				  "actionCallBack": "function(){\nconsole.log('');\n}",
 				  "actionIsHidden": false,
 				  "actionIconName": "utility:refresh",
-				  "isActionStandard":true
+				  "isActionStandard":true,
+				  "actionOrder":40
 				},
 				{
 				  "actionId": "std:request_open",
@@ -221,7 +225,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				  "actionCallBack": "function(){\nconsole.log('');\n}",
 				  "actionIsHidden": false,
 				  "actionIconName": "utility:email",
-				  "isActionStandard":true
+				  "isActionStandard":true,
+				  "actionOrder":50
 				},
 				{
 				  "actionId": "std:expand_view",
@@ -230,13 +235,15 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				  "actionCallBack": "function(){\nconsole.log('');\n}",
 				  "actionIsHidden": false,
 				  "actionIconName": "utility:expand",
-				  "isActionStandard":true
+				  "isActionStandard":true,
+				  "actionOrder":60
 				}
 			  ];
 		}
 		this.config.actionsBar = {
 			'actions':this.config.listViewConfig[0].actions,
-			'_handleEvent':this.handleEvent.bind(this)
+			'_handleEvent':this.handleEvent.bind(this),
+			'_handleEventFlow': this.handleEventFlow.bind(this)
 		};
 
 		console.log('this.config', this.config);
@@ -318,7 +325,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if (val.startsWith('dialog:')) this.handleEventDialog(event);
 		if (val.startsWith('std:refresh')) {
 			//libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.localConfig.listViewName, callback: this.loadRecords });
-			libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.config?.listView?.name, callback: this.setConfig });
+			libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.config?.listView?.name, callback: this.loadCfg });
 		}
 
 		if (val.startsWith('std:')) this.handleEventActions(event, val);
@@ -675,7 +682,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		libs.saveConfig(this.apiName, this.localConfig);
 		this.config.dialog = undefined;
 		this.config.records = undefined;
-		libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.config?.listView?.name, callback: this.setConfig });
+		libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.config?.listView?.name, callback: this.loadCfg });
 	}
 
 	handleEventActions(event, val) {
@@ -705,12 +712,14 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			});
 		}
 
-		if (val.startsWith('std:action_dynamic')) {			
-			let action = this.config.listViewConfig.dynamicActions[event.target.dataset.index];			
-			let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
+	}
 
-			let recordIdList;
-			if (action.input === 'recordId' && records.length !== 0) recordIdList = records.map(rec => rec.Id);
+	handleEventFlow(action){	
+		let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
+
+		let recordIdList;
+		if (records.length !== 0) {
+			recordIdList = records.map(rec => rec.Id);
 			
 			libs.remoteAction(this, 'invokeAction', { name: action.name, recordIdList: recordIdList, callback: (cmd, data) => {
 				console.log(cmd, data);
@@ -731,6 +740,13 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					this.dispatchEvent(event);
 				}				
 			}});
+		}else{
+			const event = new ShowToastEvent({
+				title: 'Error',
+				message: "Please Select Some records",
+				variant: 'error'
+			});
+			this.dispatchEvent(event);
 		}
 	}
 
