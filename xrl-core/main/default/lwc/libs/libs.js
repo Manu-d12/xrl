@@ -244,6 +244,54 @@ export let libs = {
 		}
 		return defParams;
 	},
+	customActions:function(){
+		let defParams = {
+			"actionId" : {
+				"defValue": ':idNew',
+				"type": "text",
+				"label": "Id of the action",
+				"tooltip": "Example: :expand_view"
+			},
+			"actionLabel" : {
+				"type": "text",
+				"label": "Label of the action",
+				"tooltip": "Example: Full Screen"
+			},
+			"actionTip" : {
+				"defValue":'Tip Representation',
+				"type": "text",
+				"label": "Tip for the action",
+				"tooltip": "Example: This is full screen your grid"
+			},
+			"actionCallBack" : {
+				"defValue":'',
+				"type": "function",
+				"label": "Call Back function"
+			},
+			"actionIsHidden" : {
+				"defValue":false,
+				"type": "checkbox",
+				"label": "Is action hidden?",
+				"tooltip": "Checking these will hide the button from grid"
+			},
+			"actionIconName" : {
+				"type": "text",
+				"label": "Name of the icon to be shown",
+				"tooltip": "If you want to show as a button keep it blank"
+			},
+			"actionOrder" : {
+				"type": "text",
+				"label": "Order of the action",
+				"tooltip":"Use proper values like 10,20 etc."
+			},
+			"actionFlowName" : {
+				"defValue":"",
+				"type": "text",
+				"label": "Api Name of the flow(if flow needs to be executed)"
+			}
+		}
+		return defParams;
+	},
 	remoteAction: function(scope, cmd, params) {
 		scope.config.isSpinner = true;
 		let outParams = {};

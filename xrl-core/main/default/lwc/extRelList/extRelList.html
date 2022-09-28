@@ -17,12 +17,13 @@
 				</div>
 				<div class="slds-m-left_xx-small forceListViewSettingsMenu">					
 					<span> <!-- Need provide configuration for all those standard buttons -->
-						<lightning-button-icon icon-name="utility:delete" alternative-text={config._LABELS.altTxt_delete} title={config._LABELS.title_delete} data-id=":action_delete" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
+						<c-action-Bar if:true={config.actionsBar} actionscfg={config.actionsBar}></c-action-Bar>
+						<!-- <lightning-button-icon icon-name="utility:delete" alternative-text={config._LABELS.altTxt_delete} title={config._LABELS.title_delete} data-id=":action_delete" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
 						<lightning-button-icon icon-name="utility:download" alternative-text={config._LABELS.altTxt_export} title={config._LABELS.title_export} data-id=":action_export" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
 						<lightning-button-icon icon-name="utility:new"  alternative-text="Refresh List View" title="New" data-id=":action_new" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
 						<lightning-button-icon icon-name="utility:refresh"  alternative-text={config._LABELS.altTxt_refreshListView} title={config._LABELS.title_refresh} data-id=":refresh" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
 						<lightning-button-icon icon-name="utility:email" alternative-text={config._LABELS.altTxt_requestAFeature} title={config._LABELS.title_requestAFeature} data-id=":request_open" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
-						<lightning-button-icon icon-name="utility:expand" alternative-text={config._LABELS.altTxt_expandView} title={config._LABELS.title_expandView} data-id=":expand_view" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
+						<lightning-button-icon icon-name="utility:expand" alternative-text={config._LABELS.altTxt_expandView} title={config._LABELS.title_expandView} data-id=":expand_view" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon> -->
 					</span>
 					<span if:true={config.listViewConfig}>
 						<lightning-button-icon if:true={config.dataTableConfig._changedRecords} icon-name="utility:save"  variant="brand" alternative-text={config._LABELS.altTxt_save} title={changedRecords} data-id=":save" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
@@ -30,7 +31,7 @@
 					
 					<lightning-button-menu if:true={hasDynamicActions} alternative-text={config._LABELS.altTxt_dynamic} variant="border-filled" icon-name="utility:play" class="slds-p-horizontal_xx-small" menu-alignment="right">
 						<template for:each={config.listViewConfig.dynamicActions} for:item="action" for:index="index">
-							<lightning-menu-item key={action.name} data-id=":action_dynamic" data-index={index} label={action.label} prefix-icon-name="utility:multi_select_checkbox" onclick={handleEvent}></lightning-menu-item>
+							<lightning-menu-item key={action.name} data-id="std:action_dynamic" data-index={index} label={action.label} prefix-icon-name="utility:multi_select_checkbox" onclick={handleEvent}></lightning-menu-item>
 						</template>					
 					</lightning-button-menu>
 
