@@ -140,6 +140,7 @@ global with sharing class infrastructure {
 		for (integer i = 0; i < lst.size(); i++) {
 			extRelListConfig__c item = lst[i];
 			map<string, object> view = new map<string, object>{
+				'id' => item.Id,
 				'name' => item.listViewName__c,
 				'label' => item.listViewLabel__c,
 				'isAdminConfig' => item.isAdminConfig__c
