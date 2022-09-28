@@ -148,7 +148,7 @@ export let libs = {
 				"label": _labels.lbl_isColumnWrapable
 			},
 			"isClipable": {
-				"defValue": false,
+				"defValue": true,
 				"type": "checkbox",
 				"label": _labels.lbl_isColumnClipable
 			},
@@ -178,21 +178,21 @@ export let libs = {
 		let _labels = globalVars[Object.keys(globalVars)[0]]._LABELS;
 		let defParams = {
 			"isShowNumeration" : {
-				"defValue": true,
+				"defValue": false,
 				"type": "checkbox",
 				"label": _labels.lbl_showNumeration,
 				"tooltip": _labels.tooltip_addNumerationColumnToTable,
 				"cmd" : "dialog:setTableParam"
 			},
 			"isShowCheckBoxes": {
-				"defValue": true,
+				"defValue": false,
 				"type": "checkbox",
 				"label": _labels.lbl_showCheckBoxes,
 				"tooltip": _labels.tooltip_addCheckBoxColumnToTable,
 				"cmd" : "dialog:setTableParam",
 			},
 			"isGlobalSearch": {
-				"defValue": true,
+				"defValue": false,
 				"type": "checkbox",
 				"label": _labels.lbl_enableGlobalSearch,
 				"tooltip": _labels.tooltip_showGlobalTableSearch,
