@@ -41,6 +41,9 @@ global with sharing class infrastructure {
 				when 'getCustomLabels' {
 					resultMethod = getCustomLabels();
 				}
+				when 'objectList'{
+					resultMethod = objectList();
+				}
 				when
 				else {
 					//throw new core.appException(null, core.appLabels.get('errCmd'), core.ExceptionType.API);
@@ -103,7 +106,7 @@ global with sharing class infrastructure {
 			fields.add('CurrencyIsoCode');
 		}
 
-		string SOQL = (relField!=null) 
+		string SOQL = (relField!='') 
 			? 'SELECT {fields} FROM {sObjApiName} WHERE {relField}=\'{recordId}\' {addCondition}'.replaceAll('\\{relField\\}', relField!= null ? relField : '').replaceAll('\\{recordId\\}', recordId)
 			: 'SELECT {fields} FROM {sObjApiName} {addCondition}';
 		
@@ -500,6 +503,19 @@ global with sharing class infrastructure {
 		iconPropertyMap.put('iconURL',  iconURL);
 
 		return iconPropertyMap;
+	}
+
+	private static List<String> objectList(){
+		Map<String, Schema.SObjectType> gd = Schema.getGlobalDescribe();
+
+		List<String> objs = new List<String>();
+
+		for(Schema.SObjectType thisObj : gd.values()) {
+			if(thisObj.getDescribe().isQueryable()){
+				objs.add(String.valueOf(thisObj));
+			}
+		}
+		return objs;
 	}
 
 	global enum exceptionType {
