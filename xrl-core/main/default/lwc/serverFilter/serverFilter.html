@@ -1,0 +1,48 @@
+<template>
+    <div class="slds-grid slds-wrap" style="padding: 5px;">
+        <template if:true={sFilterfields} for:each={sFilterfields} for:item="field" for:index="index">
+            <div class="slds-col slds-size_2-of-12" key={field.fieldName} style="padding: 2px;">
+                <lightning-input if:true={field.inputTypeStr} type="text" label={field.label} id={field.fieldName} onfocusout={handleChange}></lightning-input>
+                <c-multiselect if:true={field.inputTypeComboBox} multiselect=true listsize=20 onselect={handleSelect} 
+                id={field.fieldName} options={field.options} selectedvalues={sValues} label={field.label}></c-multiselect>
+                <lightning-input if:true={field.inputTypeDate} type="date" label={field.label} id={field.fieldName} onfocusout={handleChange}></lightning-input>
+            </div>
+        </template>
+        <div class="slds-col slds-size_1-of-12" style="padding-top:3px;">
+            <p>&nbsp;</p>
+            <lightning-button variant="brand" label={config._LABELS.lbl_more} title={config._LABELS.lbl_more} class="slds-m-left_x-small" onclick={handleClick}></lightning-button>
+        </div>
+        <div class="slds-col slds-size_1-of-12" style="padding-top:3px;">
+            <p>&nbsp;</p>
+            <lightning-button variant="brand" label={config._LABELS.lbl_apply} title={config._LABELS.lbl_apply} class="slds-m-left_x-small" onclick={fetchRecords}></lightning-button>
+        </div>
+        <template if:true={isModalOpen}>
+            <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" onclick={handleModalClose}>
+                <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#close"></use>
+                </svg>
+                <span class="slds-assistive-text">{config._LABELS.title_close}</span>
+                </button>
+                <div class="slds-modal__header">
+                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">{config._LABELS.lbl_selectFieldsForServerFilter}</h1>
+                </div>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <lightning-dual-listbox name="languages"
+                            label={config._LABELS.lbl_selectFields}
+                            source-label={config._LABELS.srcLbl_available}
+                            selected-label={config._LABELS.lbl_selected}
+                            options={allFields}
+                            value={selectedFields}
+                            onchange={handleSelectFields}></lightning-dual-listbox>
+                </div>
+                <div class="slds-modal__footer">
+                <button class="slds-button slds-button_brand" onclick={handleSave}>{config._LABELS.lbl_save}</button>
+                </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+        </template>
+    </div>
+</template>

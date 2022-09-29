@@ -1,7 +1,7 @@
 import { LightningElement, api, track } from 'lwc';
 import { libs } from 'c/libs';
 import { filterLibs } from './filterLibs';
-import { NavigationMixin } from "lightning/navigation"
+import { NavigationMixin } from "lightning/navigation";
 
 const defClass = 'slds-grid slds-grid_align-spread';
 export default class dataTable extends NavigationMixin(LightningElement) {
@@ -15,6 +15,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	@track popStyle;
 	@api recordId;
 	@api objectApiName;
+	sValues = [];
 	showPop(event){
 		this.showPopOver = true;
 		let hoverConstValues = {
@@ -207,10 +208,16 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			}
 		}
 	}
-
+	
 	connectedCallback() {
 		//super();
-		this.config = libs.getGlobalVar(this.cfg).listViewConfig;
+		this.config = libs.getGlobalVar(this.cfg);
+		this.config.listViewConfig.forEach((el)=>{
+			if(el.cmpName === 'dataTable') {
+				this.config = el;
+			}
+		});
+		// this.config = libs.getGlobalVar(this.cfg).listViewConfig;
 		console.log('Config', JSON.parse(JSON.stringify(this.config)));
 		this.config._LABELS = libs.getGlobalVar(this.cfg)._LABELS;
 		
@@ -628,9 +635,17 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		//setTimeout((() => { this.template.querySelector('[data-id="filterStr"]').focus(); }), 100);
 		this.searchFinish({which : 13})
 	}
+	handleLocalFilterSelect(event){
+		console.log(event.detail.payload.values);
+		event.detail.value = event.detail.payload.values;
+		this.sValues = JSON.parse(JSON.stringify(event.detail.payload.values));
+		console.log('hii',JSON.parse(JSON.stringify(event.detail.payload.values)));
+		this.searchOnChange(event);
+	}
 
 	searchOnChange(event) {
 		let fieldName = event.srcElement.getAttribute('data-id');
+		console.log(fieldName);
 		if (fieldName === 'saveFilter') {
 			this.searchFinish({which : 13});
 			return;
@@ -638,7 +653,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if (this.config._isFilterOptions.isShowStr) {
 			this.config._isFilterOptions[fieldName] = event.detail.value;
 		} else {
-			this.config._isFilterOptions[fieldName] = event.detail;
+			this.config._isFilterOptions[fieldName] = event.detail.payload ? event.detail.payload.values : event.detail;
 		}
 		this.config._isFilterOptions.isShowClearBtn = this.config._isFilterOptions.filterStr.length > 0 || (this.config._isFilterOptions.filterStrTo && this.config._isFilterOptions.filterStrTo.length > 0);
 		if (this.config._isFilterOptions.isShowClearBtn === false ) this.config._isFilterOptions.filterOption = undefined;
@@ -898,7 +913,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 	@api
 	updateView(){
-		this.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
+		this.connectedCallback();
 	}
 
 	handleEventStandardEdit(recordId){
@@ -910,6 +925,11 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				actionName: 'edit',
 			}
 		});
+	}
+
+	@api
+	handleEventMessage(event){
+		if(event.detail.cmd.split(':')[1] === 'refresh') this.connectedCallback();
 	}
 
 }

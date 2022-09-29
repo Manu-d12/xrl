@@ -51,7 +51,7 @@ public class packageTest {
         test.startTest();
         map < string, object > res = infrastructure.dispatcherAura('saveListView', data);
         test.stopTest();
-        //System.assertNotEquals(null, res.get('saveListViewResult'));
+        System.assertNotEquals(null, res.get('saveListViewResult'));
         //System.assertEquals(2, [SELECT Id FROM extRelListConfig__c].size());
     }
 
@@ -112,18 +112,6 @@ public class packageTest {
         VisualEditor.DesignTimePageContext ctx = new VisualEditor.DesignTimePageContext();
         ctx.entityName = 'Account';
         getRelListsPicklist grp = new getRelListsPicklist(ctx);
-        test.startTest();
-        VisualEditor.DataRow row = grp.getDefaultValue();
-        VisualEditor.DynamicPickListRows rows = grp.getValues();
-        test.stopTest();
-        System.assertNotEquals(null, row);
-        System.assertNotEquals(null, rows);
-    }
-    @isTest
-    public static void testGetRelTemplates() {
-        VisualEditor.DesignTimePageContext ctx = new VisualEditor.DesignTimePageContext();
-        ctx.entityName = 'Account';
-        getRelTemplates grp = new getRelTemplates(ctx);
         test.startTest();
         VisualEditor.DataRow row = grp.getDefaultValue();
         VisualEditor.DynamicPickListRows rows = grp.getValues();

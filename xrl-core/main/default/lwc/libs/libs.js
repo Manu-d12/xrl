@@ -98,7 +98,7 @@ export let libs = {
 			}).replace(/{\d+}/g, '');
 	},
 	colModelItem: function(colModelItem) {
-		let _labels = globalVars[Object.keys(globalVars)[0]].listViewConfig._LABELS;
+		let _labels = globalVars[Object.keys(globalVars)[0]]._LABELS;
 		let defParams = {
 			"fieldName": {
 				"type": "text",
@@ -148,7 +148,7 @@ export let libs = {
 				"label": _labels.lbl_isColumnWrapable
 			},
 			"isClipable": {
-				"defValue": false,
+				"defValue": true,
 				"type": "checkbox",
 				"label": _labels.lbl_isColumnClipable
 			},
@@ -175,24 +175,24 @@ export let libs = {
 		} else return defParams;
 	},
 	tableItem: function() {
-		let _labels = globalVars[Object.keys(globalVars)[0]].listViewConfig._LABELS;
+		let _labels = globalVars[Object.keys(globalVars)[0]]._LABELS;
 		let defParams = {
 			"isShowNumeration" : {
-				"defValue": true,
+				"defValue": false,
 				"type": "checkbox",
 				"label": _labels.lbl_showNumeration,
 				"tooltip": _labels.tooltip_addNumerationColumnToTable,
 				"cmd" : "dialog:setTableParam"
 			},
 			"isShowCheckBoxes": {
-				"defValue": true,
+				"defValue": false,
 				"type": "checkbox",
 				"label": _labels.lbl_showCheckBoxes,
 				"tooltip": _labels.tooltip_addCheckBoxColumnToTable,
 				"cmd" : "dialog:setTableParam",
 			},
 			"isGlobalSearch": {
-				"defValue": true,
+				"defValue": false,
 				"type": "checkbox",
 				"label": _labels.lbl_enableGlobalSearch,
 				"tooltip": _labels.tooltip_showGlobalTableSearch,
@@ -241,6 +241,54 @@ export let libs = {
 			}
 			
 			
+		}
+		return defParams;
+	},
+	customActions:function(){
+		let defParams = {
+			"actionId" : {
+				"defValue": ':idNew',
+				"type": "text",
+				"label": "Id of the action",
+				"tooltip": "Example: :expand_view"
+			},
+			"actionLabel" : {
+				"type": "text",
+				"label": "Label of the action",
+				"tooltip": "Example: Full Screen"
+			},
+			"actionTip" : {
+				"defValue":'Tip Representation',
+				"type": "text",
+				"label": "Tip for the action",
+				"tooltip": "Example: This is full screen your grid"
+			},
+			"actionCallBack" : {
+				"defValue":'',
+				"type": "function",
+				"label": "Call Back function"
+			},
+			"actionIsHidden" : {
+				"defValue":false,
+				"type": "checkbox",
+				"label": "Is action hidden?",
+				"tooltip": "Checking these will hide the button from grid"
+			},
+			"actionIconName" : {
+				"type": "text",
+				"label": "Name of the icon to be shown",
+				"tooltip": "If you want to show as a button keep it blank"
+			},
+			"actionOrder" : {
+				"type": "text",
+				"label": "Order of the action",
+				"tooltip":"Use proper values like 10,20 etc."
+			},
+			"actionFlowName" : {
+				"defValue":"",
+				"type": "text",
+				"label": "Api Name of the flow(if flow needs to be executed)"
+			}
 		}
 		return defParams;
 	},
