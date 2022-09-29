@@ -2,7 +2,7 @@
     <lightning-card class="slds-card_boundary" style="padding:5px; display:block">
         <div class="slds-grid slds-gutters" style="padding:5px; display:block">
             <div class="slds-col slds-size_1-of-3">
-                <c-customselect if:false={config.isSpinner} listsize=20 onsearchclicked={handleOpenGrid} onselect={handleSelect} options={objList} selectedvalue="Account" label="Select an Object"></c-customselect>
+                <c-multiselect if:false={config.isSpinner} listsize=20 onsearchclicked={handleOpenGrid} onselect={handleSelect} options={objList} selectedvalue="Account" label="Select an Object"></c-multiselect>
             </div>
         </div>
         <!-- <c-customselect onselect={handleSelect} multiselect="true" options={cOptions} selectedvalues={sOptions} label="Multi Select Combobox"></c-customselect> -->

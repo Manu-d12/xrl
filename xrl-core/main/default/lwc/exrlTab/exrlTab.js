@@ -23,6 +23,7 @@ export default class ExrlTab extends LightningElement {
         let selectedObj = event.detail.payload.value;
         if(selectedObj !== null){
             this.selectedApiName = selectedObj + ':' + selectedObj + ':';
+            this.handleOpenGrid();
         }
         
        }
