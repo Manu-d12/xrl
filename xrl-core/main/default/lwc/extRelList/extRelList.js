@@ -16,6 +16,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	@api defaultListView;	
 	@api configuration;
 	@api addTemplate;
+	@api isFullscreen;
 
 	@track config = {};
 	@track localConfig = {};
@@ -725,6 +726,24 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					defaultFieldValues: encodeDefaultFieldValues(defValue)
 				}
 			});
+		}
+		if (val.startsWith('std:expand_view')) {
+
+			if(this.isFullscreen){
+				history.back();
+			}else{
+				this[NavigationMixin.Navigate]({
+					type: 'standard__navItemPage',
+					attributes: {
+						apiName: 'XRL__EXRL',
+					},
+					state: {
+						c__apiName: btoa(this.apiName),
+						c__name: btoa(this.name),
+						c__recordId: btoa(this.recordId)
+					}
+				});
+			}
 		}
 
 	}

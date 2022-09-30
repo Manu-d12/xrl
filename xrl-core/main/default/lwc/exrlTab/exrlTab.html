@@ -1,14 +1,12 @@
 <template>
     <lightning-card class="slds-card_boundary" style="padding:5px; display:block">
-        <div class="slds-grid slds-gutters" style="padding:5px; display:block">
+        <div if:false={config.urlParameters.c__apiName} class="slds-grid slds-gutters" style="padding:5px; display:block">
             <div class="slds-col slds-size_1-of-3">
-                <c-multiselect if:false={config.isSpinner} listsize=20 onsearchclicked={handleOpenGrid} onselect={handleSelect} options={objList} selectedvalue="Account" label="Select an Object"></c-multiselect>
+                <c-multiselect if:false={config.isSpinner} listsize=20 onsearchclicked={handleOpenGrid} onselect={handleSelect} options={config.objList} selectedvalue="Account" label="Select an Object"></c-multiselect>
             </div>
         </div>
-        <!-- <c-customselect onselect={handleSelect} multiselect="true" options={cOptions} selectedvalues={sOptions} label="Multi Select Combobox"></c-customselect> -->
-        <template if:true={extApiName}>
-            <c-ext-rel-list api-name={extApiName} name=""></c-ext-rel-list>
-        </template>
+        <c-ext-rel-list if:false={config.urlParameters.c__apiName} api-name={extApiName} name=""></c-ext-rel-list>
+        <c-ext-rel-list if:true={config.urlParameters.c__apiName} api-name={config.selectedApiName} name={config.uniqName} record-id={config.recordId} is-fullscreen="true"></c-ext-rel-list>
         <div if:true={config.isSpinner} class="spinner">
             <lightning-spinner size="medium" variant="brand" alternative-text="loading"></lightning-spinner>
         </div>
