@@ -41,7 +41,7 @@ global with sharing class infrastructure {
 				when 'getCustomLabels' {
 					resultMethod = getCustomLabels();
 				}
-				when 'objectList'{
+				when 'objectList' {
 					resultMethod = objectList();
 				}
 				when
@@ -50,7 +50,7 @@ global with sharing class infrastructure {
 				}
 			}
 		} catch (exception e) {
-			
+
 			result.put('exception', new map < string, string > {
 				'title' => 'EXCEPTION',
 				'message' => e.getMessage() + ' : ' + e.getStackTraceString()
@@ -107,8 +107,8 @@ global with sharing class infrastructure {
 		}
 
 		string SOQL = (relField!='') 
-			? 'SELECT {fields} FROM {sObjApiName} WHERE {relField}=\'{recordId}\' {addCondition}'.replaceAll('\\{relField\\}', relField!= null ? relField : '').replaceAll('\\{recordId\\}', recordId)
-			: 'SELECT {fields} FROM {sObjApiName} {addCondition}';
+			? 'SELECT {fields} FROM {sObjApiName} WHERE {relField}=\'{recordId}\' {addCondition} WITH SECURITY_ENFORCED'.replaceAll('\\{relField\\}', relField!= null ? relField : '').replaceAll('\\{recordId\\}', recordId)
+			: 'SELECT {fields} FROM {sObjApiName} {addCondition} WITH SECURITY_ENFORCED';
 		
 
 		system.debug(LoggingLevel.Error, SOQL);
@@ -121,9 +121,20 @@ global with sharing class infrastructure {
 		system.debug(LoggingLevel.Error, 'SOQL ' + SOQL);
 
 		result.put('SOQL', SOQL);
-		
-		result.put('records', database.query(SOQL));
-		
+
+		sObject[] records = database.query(SOQL);
+
+		SObjectAccessDecision decision = Security.stripInaccessible(
+			AccessType.READABLE,
+			records);
+
+		// Throw an exception if any data was stripped
+		if (!decision.getModifiedIndexes().isEmpty()) {
+			throw new InfrastructureException(null,'Data was stripped', Infrastructure.exceptionType.GENERAL);
+		}
+
+		result.put('records', records);
+
 		//result.put('config', getConfig(sObjApiName, relField, listViewName));
 		return result;
 		//https://salesforce.stackexchange.com/questions/116688/lightning-get-sobject-tab-icon
@@ -517,6 +528,28 @@ global with sharing class infrastructure {
 			}
 		}
 		return objs;
+	}
+
+	global class InfrastructureException extends Exception {
+		public ExceptionType eType;
+		public String message;
+		/**
+		 *   method description
+		 *
+		 *   author Dmitry Rivlin
+		 *   email dmitry.rivlin@stratavar.com
+		 *   date: 14-10-19 09:54:06
+		 *   @method InfrastructureException
+		 *   @param  Exception ex, String exLogTxt, ExceptionType exType
+		 *   @return
+		 *
+		 */
+		global InfrastructureException(Exception ex, String exLogTxt, ExceptionType exType) {
+			this.eType = exType;
+			this.message = (ex != null) ? ex.getMessage() + ' Line: ' + ex.getLineNumber() + ' Stack: ' + ex.getStackTraceString() + exLogTxt : exLogTxt;
+			system.debug(LoggingLevel.Error, 'EXCEPTION : ' + message);
+			this.setMessage(message);
+		}
 	}
 
 	global enum exceptionType {
