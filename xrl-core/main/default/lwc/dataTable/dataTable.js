@@ -33,9 +33,11 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 		if (this.objectApiName.endsWith('Id')) {
 			this.objectApiName = this.objectApiName.replace(/Id/, '');
+			this.recordId = record[this.objectApiName].Id;
+		}else{
+			this.recordId = record[this.objectApiName.replace(/__c/, '__r')].Id;
 		}
 
-		this.recordId = record[this.objectApiName].Id;
 		console.log(this.objectApiName);
 	}
 	hidePop(event){
