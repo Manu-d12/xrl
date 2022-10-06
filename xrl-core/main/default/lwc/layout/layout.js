@@ -1,7 +1,5 @@
 import { LightningElement, api, track } from 'lwc';
 import { libs } from 'c/libs';
-import {subscribe,unsubscribe,createMessageContext} from "lightning/messageService";
-import LOAD_LAYOUT from "@salesforce/messageChannel/LayoutLoading__c";
 
 export default class Layout extends LightningElement {
     @track apiName;
@@ -22,40 +20,8 @@ export default class Layout extends LightningElement {
     @track components;
 	@track configId;
 
-    messageContext = createMessageContext();
-	receivedMessage;
-	subscription = null;
-    handleSubscribe() {
-		console.log("in handle subscribe");
-		console.log(this.subscription);
-		if (this.subscription) {
-		  	return;
-		}
-	
-		//4. Subscribing to the message channel
-		this.subscription = subscribe(
-		  this.messageContext,
-		  LOAD_LAYOUT,
-		  (message) => {
-			this.handleMessage(message);
-		  }
-		);
-	  }
-	
-	handleMessage(message) {
-		this.receivedMessage = message ? message : "no message";
-		console.log(this.receivedMessage);
-		if(this.receivedMessage){
-			// console.log(JSON.parse(this.receivedMessage.apiName));
-			this.apiName = this.receivedMessage.apiName;
-            this.name = this.receivedMessage.name;
-			// this.configId = this.receivedMessage.configId;
-			this.loadCfg(true);
-		}
-	}
     connectedCallback() {
 		console.log('RENDERED');
-        this.handleSubscribe();
 		// this.loadCfg(true);
 	}
 
