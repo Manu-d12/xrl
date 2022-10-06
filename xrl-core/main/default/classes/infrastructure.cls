@@ -260,6 +260,13 @@ global with sharing class infrastructure {
 		Type T = type.forName('list<' + sObjApiName + '>');
 		sObject[] records = (sObject[]) JSON.deserialize(JSON.serialize(data.get('records')), T);
 
+		SObjectAccessDecision decision = Security.stripInaccessible(AccessType.UPDATABLE,records);
+
+		// Throw an exception if any data was stripped
+		if (!decision.getModifiedIndexes().isEmpty()) {
+			throw new InfrastructureException(null,'Records can\'t be updated', Infrastructure.exceptionType.GENERAL);
+		}
+
 		update records;
 		return records;
 	}
