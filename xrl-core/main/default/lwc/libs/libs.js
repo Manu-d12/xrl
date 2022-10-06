@@ -315,6 +315,10 @@ export let libs = {
 			}
 		})
 	},
+	help : function(index, params) {
+		// Need to open a new tab and redirect user to specific article
+		return 'in test';
+	},
 	currencyMap: function(cur) {
 		let map = {
 			AED: 'د.إ',

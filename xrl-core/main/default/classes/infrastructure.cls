@@ -369,6 +369,7 @@ global with sharing class infrastructure {
 			'lbl_selectFieldsForServerFilter' => label.lbl_selectFieldsForServerFilter,
 			'lbl_more' => label.lbl_more,
 			'lbl_apply' => label.lbl_apply,
+			'lbl_help' => label.lbl_help,
 			'msg_lisViewWasUpdated' => label.msg_lisViewWasUpdated,
 			'msg_requestWasSent' => label.msg_requestWasSent,
 			'title_close' => label.title_close,

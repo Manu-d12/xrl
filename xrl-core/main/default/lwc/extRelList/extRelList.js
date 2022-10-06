@@ -325,6 +325,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	handleEvent(event) {
 		let val = event.target.getAttribute('data-id');
 		console.log(val);
+		if (val.startsWith('help:')) libs.help(val, {});
 		if (val === 'globalSearch') this.handleGlobalSearch(event);
 		if (val.startsWith('cfg:')) this.handleEventCfg(event);
 		if (val.startsWith('dialog:')) this.handleEventDialog(event);

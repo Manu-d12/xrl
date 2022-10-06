@@ -2,7 +2,7 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>uniqKey__c</fullName>
     <caseSensitive>false</caseSensitive>
-    <externalId>true</externalId>
+    <externalId>false</externalId>
     <label>uniqKey</label>
     <length>255</length>
     <required>true</required>

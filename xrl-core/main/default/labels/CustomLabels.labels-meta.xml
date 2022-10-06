@@ -217,6 +217,14 @@
         <value>Fields Settings</value>
     </labels>
     <labels>
+        <fullName>lbl_help</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_help</shortDescription>
+        <value>Help</value>
+    </labels>
+    <labels>
         <fullName>lbl_lockedFields</fullName>
         <categories>XRL</categories>
         <language>en_US</language>
