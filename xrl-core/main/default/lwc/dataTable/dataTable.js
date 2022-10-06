@@ -26,10 +26,15 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			200:6360
 		};
 		this.popStyle = libs.formatStr("position:absolute;top:{0}px;left:{1}px", [((event.pageY - document.body.scrollTop) - hoverConstValues[this.config.pager.pageSize]), (event.clientX - 52)]);
-		this.objectApiName = event.target.getAttribute('data-colname').slice(0,-2);
+		this.objectApiName = event.target.getAttribute('data-colname');
 		let record = this.records.find((el) =>{
-			el.Id === event.target.getAttribute('data-recordind')
+			return el.Id === event.target.getAttribute('data-recordind')
 		});
+
+		if (this.objectApiName.endsWith('Id')) {
+			this.objectApiName = this.objectApiName.replace(/Id/, '');
+		}
+
 		this.recordId = record[this.objectApiName].Id;
 		console.log(this.objectApiName);
 	}
