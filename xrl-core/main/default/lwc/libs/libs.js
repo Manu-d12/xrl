@@ -85,7 +85,10 @@ export let libs = {
 					row = obj[fields[i].replace(/__c/, '__r')];
 				}
 			}
-			obj = obj[fields[i]];
+			if(obj[fields[i]] !== undefined)
+				obj = obj[fields[i]];
+			else
+				obj = '';
 		}
 		return [row ? row : {}, obj];
 	},

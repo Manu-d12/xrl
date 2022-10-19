@@ -16,8 +16,9 @@
 
 				<lightning-tabset if:true={config.userInfo.isAdminAccess}>
 					<lightning-tab label={config._LABELS.lbl_fieldSelection}>
-						<lightning-dual-listbox data-id="dialog:setFields" label={config._LABELS.lbl_selectFields} source-label={config._LABELS.srcLbl_available} selected-label={config._LABELS.lbl_selected} field-level-help={config._LABELS.hlpTxt_selectYourPreferredFields} options={config.dialog.options} value={config.dialog.selectedFields} required-options={config.dialog.requiredOptions} onchange={config.dialog.handleEvent} size="10"></lightning-dual-listbox>
-						<lightning-input type="text" label={config._LABELS.lbl_additionalConditionForWhereClause} field-level-help={config._LABELS.hlpTxt_additionalConditionText} value={config.dialog.listViewConfig.addCondition} data-id="dialog:setAddCondition" onchange={config.dialog.handleEvent} style="margin-top: 10px;"></lightning-input>
+						<!-- <lightning-dual-listbox data-id="dialog:setFields" label={config._LABELS.lbl_selectFields} source-label={config._LABELS.srcLbl_available} selected-label={config._LABELS.lbl_selected} field-level-help={config._LABELS.hlpTxt_selectYourPreferredFields} options={config.dialog.options} value={config.dialog.selectedFields} required-options={config.dialog.requiredOptions} onchange={config.dialog.handleEvent} size="10"></lightning-dual-listbox> -->
+						<!-- <lightning-input type="text" label={config._LABELS.lbl_additionalConditionForWhereClause} field-level-help={config._LABELS.hlpTxt_additionalConditionText} value={config.dialog.listViewConfig.addCondition} data-id="dialog:setAddCondition" onchange={config.dialog.handleEvent} style="margin-top: 10px;"></lightning-input> -->
+						<c-sql-Builder cfg={cfg}></c-sql-Builder>
 					</lightning-tab>
 					<lightning-tab label={config._LABELS.lbl_fieldSettings} title={config._LABELS.title_youCanDefineAllParametersForFields}>
 						<p style="min-height:200px">

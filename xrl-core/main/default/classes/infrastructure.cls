@@ -43,6 +43,8 @@ global with sharing class infrastructure {
 				}
 				when 'objectList' {
 					resultMethod = objectList();
+				}when 'objectFieldList' {
+					resultMethod = objectFieldList(data);
 				}
 				when
 				else {
@@ -80,6 +82,7 @@ global with sharing class infrastructure {
 		string sObjApiName = (string) data.get('sObjApiName');
 		string relField = (string) data.get('relField');
 		string addCondition = (string) data.get('addCondition');
+		string orderBy = (string) data.get('orderBy');
 		string listViewName = (string) data.get('listViewName');
 		string SQL = (string) data.get('SQL');
 
@@ -109,6 +112,10 @@ global with sharing class infrastructure {
 		string SOQL = (relField!='') 
 			? 'SELECT {fields} FROM {sObjApiName} WHERE {relField}=\'{recordId}\' {addCondition} WITH SECURITY_ENFORCED'.replaceAll('\\{relField\\}', relField!= null ? relField : '').replaceAll('\\{recordId\\}', recordId)
 			: 'SELECT {fields} FROM {sObjApiName} {addCondition} WITH SECURITY_ENFORCED';
+
+		if(orderBy != null){
+			SOQL += orderBy;
+		}
 		
 
 		system.debug(LoggingLevel.Error, SOQL);
@@ -535,6 +542,18 @@ global with sharing class infrastructure {
 			}
 		}
 		return objs;
+	}
+	private static map<string, object> objectFieldList(map < string, object > data){
+		string sObjApiName = (string) data.get('sObjApiName');
+		map<string, object> result = new map<string, object>{};
+		map < string, Schema.DescribeFieldResult > describeResult = new map < string, Schema.DescribeFieldResult > ();
+		map < String, Schema.SObjectField > fieldsMap = Schema.getGlobalDescribe().get(sObjApiName).getDescribe().fields.getMap();
+		for (string fItem: fieldsMap.keySet()) {
+			Schema.DescribeFieldResult tmp = fieldsMap.get(fItem).getDescribe();
+			describeResult.put(tmp.getName(), tmp);
+		}
+		result.put('describe', JSON.serialize(describeResult));
+		return result;
 	}
 
 	global class InfrastructureException extends Exception {
