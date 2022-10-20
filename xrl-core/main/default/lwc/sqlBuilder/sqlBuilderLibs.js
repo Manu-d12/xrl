@@ -1,88 +1,88 @@
 export let sqlBuilderLibs = {
-    numberFilterActions(key) {
+    numberFilterActions(labels,key) {
 		const actions = [
-			{ label: 'Is Equal', value: 'eq' },
-			{ label: 'Not Is Equal', value: 'neq' },
-			{ label: 'Is empty', value: 'em', isUnary : true},
-			{ label: 'Is Not empty', value: 'nem', isUnary : true},
-			{ label: 'Greater Than', value: 'gr' },
-			{ label: 'Greater or equal', value: 'gre' },
-			{ label: 'Less', value: 'ls' },
-			{ label: 'Less or equal', value: 'lse' },
-			{ label: 'Range', value: 'rg' }
+			{ label: labels.lbl_isEqual, value: 'eq' },
+			{ label: labels.lbl_isNotEqual, value: 'neq' },
+			{ label: labels.lbl_isEmpty, value: 'em', isUnary : true},
+			{ label: labels.lbl_isNotEmpty, value: 'nem', isUnary : true},
+			{ label: labels.lbl_greater, value: 'gr' },
+			{ label: labels.lbl_greaterOrEqual, value: 'gre' },
+			{ label: labels.lbl_less, value: 'ls' },
+			{ label: labels.lbl_lessOrEqual, value: 'lse' },
+			{ label: labels.lbl_range, value: 'rg' }
 		]
 		return (key) 
 			? actions.find( el => { return el.value === key})
 			: actions;
 	},
-	doubleFilterActions(key) {
+	doubleFilterActions(labels,key) {
 		const actions = [
-			{ label: 'Is Equal', value: 'eq' },
-			{ label: 'Not Is Equal', value: 'neq' },
-			{ label: 'Is empty', value: 'em', isUnary : true},
-			{ label: 'Not Is empty', value: 'nem', isUnary : true},
-			{ label: 'Greater', value: 'gr' },
-			{ label: 'Greater or equal', value: 'gre' },
-			{ label: 'Less', value: 'ls' },
-			{ label: 'Less or equal', value: 'lse' },
-			{ label: 'Range', value: 'rg' }
+			{ label: labels.lbl_isEqual, value: 'eq' },
+			{ label: labels.lbl_isNotEqual, value: 'neq' },
+			{ label: labels.lbl_isEmpty, value: 'em', isUnary : true},
+			{ label: labels.lbl_isNotEmpty, value: 'nem', isUnary : true},
+			{ label: labels.lbl_greater, value: 'gr' },
+			{ label: labels.lbl_greaterOrEqual, value: 'gre' },
+			{ label: labels.lbl_less, value: 'ls' },
+			{ label: labels.lbl_lessOrEqual, value: 'lse' },
+			{ label: labels.lbl_range, value: 'rg' }
 		]
 		return (key) 
 			? actions.find( el => { return el.value === key})
 			: actions;
 	},
-    stringFilterActions(key) {
+    stringFilterActions(labels,key) {
 		const actions = [
-			{ label: 'Contains', value: 'cn' },
-			{ label: 'Does not contain', value: 'ncn' },
-			{ label: 'Begins with', value: 'bn' },
-			{ label: 'Does not begins with', value: 'nbn' },
-			{ label: 'Ends with', value: 'ed' },
-			{ label: 'Does not ends with', value: 'ned' },
-			{ label: 'Is Equal', value: 'eq' },
-			{ label: 'Not Is Equal', value: 'neq' },
-			{ label: 'Is empty', value: 'em', isUnary : true},
-			{ label: 'Not Is empty', value: 'nem', isUnary : true}
+			{ label: labels.lbl_contains, value: 'cn' },
+			{ label: labels.lbl_doesNotContains, value: 'ncn' },
+			{ label: labels.lbl_beginsWith, value: 'bn' },
+			{ label: labels.lbl_doesNotBeginsWith, value: 'nbn' },
+			{ label: labels.lbl_endsWith, value: 'ed' },
+			{ label: labels.lbl_doesNotEndsWith, value: 'ned' },
+			{ label: labels.lbl_isEqual, value: 'eq' },
+			{ label: labels.lbl_isNotEqual, value: 'neq' },
+			{ label: labels.lbl_isEmpty, value: 'em', isUnary : true},
+			{ label: labels.lbl_isNotEmpty, value: 'nem', isUnary : true},
 		]
         return (key) 
 			? actions.find( el => { return el.value === key})
 			: actions;
 	},
-    picklistFilterActions(key) {
+    picklistFilterActions(labels,key) {
 		const actions = [
-			{ label: 'Contains', value: 'cn' },
-			{ label: 'Does not contain', value: 'ncn' },
-			{ label: 'Is Equal', value: 'eq' },
-			{ label: 'Not Is Equal', value: 'neq' },
-			{ label: 'Is empty', value: 'em', isUnary : true},
-			{ label: 'Not Is empty', value: 'nem', isUnary : true}
+			{ label: labels.lbl_contains, value: 'cn' },
+			{ label: labels.lbl_doesNotContains, value: 'ncn' },
+			{ label: labels.lbl_isEqual, value: 'eq' },
+			{ label: labels.lbl_isNotEqual, value: 'neq' },
+			{ label: labels.lbl_isEmpty, value: 'em', isUnary : true},
+			{ label: labels.lbl_isNotEmpty, value: 'nem', isUnary : true},
 		]
         return (key) 
 			? actions.find( el => { return el.value === key})
 			: actions;
 	},
-	booleanFilterActions(key) {
+	booleanFilterActions(labels,key) {
 		const actions = [
-			{ label: 'Is Equal', value: 'eq' },
-			{ label: 'Not Is Equal', value: 'neq' },
-			{ label: 'Is empty', value: 'em', isUnary : true},
-			{ label: 'Not Is empty', value: 'nem', isUnary : true}
+			{ label: labels.lbl_isEqual, value: 'eq' },
+			{ label: labels.lbl_isNotEqual, value: 'neq' },
+			{ label: labels.lbl_isEmpty, value: 'em', isUnary : true},
+			{ label: labels.lbl_isNotEmpty, value: 'nem', isUnary : true},
 		];
 		return (key) 
 			? actions.find( el => { return el.value === key})
 			: actions;
 	},
-	datetimeFilterActions(key) {
+	datetimeFilterActions(labels,key) {
 		const actions = [
-			{ label: 'Is Equal', value: 'eq' },
-			{ label: 'Not Is Equal', value: 'neq' },
-			{ label: 'Is empty', value: 'em', isUnary : true},
-			{ label: 'Not Is empty', value: 'nem', isUnary : true},
-			{ label: 'Greater', value: 'gr' },
-			{ label: 'Greater or equal', value: 'gre' },
-			{ label: 'Less', value: 'ls' },
-			{ label: 'Less or equal', value: 'lse' },
-			{ label: 'Range', value: 'rg' }
+			{ label: labels.lbl_isEqual, value: 'eq' },
+			{ label: labels.lbl_isNotEqual, value: 'neq' },
+			{ label: labels.lbl_isEmpty, value: 'em', isUnary : true},
+			{ label: labels.lbl_isNotEmpty, value: 'nem', isUnary : true},
+			{ label: labels.lbl_greater, value: 'gr' },
+			{ label: labels.lbl_greaterOrEqual, value: 'gre' },
+			{ label: labels.lbl_less, value: 'ls' },
+			{ label: labels.lbl_lessOrEqual, value: 'lse' },
+			{ label: labels.lbl_range, value: 'rg' }
 		]
 		return (key) 
 			? actions.find( el => { return el.value === key})
@@ -108,9 +108,9 @@ export let sqlBuilderLibs = {
 			case 'neq':
 				return filter.field + " !='" +  filter.value + "'";
 			case 'em': 
-				return filter.field + " = null";
+				return filter.field + " = NULL";
 			case 'nem': 
-				return filter.field + " != null";
+				return filter.field + " != NULL";
         }
     },
 	picklist__condition(filter) {

@@ -775,4 +775,340 @@
         <shortDescription>lbl_apply</shortDescription>
         <value>Apply</value>
     </labels>
+    <labels>
+        <fullName>lbl_ascending</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_ascending</shortDescription>
+        <value>Ascending</value>
+    </labels>
+    <labels>
+        <fullName>lbl_descending</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_descending</shortDescription>
+        <value>Descending</value>
+    </labels>
+    <labels>
+        <fullName>lbl_beginning</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_beginning</shortDescription>
+        <value>Beginning</value>
+    </labels>
+    <labels>
+        <fullName>lbl_end</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_end</shortDescription>
+        <value>End</value>
+    </labels>
+    <labels>
+        <fullName>lbl_maxLevelReached</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_maxLevelReached</shortDescription>
+        <value>Already reached 5 levels</value>
+    </labels>
+    <labels>
+        <fullName>lbl_availableFieldsFrom</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_availableFieldsFrom</shortDescription>
+        <value>Available Fields from</value>
+    </labels>
+    <labels>
+        <fullName>lbl_enterSearchTermHere</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_enterSearchTermHere</shortDescription>
+        <value>Enter Search Term here</value>
+    </labels>
+    <labels>
+        <fullName>lbl_back</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_back</shortDescription>
+        <value>Back</value>
+    </labels>
+    <labels>
+        <fullName>lbl_selectedFields</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_selectedFields</shortDescription>
+        <value>Selected Fields</value>
+    </labels>
+    <labels>
+        <fullName>lbl_availableOperations</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_availableOperations</shortDescription>
+        <value>Available Operations</value>
+    </labels>
+    <labels>
+        <fullName>lbl_appliedConditions</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_appliedConditions</shortDescription>
+        <value>Applied Conditions</value>
+    </labels>
+    <labels>
+        <fullName>lbl_slNo</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_slNo</shortDescription>
+        <value>SL NO.</value>
+    </labels>
+    <labels>
+        <fullName>lbl_fieldName</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_fieldName</shortDescription>
+        <value>Field Name</value>
+    </labels>
+    <labels>
+        <fullName>lbl_operator</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_operator</shortDescription>
+        <value>Operator</value>
+    </labels>
+    <labels>
+        <fullName>lbl_value</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_value</shortDescription>
+        <value>Value</value>
+    </labels>
+    <labels>
+        <fullName>lbl_actions</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_actions</shortDescription>
+        <value>Actions</value>
+    </labels>
+    <labels>
+        <fullName>lbl_conditionFilteringPattern</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_conditionFilteringPattern</shortDescription>
+        <value>Condition Filtering Pattern</value>
+    </labels>
+    <labels>
+        <fullName>lbl_configure</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_configure</shortDescription>
+        <value>Configure</value>
+    </labels>
+    <labels>
+        <fullName>lbl_selectSortOrder</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_selectSortOrder</shortDescription>
+        <value>Select Sort Order</value>
+    </labels>
+    <labels>
+        <fullName>lbl_selectEmptyFieldLocation</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_selectEmptyFieldLocation</shortDescription>
+        <value>Select Empty Field Location</value>
+    </labels>
+    <labels>
+        <fullName>lbl_addOrdering</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_addOrdering</shortDescription>
+        <value>Add Ordering</value>
+    </labels>
+    <labels>
+        <fullName>lbl_appliedOrderings</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_appliedOrderings</shortDescription>
+        <value>Applied Orderings</value>
+    </labels>
+    <labels>
+        <fullName>lbl_liveQuery</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_liveQuery</shortDescription>
+        <value>Live Query: </value>
+    </labels>
+    <labels>
+        <fullName>lbl_addCondition</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_addCondition</shortDescription>
+        <value>Add Condition</value>
+    </labels>
+    <labels>
+        <fullName>lbl_enterValue</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_enterValue</shortDescription>
+        <value>Enter Value</value>
+    </labels>
+    <labels>
+        <fullName>lbl_applyOrdering</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_applyOrdering</shortDescription>
+        <value>Apply Ordering</value>
+    </labels>
+    <labels>
+        <fullName>lbl_applyConditions</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_applyConditions</shortDescription>
+        <value>Apply Conditions</value>
+    </labels>
+    <labels>
+        <fullName>lbl_isEqual</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_isEqual</shortDescription>
+        <value>Is Equal</value>
+    </labels>
+    <labels>
+        <fullName>lbl_isNotEqual</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_isNotEqual</shortDescription>
+        <value>Is Not Equal</value>
+    </labels>
+    <labels>
+        <fullName>lbl_isEmpty</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_isEmpty</shortDescription>
+        <value>Is Empty</value>
+    </labels>
+    <labels>
+        <fullName>lbl_isNotEmpty</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_isNotEmpty</shortDescription>
+        <value>Is Not Empty</value>
+    </labels>
+    <labels>
+        <fullName>lbl_greater</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_greater</shortDescription>
+        <value>Greater</value>
+    </labels>
+    <labels>
+        <fullName>lbl_greaterOrEqual</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_greaterOrEqual</shortDescription>
+        <value>Greater or Equal</value>
+    </labels>
+    <labels>
+        <fullName>lbl_less</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_less</shortDescription>
+        <value>Less</value>
+    </labels>
+    <labels>
+        <fullName>lbl_lessOrEqual</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_lessOrEqual</shortDescription>
+        <value>Less or Equal</value>
+    </labels>
+    <labels>
+        <fullName>lbl_range</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_range</shortDescription>
+        <value>Range</value>
+    </labels>
+    <labels>
+        <fullName>lbl_contains</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_contains</shortDescription>
+        <value>Contains</value>
+    </labels>
+    <labels>
+        <fullName>lbl_doesNotContains</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_doesNotContains</shortDescription>
+        <value>Does Not Contains</value>
+    </labels>
+    <labels>
+        <fullName>lbl_beginsWith</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_beginsWith</shortDescription>
+        <value>Begins With</value>
+    </labels>
+    <labels>
+        <fullName>lbl_doesNotBeginsWith</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_doesNotBeginsWith</shortDescription>
+        <value>Does Not Begins With</value>
+    </labels>
+    <labels>
+        <fullName>lbl_endsWith</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_endsWith</shortDescription>
+        <value>Ends With</value>
+    </labels>
+    <labels>
+        <fullName>lbl_doesNotEndsWith</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_doesNotEndsWith</shortDescription>
+        <value>Does Not Ends With</value>
+    </labels>
 </CustomLabels>

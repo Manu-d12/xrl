@@ -35,10 +35,10 @@ export default class SqlBuilder extends LightningElement {
             }
             this.config.sqlBuilder.selectedFields.push(fieldMap);
         });
-        this.config.sqlBuilder.sortOrderOptions = [{label:'Ascending', value:'ASC'},
-                                                    {label:'Descending', value:'DESC'}];
-        this.config.sqlBuilder.emptyFieldOptions = [{label:'Beginning', value:'NULLS FIRST'},
-                                                    {label:'END', value:'NULLS LAST'}];
+        this.config.sqlBuilder.sortOrderOptions = [{label: this.config._LABELS.lbl_ascending, value:'ASC'},
+                                                    {label: this.config._LABELS.lbl_descending, value:'DESC'}];
+        this.config.sqlBuilder.emptyFieldOptions = [{label:this.config._LABELS.lbl_beginning, value:'NULLS FIRST'},
+                                                    {label:this.config._LABELS.lbl_end, value:'NULLS LAST'}];
         this.config.sqlBuilder._objectStack = [{relationShip:this.config.sObjApiName,referredObj:this.config.sObjApiName}];
         this.config.sqlBuilder.fields = libs.sortRecords(this.generateFields(this.config.describe), 'label', true);
         this.config.sqlBuilder.allFields = this.config.sqlBuilder.fields;
@@ -101,7 +101,7 @@ export default class SqlBuilder extends LightningElement {
                 }else{
                     const toast = new ShowToastEvent({
                         title: 'Error',
-                        message: 'Already reached 5 levels',
+                        message: this.config._LABELS.lbl_maxLevelReached,
                         variant: 'error'
                     });
                     this.dispatchEvent(toast);
@@ -148,7 +148,7 @@ export default class SqlBuilder extends LightningElement {
                     this.config.sqlBuilder.currentCondition.fieldOptions = selectedField.options;
                 }
                 if(sqlBuilderLibs[selectedField.type + 'FilterActions']){
-                    sqlBuilderLibs[selectedField.type + 'FilterActions']().forEach((el)=>{
+                    sqlBuilderLibs[selectedField.type + 'FilterActions'](this.config._LABELS).forEach((el)=>{
                         this.config.sqlBuilder.conditionOperations.push(el);
                     });
                 }else{
@@ -167,7 +167,7 @@ export default class SqlBuilder extends LightningElement {
                 }else{
                     const toast = new ShowToastEvent({
                         title: 'Error',
-                        message: 'Already reached 5 levels',
+                        message: this.config._LABELS.lbl_maxLevelReached,
                         variant: 'error'
                     });
                     this.dispatchEvent(toast);
@@ -176,7 +176,7 @@ export default class SqlBuilder extends LightningElement {
         }
         if(val === "sqlBuilder:conditions:selectOperation"){
             let operator = event.target.getAttribute('data-val');     
-            this.config.sqlBuilder.currentCondition.operator = sqlBuilderLibs[this.config.sqlBuilder.currentCondition.fieldType + 'FilterActions']().find((el)=> el.value === operator);
+            this.config.sqlBuilder.currentCondition.operator = sqlBuilderLibs[this.config.sqlBuilder.currentCondition.fieldType + 'FilterActions'](this.config._LABELS).find((el)=> el.value === operator);
             this.config.sqlBuilder.openConditionInput = {
                 isPicklist: this.config.sqlBuilder.currentCondition.fieldType === 'picklist' ? true : false,
                 isRange: operator === 'rg' ? true : false
@@ -219,7 +219,7 @@ export default class SqlBuilder extends LightningElement {
                 }else{
                     const toast = new ShowToastEvent({
                         title: 'Error',
-                        message: 'Already reached 5 levels',
+                        message: this.config._LABELS.lbl_maxLevelReached,
                         variant: 'error'
                     });
                     this.dispatchEvent(toast);
@@ -245,7 +245,6 @@ export default class SqlBuilder extends LightningElement {
         }
     }
     upsertArray(array, item) { 
-        console.log('HERE>',item.field.value);
         const i = array.findIndex(_item => _item.field.value === item.field.value);
         if (i > -1) array[i] = item; // (2)
         else array.push(item);
@@ -257,7 +256,6 @@ export default class SqlBuilder extends LightningElement {
             array = array.filter(e => e.value !== value);
         }else{
             array.push(field); 
-            console.log('pushed');
             this.addIntoDialog(field);
         }
     }
