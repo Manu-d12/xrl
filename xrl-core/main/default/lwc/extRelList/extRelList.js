@@ -262,6 +262,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			sObjApiName: this.config.sObjApiName,
 			relField: this.config.relField,
 			addCondition: this.config.listViewConfig[0].addCondition,
+			orderBy: this.config.listViewConfig[0].orderBy,
 			fields: this.config.fields,
 			listViewName: this.config?.listView?.name,
 			callback: ((nodeName, data) => {
@@ -283,9 +284,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			let describe = this.config.describe[e.fieldName];
 			if (e.label === undefined) e.label = describe.label;
 			if (e.type === undefined) e.type = describe.type;
-			e.updateable = describe.updateable;
-			e.isNameField = describe && describe.nameField === true;
-			if (e.type === 'picklist') {
+			if (e.updateable === undefined) e.updateable = describe.updateable;
+			if (e.isNameField === undefined) e.isNameField = describe && describe.nameField === true;
+			if (e.type === 'picklist' && e.options === undefined) {
 				e.options = [];
 				describe.picklistValues.forEach(field => {
 					e.options.push(
