@@ -222,6 +222,13 @@ export let libs = {
 				"tooltip": _labels.tooltip_replaceInlineEditWithStandardEdit,
 				"cmd" : "dialog:setTableParam",
 			},
+			"rollBack" : {
+				"defValue": false,
+				"type": "checkbox",
+				"label": "Rollback?",
+				"tooltip": "In case of bulk edit if any exception occurs should the entire transaction rolled back?",
+				"cmd" : "dialog:setTableParam",
+			},
 			"saveChunkSize" : {
 				"defValue": 200,
 				"type": "string",
