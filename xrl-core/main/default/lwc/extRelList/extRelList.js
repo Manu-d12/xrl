@@ -319,9 +319,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	resetChangedRecords() {
+		this.config.resetIndex += 1;
 		this.template.querySelector('c-Data-Table').setUpdateInfo('• ' + this.config.listViewConfig[0]._changedRecords.length + ' item(s) updated');
 		setTimeout((() => { this.template.querySelector('c-Data-Table').setUpdateInfo(''); }), 3000);
-		this.config.listViewConfig[0]._changedRecords = undefined;
+		if(this.config.loopIndex === this.config.resetIndex)
+			this.config.listViewConfig[0]._changedRecords = undefined;
 	}
 
 	handleEvent(event) {
@@ -347,10 +349,25 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				// In thiscase need merge to libs.getGlobalVar(this.name).records;
 				return this.config.listViewConfig[0]._changedRecords.indexOf(el.Id) > -1
 			})
+			// libs.remoteAction(this, 'saveRecords', { records: changedItems, sObjApiName: this.config.sObjApiName, callback: this.resetChangedRecords });
 
+			this.config.loopIndex = 0;
+			this.config.resetIndex = 0;
+			let saveChunk = this.config.listViewConfig[0].saveChunk ? this.config.listViewConfig[0].saveChunk : 200; //200 is the default value for saveChunk
 			//changedItems = JSON.parse(JSON.stringify(changedItems));
-			libs.remoteAction(this, 'saveRecords', { records: changedItems, sObjApiName: this.config.sObjApiName, callback: this.resetChangedRecords });
-		}
+			let index = 0;
+			console.log('HERE>',JSON.parse(JSON.stringify(this.config.listViewConfig[0])));
+			console.log("rollback",this.config.listViewConfig[0].rollBack);
+			while(index <= changedItems.length){
+				let chunk = changedItems.slice(index,changedItems[(index+saveChunk)] ? (index+saveChunk) : (changedItems.length));
+				index += changedItems[(index+saveChunk)] ? (saveChunk) : (changedItems.length);
+				this.config.loopIndex += 1;
+				libs.remoteAction(this, 'saveRecords', { records: chunk, 
+					sObjApiName: this.config.sObjApiName,
+					rollback:this.config.listViewConfig[0].rollBack ? this.config.listViewConfig[0].rollBack : true,
+					callback: this.resetChangedRecords });
+			}
+			}
 
 		if (val.startsWith(':change_view')) {
 			this.name = event.target.value;

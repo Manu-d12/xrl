@@ -274,6 +274,7 @@ export default class SqlBuilder extends LightningElement {
         }else{
             libs.remoteAction(this, 'objectFieldList', { sObjApiName: sObjName, 
                 callback: function(cmd,data){
+                    console.log('HERE>',JSON.parse(JSON.stringify(data[cmd])));
                     let objectFields = JSON.parse(data[cmd].describe);
                     this.config.describeMap[sObjName] = objectFields;
                     this.config.sqlBuilder.fields = this.generateFields(objectFields,objStr);   

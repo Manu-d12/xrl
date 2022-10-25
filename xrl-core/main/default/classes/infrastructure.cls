@@ -10,7 +10,7 @@ global with sharing class infrastructure {
 		recordId = (string) data.get('recordId');
 		try {
 
-			list < PermissionSetAssignment > permission = [SELECT Id FROM PermissionSetAssignment WHERE AssigneeId = :UserInfo.getUserId() AND PermissionSet.Name = 'XRL_Admin'];
+			list < PermissionSetAssignment > permission = [SELECT Id FROM PermissionSetAssignment WHERE AssigneeId =: UserInfo.getUserId() AND PermissionSet.Name = 'XRL_Admin'];
 			if (permission.size() != 0) isAdminAccess = true;
 
 			switch on cmd {
@@ -45,7 +45,7 @@ global with sharing class infrastructure {
 					resultMethod = objectList();
 				}when 'objectFieldList' {
 					resultMethod = objectFieldList(data);
-				}
+				}				
 				when
 				else {
 					//throw new core.appException(null, core.appLabels.get('errCmd'), core.ExceptionType.API);
@@ -60,13 +60,13 @@ global with sharing class infrastructure {
 		}
 		result.put(cmd + 'Result', resultMethod);
 
-		User userDetails = [SELECT Id, Name, Profile.Name, UserRole.Name FROM User where Id=:userinfo.getUserId()]; 
-		list < PermissionSetAssignment > permissionSets = [SELECT Id,PermissionSet.Name FROM PermissionSetAssignment WHERE AssigneeId = :UserInfo.getUserId()];
-		List<Group> publicGroups = getGroupsForUser(userinfo.getUserId());
+		User userDetails = [SELECT Id, Name, Profile.Name, UserRole.Name FROM User where Id =: userinfo.getUserId()];
+		list < PermissionSetAssignment > permissionSets = [SELECT Id, PermissionSet.Name FROM PermissionSetAssignment WHERE AssigneeId =: UserInfo.getUserId()];
+		List < Group > publicGroups = getGroupsForUser(userinfo.getUserId());
 		System.debug(publicGroups);
 
-		result.put('userInfo', new map<string, object>{
-			'locale' => userInfo.getLocale().replaceAll('_','-').replace('-EURO',''),
+		result.put('userInfo', new map < string, object > {
+			'locale' => userInfo.getLocale().replaceAll('_', '-').replace('-EURO', ''),
 			'isAdminAccess' => isAdminAccess,
 			'profileName' => userDetails.Profile.Name,
 			'roleName' => userDetails.UserRole.Name,
@@ -78,7 +78,7 @@ global with sharing class infrastructure {
 	}
 
 	private static object getQuery(map < string, object > data) {
-		map<string, object> result = new map<string, object>();
+		map < string, object > result = new map < string, object > ();
 		string sObjApiName = (string) data.get('sObjApiName');
 		string relField = (string) data.get('relField');
 		string addCondition = (string) data.get('addCondition');
@@ -87,7 +87,7 @@ global with sharing class infrastructure {
 		string SQL = (string) data.get('SQL');
 
 		boolean isNeedDescribe = (boolean) data.get('isNeedDescribe') == true;
-		set <string> fields = (set<string>) JSON.deserialize(JSON.serialize(data.get('fields')), set<string>.class);
+		set < string > fields = (set < string > ) JSON.deserialize(JSON.serialize(data.get('fields')), set < string > .class);
 
 		set < string > soqlFields = new set < string > { 'Id' };
 
@@ -104,25 +104,24 @@ global with sharing class infrastructure {
 			}
 			result.put('describe', JSON.serialize(describeResult));
 		}*/
-		
+
 		if (UserInfo.isMultiCurrencyOrganization() == true) {
 			fields.add('CurrencyIsoCode');
 		}
 
-		string SOQL = (relField!='') 
-			? 'SELECT {fields} FROM {sObjApiName} WHERE {relField}=\'{recordId}\' {addCondition} WITH SECURITY_ENFORCED'.replaceAll('\\{relField\\}', relField!= null ? relField : '').replaceAll('\\{recordId\\}', recordId)
-			: 'SELECT {fields} FROM {sObjApiName} {addCondition} WITH SECURITY_ENFORCED';
-
+		string SOQL = (relField != '') ?
+			'SELECT {fields} FROM {sObjApiName} WHERE {relField}=\'{recordId}\' {addCondition}'.replaceAll('\\{relField\\}', relField != null ? relField : '').replaceAll('\\{recordId\\}', recordId) :
+			'SELECT {fields} FROM {sObjApiName} {addCondition}';
+		
 		if(orderBy != null){
 			SOQL += orderBy;
 		}
-		
 
 		system.debug(LoggingLevel.Error, SOQL);
 
-		SOQL = SOQL.replaceAll('\\{sObjApiName\\}', sObjApiName!=null ? sObjApiName : '');
+		SOQL = SOQL.replaceAll('\\{sObjApiName\\}', sObjApiName != null ? sObjApiName : '');
 		SOQL = SOQL.replaceAll('\\{addCondition\\}', addCondition != null ? addCondition : '');
-		SOQL = SOQL.replaceAll('\\{fields\\}', soqlFields!=null ? string.join(new list < string > (soqlFields), ',') : '');
+		SOQL = SOQL.replaceAll('\\{fields\\}', soqlFields != null ? string.join(new list < string > (soqlFields), ',') : '');
 
 		//if (string.isBlank(SOQL)) throw new core.appException(null, string.format(core.appLabels.get('errCmdParams'), new string[]{'executeAnon','apexCode'}), core.ExceptionType.API);
 		system.debug(LoggingLevel.Error, 'SOQL ' + SOQL);
@@ -131,9 +130,7 @@ global with sharing class infrastructure {
 
 		sObject[] records = database.query(SOQL);
 
-		SObjectAccessDecision decision = Security.stripInaccessible(
-			AccessType.READABLE,
-			records);
+		SObjectAccessDecision decision = Security.stripInaccessible(AccessType.READABLE, records);
 
 		// Throw an exception if any data was stripped
 		if (!decision.getModifiedIndexes().isEmpty()) {
@@ -147,20 +144,21 @@ global with sharing class infrastructure {
 		//https://salesforce.stackexchange.com/questions/116688/lightning-get-sobject-tab-icon
 	}
 
-	private static map<string, object> getConfig(map < string, object > data) {
+	private static map < string, object > getConfig(map < string, object > data) {
 		string sObjApiName = (string) data.get('sObjApiName');
 		string relField = (string) data.get('relField');
 		string listViewName = (string) data.get('listViewName');
 		boolean isNeedDescribe = true;
 
-		map<string, object> result = new map<string, object>{};
+		map < string, object > result = new map < string, object > {};
 
-		list<map<string, object>> listViews = new list<map<string, object>>{};
+		list < map < string, object >> listViews = new list < map < string, object >> {};
 
-		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c FROM extRelListConfig__c WHERE sObjApiName__c=:sObjApiName AND relFieldApiName__c=:relField AND (CreatedById =:userInfo.getUserID() OR isAdminConfig__c=TRUE) AND Is_Active__c = TRUE AND RecordType.Name = 'Config' ORDER BY isAdminConfig__c DESC, listViewName__c ASC LIMIT 20];
+		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c FROM extRelListConfig__c WHERE sObjApiName__c =: sObjApiName AND relFieldApiName__c =: relField AND(CreatedById =: userInfo.getUserID() OR isAdminConfig__c = TRUE) AND Is_Active__c = TRUE AND RecordType.Name = 'Config'
+			ORDER BY isAdminConfig__c DESC, listViewName__c ASC LIMIT 20];
 		for (integer i = 0; i < lst.size(); i++) {
 			extRelListConfig__c item = lst[i];
-			map<string, object> view = new map<string, object>{
+			map < string, object > view = new map < string, object > {
 				'id' => item.Id,
 				'name' => item.listViewName__c,
 				'label' => item.listViewLabel__c,
@@ -184,30 +182,30 @@ global with sharing class infrastructure {
 			}
 			result.put('describe', JSON.serialize(describeResult));
 		}
-		result.put('currency', new map<string, object>{
-			'orgCurrency' =>  UserInfo.getDefaultCurrency(),
+		result.put('currency', new map < string, object > {
+			'orgCurrency' => UserInfo.getDefaultCurrency(),
 			'isMultyCurrencyOrg' => UserInfo.isMultiCurrencyOrganization()
 		});
 
-		result.put('iconMap',retrieveIconForObject(sObjApiName));
+		result.put('iconMap', retrieveIconForObject(sObjApiName));
 
 		return result;
 	}
-	private static map<string, object> getConfigById(map < string, object > data) {
+	private static map < string, object > getConfigById(map < string, object > data) {
 		// string sObjApiName = (string) data.get('sObjApiName');
 		// string relField = (string) data.get('relField');
 		// string listViewName = (string) data.get('listViewName');
 		string configId = (string) data.get('configId');
 		boolean isNeedDescribe = true;
 
-		map<string, object> result = new map<string, object>{};
+		map < string, object > result = new map < string, object > {};
 
-		list<map<string, object>> listViews = new list<map<string, object>>{};
+		list < map < string, object >> listViews = new list < map < string, object >> {};
 
-		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c,sObjApiName__c,relFieldApiName__c FROM extRelListConfig__c WHERE Id = :configId LIMIT 20];
+		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c, sObjApiName__c, relFieldApiName__c FROM extRelListConfig__c WHERE Id =: configId LIMIT 20];
 		for (integer i = 0; i < lst.size(); i++) {
 			extRelListConfig__c item = lst[i];
-			map<string, object> view = new map<string, object>{
+			map < string, object > view = new map < string, object > {
 				'name' => item.listViewName__c,
 				'label' => item.listViewLabel__c,
 				'isAdminConfig' => item.isAdminConfig__c,
@@ -221,8 +219,8 @@ global with sharing class infrastructure {
 		}
 		result.put('listViews', listViews);
 
-		result.put('currency', new map<string, object>{
-			'orgCurrency' =>  UserInfo.getDefaultCurrency(),
+		result.put('currency', new map < string, object > {
+			'orgCurrency' => UserInfo.getDefaultCurrency(),
 			'isMultyCurrencyOrg' => UserInfo.isMultiCurrencyOrganization()
 		});
 
@@ -237,15 +235,17 @@ global with sharing class infrastructure {
 		string relField = (string) data.get('relField');
 		string config = (string) data.get('config');
 
-		listViewName = string.isBlank(listViewName) 
-			? (isAdminAccess ? '_admin' : null)
-			: listViewName;
-		listViewLabel = string.isBlank(listViewLabel) 
-			? (isAdminAccess ? 'Admin' : null)
-			: listViewLabel;
+		listViewName = string.isBlank(listViewName) ?
+			(isAdminAccess ? '_admin' : null) :
+			listViewName;
+		listViewLabel = string.isBlank(listViewLabel) ?
+			(isAdminAccess ? 'Admin' : null) :
+			listViewLabel;
 		boolean isAdminConf = listViewName == '_admin' ? isAdminAccess : listViewAdmin;
 
-		RecordType rt = [SELECT Id FROM RecordType WHERE Name = 'Config' AND (SobjectType ='extRelListConfig__c' OR SobjectType ='XRL__extRelListConfig__c') limit 1];
+		RecordType rt = [SELECT Id FROM RecordType WHERE Name = 'Config'
+			AND(SobjectType = 'extRelListConfig__c'
+				OR SobjectType = 'XRL__extRelListConfig__c') limit 1];
 
 		extRelListConfig__c listView = new extRelListConfig__c(
 			listViewName__c = listViewName,
@@ -263,18 +263,37 @@ global with sharing class infrastructure {
 	}
 
 	private static object saveRecords(map < string, object > data) {
+		//https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_Security.htm#apex_System_Security_stripInaccessible
 		string sObjApiName = (string) data.get('sObjApiName');
+		boolean isRollback = (boolean) data.get('rollback');
 		Type T = type.forName('list<' + sObjApiName + '>');
 		sObject[] records = (sObject[]) JSON.deserialize(JSON.serialize(data.get('records')), T);
-
+		/*This part only for security review. Please don't remove
 		SObjectAccessDecision decision = Security.stripInaccessible(AccessType.UPDATABLE,records);
 
 		// Throw an exception if any data was stripped
 		if (!decision.getModifiedIndexes().isEmpty()) {
-			throw new InfrastructureException(null,'Records can\'t be updated', Infrastructure.exceptionType.GENERAL);
+			System.debug(decision.getRemovedFields()); // Prints "Rating"
+			System.debug(decision.getModifiedIndexes()); // Prints "1"
+			throw new InfrastructureException(null,'Records can\'t be updated.', Infrastructure.exceptionType.GENERAL);
 		}
-
-		update records;
+		//update securityDecision.getRecords() update records that can be updated
+		*/
+		Savepoint sp = Database.setSavepoint();
+		system.debug(isRollback);
+ 
+		List<Database.SaveResult> srs = Database.update(records, isRollback); 
+		for (Database.SaveResult sr : srs) {
+			if (!sr.isSuccess()) {
+				String error = '';
+				for (Database.Error err : sr.getErrors()) {
+					// if(isRollback == true)
+					// 	Database.rollback(sp);
+					throw new InfrastructureException(null,String.valueOf(err.getStatusCode()) + ': ' + err.getMessage() , Infrastructure.exceptionType.GENERAL);
+				}
+			}
+		}
+		// update records;
 		return records;
 	}
 
@@ -285,14 +304,15 @@ global with sharing class infrastructure {
 
 		delete records;
 		return records;
-	}	
+	}
 
 	private static object requestFeature(map < string, object > data) {
 		string text = (string) data.get('text');
-		UserLicense license = [SELECT TotalLicenses, UsedLicenses FROM UserLicense WHERE Name = 'Salesforce' LIMIT 1];
-		
+		UserLicense license = [SELECT TotalLicenses, UsedLicenses FROM UserLicense WHERE Name = 'Salesforce'
+			LIMIT 1];
+
 		Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
-		email.setToAddresses(new string[]{'polina.sorokina@stratavar.com'});
+		email.setToAddresses(new string[] { 'polina.sorokina@stratavar.com' });
 		email.setSubject('Feature is requested');
 		email.setHtmlBody(
 			'<p>OrgId: ' + UserInfo.getOrganizationId() + '<br>' +
@@ -303,13 +323,13 @@ global with sharing class infrastructure {
 			'Date: ' + Date.today() + '</p><br>' +
 			'<p>' + text + '</p>'
 		);
-		Messaging.SendEmailResult[] sendRes = Messaging.sendEmail(new Messaging.SingleEmailMessage[] {email});
+		Messaging.SendEmailResult[] sendRes = Messaging.sendEmail(new Messaging.SingleEmailMessage[] { email });
 
-		map < string, object > result = new map < string, object >();
+		map < string, object > result = new map < string, object > ();
 		result.put('isSuccess', sendRes[0].isSuccess());
 		if (!sendRes[0].isSuccess()) {
 			string error = '';
-			for (Messaging.SendEmailError err : sendRes[0].getErrors()) {                  
+			for (Messaging.SendEmailError err: sendRes[0].getErrors()) {
 				error += err.getStatusCode() + ': ' + err.getMessage() + ' [' + err.getFields() + '].';
 			}
 			result.put('error', error);
@@ -319,19 +339,19 @@ global with sharing class infrastructure {
 
 	private static object invokeAction(map < string, object > data) {
 		string name = (string) data.get('name');
-		list < object > recordIdList = (list < object >) data.get('recordIdList');
+		list < object > recordIdList = (list < object > ) data.get('recordIdList');
 
-		map < string, object > params = new map < string, object >();
+		map < string, object > params = new map < string, object > ();
 		if (recordIdList != null) params.put('recordIdList', recordIdList);
 
 		Flow.Interview flow = Flow.Interview.createInterview(name, params);
-  		flow.start();
+		flow.start();
 		String result = (String) flow.getVariableValue('result');
 
 		return result;
 	}
-	private static map<string, string> getCustomLabels(){
-		return new map<string, string> {
+	private static map < string, string > getCustomLabels() {
+		return new map < string, string > {
 			'altTxt_collapse' => label.altTxt_collapse,
 			'altTxt_clearInput' => label.altTxt_clearInput,
 			'altTxt_delete' => label.altTxt_delete,
@@ -445,7 +465,7 @@ global with sharing class infrastructure {
 			'title_export' => label.title_export,
 			'title_expand' => label.title_expand,
 			'title_editColumn' => label.title_editColumn,
-			'title_new' =>label.title_new,
+			'title_new' => label.title_new,
 			'title_requestAFeature' => label.title_requestAFeature,
 			'title_refresh' => label.title_refresh,
 			'title_saveFilter' => label.title_saveFilter,
@@ -473,30 +493,30 @@ global with sharing class infrastructure {
 		};
 	}
 
-	public static Group[] getGroupsForUser(Id userId){
+	public static Group[] getGroupsForUser(Id userId) {
 
-		Set<Id> groupIds = getGroupsForIds(new Set<Id>{userId});
+		Set < Id > groupIds = getGroupsForIds(new Set < Id > { userId });
 		return [SELECT Id, Name FROM Group WHERE Id IN: groupIds];
 
 	}
 
-	public static Set<Id> getGroupsForIds(Set<Id> userOrGroupIds){
+	public static Set < Id > getGroupsForIds(Set < Id > userOrGroupIds) {
 
-		Set<Id> groupIds = new Set<Id>();
-		Set<Id> nestedGroupIds = new Set<Id>();
+		Set < Id > groupIds = new Set < Id > ();
+		Set < Id > nestedGroupIds = new Set < Id > ();
 
-		list<GroupMember> records = [SELECT Id, GroupId, UserOrGroupId FROM GroupMember WHERE UserOrGroupId =: userOrGroupIds AND UserOrGroupId != null AND Group.Type = 'Regular'];
+		list < GroupMember > records = [SELECT Id, GroupId, UserOrGroupId FROM GroupMember WHERE UserOrGroupId =: userOrGroupIds AND UserOrGroupId != null AND Group.Type = 'Regular'];
 
-		for (GroupMember record:records){
-			if (!(record.UserOrGroupId + '').startsWith('005')){
-				nestedGroupIds.add(record.UserOrGroupId);   
+		for (GroupMember record: records) {
+			if (!(record.UserOrGroupId + '').startsWith('005')) {
+				nestedGroupIds.add(record.UserOrGroupId);
 			}
-			else{
+			else {
 				groupIds.add(record.GroupId);
 			}
 		}
 
-		if (nestedGroupIds.size() > 0){
+		if (nestedGroupIds.size() > 0) {
 			groupIds.addAll(getGroupsForIds(nestedGroupIds));
 		}
 
@@ -511,74 +531,82 @@ global with sharing class infrastructure {
 	 * @return  Map<String,String>    Map of properties about the icon to be consumed by the front end.
 	 *                                Right now, returns values for keys: iconStyle,iconURL
 	 */
-	private static Map<String,String> retrieveIconForObject(String sObjectName) {    
+	private static Map < String, String > retrieveIconForObject(String sObjectName) {
 		String iconStyle;
 		String iconURL;
 		String iconTag;
-		Map<String,String>                iconPropertyMap = new Map<String,String>();
-		List<Schema.DescribeTabSetResult> tabSetDesc      = Schema.describeTabs();
-		List<Schema.DescribeTabResult>    tabDesc         = new List<Schema.DescribeTabResult>();
-		List<Schema.DescribeIconResult>   iconDesc        = new List<Schema.DescribeIconResult>();
+		Map < String, String > iconPropertyMap = new Map < String, String > ();
+		List < Schema.DescribeTabSetResult > tabSetDesc = Schema.describeTabs();
+		List < Schema.DescribeTabResult > tabDesc = new List < Schema.DescribeTabResult > ();
+		List < Schema.DescribeIconResult > iconDesc = new List < Schema.DescribeIconResult > ();
 
-		for(Schema.DescribeTabSetResult tsr : tabSetDesc){
+		for (Schema.DescribeTabSetResult tsr: tabSetDesc) {
+			tabDesc.addAll(tsr.getTabs());
 		tabDesc.addAll(tsr.getTabs()); 
+			tabDesc.addAll(tsr.getTabs());
+		tabDesc.addAll(tsr.getTabs()); 
+			tabDesc.addAll(tsr.getTabs());
+		tabDesc.addAll(tsr.getTabs()); 
+			tabDesc.addAll(tsr.getTabs());
+		tabDesc.addAll(tsr.getTabs()); 
+			tabDesc.addAll(tsr.getTabs());
 		}
-		for(Schema.DescribeTabResult tr : tabDesc) {
-			if( sObjectName == tr.getSobjectName() ) {
+		for (Schema.DescribeTabResult tr: tabDesc) {
+			if (sObjectName == tr.getSobjectName()) {
 				system.debug(tr.getIcons());
-				if(!tr.getIcons().isEmpty()){
+				if (!tr.getIcons().isEmpty()) {
 					iconDesc.addAll(tr.getIcons());
-				}else{
-					if( tr.isCustom() == true ) {
+				} else {
+					if (tr.isCustom() == true) {
 						iconStyle = 'slds-icon-standard-custom';
-						iconURL   = '/img/icon/t4v35/standard/custom_120.png';
+						iconURL = '/img/icon/t4v35/standard/custom_120.png';
 					} else {
 						iconStyle = 'slds-icon-standard-' + sObjectName.toLowerCase();
-						iconURL   = '/img/icon/t4v35/standard/' + sObjectName.toLowerCase() + '_120.png';
+						iconURL = '/img/icon/t4v35/standard/' + sObjectName.toLowerCase() + '_120.png';
 					}
 				}
 			}
 		}
-		for (Schema.DescribeIconResult ir : iconDesc) {
-			if(ir.getTheme() =='custom' && !ir.getContentType().startsWith('image/svg')){//custom icon thats not an svg
-				iconTag   = 'custom';
-				iconURL   = ir.getURL();
+		for (Schema.DescribeIconResult ir: iconDesc) {
+			if (ir.getTheme() == 'custom' && !ir.getContentType().startsWith('image/svg')) { //custom icon thats not an svg
+				iconTag = 'custom';
+				iconURL = ir.getURL();
 				iconStyle = 'slds-icon-standard-custom';
 				break;
-			}else if(ir.getWidth() == 120 && ir.getTheme() =='theme4' && ir.getContentType() == 'image/png'){//large lightning icon image
-				if(ir.getURL().contains('/custom/')){ //Icon is from the Custom Sprite
-					iconTag    = ir.getURL().substringBetween('custom/','.png').substringBefore('_');
-					iconURL    = '/img/icon/t4v35/custom/' + iconTag + '_120.png';
-					iconStyle  = 'slds-icon-custom-'+ iconTag;
+			} else if (ir.getWidth() == 120 && ir.getTheme() == 'theme4' && ir.getContentType() == 'image/png') { //large lightning icon image
+				if (ir.getURL().contains('/custom/')) { //Icon is from the Custom Sprite
+					iconTag = ir.getURL().substringBetween('custom/', '.png').substringBefore('_');
+					iconURL = '/img/icon/t4v35/custom/' + iconTag + '_120.png';
+					iconStyle = 'slds-icon-custom-' + iconTag;
 					break;
-				}else if(ir.getURL().contains('/standard/')){//Icon is from the Standard Sprite
-					iconTag    = ir.getURL().substringBetween('standard/','.png').substringBefore('_');
-					iconURL    = '/img/icon/t4v35/standard/' + iconTag + '_120.png';
-					iconStyle  = 'slds-icon-standard-'+ iconTag;
+				} else if (ir.getURL().contains('/standard/')) { //Icon is from the Standard Sprite
+					iconTag = ir.getURL().substringBetween('standard/', '.png').substringBefore('_');
+					iconURL = '/img/icon/t4v35/standard/' + iconTag + '_120.png';
+					iconStyle = 'slds-icon-standard-' + iconTag;
 					break;
 				}
 			}
 		}
 		//if no icons are found, just default to the Custom lightning icon
-		if(iconStyle == null){
+		if (iconStyle == null) {
 			iconStyle = 'slds-icon-standard-custom';
-			iconURL   = '/img/icon/t4v35/standard/custom_120.png';
-			iconTag   = 'No Lightning Icon Found';
+			iconURL = '/img/icon/t4v35/standard/custom_120.png';
+			iconTag = 'No Lightning Icon Found';
 		}
 		//return a map with our properties for the front end
-		iconPropertyMap.put('iconStyle',iconStyle);
-		iconPropertyMap.put('iconURL',  iconURL);
+		iconPropertyMap.put('iconStyle', iconStyle);
+		iconPropertyMap.put('iconURL', iconURL);
 
 		return iconPropertyMap;
 	}
 
-	private static List<String> objectList(){
-		Map<String, Schema.SObjectType> gd = Schema.getGlobalDescribe();
+	private static List < String > objectList() {
+		Map < String, Schema.SObjectType > gd = Schema.getGlobalDescribe();
 
-		List<String> objs = new List<String>();
+		List < String > objs = new List < String > ();
 
-		for(Schema.SObjectType thisObj : gd.values()) {
-			if(thisObj.getDescribe().isQueryable()){
+		for (Schema.SObjectType thisObj: gd.values()) {
+			if (thisObj.getDescribe().isQueryable()) {
 				objs.add(String.valueOf(thisObj));
 			}
 		}
