@@ -143,7 +143,36 @@
                         </tbody>
                         </table>
                         <br/>
-                        <lightning-input data-id="sqlBuilder:conditions:orderingConditions" value={config.sqlBuilder.conditionOrdering} onfocusout={handleBuilderEvent} type="text" label={config._LABELS.lbl_conditionFilteringPattern}></lightning-input>
+                        <div style="position:relative;width:100%">
+                            <div class="slds-form-element">
+                             <label class="slds-form-element__label" for="text-input-id-1"><b>{config._LABELS.lbl_conditionFilteringPattern}</b></label>
+                             <div class="slds-form-element__icon">
+                                <button class="slds-button slds-button_icon" onmouseover={toggleConditionFilteringHelp}
+                                     onmouseout={toggleConditionFilteringHelp}>
+                                    <lightning-icon icon-name="utility:info" alternative-text="Info" size="xx-small"
+                                         title="">
+                                    </lightning-icon>
+                                </button>
+                                <div class={ConditionFilteringClass} role="tooltip" id="help"
+                                     style="position:absolute;top:-150px;left:-15px;width:250px">
+                                     <div class="slds-popover__body">
+                                        Construct different logical connections between conditions using parentheses and the words 'AND' and 'OR'.<br>
+                                        <br>
+                                        Example of Patterns<br>
+                                        1. (1 OR 2) AND 3 <br>
+                                        2. (1 OR 3) AND (2 OR 4) <br>
+                                        3. (2 OR 4) AND ((3 OR 6) AND (5 OR 1)) <br>
+                                        <br>
+                                        Once you are done editing the pattern, click outside the input box.
+                                     </div>
+                                </div>
+                            </div>
+                            <div class="slds-form-element__control">
+                                <input style="width: 100%;" data-id="sqlBuilder:conditions:orderingConditions" value={config.sqlBuilder.conditionOrdering} 
+                                 onfocusout={handleBuilderEvent} type="text"/>
+                            </div>
+                           </div>
+                        </div>
                 </div>
             </div>
         </lightning-tab>
