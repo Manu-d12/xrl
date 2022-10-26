@@ -15,7 +15,10 @@
                         <div class="slds-scrollable_y" style="height:20rem;padding:4px;">
                             <ul class="slds-has-dividers_around-space">
                                 <template if:true={config.sqlBuilder.fields} for:each={config.sqlBuilder.fields} for:item="field" for:index="index">
-                                    <li data-id="sqlBuilder:selectItem" onclick={handleBuilderEvent} class={field.css} style="cursor: pointer;" data-ref={field.refObj} data-val={field.value} key={field.value}>{field.label}</li>
+                                    <li data-id="sqlBuilder:selectItem" onclick={handleBuilderEvent} class={field.css} style="cursor: pointer;" data-ref={field.refObj} data-val={field.value} key={field.value}>
+                                        {field.label} 
+                                        <lightning-helptext content={field.value}></lightning-helptext>
+                                    </li>
                                 </template>
                             </ul>
                         </div>
@@ -51,7 +54,9 @@
                         <div class="slds-scrollable_y" style="height:20rem;padding:4px;">
                             <ul class="slds-has-dividers_around-space">
                                 <template if:true={config.sqlBuilder.fields} for:each={config.sqlBuilder.fields} for:item="field" for:index="index">
-                                    <li data-id="sqlBuilder:conditions:selectItem" onclick={handleBuilderEvent} style="cursor: pointer;" class={field.css} data-ref={field.refObj} data-val={field.value} key={field.value}>{field.label}</li>
+                                    <li data-id="sqlBuilder:conditions:selectItem" onclick={handleBuilderEvent} style="cursor: pointer;" class={field.css} data-ref={field.refObj} data-val={field.value} key={field.value}>{field.label} 
+                                        <lightning-helptext content={field.value}></lightning-helptext>
+                                    </li>
                                 </template>
                             </ul>
                         </div>
@@ -157,7 +162,9 @@
                         <div class="slds-scrollable_y" style="height:20rem">
                             <ul class="slds-has-dividers_around-space">
                                 <template if:true={config.sqlBuilder.fields} for:each={config.sqlBuilder.fields} for:item="field" for:index="index">
-                                    <li data-id="sqlBuilder:ordering:selectItem" style="cursor: pointer;" onclick={handleBuilderEvent} class={field.css} data-ref={field.refObj} data-val={field.value} key={field.value}>{field.label}</li>
+                                    <li data-id="sqlBuilder:ordering:selectItem" style="cursor: pointer;" onclick={handleBuilderEvent} class={field.css} data-ref={field.refObj} data-val={field.value} key={field.value}>{field.label} 
+                                        <lightning-helptext content={field.value}></lightning-helptext>
+                                    </li>
                                 </template>
                             </ul>
                         </div>
