@@ -23,10 +23,10 @@ export default class extRelListSettings extends LightningElement {
 
 	get selectedFields() {
 		let items = [];
-		let describe = this.config.describe;
+		let allColumns = this.dataTable.colModel;
 		this.config.dialog.selectedFields.forEach( e=>{
-			let item = describe[e];
-			if (item) items.push({value: item.name, label: item.label});
+			let item = allColumns.find((el)=> el.fieldName === e);
+			if (item) items.push({value: item.fieldName, label: item.label});
 		});
         return items;
     } 
@@ -50,7 +50,7 @@ export default class extRelListSettings extends LightningElement {
 		let tmp = libs.colModelItem();
 
 		for (let item in tmp) {
-			if(!describe[this.config.dialog.field].updateable && item === 'isEditable') continue;
+			if(!fieldParams.updateable && item === 'isEditable') continue;
 			let defValue = (item === 'fieldName') 
 				? this.config.dialog.field 
 				: fieldParams[item] === undefined
@@ -68,7 +68,7 @@ export default class extRelListSettings extends LightningElement {
 				"placeHolder" : tmp[item].placeHolder
 			})
 		}
-		console.log(result, describe[this.config.dialog.field]);
+		// console.log(result, describe[this.config.dialog.field]);
 		return result;
 	}
 
