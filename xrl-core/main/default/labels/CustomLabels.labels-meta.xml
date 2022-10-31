@@ -254,7 +254,7 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_selectFields</shortDescription>
-        <value>Select fields</value>
+        <value>Configure</value>
     </labels>
     <labels>
         <fullName>lbl_selectLockedFields</fullName>
@@ -829,7 +829,7 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_enterSearchTermHere</shortDescription>
-        <value>Enter Search Term here</value>
+        <value>Search Fields</value>
     </labels>
     <labels>
         <fullName>lbl_back</fullName>
@@ -1110,5 +1110,117 @@
         <protected>false</protected>
         <shortDescription>lbl_doesNotEndsWith</shortDescription>
         <value>Does Not Ends With</value>
+    </labels>
+    <labels>
+        <fullName>hlpTxt_selectFields</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>hlpTxt_selectFields</shortDescription>
+        <value>You can select fields from the below list which will appear on the grid. Fields with '>' sign indicates a reference field. Clicking reference fields will open that object's field list.</value>
+    </labels>
+    <labels>
+        <fullName>hlpTxt_selectedFields</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>hlpTxt_selectedFields</shortDescription>
+        <value>You can drag and drop to reorder fields</value>
+    </labels>
+    <labels>
+        <fullName>hlpTxt_applyCondition</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>hlpTxt_applyCondition</shortDescription>
+        <value>You can select fields from the below list to apply condition. Fields with '>' sign indicates a reference field. Clicking reference fields will open that object's field list.</value>
+    </labels>
+    <labels>
+        <fullName>hlpTxt_applyConditionGetStartedText</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>hlpTxt_applyConditionGetStartedText</shortDescription>
+        <value>Select a field from the left to get started</value>
+    </labels>
+    <labels>
+        <fullName>hlpTxt_availableOperationTooltip</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>hlpTxt_availableOperationTooltip</shortDescription>
+        <value>You can select your preferred operation from the list of below available operations</value>
+    </labels>
+    <labels>
+        <fullName>hlpTxt_applyConditionInput</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>hlpTxt_applyConditionInput</shortDescription>
+        <value>Please select or enter value in the below input box. After clicking the 'Add Condition' the condition will be added to the condition list and will apply if you save it</value>
+    </labels>
+    <labels>
+        <fullName>title_addConditionBtn</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>title_addConditionBtn</shortDescription>
+        <value>These will add this condition to the condition list. You can view it in the below table</value>
+    </labels>
+    <labels>
+        <fullName>hlpTxt_appliedConditions</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>hlpTxt_appliedConditions</shortDescription>
+        <value>These conditions will be applied when loading the grid</value>
+    </labels>
+    <labels>
+        <fullName>hlpTxt_appliedConditionsActionsHelp</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>hlpTxt_appliedConditionsActionsHelp</shortDescription>
+        <value>Here 2 actions are available, EDIT- To edit that particular condition, DELETE- To delete that condition</value>
+    </labels>
+    <labels>
+        <fullName>title_appliedConditionsActionEdit</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>title_appliedConditionsActionEdit</shortDescription>
+        <value>You can edit this condition</value>
+    </labels>
+    <labels>
+        <fullName>title_appliedConditionsActionDelete</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>title_appliedConditionsActionDelete</shortDescription>
+        <value>You can Delete this condition</value>
+    </labels>
+    <labels>
+        <fullName>hlpTxt_applyOrdering</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>hlpTxt_applyOrdering</shortDescription>
+        <value>You can select fields from the below list to apply ordering. Fields with '>' sign indicates a reference field. Clicking reference fields will open that object's field list.</value>
+    </labels>
+    <labels>
+        <fullName>title_addOrdering</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>title_addOrdering</shortDescription>
+        <value>The selected Ordering and Empty field choice will be added</value>
+    </labels>
+    <labels>
+        <fullName>hlpTxt_appliedOrderings</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>hlpTxt_appliedOrderings</shortDescription>
+        <value>This is the list of all the applied orderings.</value>
     </labels>
 </CustomLabels>
