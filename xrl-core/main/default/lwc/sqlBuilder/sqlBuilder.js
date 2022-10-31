@@ -6,6 +6,8 @@ import { sqlBuilderLibs } from './sqlBuilderLibs';
 export default class SqlBuilder extends LightningElement {
     @track config = {};
     @api cfg;
+    Data = [];
+    @track ElementList = [];
     connectedCallback(){
         this.config = libs.getGlobalVar(this.cfg);
         this.config.describeMap = {};
@@ -42,6 +44,14 @@ export default class SqlBuilder extends LightningElement {
         this.config.sqlBuilder._objectStack = [{relationShip:this.config.sObjApiName,referredObj:this.config.sObjApiName}];
         this.config.sqlBuilder.fields = libs.sortRecords(this.generateFields(this.config.describe), 'label', true);
         this.config.sqlBuilder.allFields = this.config.sqlBuilder.fields;
+
+
+        this.config.sqlBuilder.selectedFields.forEach((el)=>{
+            this.ElementList.push(el.value);
+        });
+        if(!this.ElementList){
+            this.ElementList = [...this.Data]
+        }
     }
     get breadcrumb(){
         let breadCrumbStr = ''; 
@@ -136,8 +146,7 @@ export default class SqlBuilder extends LightningElement {
         if(val === "sqlBuilder:conditions:selectItem"){
             let refObj = event.target.getAttribute('data-ref');
             if( refObj === null){
-                let fieldVal = event.target.getAttribute('data-val'); 
-                // event.target.classList.toggle('slds-theme_alt-inverse');     
+                let fieldVal = event.target.getAttribute('data-val');    
                 let selectedField = this.config.sqlBuilder.fields.find((el) => el.value === fieldVal);
                 console.log(selectedField);
                 this.config.sqlBuilder.conditionOperations = [];
@@ -186,10 +195,16 @@ export default class SqlBuilder extends LightningElement {
             this.config.sqlBuilder.openConditionInput = false;
             this.config.sqlBuilder.conditionOperations = [];
             this.config.sqlBuilder.currentCondition.key = this.config.sqlBuilder.conditions.field + this.config.sqlBuilder.conditions.length;
-            this.config.sqlBuilder.currentCondition.index = this.config.sqlBuilder.conditions.length + 1;
-            this.config.sqlBuilder.conditionOrdering += (this.config.sqlBuilder.conditions.length + 1) === 1 ?
-            (this.config.sqlBuilder.conditions.length + 1) : ' AND ' + (this.config.sqlBuilder.conditions.length + 1);
-            this.config.sqlBuilder.conditions.push(this.config.sqlBuilder.currentCondition);
+            if(this.config.sqlBuilder.currentCondition.index === undefined){
+                this.config.sqlBuilder.currentCondition.index = this.config.sqlBuilder.conditions.length + 1;
+                this.config.sqlBuilder.conditionOrdering += (this.config.sqlBuilder.conditions.length + 1) === 1 ?
+                (this.config.sqlBuilder.conditions.length + 1) : ' AND ' + (this.config.sqlBuilder.conditions.length + 1);
+                this.config.sqlBuilder.conditions.push(this.config.sqlBuilder.currentCondition);
+            }else{
+                let fieldInd = this.config.sqlBuilder.conditions.findIndex((el)=> el.index.toString() === this.config.sqlBuilder.currentCondition.index);
+                this.config.sqlBuilder.conditions[fieldInd] = this.config.sqlBuilder.currentCondition;
+            }
+            config.sqlBuilder.conditionOperations = false;
         }
         if(val === "sqlBuilder:conditions:conditionText"){
             this.config.sqlBuilder.currentCondition.value = event.target.value;
@@ -200,6 +215,31 @@ export default class SqlBuilder extends LightningElement {
         if(val === "sqlBuilder:conditions:deleteSelectedCondition"){
             let index = event.target.getAttribute('data-val');  
             this.config.sqlBuilder.conditions = this.config.sqlBuilder.conditions.filter(e => e.index.toString() !== index);
+        }
+        if(val === "sqlBuilder:conditions:editSelectedCondition"){
+            let indexVal = event.target.getAttribute('data-val'); 
+            let selectedCondition = this.config.sqlBuilder.conditions.find((el)=> el.index.toString() === indexVal);
+            console.log('HERE>',JSON.parse(JSON.stringify(selectedCondition)));
+            this.config.sqlBuilder.conditionOperations = [];
+            // if(selectedCondition.fieldType === 'picklist'){
+            //     this.config.sqlBuilder.currentCondition.fieldOptions = selectedCondition.options;
+            // }
+            if(sqlBuilderLibs[selectedCondition.fieldType + 'FilterActions']){
+                sqlBuilderLibs[selectedCondition.fieldType + 'FilterActions'](this.config._LABELS).forEach((el)=>{
+                    this.config.sqlBuilder.conditionOperations.push(el);
+                });
+            }else{
+                this.config.sqlBuilder.conditionOperations = [
+                    { label: 'Contains', value: 'cn' },
+                    { label: 'Is Equal', value: 'eq' },
+                    { label: 'Not Is Equal', value: 'neq' },
+                ];
+            }
+            this.config.sqlBuilder.currentCondition= selectedCondition;
+            this.config.sqlBuilder.openConditionInput = {
+                isPicklist: this.config.sqlBuilder.currentCondition.fieldType === 'picklist' ? true : false,
+                isRange: this.config.sqlBuilder.currentCondition.operator.value === 'rg' ? true : false
+            };
         }
         if(val === "sqlBuilder:conditions:orderingConditions"){
             this.config.sqlBuilder.conditionOrdering = event.target.value;
@@ -331,4 +371,64 @@ export default class SqlBuilder extends LightningElement {
         }
         this.config.dialog.listViewConfig.colModel.push(record);
     }
+    ConditionFilteringClass = "slds-popover slds-popover_tooltip slds-nubbin_bottom-left slds-fall-into-ground slds-hide";
+    toggleConditionFilteringHelp() {
+        this.ConditionFilteringClass = this.ConditionFilteringClass === 'slds-popover slds-popover_tooltip slds-nubbin_bottom-left slds-fall-into-ground slds-hide' ? "slds-popover slds-popover_tooltip slds-nubbin_bottom-left slds-rise-from-ground" : "slds-popover slds-popover_tooltip slds-nubbin_bottom-left slds-fall-into-ground slds-hide"
+    }
+
+
+    Change(event){
+        this.Data = event.detail.join(', ');
+    }
+
+     DragStart(event) {
+        event.target.classList.add('drag')
+    }
+
+    DragOver(event) {
+        event.preventDefault()
+        return false
+    }
+    Drop(event) {
+        event.stopPropagation()
+        const Element = this.template.querySelectorAll('.Items')
+        const DragValName = this.template.querySelector('.drag').textContent
+        const DropValName = event.target.textContent
+
+        if(DragValName === DropValName){ return false }
+        const index = this.config.sqlBuilder.selectedFields.findIndex((el)=> el.value === DropValName);
+        const dragIndex = this.config.sqlBuilder.selectedFields.findIndex((el)=> el.value === DragValName);
+        this.ElementList = this.ElementList.reduce((acc, curVal, CurIndex) => {
+        // this.config.sqlBuilder.selectedFields = this.config.sqlBuilder.selectedFields.reduce((acc, curVal, CurIndex) => {
+            if(CurIndex === index){
+                if(dragIndex > index){
+                    return [...acc, DragValName, curVal];
+                }else{
+                    return [...acc, curVal, DragValName];
+                }
+            }
+            else if(curVal !== DragValName){
+                return [...acc, curVal]
+            }
+            return acc
+        }, [])
+
+        Element.forEach(element => {
+            element.classList.remove('drag')
+        });
+
+        let copySelectedFields = this.config.sqlBuilder.selectedFields;
+        this.config.sqlBuilder.selectedFields = [];
+        this.config.dialog.listViewConfig.colModel = [];
+        this.ElementList.forEach((el)=>{
+            let item = copySelectedFields.find((e) => e.value === el);
+            this.addIntoDialog(item);
+            this.config.sqlBuilder.selectedFields.push(item);
+        });
+        return this.ElementList
+    }
+
+
+    
+
 }
