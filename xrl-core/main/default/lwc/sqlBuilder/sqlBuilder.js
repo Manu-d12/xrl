@@ -215,6 +215,11 @@ export default class SqlBuilder extends LightningElement {
         if(val === "sqlBuilder:conditions:deleteSelectedCondition"){
             let index = event.target.getAttribute('data-val');  
             this.config.sqlBuilder.conditions = this.config.sqlBuilder.conditions.filter(e => e.index.toString() !== index);
+            //Need to rebuild a 
+            
+            var regExp = new RegExp(' *?(OR|AND)*? *?' + index + ' *?(OR|AND)*? *?','gi');
+            this.config.sqlBuilder.conditionOrdering = this.config.sqlBuilder.conditionOrdering.replace(regExp,'');
+            console.log('DELETING condition', index, this.config.sqlBuilder.conditionOrdering);
         }
         if(val === "sqlBuilder:conditions:editSelectedCondition"){
             let indexVal = event.target.getAttribute('data-val'); 
@@ -242,6 +247,7 @@ export default class SqlBuilder extends LightningElement {
             };
         }
         if(val === "sqlBuilder:conditions:orderingConditions"){
+            console.log('sqlBuilder:conditions:orderingConditions', this.config.sqlBuilder);
             this.config.sqlBuilder.conditionOrdering = event.target.value;
         }
         //For ordering
