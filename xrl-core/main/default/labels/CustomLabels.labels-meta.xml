@@ -637,7 +637,7 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>tooltip_fieldApiName</shortDescription>
-        <value>You can use different constructions like a 'Account.Name' or '(SELECT Id FROM Accounts WHERE CreatedDate=TODAY)' </value>
+        <value>You can use different constructions like a &apos;Account.Name&apos; or &apos;(SELECT Id FROM Accounts WHERE CreatedDate=TODAY)&apos;</value>
     </labels>
     <labels>
         <fullName>lbl_fieldLabel</fullName>
@@ -685,7 +685,7 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_customFunctionStyleExample</shortDescription>
-        <value>example : function(row, col, val) { return \"background-color:#FF0000\"; }</value>
+        <value>example : function(row, col, val) { return \&quot;background-color:#FF0000\&quot;; }</value>
     </labels>
     <labels>
         <fullName>lbl_isColumnHidden</fullName>
@@ -957,7 +957,7 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_liveQuery</shortDescription>
-        <value>Live Query: </value>
+        <value>Live Query:</value>
     </labels>
     <labels>
         <fullName>lbl_addCondition</fullName>
@@ -1117,7 +1117,7 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>hlpTxt_selectFields</shortDescription>
-        <value>You can select fields from the below list which will appear on the grid. Fields with '>' sign indicates a reference field. Clicking reference fields will open that object's field list.</value>
+        <value>You can select fields from the below list which will appear on the grid. Fields with &apos;&gt;&apos; sign indicates a reference field. Clicking reference fields will open that object&apos;s field list.</value>
     </labels>
     <labels>
         <fullName>hlpTxt_selectedFields</fullName>
@@ -1133,7 +1133,7 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>hlpTxt_applyCondition</shortDescription>
-        <value>You can select fields from the below list to apply condition. Fields with '>' sign indicates a reference field. Clicking reference fields will open that object's field list.</value>
+        <value>You can select fields from the below list to apply condition. Fields with &apos;&gt;&apos; sign indicates a reference field. Clicking reference fields will open that object&apos;s field list.</value>
     </labels>
     <labels>
         <fullName>hlpTxt_applyConditionGetStartedText</fullName>
@@ -1157,7 +1157,7 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>hlpTxt_applyConditionInput</shortDescription>
-        <value>Please select or enter value in the below input box. After clicking the 'Add Condition' the condition will be added to the condition list and will apply if you save it</value>
+        <value>Please select or enter value in the below input box. After clicking the &apos;Add Condition&apos; the condition will be added to the condition list and will apply if you save it</value>
     </labels>
     <labels>
         <fullName>title_addConditionBtn</fullName>
@@ -1205,7 +1205,7 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>hlpTxt_applyOrdering</shortDescription>
-        <value>You can select fields from the below list to apply ordering. Fields with '>' sign indicates a reference field. Clicking reference fields will open that object's field list.</value>
+        <value>You can select fields from the below list to apply ordering. Fields with &apos;&gt;&apos; sign indicates a reference field. Clicking reference fields will open that object&apos;s field list.</value>
     </labels>
     <labels>
         <fullName>title_addOrdering</fullName>
@@ -1222,5 +1222,240 @@
         <protected>false</protected>
         <shortDescription>hlpTxt_appliedOrderings</shortDescription>
         <value>This is the list of all the applied orderings.</value>
+    </labels>
+    <labels>
+        <fullName>lbl_confirmDelete</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_confirmDelete</shortDescription>
+        <value>Confirm Delete</value>
+    </labels>
+    <labels>
+        <fullName>msg_deleteConfirm1</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>msg_deleteConfirm1</shortDescription>
+        <value>Are you sure you want to delete</value>
+    </labels>
+    <labels>
+        <fullName>msg_deleteConfirm2</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>msg_deleteConfirm2</shortDescription>
+        <value>items? If you have validation enabled then only validated records will be deleted.</value>
+    </labels>
+    <labels>
+        <fullName>lbl_deleteChunkSize</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_deleteChunkSize</shortDescription>
+        <value>Delete chunk size</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_deleteChunkSize</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_deleteChunkSize</shortDescription>
+        <value>Please enter the chunk size for bulk delete operation</value>
+    </labels>
+    <labels>
+        <fullName>lbl_beforeDeleteValidation</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_beforeDeleteValidation</shortDescription>
+        <value>Before Delete validation Callback</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_beforeDeleteValidation</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_beforeDeleteValidation</shortDescription>
+        <value>This JS function will be executed before Delete action</value>
+    </labels>
+    <labels>
+        <fullName>lbl_actionCallback</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_actionCallback</shortDescription>
+        <value>Callback function</value>
+    </labels>
+    <labels>
+        <fullName>lbl_actionFlowName</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_actionFlowName</shortDescription>
+        <value>Api Name of the flow(if flow needs to be executed)</value>
+    </labels>
+    <labels>
+        <fullName>lbl_actionIconName</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_actionIconName</shortDescription>
+        <value>Name of the icon to be shown</value>
+    </labels>
+    <labels>
+        <fullName>lbl_actionId</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_actionId</shortDescription>
+        <value>Id of the action</value>
+    </labels>
+    <labels>
+        <fullName>lbl_actionIsHidden</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_actionIsHidden</shortDescription>
+        <value>Hide this action?</value>
+    </labels>
+    <labels>
+        <fullName>lbl_actionLabel</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_actionLabel</shortDescription>
+        <value>Label of the action</value>
+    </labels>
+    <labels>
+        <fullName>lbl_actionOrder</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_actionOrder</shortDescription>
+        <value>Order of the action</value>
+    </labels>
+    <labels>
+        <fullName>lbl_actionTip</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_actionTip</shortDescription>
+        <value>Tip for the action</value>
+    </labels>
+    <labels>
+        <fullName>lbl_beforeSaveValidation</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_beforeSaveValidation</shortDescription>
+        <value>Before save
+ validation Callback</value>
+    </labels>
+    <labels>
+        <fullName>placeholder_actionCallback</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>placeholder_actionCallback</shortDescription>
+        <value>function(){\nconsole.log(&apos;&apos;);\n}</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_actionIconName</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_actionIconName</shortDescription>
+        <value>If you want to show as a button keep it blank</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_actionIdTooltip</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_actionTooltip</shortDescription>
+        <value>Must be a string without spaces Ex. newFlow</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_actionIsHidden</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_actionIsHidden</shortDescription>
+        <value>Checking these will hide the button from grid</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_actionLabelTooltip</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_actionLabelTooltip</shortDescription>
+        <value>Example: Full Screen</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_actionOrder</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_actionOrder</shortDescription>
+        <value>Use proper values like 10,20 etc.</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_actionTipTooltip</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_actionTipTooltip</shortDescription>
+        <value>Example: This is full screen your grid</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_actionTooltip</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_actionTooltip</shortDescription>
+        <value>Must be a string without spaces Ex. newFlow</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_customFunctionExample</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_customFunctionExample</shortDescription>
+        <value>example : function(row, col, val) { return val; }</value>
+    </labels>
+    <labels>
+        <fullName>placeHolder_beforeSaveValidation</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>placeHolder_beforeSaveValidation</shortDescription>
+        <value>function(record){
+console.log(&apos;Record Type &apos;,record.Type);
+  if(record.Type==&apos;Electrical&apos;) 
+  record.Type==&apos;Mechanical&apos;;
+}</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_beforeSaveValidation</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_beforeSaveValidation</shortDescription>
+        <value>This JS function will be executed before save action</value>
+    </labels>
+    <labels>
+        <fullName>placeHolder_beforeDeleteValidation</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>placeHolder_beforeDeleteValidation</shortDescription>
+        <value>#This function must accept a value as parameter which will be the record
+#It should return true or false, Only values which returned true will be deleted 
+function(record){
+  if(record.Type==&apos;Electrical&apos;)
+    return false; 
+  else 
+    return true;
+}</value>
     </labels>
 </CustomLabels>
