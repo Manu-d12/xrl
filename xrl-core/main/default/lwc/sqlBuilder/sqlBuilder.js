@@ -12,29 +12,10 @@ export default class SqlBuilder extends LightningElement {
         this.config.describeMap[this.config.sObjApiName] = this.config.describe;
         this.config.sqlBuilder = {};
         this.config.sqlBuilder.fields = [];
-        this.config.sqlBuilder.selectedFields = [];
+        this.config.sqlBuilder.selectedFields = this.config.dialog.listViewConfig.colModel;
         this.config.sqlBuilder.conditions = this.config.dialog.listViewConfig.conditionMap ? this.config.dialog.listViewConfig.conditionMap : [];
         this.config.sqlBuilder.orderings = this.config.dialog.listViewConfig.orderMap ? this.config.dialog.listViewConfig.orderMap : [];
         this.config.sqlBuilder.conditionOrdering = this.config.dialog.listViewConfig.conditionOrdering ? this.config.dialog.listViewConfig.conditionOrdering : '';
-        this.config.dialog.listViewConfig.colModel.forEach((el)=>{
-            let fieldMap = { 
-                label: el.label, 
-                value: el.fieldName, 
-                css: 'slds-item', 
-                type: el.type,
-                updateable: el.updateable,
-                isNameField: el && el.nameField === true
-            };
-            if(el.type === 'picklist'){
-                fieldMap.options = [];
-                el.options.forEach(field => {
-                    fieldMap.options.push(
-                        { label: field.label, value: field.value }
-                    )
-                });
-            }
-            this.config.sqlBuilder.selectedFields.push(fieldMap);
-        });
         this.config.sqlBuilder.sortOrderOptions = [{label: this.config._LABELS.lbl_ascending, value:'ASC'},
                                                     {label: this.config._LABELS.lbl_descending, value:'DESC'}];
         this.config.sqlBuilder.emptyFieldOptions = [{label:this.config._LABELS.lbl_beginning, value:'NULLS FIRST'},
@@ -306,6 +287,18 @@ export default class SqlBuilder extends LightningElement {
                         )
                     });
                 }
+                if (describe[key].updateable) {
+                    if (fieldMap.type === 'picklist' || fieldMap.type === 'reference') {
+                        fieldMap.isEditableAsPicklist = true;
+                        console.log('picklist', fieldMap);
+                    } else if (fieldMap.type === 'boolean') {
+                        fieldMap.isEditableBool = true;
+                    } else {
+                        fieldMap.isEditableRegular = true;
+                    }
+                } else {
+                    fieldMap.isEditable = false;
+                }
                 fields.push(fieldMap);
             }
         }
@@ -319,16 +312,8 @@ export default class SqlBuilder extends LightningElement {
         return condition;
     }
     addIntoDialog(field){
-        let record = {
-            "fieldName":field.value,
-            "type":field.type,
-            "label":field.label,
-            "updateable": field.updateable,
-            "isNameField": field.isNameField
-        };
-        if(field.type === 'picklist'){
-            record.options = field.options;
-        }
+        let record = field;
+        record.fieldName = field.value;
         this.config.dialog.listViewConfig.colModel.push(record);
     }
 }
