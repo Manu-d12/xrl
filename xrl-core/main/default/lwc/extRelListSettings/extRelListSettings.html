@@ -34,7 +34,7 @@
 					<lightning-tab label={config._LABELS.lbl_tableSettings} title={config._LABELS.title_youCanDefineAllGeneralTableParameters}>
 						<template for:each={tableItem} for:item="param" for:index="index">
 							<lightning-input if:false={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} type={param.type} label={param.label} disabled={param.isDisabled} value={param.value} data-id={param.cmd} data-param={param.paramName} data-type={param.type} checked={param.isChecked} onchange={config.dialog.handleEvent}></lightning-input>
-							<lightning-textarea if:true={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} data-type={param.type} label={param.label} value={param.value} data-id={param.cmd} data-param={param.paramName} onchange={config.dialog.handleEvent}></lightning-textarea>
+							<lightning-textarea if:true={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} data-type={param.type} label={param.label} value={param.value} data-id={param.cmd} data-param={param.paramName} onchange={config.dialog.handleEvent} placeholder={param.placeHolder}></lightning-textarea>
 						</template>
 					</lightning-tab>					
 					<lightning-tab label={config._LABELS.lbl_lockedFields}>

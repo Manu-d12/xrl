@@ -302,8 +302,19 @@ global with sharing class infrastructure {
 		Type T = type.forName('list<' + sObjApiName + '>');
 		sObject[] records = (sObject[]) JSON.deserialize(JSON.serialize(data.get('records')), T);
 
-		delete records;
-		return records;
+		map < string, object > result = new map < string, object > ();
+		Savepoint sp = Database.setSavepoint();
+		try { 
+			delete records;
+			result.put('success', 'Success');
+			result.put('length',records.size());
+			result.put('error', 'Success: The following exception has occurred: ');
+		} catch(DmlException e) {
+			Database.rollback(sp);
+			System.debug('The following exception has occurred: ' + e.getMessage());
+			result.put('error', 'Error: The following exception has occurred: ' + e.getMessage());
+		}
+		return result;
 	}
 
 	private static object requestFeature(map < string, object > data) {
@@ -467,8 +478,25 @@ global with sharing class infrastructure {
 			'lbl_doesNotBeginsWith' => label.lbl_doesNotBeginsWith,
 			'lbl_endsWith' => label.lbl_endsWith,
 			'lbl_doesNotEndsWith' => label.lbl_doesNotEndsWith,
+			'lbl_confirmDelete'=>label.lbl_confirmDelete,
+			'lbl_beforeSaveValidation'=>label.lbl_beforeSaveValidation,
+			'lbl_deleteChunkSize'=>label.lbl_deleteChunkSize,
+			'lbl_beforeDeleteValidation'=>label.lbl_beforeDeleteValidation,
+			'lbl_actionId' => label.lbl_actionId,
+			'lbl_actionLabel' => label.lbl_actionLabel,
+			'lbl_actionTip' => label.lbl_actionTip,
+			'lbl_actionCallback'=> label.lbl_actionCallback,
+			'lbl_actionIsHidden' => label.lbl_actionIsHidden,
+			'lbl_actionIconName' => label.lbl_actionIconName,
+			'lbl_actionOrder'=> label.lbl_actionOrder,
+			'lbl_actionFlowName' => label.lbl_actionFlowName,
 			'msg_lisViewWasUpdated' => label.msg_lisViewWasUpdated,
 			'msg_requestWasSent' => label.msg_requestWasSent,
+			'msg_deleteConfirm1'=>label.msg_deleteConfirm1,
+			'msg_deleteConfirm2'=>label.msg_deleteConfirm2,
+			'placeHolder_beforeSaveValidation'=>label.placeHolder_beforeSaveValidation,
+			'placeHolder_beforeDeleteValidation'=>label.placeHolder_beforeDeleteValidation,
+			'placeholder_actionCallback'=> label.placeholder_actionCallback,
 			'title_close' => label.title_close,
 			'title_clear' => label.title_clear,
 			'title_collapse' => label.title_collapse,
@@ -503,6 +531,16 @@ global with sharing class infrastructure {
 			'tooltip_fieldApiName' => label.tooltip_fieldApiName,
 			'tooltip_fieldLabel' => label.tooltip_fieldLabel,
 			'tooltip_widthExample' => label.tooltip_widthExample,
+			'tooltip_beforeSaveValidation'=>label.tooltip_beforeSaveValidation,
+			'tooltip_deleteChunkSize'=>label.tooltip_deleteChunkSize,
+			'tooltip_beforeDeleteValidation'=>label.tooltip_beforeDeleteValidation,
+			'tooltip_conditionFilteringPattern'=>label.tooltip_conditionFilteringPattern,
+			'tooltip_actionIdTooltip' => label.tooltip_actionIdTooltip,
+			'tooltip_actionLabelTooltip' => label.tooltip_actionLabelTooltip,
+			'tooltip_actionTipTooltip' => label.tooltip_actionTipTooltip,
+			'tooltip_actionIsHidden'=> label.tooltip_actionIsHidden,
+			'tooltip_actionIconName' => label.tooltip_actionIconName,
+			'tooltip_actionOrder'=> label.tooltip_actionOrder,
 			'srcLbl_available' => label.srcLbl_available,
 			'srcLbl_optional' => label.srcLbl_optional
 		};

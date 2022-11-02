@@ -349,15 +349,23 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				// In thiscase need merge to libs.getGlobalVar(this.name).records;
 				return this.config.listViewConfig[0]._changedRecords.indexOf(el.Id) > -1
 			})
-			// libs.remoteAction(this, 'saveRecords', { records: changedItems, sObjApiName: this.config.sObjApiName, callback: this.resetChangedRecords });
+			
+			if(this.config.listViewConfig[0].beforeSaveValidation !== undefined && 
+				this.config.listViewConfig[0].beforeSaveValidation !== ""){
+				changedItems.forEach((el)=>{
+					let rec = eval('('+this.config.listViewConfig[0].beforeSaveValidation+')')(el);
+					if(rec){
+						el = rec;
+					}
+				});
+			}
 
 			this.config.loopIndex = 0;
 			this.config.resetIndex = 0;
 			let saveChunk = this.config.listViewConfig[0].saveChunk ? this.config.listViewConfig[0].saveChunk : 200; //200 is the default value for saveChunk
-			//changedItems = JSON.parse(JSON.stringify(changedItems));
 			let index = 0;
-			console.log('HERE>',JSON.parse(JSON.stringify(this.config.listViewConfig[0])));
-			console.log("rollback",this.config.listViewConfig[0].rollBack);
+			// console.log('HERE>',JSON.parse(JSON.stringify(this.config.listViewConfig[0])));
+			// console.log("rollback",this.config.listViewConfig[0].rollBack);
 			while(index <= changedItems.length){
 				let chunk = changedItems.slice(index,changedItems[(index+saveChunk)] ? (index+saveChunk) : (changedItems.length));
 				index += changedItems[(index+saveChunk)] ? (saveChunk) : (changedItems.length);
@@ -367,7 +375,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					rollback:this.config.listViewConfig[0].rollBack ? this.config.listViewConfig[0].rollBack : true,
 					callback: this.resetChangedRecords });
 			}
-			}
+		}
 
 		if (val.startsWith(':change_view')) {
 			this.name = event.target.value;
@@ -398,11 +406,12 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 						variant: 'brand',
 						class: 'slds-m-left_x-small'
 					}
-				]
+				],
+				data_id: "reqFeature:dialog"
 			};
 			this.showDialog = true;
 		}
-		if (val.startsWith(':dialog')) {
+		if (val.startsWith('reqFeature:dialog')) {
 			if (event.detail.action === 'cancel') this.showDialog = false;
 			else {
 				event.target.setLoading(true);
@@ -428,6 +437,65 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				});
 			}
 		}
+		if (val.startsWith('delete:dialog')) {
+			if (event.detail.action === 'cancel') this.showDialog = false;
+			else {
+				event.target.setLoading(true);
+				let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
+				console.log(records);
+
+				//user validation callback
+				if(this.config.listViewConfig[0].beforeDeleteValidation !== undefined && 
+					this.config.listViewConfig[0].beforeDeleteValidation !== ""){
+					let copyRecords = records;
+					records = [];
+					copyRecords.forEach((el)=>{
+						let rec = eval('('+this.config.listViewConfig[0].beforeDeleteValidation+')')(el);
+						if(rec){
+							records.push(el);
+						}
+					});
+				}
+
+				//chunking the data and sending it to apex
+				this.config.deleteIndex = 0;
+				this.config.recordsLen = records.length;
+				let deleteChunk = this.config.listViewConfig[0].deleteChunkSize ? this.config.listViewConfig[0].deleteChunkSize : 200; //200 is the default value for saveChunk
+				let index = 0;
+
+				while(index < records.length){
+					let chunk = records.slice(index,records[(index+deleteChunk)] ? (index+deleteChunk) : (records.length));
+					index += records[(index+deleteChunk)] ? (deleteChunk) : (records.length);
+					libs.remoteAction(this, 'delRecords', { records: chunk, 
+						sObjApiName: this.config.sObjApiName,
+						callback: function(cmd,result){
+							if(result.delRecordsResult.error.startsWith('Error')){
+								const toast = new ShowToastEvent({
+									title: 'Error',
+									message: result.delRecordsResult.error,
+									variant: 'error'
+								});
+								this.dispatchEvent(toast);
+							}else{
+								this.config.deleteIndex += result.delRecordsResult.length;
+							}
+							if(!result.delRecordsResult.error.startsWith('Error') && this.config.deleteIndex === (parseInt(this.config.recordsLen))){
+								const toast = new ShowToastEvent({
+									title: 'Success',
+									message: "Successfully deleted",
+									variant: 'success'
+								});
+								this.dispatchEvent(toast);
+								this.showDialog = false;
+								this.config.records = this.config.records.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
+								this.allRecords = this.config.records;
+								this.template.querySelector('c-Data-Table').updateView();
+							}
+				 		} 
+					});
+				}
+			}
+		}
 	}
 
 	handleEventCfg(event) {
@@ -435,10 +503,6 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let variant = this.config.userInfo.isAdminAccess === true ? 'error' : 'shade'; // shade, error, warning, info, confirm
 		let fields = [];
 		for (let key in this.config.describe) {
-			//temporary commenting this, will implement it fully with EXREL-35
-			// if (this.config.describe[key].type === 'reference') {
-			// 	fields.push({ label: this.config.describe[key].relationshipName + ' > ', value: this.config.describe[key].relationshipName, refObj : this.config.describe[key].referenceTo[0] });	
-			// }
 			fields.push({ label: this.config.describe[key].label, value: this.config.describe[key].name });
 		}
 		let lockedOptions = [];
@@ -724,9 +788,32 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if (val.startsWith('std:export')) this.handleEventExport(event);
 		if (val.startsWith('std:delete')) {
 			let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
-			console.log(records);
-			// wrong - shouldnt call loadrecords with delete results
-			libs.remoteAction(this, 'delRecords', { records: records, sObjApiName: this.config.sObjApiName, callback: this.loadCfg });
+
+			this.dialogCfg = {
+				title: this.config._LABELS.lbl_confirmDelete,
+				contents: [
+					{
+						isMessage: true,
+						name: 'deleteConfirm',
+						text: this.config._LABELS.msg_deleteConfirm1 + ' ' + records.length + ' ' + this.config._LABELS.msg_deleteConfirm2
+					}
+				],
+				buttons: [
+					{
+						name: 'cancel',
+						label: this.config._LABELS.lbl_cancel,
+						variant: 'neutral'
+					},
+					{
+						name: 'Delete',
+						label: this.config._LABELS.title_delete,
+						variant: 'brand',
+						class: 'slds-m-left_x-small'
+					}
+				],
+				data_id: "delete:dialog"
+			};
+			this.showDialog = true;
 		}
 
 		if (val.startsWith('std:new')) {
