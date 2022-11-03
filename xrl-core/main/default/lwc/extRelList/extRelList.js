@@ -111,7 +111,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let userConfig = (data[cmd].userConfig) ? JSON.parse(JSON.stringify(data[cmd].userConfig)) : [];
 
 		console.log('adminConfig', adminConfig);
-		console.log('userConfig', userConfig);
+		// console.log('userConfig', userConfig);
 
 		let adminDataTableConfig = adminConfig;
 		if(userConfig.length !== 0){
@@ -281,30 +281,32 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 	generateColModel() {
 		this.config.listViewConfig[0].colModel.forEach(e => {
-			let describe = this.config.describe[e.fieldName];
-			if (e.label === undefined) e.label = describe.label;
-			if (e.type === undefined) e.type = describe.type;
-			if (e.updateable === undefined) e.updateable = describe.updateable;
-			if (e.isNameField === undefined) e.isNameField = describe && describe.nameField === true;
-			if (e.type === 'picklist' && e.options === undefined) {
-				e.options = [];
-				describe.picklistValues.forEach(field => {
-					e.options.push(
-						{ label: field.label, value: field.value }
-					)
-				});
-			}
-			if (e.isEditable && describe.updateable) {
-				if (e.type === 'picklist' || e.type === 'reference') {
-					e.isEditableAsPicklist = true;
-					console.log('picklist', e);
-				} else if (e.type === 'boolean') {
-					e.isEditableBool = true;
-				} else {
-					e.isEditableRegular = true;
+			if(e.fieldName === 'Id'){
+				let describe = this.config.describe[e.fieldName];
+				if (e.label === undefined) e.label = describe.label;
+				if (e.type === undefined) e.type = describe.type;
+				if (e.updateable === undefined) e.updateable = describe.updateable;
+				if (e.isNameField === undefined) e.isNameField = describe && describe.nameField === true;
+				if (e.type === 'picklist' && e.options === undefined) {
+					e.options = [];
+					describe.picklistValues.forEach(field => {
+						e.options.push(
+							{ label: field.label, value: field.value }
+						)
+					});
 				}
-			} else {
-				e.isEditable = false;
+				if (e.isEditable && describe.updateable) {
+					if (e.type === 'picklist' || e.type === 'reference') {
+						e.isEditableAsPicklist = true;
+						console.log('picklist', e);
+					} else if (e.type === 'boolean') {
+						e.isEditableBool = true;
+					} else {
+						e.isEditableRegular = true;
+					}
+				} else {
+					e.isEditable = false;
+				}
 			}
 		});
 		this.config.isServerFilter = true;
