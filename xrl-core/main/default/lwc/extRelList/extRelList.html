@@ -52,6 +52,6 @@
 
 	<c-ext-Rel-List-Settings if:true={config.dialog} cfg={name}></c-ext-Rel-List-Settings>
 
-	<c-dialog if:true={showDialog} cfg={dialogCfg} data-id=":dialog" onaction={handleEvent}></c-dialog>
+	<c-dialog if:true={showDialog} cfg={dialogCfg} data-id={dialogCfg.data_id} onaction={handleEvent}></c-dialog>
 
 </template>

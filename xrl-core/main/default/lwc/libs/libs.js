@@ -236,6 +236,27 @@ export let libs = {
 				"tooltip": _labels.tooltip_numbersOfRecordInChunk,
 				"cmd" : "dialog:setTableParam",
 			},
+			"beforeSaveValidation": {
+				"type": "function",
+				"label": _labels.lbl_beforeSaveValidation,
+				"tooltip": _labels.tooltip_beforeSaveValidation,
+				"placeHolder": _labels.placeHolder_beforeSaveValidation,
+				"cmd" : "dialog:setTableParam"
+			},
+			"deleteChunkSize" : {
+				"defValue": 200,
+				"type": "string",
+				"label": _labels.lbl_deleteChunkSize,
+				"tooltip": _labels.tooltip_deleteChunkSize,
+				"cmd" : "dialog:setTableParam",
+			},
+			"beforeDeleteValidation": {
+				"type": "function",
+				"label": _labels.lbl_beforeDeleteValidation,
+				"tooltip": _labels.tooltip_beforeDeleteValidation,
+				"placeHolder": _labels.placeHolder_beforeDeleteValidation,
+				"cmd" : "dialog:setTableParam"
+			},
 			"displayOptionListSize" : {
 				"defValue": 20,
 				"type": "string",
@@ -255,49 +276,53 @@ export let libs = {
 		return defParams;
 	},
 	customActions:function(){
+		let _labels = globalVars[Object.keys(globalVars)[0]]._LABELS;
 		let defParams = {
 			"actionId" : {
 				"defValue": ':idNew',
 				"type": "text",
-				"label": "Id of the action",
-				"tooltip": "Example: :expand_view"
+				"label": _labels.lbl_actionId,
+				"tooltip": _labels.tooltip_actionTooltip
 			},
 			"actionLabel" : {
 				"type": "text",
-				"label": "Label of the action",
-				"tooltip": "Example: Full Screen"
+				"label": _labels.lbl_actionLabel,
+				"tooltip": _labels.tooltip_actionLabelTooltip
 			},
 			"actionTip" : {
 				"defValue":'Tip Representation',
 				"type": "text",
-				"label": "Tip for the action",
-				"tooltip": "Example: This is full screen your grid"
+				"label": _labels.lbl_actionTip,
+				"tooltip": _labels.tooltip_actionTipTooltip
+
 			},
 			"actionCallBack" : {
 				"defValue":'',
 				"type": "function",
-				"label": "Call Back function"
+				"label": _labels.lbl_actionCallback,
+				"placeHolder" : _labels.placeholder_actionCallba
 			},
 			"actionIsHidden" : {
 				"defValue":false,
 				"type": "checkbox",
-				"label": "Is action hidden?",
-				"tooltip": "Checking these will hide the button from grid"
+				"label": _labels.lbl_actionIsHidden,
+				"tooltip": _labels.tooltip_actionIsHidden
+
 			},
 			"actionIconName" : {
 				"type": "text",
-				"label": "Name of the icon to be shown",
-				"tooltip": "If you want to show as a button keep it blank"
+				"label": _labels.lbl_actionIconName,
+				"tooltip": _labels.tooltip_actionIconName
 			},
 			"actionOrder" : {
 				"type": "text",
-				"label": "Order of the action",
-				"tooltip":"Use proper values like 10,20 etc."
+				"label": _labels.lbl_actionOrder,
+				"tooltip":_labels.tooltip_actionOrder
 			},
 			"actionFlowName" : {
 				"defValue":"",
 				"type": "text",
-				"label": "Api Name of the flow(if flow needs to be executed)"
+				"label": _labels.lbl_actionFlowName
 			}
 		}
 		return defParams;
