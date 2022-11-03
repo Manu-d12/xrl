@@ -35,34 +35,46 @@ export default class SqlBuilder extends LightningElement {
         if(this.config.sqlBuilder.selectedFields.length > 0){
             let query = 'SELECT ';
             this.config.sqlBuilder.selectedFields.forEach((el)=>{
-                query += el.value + ', ';
+                query += el.fieldName + ', ';
             });
             query = query.slice(0, -2);
             query += ' FROM ' + this.config.sObjApiName;
             if(this.config.sqlBuilder.conditions.length > 0){
                 query += ' WHERE ';
                 query += this.generateCondition();
-                this.config.dialog.listViewConfig.addCondition = 'AND (' + this.generateCondition() + ')';
-                this.config.dialog.listViewConfig.conditionMap = this.config.sqlBuilder.conditions;
-                this.config.dialog.listViewConfig.conditionOrdering = this.config.sqlBuilder.conditionOrdering;
-            }else{
-                this.config.dialog.listViewConfig.addCondition = '';
-                this.config.dialog.listViewConfig.conditionMap = [];
-                this.config.dialog.listViewConfig.conditionOrdering = '';
             }
             if(this.config.sqlBuilder.orderings.length > 0){
                 let str = ' ORDER BY ';
                 this.config.sqlBuilder.orderings.forEach((el)=>{
-                    str += el.field.value + ' ' + el.sortOrder + ' ' +el.emptyField + ', ';
+                    str += el.field.fieldName + ' ' + el.sortOrder + ' ' +el.emptyField + ', ';
                 });
                 str = str.slice(0, -2);
                 query += str;
-                this.config.dialog.listViewConfig.orderBy = str;
-                this.config.dialog.listViewConfig.orderMap = this.config.sqlBuilder.orderings;
-            }else{
-                this.config.dialog.listViewConfig.orderBy = '';
             }
             return query;
+        }
+    }
+    dialogValues(val){
+        if(this.config.sqlBuilder.conditions.length > 0){
+            this.config.dialog.listViewConfig.addCondition = 'AND (' + this.generateCondition() + ')';
+            this.config.dialog.listViewConfig.conditionMap = this.config.sqlBuilder.conditions;
+            this.config.dialog.listViewConfig.conditionOrdering = this.config.sqlBuilder.conditionOrdering;
+        }else{
+            this.config.dialog.listViewConfig.addCondition = '';
+            this.config.dialog.listViewConfig.conditionMap = [];
+            this.config.dialog.listViewConfig.conditionOrdering = '';
+        }
+
+        if(this.config.sqlBuilder.orderings.length > 0){
+            let str = ' ORDER BY ';
+            this.config.sqlBuilder.orderings.forEach((el)=>{
+                str += el.field.fieldName + ' ' + el.sortOrder + ' ' +el.emptyField + ', ';
+            });
+            str = str.slice(0, -2);
+            this.config.dialog.listViewConfig.orderBy = str;
+            this.config.dialog.listViewConfig.orderMap = this.config.sqlBuilder.orderings;
+        }else{
+            this.config.dialog.listViewConfig.orderBy = '';
         }
     }
     handleBuilderEvent(event){
@@ -102,14 +114,14 @@ export default class SqlBuilder extends LightningElement {
             this.config.sqlBuilder.fields = [];
             this.config.sqlBuilder.allFields.forEach((el)=>{
                 if(el['label'].toString().toLowerCase().indexOf(this.config.sqlBuilder.searchTerm) != -1 
-                || el.value.toString().toLowerCase().indexOf(this.config.sqlBuilder.searchTerm) != -1){
+                || el.fieldName.toString().toLowerCase().indexOf(this.config.sqlBuilder.searchTerm) != -1){
                     this.config.sqlBuilder.fields.push(el);
                 }
             });
         }
         if(val === "sqlBuilder:deleteSelectedField"){
             let field = event.target.getAttribute('data-val');                
-            this.config.sqlBuilder.selectedFields = this.config.sqlBuilder.selectedFields.filter(function(e) { return e.value !== field })
+            this.config.sqlBuilder.selectedFields = this.config.sqlBuilder.selectedFields.filter(function(e) { return e.fieldName !== field })
             this.config.dialog.listViewConfig.colModel = this.config.dialog.listViewConfig.colModel.filter(function(e) { return e.fieldName !== field });
         }
 
@@ -119,7 +131,7 @@ export default class SqlBuilder extends LightningElement {
             if( refObj === null){
                 let fieldVal = event.target.getAttribute('data-val'); 
                 // event.target.classList.toggle('slds-theme_alt-inverse');     
-                let selectedField = this.config.sqlBuilder.fields.find((el) => el.value === fieldVal);
+                let selectedField = this.config.sqlBuilder.fields.find((el) => el.fieldName === fieldVal);
                 console.log(selectedField);
                 this.config.sqlBuilder.conditionOperations = [];
                 this.config.sqlBuilder.currentCondition = {};
@@ -171,6 +183,7 @@ export default class SqlBuilder extends LightningElement {
             this.config.sqlBuilder.conditionOrdering += (this.config.sqlBuilder.conditions.length + 1) === 1 ?
             (this.config.sqlBuilder.conditions.length + 1) : ' AND ' + (this.config.sqlBuilder.conditions.length + 1);
             this.config.sqlBuilder.conditions.push(this.config.sqlBuilder.currentCondition);
+            this.dialogValues(true);
         }
         if(val === "sqlBuilder:conditions:conditionText"){
             this.config.sqlBuilder.currentCondition.value = event.target.value;
@@ -181,16 +194,19 @@ export default class SqlBuilder extends LightningElement {
         if(val === "sqlBuilder:conditions:deleteSelectedCondition"){
             let index = event.target.getAttribute('data-val');  
             this.config.sqlBuilder.conditions = this.config.sqlBuilder.conditions.filter(e => e.index.toString() !== index);
+            
+            this.dialogValues(true);
         }
         if(val === "sqlBuilder:conditions:orderingConditions"){
             this.config.sqlBuilder.conditionOrdering = event.target.value;
+            this.dialogValues(true);
         }
         //For ordering
         if(val === "sqlBuilder:ordering:selectItem"){
             let refObj = event.target.getAttribute('data-ref');
             if( refObj === null){
                 let orderField = event.target.getAttribute('data-val');
-                let selectedField = this.config.sqlBuilder.fields.find((el) => el.value === orderField);
+                let selectedField = this.config.sqlBuilder.fields.find((el) => el.fieldName === orderField);
                 this.config.sqlBuilder.currentOrder = {field:selectedField,
                     emptyField:this.config.sqlBuilder.emptyFieldOptions[0].value};
             }else{
@@ -218,26 +234,29 @@ export default class SqlBuilder extends LightningElement {
         if(val === "sqlBuilder:ordering:addOrdering"){
             this.upsertArray(this.config.sqlBuilder.orderings,this.config.sqlBuilder.currentOrder);
             this.config.sqlBuilder.currentOrder = false;
+            this.dialogValues(true);
         }
         if(val === "sqlBuilder:ordering:delete"){
             let field = event.target.getAttribute('data-val');
-            this.config.sqlBuilder.orderings = this.config.sqlBuilder.orderings.filter(e => e.field.value !== field);
+            this.config.sqlBuilder.orderings = this.config.sqlBuilder.orderings.filter(e => e.field.fieldName !== field);
             this.config.dialog.listViewConfig.orderMap = this.config.sqlBuilder.orderings;
+            this.dialogValues(true);
         }
     }
     upsertArray(array, item) { 
-        const i = array.findIndex(_item => _item.field.value === item.field.value);
+        const i = array.findIndex(_item => _item.field.fieldName === item.field.fieldName);
         if (i > -1) array[i] = item; // (2)
         else array.push(item);
     }
     toggleArrayElement(array, value) {
-        let field = this.config.sqlBuilder.allFields.find((el) => el.value === value);
-        let isValExists = array.find((el) => el.value === value);
+        let field = this.config.sqlBuilder.allFields.find((el) => el.fieldName === value);
+        let isValExists = array.find((el) => el.fieldName === value);
         if(isValExists){
-            array = array.filter(e => e.value !== value);
+            array = array.filter(e => e.fieldName !== value);
         }else{
             array.push(field); 
-            this.addIntoDialog(field);
+            // this.addIntoDialog(field);
+            this.config.dialog.listViewConfig.colModel.push(field);
         }
     }
     loadFields(sObjName){
@@ -255,7 +274,6 @@ export default class SqlBuilder extends LightningElement {
         }else{
             libs.remoteAction(this, 'objectFieldList', { sObjApiName: sObjName, 
                 callback: function(cmd,data){
-                    console.log('HERE>',JSON.parse(JSON.stringify(data[cmd])));
                     let objectFields = JSON.parse(data[cmd].describe);
                     this.config.describeMap[sObjName] = objectFields;
                     this.config.sqlBuilder.fields = this.generateFields(objectFields,objStr);   
@@ -268,12 +286,12 @@ export default class SqlBuilder extends LightningElement {
         let fields = [];
         for (let key in describe) {
             if (describe[key].type === 'reference') {
-                fields.push({ label: describe[key].relationshipName + ' > ', value: describe[key].relationshipName, refObj : describe[key].referenceTo[0], css: 'slds-item' });	
+                fields.push({ label: describe[key].relationshipName + ' > ', fieldName: describe[key].relationshipName, refObj : describe[key].referenceTo[0], css: 'slds-item' });	
             }else{
-                let itemCss = this.config.sqlBuilder.selectedFields.find(el => el.value === (objStr ? objStr + describe[key].name : describe[key].name)) ? 'slds-item slds-theme_alt-inverse' : 'slds-item';
+                let itemCss = this.config.sqlBuilder.selectedFields.find(el => el.fieldName === (objStr ? objStr + describe[key].name : describe[key].name)) ? 'slds-item slds-theme_alt-inverse' : 'slds-item';
                 let fieldMap = { 
                     label: describe[key].label, 
-                    value: objStr ? objStr + describe[key].name : describe[key].name, 
+                    fieldName: objStr ? objStr + describe[key].name : describe[key].name, 
                     css: itemCss, 
                     type: describe[key].type,
                     updateable: describe[key].updateable,
@@ -311,9 +329,7 @@ export default class SqlBuilder extends LightningElement {
         });
         return condition;
     }
-    addIntoDialog(field){
-        let record = field;
-        record.fieldName = field.value;
-        this.config.dialog.listViewConfig.colModel.push(record);
-    }
+    // addIntoDialog(field){
+    //     this.config.dialog.listViewConfig.colModel.push(field);
+    // }
 }

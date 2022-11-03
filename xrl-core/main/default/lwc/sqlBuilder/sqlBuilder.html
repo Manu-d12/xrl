@@ -15,7 +15,7 @@
                         <div class="slds-scrollable_y" style="height:20rem;padding:4px;">
                             <ul class="slds-has-dividers_around-space">
                                 <template if:true={config.sqlBuilder.fields} for:each={config.sqlBuilder.fields} for:item="field" for:index="index">
-                                    <li data-id="sqlBuilder:selectItem" onclick={handleBuilderEvent} class={field.css} style="cursor: pointer;" data-ref={field.refObj} data-val={field.value} key={field.value}>{field.label}</li>
+                                    <li data-id="sqlBuilder:selectItem" onclick={handleBuilderEvent} class={field.css} style="cursor: pointer;" data-ref={field.refObj} data-val={field.fieldName} key={field.fieldName}>{field.label}</li>
                                 </template>
                             </ul>
                         </div>
@@ -26,8 +26,8 @@
                     <div class="slds-scrollable_y" style="height:27rem;border:0.5px solid rgb(183, 180, 180);padding:4px;">
                         <ul class="slds-has-dividers_around-space">
                             <template if:true={config.sqlBuilder.selectedFields} for:each={config.sqlBuilder.selectedFields} for:item="field" for:index="index">
-                                <li class="slds-item" key={field.value} style="cursor: pointer;" draggable="true">{field.value}
-                                    <lightning-icon size="small" data-id="sqlBuilder:deleteSelectedField" data-val={field.value} onclick={handleBuilderEvent} style="float: right;" icon-name="utility:delete" alternative-text="Delete" title="Delete"></lightning-icon>
+                                <li class="slds-item" key={field.fieldName} style="cursor: pointer;" draggable="true">{field.fieldName}
+                                    <lightning-icon size="small" data-id="sqlBuilder:deleteSelectedField" data-val={field.fieldName} onclick={handleBuilderEvent} style="float: right;" icon-name="utility:delete" alternative-text="Delete" title="Delete"></lightning-icon>
                                 </li>
                             </template>
                         </ul>
@@ -51,7 +51,7 @@
                         <div class="slds-scrollable_y" style="height:20rem;padding:4px;">
                             <ul class="slds-has-dividers_around-space">
                                 <template if:true={config.sqlBuilder.fields} for:each={config.sqlBuilder.fields} for:item="field" for:index="index">
-                                    <li data-id="sqlBuilder:conditions:selectItem" onclick={handleBuilderEvent} style="cursor: pointer;" class={field.css} data-ref={field.refObj} data-val={field.value} key={field.value}>{field.label}</li>
+                                    <li data-id="sqlBuilder:conditions:selectItem" onclick={handleBuilderEvent} style="cursor: pointer;" class={field.css} data-ref={field.refObj} data-val={field.fieldName} key={field.fieldName}>{field.label}</li>
                                 </template>
                             </ul>
                         </div>
@@ -157,7 +157,7 @@
                         <div class="slds-scrollable_y" style="height:20rem">
                             <ul class="slds-has-dividers_around-space">
                                 <template if:true={config.sqlBuilder.fields} for:each={config.sqlBuilder.fields} for:item="field" for:index="index">
-                                    <li data-id="sqlBuilder:ordering:selectItem" style="cursor: pointer;" onclick={handleBuilderEvent} class={field.css} data-ref={field.refObj} data-val={field.value} key={field.value}>{field.label}</li>
+                                    <li data-id="sqlBuilder:ordering:selectItem" style="cursor: pointer;" onclick={handleBuilderEvent} class={field.css} data-ref={field.refObj} data-val={field.fieldName} key={field.fieldName}>{field.label}</li>
                                 </template>
                             </ul>
                         </div>
@@ -180,7 +180,7 @@
                         <ul class="slds-has-dividers_around-space">
                             <template if:true={config.sqlBuilder.orderings} for:each={config.sqlBuilder.orderings} for:item="field" for:index="index">
                                 <li class="slds-item" key={field.value}>{field.field.label} {field.sortOrder} {field.emptyField} 
-                                    <lightning-icon style="float:right;" size="small" data-id="sqlBuilder:ordering:delete" data-val={field.field.value} onclick={handleBuilderEvent} icon-name="utility:delete" alternative-text="Delete" title="Delete"></lightning-icon>
+                                    <lightning-icon style="float:right;" size="small" data-id="sqlBuilder:ordering:delete" data-val={field.field.fieldName} onclick={handleBuilderEvent} icon-name="utility:delete" alternative-text="Delete" title="Delete"></lightning-icon>
                                 </li>
                             </template>
                         </ul>
