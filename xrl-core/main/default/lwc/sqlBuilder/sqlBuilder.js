@@ -198,7 +198,7 @@ export default class SqlBuilder extends LightningElement {
                 this.config.sqlBuilder.conditions[fieldInd] = this.config.sqlBuilder.currentCondition;
             }
             this.dialogValues(true);
-            config.sqlBuilder.conditionOperations = false;
+            this.config.sqlBuilder.conditionOperations = false;
         }
         if(val === "sqlBuilder:conditions:conditionText"){
             this.config.sqlBuilder.currentCondition.value = event.target.value;
@@ -211,8 +211,8 @@ export default class SqlBuilder extends LightningElement {
             this.config.sqlBuilder.conditions = this.config.sqlBuilder.conditions.filter(e => e.index.toString() !== index);
             //Need to rebuild a 
             
-            var regExp = new RegExp(' *?(OR|AND)*? *?' + index + ' *?(OR|AND)*? *?','gi');
-            this.config.sqlBuilder.conditionOrdering = this.config.sqlBuilder.conditionOrdering.replace(regExp,'');
+            // var regExp = new RegExp(' *?(OR|AND)*? *?' + index + ' *?(OR|AND)*? *?','gi');
+            // this.config.sqlBuilder.conditionOrdering = this.config.sqlBuilder.conditionOrdering.replace(regExp,'');
             console.log('DELETING condition', index, this.config.sqlBuilder.conditionOrdering);
             this.dialogValues(true);
         }
