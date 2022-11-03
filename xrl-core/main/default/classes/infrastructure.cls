@@ -1,6 +1,10 @@
 global with sharing class infrastructure {
 	private static id recordId;
 	private static boolean isAdminAccess = false;
+    
+    global abstract class handler {
+        global abstract object execute(map < string, object > data);
+    }
 
 	@AuraEnabled(Cacheable = false)
 	global static map < string, object > dispatcherAura(string cmd, map < string, object > data) {
@@ -279,6 +283,9 @@ global with sharing class infrastructure {
 		}
 		//update securityDecision.getRecords() update records that can be updated
 		*/
+        if (data.get('beforeSaveAction') != null) {
+            invokeApex((string) data.get('beforeSaveAction'), records);
+        }
 		Savepoint sp = Database.setSavepoint();
 		system.debug(isRollback);
  
@@ -677,6 +684,39 @@ global with sharing class infrastructure {
 		result.put('describe', JSON.serialize(describeResult));
 		return result;
 	}
+    
+    private static void invokeApex(string helperType, sObject[] records) {
+        string helperTypeClass = 'HLP_' + helperType.replace('.', '_');
+    	try {
+            // check class exist or not
+            ApexClass[] A = [SELECT Id, NamespacePrefix FROM ApexClass WHERE Name =: helperTypeClass LIMIT 1];
+            
+            if (A.size() == 0) throw new InfrastructureException(null, 'Can\'t find class {1}'.replace('{1}', helperType) + ':' + helperTypeClass, exceptionType.CLASS_NOT_FOUND);
+                        
+            Type T = string.isEmpty(A[0].namespacePrefix) ? type.forName(helperType) : type.forName(A[0].namespacePrefix, helperType);
+            if (T == null) throw new InfrastructureException(null, ('Can\'t find method {1} in class ' + helperType).replace('{1}', helperType) + ':' + helperTypeClass, exceptionType.INSTANCE_CLASS_NOT_FOUND);
+            
+            //system.debug(LoggingLevel.Error, JSON.serialize(data));
+            //system.debug(LoggingLevel.Error, T.toString());
+            
+            
+            /*handler handlerClass = (handler) JSON.deserialize(allParams, T);
+            try {
+                result = handlerClass.execute(data);
+            } catch (Exception e) {
+                string eMsg = getExceptionString(e, 'IMPLEMENTATION EXCEPTION');
+                system.debug(LoggingLevel.Error, eMsg);
+                infrastructure.addError('-1', eMsg);
+                infrastructure.addStackTrace('-1', infrastructure.getStackTraceString(e, 'EXCEPTION'));
+            }*/
+        } catch (Exception E) {
+            //string eMsg = getExceptionString(e, 'EXCEPTION');
+            //system.debug(LoggingLevel.Error, eMsg);
+            //infrastructure.addError('-1', eMsg);
+            //infrastructure.addStackTrace('-1', infrastructure.getStackTraceString(e, 'EXCEPTION'));
+        }
+        
+    }
 
 	global class InfrastructureException extends Exception {
 		public ExceptionType eType;
