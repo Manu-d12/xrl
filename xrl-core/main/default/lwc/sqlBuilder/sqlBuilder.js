@@ -28,7 +28,7 @@ export default class SqlBuilder extends LightningElement {
 
 
         this.config.sqlBuilder.selectedFields.forEach((el)=>{
-            this.ElementList.push(el.value);
+            this.ElementList.push(el.fieldName);
         });
         if(!this.ElementList){
             this.ElementList = [...this.Data]
@@ -186,7 +186,7 @@ export default class SqlBuilder extends LightningElement {
         }
         if(val === "sqlBuilder:conditions:addCondition"){
             this.config.sqlBuilder.openConditionInput = false;
-            this.config.sqlBuilder.conditionOperations = [];
+            this.config.sqlBuilder.conditionOperations = undefined;
             this.config.sqlBuilder.currentCondition.key = this.config.sqlBuilder.conditions.field + this.config.sqlBuilder.conditions.length;
             if(this.config.sqlBuilder.currentCondition.index === undefined){
                 this.config.sqlBuilder.currentCondition.index = this.config.sqlBuilder.conditions.length + 1;
@@ -198,7 +198,7 @@ export default class SqlBuilder extends LightningElement {
                 this.config.sqlBuilder.conditions[fieldInd] = this.config.sqlBuilder.currentCondition;
             }
             this.dialogValues(true);
-            this.config.sqlBuilder.conditionOperations = false;
+            // this.config.sqlBuilder.conditionOperations = false;
         }
         if(val === "sqlBuilder:conditions:conditionText"){
             this.config.sqlBuilder.currentCondition.value = event.target.value;
@@ -211,8 +211,8 @@ export default class SqlBuilder extends LightningElement {
             this.config.sqlBuilder.conditions = this.config.sqlBuilder.conditions.filter(e => e.index.toString() !== index);
             //Need to rebuild a 
             
-            // var regExp = new RegExp(' *?(OR|AND)*? *?' + index + ' *?(OR|AND)*? *?','gi');
-            // this.config.sqlBuilder.conditionOrdering = this.config.sqlBuilder.conditionOrdering.replace(regExp,'');
+            var regExp = new RegExp(' *?(OR|AND)*? *?' + index + ' *?(OR|AND)*? *?','gi');
+            this.config.sqlBuilder.conditionOrdering = this.config.sqlBuilder.conditionOrdering.replace(regExp,'');
             console.log('DELETING condition', index, this.config.sqlBuilder.conditionOrdering);
             this.dialogValues(true);
         }
@@ -402,8 +402,8 @@ export default class SqlBuilder extends LightningElement {
         const DropValName = event.target.textContent
 
         if(DragValName === DropValName){ return false }
-        const index = this.config.sqlBuilder.selectedFields.findIndex((el)=> el.value === DropValName);
-        const dragIndex = this.config.sqlBuilder.selectedFields.findIndex((el)=> el.value === DragValName);
+        const index = this.config.sqlBuilder.selectedFields.findIndex((el)=> el.fieldName === DropValName);
+        const dragIndex = this.config.sqlBuilder.selectedFields.findIndex((el)=> el.fieldName === DragValName);
         this.ElementList = this.ElementList.reduce((acc, curVal, CurIndex) => {
         // this.config.sqlBuilder.selectedFields = this.config.sqlBuilder.selectedFields.reduce((acc, curVal, CurIndex) => {
             if(CurIndex === index){
@@ -427,8 +427,9 @@ export default class SqlBuilder extends LightningElement {
         this.config.sqlBuilder.selectedFields = [];
         this.config.dialog.listViewConfig.colModel = [];
         this.ElementList.forEach((el)=>{
-            let item = copySelectedFields.find((e) => e.value === el);
-            this.addIntoDialog(item);
+            let item = copySelectedFields.find((e) => e.fieldName === el);
+            // this.addIntoDialog(item);
+            this.config.dialog.listViewConfig.colModel.push(item);
             this.config.sqlBuilder.selectedFields.push(item);
         });
         return this.ElementList
