@@ -1458,4 +1458,52 @@ function(record){
     return true;
 }</value>
     </labels>
+    <labels>
+        <fullName>tooltip_configSave</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_configSave</shortDescription>
+        <value>Save the config changes. The changes will be applied to the grid.</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_configCancel</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_configCancel</shortDescription>
+        <value>Cancel the changes made. No changes will be saved as well as applied</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_configShare</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_configShare</shortDescription>
+        <value>Share this config with other user/public group/role/role and subordinates of this org</value>
+    </labels>
+    <labels>
+        <fullName>title_selectListView</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>title_selectListView</shortDescription>
+        <value>Select your preferred list view from the dropdown</value>
+    </labels>
+    <labels>
+        <fullName>title_newRecord</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>title_newRecord</shortDescription>
+        <value>Create New Record</value>
+    </labels>
+    <labels>
+        <fullName>altTxt_new</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>altTxt_new</shortDescription>
+        <value>New</value>
+    </labels>
 </CustomLabels>
