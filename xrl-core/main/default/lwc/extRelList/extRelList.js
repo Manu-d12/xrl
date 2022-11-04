@@ -62,7 +62,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 	loadCfg(isInit) {
 		libs.remoteAction(this, 'getCustomLabels', {callback: this.setCustomLabels.bind(this) });
-		let apiNames = this.apiName.split(':');
+		let apiNames = this.apiName.split('::');
 		console.log(apiNames);
 		this.localConfig = {};
 

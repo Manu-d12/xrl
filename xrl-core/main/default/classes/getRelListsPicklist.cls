@@ -28,7 +28,7 @@ global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickLi
 				string sObjField = string.valueOf(thisChild.getField());
 				string sObjLabel = gd.get(sObjApiName).getDescribe().getLabelPlural();
 				picklistValues.addRow(
-					new VisualEditor.DataRow(sObjLabel, sObjLabel + ':' + sObjApiName + ':' + sObjField)
+					new VisualEditor.DataRow(sObjLabel, sObjLabel + '::' + sObjApiName + '::' + sObjField)
 				);
 			}
 		}
