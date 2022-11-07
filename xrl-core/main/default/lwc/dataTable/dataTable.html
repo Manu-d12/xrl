@@ -77,7 +77,7 @@
 				</template>
 
 
-				<template if:true={hasGrouping} for:each={tableRecords} for:item="group">
+				<template if:true={hasGrouping} for:each={groupedRecords} for:item="group">
 					<tr key={group.title} class="groupRow" data-groupind={group.title}>
 						<td scope="col" style="width: 2rem;" class="toggle">
 							<lightning-button-icon if:true={group.isOpened} icon-name="utility:dash"  variant="bare" alternative-text={config._LABELS.altTxt_collapse} title={config._LABELS.title_collapse} onclick={toggleGroup} data-groupind={group.title}></lightning-button-icon>

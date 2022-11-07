@@ -148,11 +148,11 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 
 	get hasGrouping() {
-		return this.config.grouping === true;
+		return true;
 	}
 
 	get groupColspan() {
-		return this.config.colModel.filter(col => !col.isHidden).length;
+		return this.config.colModel.filter(col => !col.isHidden).length - 1;
 	}
 
 	_sortSequence = [];
@@ -171,8 +171,13 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 	setGroupRecords() {
 		let result = new Map();
+		this.config.groupingParams = {
+			field:'Origin',
+			order:'asc'
+		}
 		this.records.forEach(r => {
 			let groupName = r[this.config.groupingParams.field] || 'empty';
+			console.log('groupNAme',groupName);
 			let group = result.has(groupName) ? result.get(groupName) : {
 				title: groupName,
 				isChecked: false,
