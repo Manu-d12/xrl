@@ -669,7 +669,10 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>tooltip_customFunctionExample</shortDescription>
-        <value>example : function(row, col, val) { return val; }</value>
+        <value>//Example - To use this example please remove the slashes(//) from the beginning of the return statement
+function(row, col, val) { 
+//return val;
+}</value>
     </labels>
     <labels>
         <fullName>lbl_customFunctionForStyle</fullName>
@@ -685,7 +688,10 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_customFunctionStyleExample</shortDescription>
-        <value>example : function(row, col, val) { return \&quot;background-color:#FF0000\&quot;; }</value>
+        <value>//Example - To use this example please remove the slashes(//) from the beginning of the return statement
+function(row,col,val){
+//return &quot;color:#FF0000&quot;;
+}</value>
     </labels>
     <labels>
         <fullName>lbl_isColumnHidden</fullName>
