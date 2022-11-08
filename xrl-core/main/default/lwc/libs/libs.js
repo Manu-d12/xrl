@@ -117,13 +117,15 @@ export let libs = {
 				"type": "function",
 				"params": "(row, col, val)",
 				"label": _labels.lbl_customFunctionForFormatting,
-				"placeHolder" : _labels.lbl_customFunctionExample
+				"placeHolder" : _labels.lbl_customFunctionExample,
+				"useExample":true
 			},
 			"uStyle": {
 				"type": "function",
 				"params": "(row, col, val)",
 				"label": _labels.lbl_customFunctionForStyle,
-				"placeHolder" : _labels.lbl_customFunctionStyleExample
+				"placeHolder" : _labels.lbl_customFunctionStyleExample,
+				"useExample":true
 			},
 			"isHidden": {
 				"defValue": false,

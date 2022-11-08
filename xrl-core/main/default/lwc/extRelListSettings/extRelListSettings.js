@@ -10,6 +10,7 @@ export default class extRelListSettings extends LightningElement {
 		console.log(this.cfg);
 		this.config = libs.getGlobalVar(this.cfg);
 		this.config.dialog.allActions = [];
+		this.config.dialog.useExampleParams = {};
 		this.config.dialog.listViewConfig.actions.forEach((el)=>{
 			this.config.dialog.allActions.push({label:el.actionLabel,value:el.actionId});
 		});
@@ -56,6 +57,9 @@ export default class extRelListSettings extends LightningElement {
 				: fieldParams[item] === undefined
 					? tmp[item].defValue
 					: fieldParams[item];
+			if(this.config.dialog.useExampleParams[item] !== undefined){
+				defValue = this.config.dialog.useExampleParams[item];
+			}
 			result.push({
 				"paramName" : item,
 				"type" : tmp[item].type,
@@ -65,7 +69,8 @@ export default class extRelListSettings extends LightningElement {
 				"isDisabled" : (item === 'fieldName'),
 				"value" : defValue,
 				"isChecked" : (tmp[item].type === 'checkbox') ? defValue : undefined,
-				"placeHolder" : tmp[item].placeHolder
+				"placeHolder" : tmp[item].placeHolder,
+				"useExample": tmp[item].useExample
 			})
 		}
 		// console.log(result, describe[this.config.dialog.field]);
@@ -140,8 +145,9 @@ export default class extRelListSettings extends LightningElement {
 	handleNewActionSave(event){
 		this.config.dialog.action = event.target.value;
 		this.config.dialog.listViewConfig.actions.push({actionId:event.target.value});
-		console.log(event.target.value);
 		this.config.openNewAction = false;
 	}
-
+	addNewUseExampleParam(event){
+		this.config.dialog.useExampleParams[event.target.getAttribute('data-param')] = event.target.getAttribute('data-val');
+	}
 }
