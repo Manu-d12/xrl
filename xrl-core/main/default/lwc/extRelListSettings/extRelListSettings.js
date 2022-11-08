@@ -148,6 +148,6 @@ export default class extRelListSettings extends LightningElement {
 		this.config.openNewAction = false;
 	}
 	addNewUseExampleParam(event){
-		this.config.dialog.useExampleParams[event.target.getAttribute('data-param')] = event.target.getAttribute('data-val');
+		this.config.dialog.useExampleParams[event.target.getAttribute('data-param')] = event.target.getAttribute('data-val').replaceAll("//","");
 	}
 }
