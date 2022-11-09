@@ -1464,4 +1464,19 @@ function(record){
     return true;
 }</value>
     </labels>
+    <labels>
+        <fullName>placeHolder_rowCss</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>placeHolder_rowCss</shortDescription>
+        <value>function(row){
+//This is the logic of striped row if you want to change row colors please modify according to your needs
+if(row.sl % 2 === 0){
+return &quot;background-color:#ffffff;&quot; //white
+}else {
+return &quot;background-color:#F5F5F5;&quot; //light grey
+}
+}</value>
+    </labels>
 </CustomLabels>

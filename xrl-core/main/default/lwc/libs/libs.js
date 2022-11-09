@@ -270,6 +270,7 @@ export let libs = {
 				"type": "function",
 				"label": _labels.lbl_rowCss,
 				"tooltip": _labels.tooltip_changeRowStyleByFunction,
+				"placeHolder": _labels.placeHolder_rowCss,
 				"cmd" : "dialog:setTableParam"
 			}
 			
