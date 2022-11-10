@@ -1487,4 +1487,12 @@ return &quot;background-color:#F5F5F5;&quot; //light grey
         <shortDescription>lbl_columnFilter</shortDescription>
         <value>Column Filters</value>
     </labels>
+    <labels>
+        <fullName>lbl_deleteNoRecordSelectedError</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_deleteNoRecordSelectedError</shortDescription>
+        <value>Please Select at least 1 record. If checkbox is not enabled then follow Configure -> Table Settings -> Enable Checkboxes</value>
+    </labels>
 </CustomLabels>

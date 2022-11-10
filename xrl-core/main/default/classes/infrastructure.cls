@@ -498,6 +498,7 @@ global with sharing class infrastructure {
 			'lbl_actionOrder'=> label.lbl_actionOrder,
 			'lbl_actionFlowName' => label.lbl_actionFlowName,
 			'lbl_columnFilter'=>label.lbl_columnFilter,
+			'lbl_deleteNoRecordSelectedError'=>label.lbl_deleteNoRecordSelectedError,
 			'msg_lisViewWasUpdated' => label.msg_lisViewWasUpdated,
 			'msg_requestWasSent' => label.msg_requestWasSent,
 			'msg_deleteConfirm1'=>label.msg_deleteConfirm1,

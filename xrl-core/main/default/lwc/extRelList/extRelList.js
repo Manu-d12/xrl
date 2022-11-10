@@ -791,31 +791,40 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if (val.startsWith('std:delete')) {
 			let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
 
-			this.dialogCfg = {
-				title: this.config._LABELS.lbl_confirmDelete,
-				contents: [
-					{
-						isMessage: true,
-						name: 'deleteConfirm',
-						text: this.config._LABELS.msg_deleteConfirm1 + ' ' + records.length + ' ' + this.config._LABELS.msg_deleteConfirm2
-					}
-				],
-				buttons: [
-					{
-						name: 'cancel',
-						label: this.config._LABELS.lbl_cancel,
-						variant: 'neutral'
-					},
-					{
-						name: 'Delete',
-						label: this.config._LABELS.title_delete,
-						variant: 'brand',
-						class: 'slds-m-left_x-small'
-					}
-				],
-				data_id: "delete:dialog"
-			};
-			this.showDialog = true;
+			if(records.length > 0){
+				this.dialogCfg = {
+					title: this.config._LABELS.lbl_confirmDelete,
+					contents: [
+						{
+							isMessage: true,
+							name: 'deleteConfirm',
+							text: this.config._LABELS.msg_deleteConfirm1 + ' ' + records.length + ' ' + this.config._LABELS.msg_deleteConfirm2
+						}
+					],
+					buttons: [
+						{
+							name: 'cancel',
+							label: this.config._LABELS.lbl_cancel,
+							variant: 'neutral'
+						},
+						{
+							name: 'Delete',
+							label: this.config._LABELS.title_delete,
+							variant: 'brand',
+							class: 'slds-m-left_x-small'
+						}
+					],
+					data_id: "delete:dialog"
+				};
+				this.showDialog = true;
+			}else{
+				const event = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.lbl_deleteNoRecordSelectedError,
+					variant: 'error'
+				});
+				this.dispatchEvent(event);
+			}
 		}
 
 		if (val.startsWith('std:new')) {
@@ -885,7 +894,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}else{
 			const event = new ShowToastEvent({
 				title: 'Error',
-				message: "Please Select Some records",
+				message: this.config._LABELS.lbl_deleteNoRecordSelectedError,
 				variant: 'error'
 			});
 			this.dispatchEvent(event);
