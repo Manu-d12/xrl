@@ -1511,6 +1511,8 @@ function(record){
         <protected>false</protected>
         <shortDescription>altTxt_new</shortDescription>
         <value>New</value>
+    </labels>
+    <labels>
         <fullName>placeHolder_rowCss</fullName>
         <categories>XRL</categories>
         <language>en_US</language>
@@ -1532,5 +1534,29 @@ return &quot;background-color:#F5F5F5;&quot; //light grey
         <protected>true</protected>
         <shortDescription>lbl_columnFilter</shortDescription>
         <value>Column Filters</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_configSaveAs</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_configSaveAs</shortDescription>
+        <value>Save the whole configuration as a new configuration</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_configSaveAsSave</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_configSaveAsSave</shortDescription>
+        <value>Save this listview with this list view name and label</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_configSaveAsCancel</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_configSaveAsCancel</shortDescription>
+        <value>Cancel Saving new list view</value>
     </labels>
 </CustomLabels>

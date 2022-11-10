@@ -556,6 +556,9 @@ global with sharing class infrastructure {
 			'tooltip_configSave'=>label.tooltip_configSave,
 			'tooltip_configCancel'=>label.tooltip_configCancel,
 			'tooltip_configShare'=>label.tooltip_configShare,
+			'tooltip_configSaveAs'=>label.tooltip_configSaveAs,
+			'tooltip_configSaveAsSave'=>label.tooltip_configSaveAsSave,
+			'tooltip_configSaveAsCancel'=>label.tooltip_configSaveAsCancel,
 			'srcLbl_available' => label.srcLbl_available,
 			'srcLbl_optional' => label.srcLbl_optional
 		};
