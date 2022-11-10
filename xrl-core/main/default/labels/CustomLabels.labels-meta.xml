@@ -1479,4 +1479,12 @@ return &quot;background-color:#F5F5F5;&quot; //light grey
 }
 }</value>
     </labels>
+    <labels>
+        <fullName>lbl_columnFilter</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_columnFilter</shortDescription>
+        <value>Column Filters</value>
+    </labels>
 </CustomLabels>

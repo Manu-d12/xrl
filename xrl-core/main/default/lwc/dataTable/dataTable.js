@@ -258,7 +258,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 								? 'slds-cell-wrap'
 								: 'slds-truncate';
 			item._isReference = (item.type === 'reference') ? true : false;
-			item._filterCondition = item._filterCondition ? item._filterCondition : 'Column Filter';
+			item._filterCondition = item._filterCondition ? item._filterCondition : this.config._LABELS.lbl_columnFilter;
 		});
 		//this.config.colModel = JSON.parse(JSON.stringify(this.config.colModel));
 		this.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
