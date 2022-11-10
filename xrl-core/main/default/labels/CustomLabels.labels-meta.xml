@@ -669,7 +669,10 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>tooltip_customFunctionExample</shortDescription>
-        <value>example : function(row, col, val) { return val; }</value>
+        <value>//Example - To use this example please remove the slashes(//) from the beginning of the return statement
+function(row, col, val) { 
+//return val;
+}</value>
     </labels>
     <labels>
         <fullName>lbl_customFunctionForStyle</fullName>
@@ -685,7 +688,10 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_customFunctionStyleExample</shortDescription>
-        <value>example : function(row, col, val) { return \&quot;background-color:#FF0000\&quot;; }</value>
+        <value>//Example - To use this example please remove the slashes(//) from the beginning of the return statement
+function(row,col,val){
+//return &quot;color:#FF0000&quot;;
+}</value>
     </labels>
     <labels>
         <fullName>lbl_isColumnHidden</fullName>
@@ -1505,5 +1511,26 @@ function(record){
         <protected>false</protected>
         <shortDescription>altTxt_new</shortDescription>
         <value>New</value>
+        <fullName>placeHolder_rowCss</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>placeHolder_rowCss</shortDescription>
+        <value>function(row){
+//This is the logic of striped row if you want to change row colors please modify according to your needs
+if(row.sl % 2 === 0){
+return &quot;background-color:#ffffff;&quot; //white
+}else {
+return &quot;background-color:#F5F5F5;&quot; //light grey
+}
+}</value>
+    </labels>
+    <labels>
+        <fullName>lbl_columnFilter</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_columnFilter</shortDescription>
+        <value>Column Filters</value>
     </labels>
 </CustomLabels>

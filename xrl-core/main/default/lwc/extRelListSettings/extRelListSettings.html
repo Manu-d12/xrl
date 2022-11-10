@@ -14,12 +14,16 @@
 			</header>
 			<div if:false={config.dialog.saveAs} class="slds-modal__content slds-p-around_medium" style="min-height300px !important">
 
+				<!-- Admin Part -->
 				<lightning-tabset if:true={config.userInfo.isAdminAccess}>
+					<!-- Field Selection Starts -->
 					<lightning-tab label={config._LABELS.lbl_fieldSelection}>
 						<!-- <lightning-dual-listbox data-id="dialog:setFields" label={config._LABELS.lbl_selectFields} source-label={config._LABELS.srcLbl_available} selected-label={config._LABELS.lbl_selected} field-level-help={config._LABELS.hlpTxt_selectYourPreferredFields} options={config.dialog.options} value={config.dialog.selectedFields} required-options={config.dialog.requiredOptions} onchange={config.dialog.handleEvent} size="10"></lightning-dual-listbox> -->
 						<!-- <lightning-input type="text" label={config._LABELS.lbl_additionalConditionForWhereClause} field-level-help={config._LABELS.hlpTxt_additionalConditionText} value={config.dialog.listViewConfig.addCondition} data-id="dialog:setAddCondition" onchange={config.dialog.handleEvent} style="margin-top: 10px;"></lightning-input> -->
 						<c-sql-Builder cfg={cfg}></c-sql-Builder>
 					</lightning-tab>
+					<!-- Field Selection Ends -->
+					<!-- Field Settings Starts -->
 					<lightning-tab label={config._LABELS.lbl_fieldSettings} title={config._LABELS.title_youCanDefineAllParametersForFields}>
 						<p style="min-height:200px">
 							<lightning-combobox name="status" label={config._LABELS.lbl_fieldSelection} placeholder={config._LABELS.lbl_chooseField} value={config.dialog.selectedFields} data-id="dialog:setField" onchange={config.dialog.handleEvent} options={selectedFields}>
@@ -28,18 +32,25 @@
 							<template if:true={config.dialog.field} for:each={colModelItem} for:item="param" for:index="index">
 								<lightning-input if:false={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} type={param.type} label={param.label} disabled={param.isDisabled} value={param.value} data-id="dialog:setFieldParam" data-param={param.paramName} data-type={param.type} checked={param.isChecked} onchange={config.dialog.handleEvent}></lightning-input>
 								<lightning-textarea if:true={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} data-type={param.type} label={param.label} value={param.value} data-id="dialog:setFieldParam" data-param={param.paramName} onchange={config.dialog.handleEvent} placeholder={param.placeHolder}></lightning-textarea>
+								<lightning-button-icon if:true={param.useExample} key={param.paramName} icon-name="utility:copy_to_clipboard" class="slds-m-around_small" title="Use example" data-id="dialog:setFieldParam" data-val={param.placeHolder} data-param={param.paramName} data-type={param.type} onclick={addNewUseExampleParam}></lightning-button-icon>
 							</template>		
 						</p>
 					</lightning-tab>
+					<!-- Field Settings Ends -->
+					<!-- Table Settings Starts -->
 					<lightning-tab label={config._LABELS.lbl_tableSettings} title={config._LABELS.title_youCanDefineAllGeneralTableParameters}>
 						<template for:each={tableItem} for:item="param" for:index="index">
 							<lightning-input if:false={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} type={param.type} label={param.label} disabled={param.isDisabled} value={param.value} data-id={param.cmd} data-param={param.paramName} data-type={param.type} checked={param.isChecked} onchange={config.dialog.handleEvent}></lightning-input>
 							<lightning-textarea if:true={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} data-type={param.type} label={param.label} value={param.value} data-id={param.cmd} data-param={param.paramName} onchange={config.dialog.handleEvent} placeholder={param.placeHolder}></lightning-textarea>
 						</template>
-					</lightning-tab>					
+					</lightning-tab>	
+					<!-- Table Settings Ends -->
+					<!-- Locked Fields Starts  -->
 					<lightning-tab label={config._LABELS.lbl_lockedFields}>
 						<lightning-dual-listbox data-id="dialog:setLockedFields" label={config._LABELS.lbl_selectLockedFields} source-label={config._LABELS.srcLbl_optional} selected-label={config._LABELS.lbl_lockedFields} field-level-help={config._LABELS.hlpTxt_selectYourLockedFields} options={config.dialog.lockedOptions} value={config.dialog.lockedFields} onchange={config.dialog.handleEvent} size="10"></lightning-dual-listbox>
 					</lightning-tab>
+					<!-- Locked Fields Ends  -->
+					<!-- Action Starts  -->
 					<lightning-tab label="Actions">
 						<template if:false={config.openNewAction}>
 							<lightning-button if:false={config.dialog.action} variant="brand" label="New Action" title="New Action" class="slds-m-right_x-small" onclick={handleNewAction}></lightning-button>
@@ -55,10 +66,14 @@
 							<lightning-textarea if:true={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} data-type={param.type} label={param.label} value={param.value} data-id="dialog:setActionParam" data-param={param.paramName} onchange={config.dialog.handleEvent} placeholder={param.placeHolder}></lightning-textarea>
 						</template>
 					</lightning-tab>
+					<!-- Action Ends  -->
 				</lightning-tabset>
+				<!-- Admin Part Ends  -->
+				<!-- User Part  -->
 				<lightning-dual-listbox if:false={config.userInfo.isAdminAccess} data-id="dialog:setFields" label={config._LABELS.lbl_selectFields} source-label={config._LABELS.srcLbl_available} selected-label={config._LABELS.lbl_selected} field-level-help={config._LABELS.hlpTxt_selectYourPreferredFields} options={config.dialog.options} value={config.dialog.selectedFields} required-options={config.dialog.requiredOptions} onchange={config.dialog.handleEvent} size="12"></lightning-dual-listbox>
 			</div>
 			<footer class="slds-modal__footer modal-footer">
+				<!-- Save As dialog Starts -->
 				<div if:true={config.dialog.saveAs} class="slds-p-around_medium lgc-bg">
 					<lightning-input type="text" label={config._LABELS.lbl_enterListViewName} placeholder={config._LABELS.lbl_typeHere} required focus data-id="dialog:saveAsName" onchange={config.dialog.handleEvent}></lightning-input>
 					<lightning-input type="text" label={config._LABELS.lbl_enterListViewLabel} placeholder={config._LABELS.lbl_typeHere} required focus data-id="dialog:saveAsLabel" onchange={config.dialog.handleEvent}></lightning-input>
@@ -66,14 +81,17 @@
 
 				<lightning-button if:true={config.dialog.saveAs} variant="brand" label={config._LABELS.lbl_save} title={config._LABELS.lbl_save} icon-name="utility:save" class="slds-m-left_x-small" data-id="dialog:saveAsFinish" onclick={config.dialog.handleEvent}></lightning-button>
 				<lightning-button if:true={config.dialog.saveAs} variant="base" label={config._LABELS.lbl_cancel} title={config._LABELS.lbl_cancel} icon-name="utility:error" class="slds-m-left_x-small" data-id="dialog:saveAsCancel" onclick={config.dialog.handleEvent}></lightning-button>
+				<!-- Save As dialog Ends -->
 
+				<!-- Save Button -->
 				<lightning-button if:false={config.dialog.saveAs} variant="neutral" label={config._LABELS.lbl_save} title={config._LABELS.title_saveSelectedFields} icon-name="utility:save" class="slds-m-left_x-small" data-id="dialog:save" onclick={config.dialog.handleEvent}></lightning-button>
 				<lightning-helptext content={config._LABELS.tooltip_configSave}></lightning-helptext>
-				<span if:false={config.userInfo.isAdminAccess}>
-					<lightning-button if:false={config.dialog.saveAs} variant="brand" label={config._LABELS.lbl_saveAs} title={config._LABELS.title_saveSelectedFields} icon-name="utility:save" class="slds-m-left_x-small" data-id="dialog:saveAs" onclick={config.dialog.handleEvent}></lightning-button>
-				</span>
+				<!-- Save As Button -->
+				<lightning-button if:false={config.dialog.saveAs} variant="brand" label={config._LABELS.lbl_saveAs} title={config._LABELS.title_saveSelectedFields} icon-name="utility:save" class="slds-m-left_x-small" data-id="dialog:saveAs" onclick={config.dialog.handleEvent}></lightning-button>
+				<!-- Cancel Button -->
 				<lightning-button if:false={config.dialog.saveAs} variant="base" label={config._LABELS.lbl_cancel} title={config._LABELS.lbl_cancel} icon-name="utility:error" class="slds-m-left_x-small" data-id="dialog:close" onclick={config.dialog.handleEvent}></lightning-button>
 				<lightning-helptext content={config._LABELS.tooltip_configCancel}></lightning-helptext>
+				<!-- Share Button -->
 				<lightning-button if:false={config.dialog.saveAs} variant="base" label="Share" title={config._LABELS.lbl_cancel} icon-name="utility:internal_share" class="slds-m-left_x-small" data-id="dialog:config_share" onclick={config.dialog.handleEvent}></lightning-button>
 				<lightning-helptext content={config._LABELS.tooltip_configShare}></lightning-helptext>
 				

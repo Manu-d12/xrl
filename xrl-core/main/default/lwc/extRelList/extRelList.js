@@ -62,7 +62,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 	loadCfg(isInit) {
 		libs.remoteAction(this, 'getCustomLabels', {callback: this.setCustomLabels.bind(this) });
-		let apiNames = this.apiName.split(':');
+		let apiNames = this.apiName.split('::');
 		console.log(apiNames);
 		this.localConfig = {};
 
@@ -783,7 +783,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		libs.saveConfig(this.apiName, this.localConfig);
 		this.config.dialog = undefined;
 		this.config.records = undefined;
-		libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.config?.listView?.name, callback: this.loadCfg });
+		libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.config?.listView?.name, callback: this.setConfig });
 	}
 
 	handleEventActions(event, val) {

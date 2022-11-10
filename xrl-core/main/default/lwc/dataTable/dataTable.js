@@ -68,6 +68,10 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	get tableRecords() {
 		this.records.forEach((el,ind) =>{
 			el.sl = ind + 1;
+			if(this.config.rowCss){
+				el._rowStyle = this.config.rowCallback ? 'cursor : pointer;' : '';
+				el._rowStyle += eval('(' + this.config.rowCss + ')')(el);
+			}
 		});
 
 		if (this.config.grouping && this.config.groupingParams?.field) {
@@ -254,6 +258,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 								? 'slds-cell-wrap'
 								: 'slds-truncate';
 			item._isReference = (item.type === 'reference') ? true : false;
+			item._filterCondition = item._filterCondition ? item._filterCondition : this.config._LABELS.lbl_columnFilter;
 		});
 		//this.config.colModel = JSON.parse(JSON.stringify(this.config.colModel));
 		this.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
@@ -325,9 +330,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if (this.config._changedRecords.indexOf(id) === -1) this.config._changedRecords.push(id);
 	}
 
-	get rowStyle() {
-		return this.config.rowCallback ? 'cursor : pointer' : '';
-	}
+	// get rowStyle() {
+	// 	return this.config.rowCallback ? 'cursor : pointer' : '';
+	// }
 
 	selectAll(event) {
 		this.records.forEach(e => {

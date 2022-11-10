@@ -10,22 +10,27 @@ export default class ActionBar extends LightningElement {
     }
     handleEventClick(event){
         
-        let actionId = (event.currentTarget.id).slice(0, -4);
+        let actionId = event.target.getAttribute('data-id');
         let actionDetails;
         this.actionscfg.actions.forEach((el)=>{
             if(el.actionId === actionId){
                 actionDetails = el;
             }
         });
-        if(actionDetails.actionFlowName){
-            console.log("clicked");
-            this.actionscfg._handleEventFlow({name:actionDetails.actionFlowName,label:actionDetails.actionLabel});
-        }else if(actionDetails.isActionStandard){
-            this.actionscfg._handleEvent(event);
+        if(actionDetails !== undefined){
+            if(actionDetails.actionFlowName){
+                console.log("Flow Execution");
+                this.actionscfg._handleEventFlow({name:actionDetails.actionFlowName,label:actionDetails.actionLabel});
+            }else if(actionDetails.isActionStandard){
+                console.log('Standard Event');
+                this.actionscfg._handleEvent(event);
+            }else{
+                console.log("Callback Execution");
+                let fn = eval('(' + actionDetails.callback + ')');
+                fn(event);
+            }
         }else{
-            console.log("clicked");
-            let fn = eval('(' + actionDetails.callback + ')');
-            fn(event);
+            console.log('Action Error');
         }
     }
     sortRecords(records, fieldName, isASCSort, referenceField) {
