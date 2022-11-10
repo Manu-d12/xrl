@@ -671,9 +671,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 
 		if (val === 'dialog:saveAs') {
+			this.config.dialog.title = this.config._LABELS.title_newListView;
 			this.config.dialog.saveAs = true;
 		}
 		if (val === 'dialog:saveAsCancel') {
+			this.config.dialog.title = this.config.userInfo.isAdminAccess === true ? this.config._LABELS.title_listViewConfiguration + ' ' +  this.config?.listView?.name: this.config._LABELS.title_selectFieldToDisplay + ' ' +  this.config?.listView?.name;
 			this.config.dialog.saveAs = false;
 		}
 		if (val === 'dialog:saveAsName') {

@@ -529,6 +529,7 @@ global with sharing class infrastructure {
 			'title_appliedConditionsActionEdit'=>label.title_appliedConditionsActionEdit,
 			'title_appliedConditionsActionDelete'=>label.title_appliedConditionsActionDelete,
 			'title_addOrdering'=>label.title_addOrdering,
+			'title_newListView'=>label.title_newListView,
 			'tooltip_addNumerationColumnToTable' => label.tooltip_addNumerationColumnToTable,
 			'tooltip_addCheckBoxColumnToTable' => label.tooltip_addCheckBoxColumnToTable,
 			'tooltip_showGlobalTableSearch' => label.tooltip_showGlobalTableSearch,
