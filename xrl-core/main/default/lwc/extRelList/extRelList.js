@@ -246,10 +246,12 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				}
 			  ];
 		}
+		this.config.listViewConfig[0].rowChecked = false;
 		this.config.actionsBar = {
 			'actions':this.config.listViewConfig[0].actions,
 			'_handleEvent':this.handleEvent.bind(this),
-			'_handleEventFlow': this.handleEventFlow.bind(this)
+			'_handleEventFlow': this.handleEventFlow.bind(this),
+			'_cfgName': this.name
 		};
 
 		console.log('this.config', this.config);
@@ -492,6 +494,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 								this.config.records = this.config.records.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
 								this.allRecords = this.config.records;
 								this.template.querySelector('c-Data-Table').updateView();
+								this.config.listViewConfig[0].rowChecked = false;
 							}
 				 		} 
 					});

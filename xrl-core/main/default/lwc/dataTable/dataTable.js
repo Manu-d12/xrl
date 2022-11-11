@@ -345,7 +345,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					rec._isChecked = event.target.checked;
 				});
 			});
-		}		
+		}	
+		this.rowCheckStatus();	
 	}
 
 	toggleGroup(event) {
@@ -381,6 +382,15 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		} else {
 			let rowind = event.target.getAttribute('data-rowind');
 			this.records[this.calcRowIndex(rowind)]._isChecked = event.target.checked;
+		}
+		this.rowCheckStatus();
+	}
+
+	rowCheckStatus(){
+		if(this.getSelectedRecords().length>0){
+			this.config.rowChecked = true;
+		}else{
+			this.config.rowChecked = false;
 		}
 	}
 
