@@ -19,7 +19,7 @@ export default class extRelListSettings extends LightningElement {
 				this.dataTable = el;
 			}
 		});
-		this.config.enableActions = ['actionTip','actionIsHidden','actionIconName','actionOrder'];
+		this.config.enableActions = ['actionTip','actionIsHidden','actionIconName','actionOrder','actionVisibleOnRecordSelection'];
 	}
 
 	get selectedFields() {

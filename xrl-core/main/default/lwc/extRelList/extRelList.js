@@ -246,10 +246,12 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				}
 			  ];
 		}
+		this.config.listViewConfig[0].rowChecked = false;
 		this.config.actionsBar = {
 			'actions':this.config.listViewConfig[0].actions,
 			'_handleEvent':this.handleEvent.bind(this),
-			'_handleEventFlow': this.handleEventFlow.bind(this)
+			'_handleEventFlow': this.handleEventFlow.bind(this),
+			'_cfgName': this.name
 		};
 
 		console.log('this.config', this.config);
@@ -492,6 +494,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 								this.config.records = this.config.records.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
 								this.allRecords = this.config.records;
 								this.template.querySelector('c-Data-Table').updateView();
+								this.config.listViewConfig[0].rowChecked = false;
 							}
 				 		} 
 					});
@@ -671,9 +674,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 
 		if (val === 'dialog:saveAs') {
+			this.config.dialog.title = this.config._LABELS.title_newListView;
 			this.config.dialog.saveAs = true;
 		}
 		if (val === 'dialog:saveAsCancel') {
+			this.config.dialog.title = this.config.userInfo.isAdminAccess === true ? this.config._LABELS.title_listViewConfiguration + ' ' +  this.config?.listView?.name: this.config._LABELS.title_selectFieldToDisplay + ' ' +  this.config?.listView?.name;
 			this.config.dialog.saveAs = false;
 		}
 		if (val === 'dialog:saveAsName') {
@@ -791,31 +796,40 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if (val.startsWith('std:delete')) {
 			let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
 
-			this.dialogCfg = {
-				title: this.config._LABELS.lbl_confirmDelete,
-				contents: [
-					{
-						isMessage: true,
-						name: 'deleteConfirm',
-						text: this.config._LABELS.msg_deleteConfirm1 + ' ' + records.length + ' ' + this.config._LABELS.msg_deleteConfirm2
-					}
-				],
-				buttons: [
-					{
-						name: 'cancel',
-						label: this.config._LABELS.lbl_cancel,
-						variant: 'neutral'
-					},
-					{
-						name: 'Delete',
-						label: this.config._LABELS.title_delete,
-						variant: 'brand',
-						class: 'slds-m-left_x-small'
-					}
-				],
-				data_id: "delete:dialog"
-			};
-			this.showDialog = true;
+			if(records.length > 0){
+				this.dialogCfg = {
+					title: this.config._LABELS.lbl_confirmDelete,
+					contents: [
+						{
+							isMessage: true,
+							name: 'deleteConfirm',
+							text: this.config._LABELS.msg_deleteConfirm1 + ' ' + records.length + ' ' + this.config._LABELS.msg_deleteConfirm2
+						}
+					],
+					buttons: [
+						{
+							name: 'cancel',
+							label: this.config._LABELS.lbl_cancel,
+							variant: 'neutral'
+						},
+						{
+							name: 'Delete',
+							label: this.config._LABELS.title_delete,
+							variant: 'brand',
+							class: 'slds-m-left_x-small'
+						}
+					],
+					data_id: "delete:dialog"
+				};
+				this.showDialog = true;
+			}else{
+				const event = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.lbl_deleteNoRecordSelectedError,
+					variant: 'error'
+				});
+				this.dispatchEvent(event);
+			}
 		}
 
 		if (val.startsWith('std:new')) {
@@ -885,7 +899,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}else{
 			const event = new ShowToastEvent({
 				title: 'Error',
-				message: "Please Select Some records",
+				message: this.config._LABELS.lbl_deleteNoRecordSelectedError,
 				variant: 'error'
 			});
 			this.dispatchEvent(event);

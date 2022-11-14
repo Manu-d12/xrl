@@ -499,6 +499,8 @@ global with sharing class infrastructure {
 			'lbl_actionOrder'=> label.lbl_actionOrder,
 			'lbl_actionFlowName' => label.lbl_actionFlowName,
 			'lbl_columnFilter'=>label.lbl_columnFilter,
+			'lbl_deleteNoRecordSelectedError'=>label.lbl_deleteNoRecordSelectedError,
+			'lbl_actionVisibleOnRecords'=>label.lbl_actionVisibleOnRecords,
 			'msg_lisViewWasUpdated' => label.msg_lisViewWasUpdated,
 			'msg_requestWasSent' => label.msg_requestWasSent,
 			'msg_deleteConfirm1'=>label.msg_deleteConfirm1,
@@ -531,6 +533,7 @@ global with sharing class infrastructure {
 			'title_addOrdering'=>label.title_addOrdering,
 			'title_selectListView'=>label.title_selectListView,
 			'title_newRecord'=>label.title_newRecord,
+			'title_newListView'=>label.title_newListView,
 			'tooltip_addNumerationColumnToTable' => label.tooltip_addNumerationColumnToTable,
 			'tooltip_addCheckBoxColumnToTable' => label.tooltip_addCheckBoxColumnToTable,
 			'tooltip_showGlobalTableSearch' => label.tooltip_showGlobalTableSearch,
@@ -559,6 +562,7 @@ global with sharing class infrastructure {
 			'tooltip_configSaveAs'=>label.tooltip_configSaveAs,
 			'tooltip_configSaveAsSave'=>label.tooltip_configSaveAsSave,
 			'tooltip_configSaveAsCancel'=>label.tooltip_configSaveAsCancel,
+			'tooltip_actionVisibleOnRecords'=>label.tooltip_actionVisibleOnRecords,
 			'srcLbl_available' => label.srcLbl_available,
 			'srcLbl_optional' => label.srcLbl_optional
 		};

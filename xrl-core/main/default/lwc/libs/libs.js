@@ -312,6 +312,13 @@ export let libs = {
 				"tooltip": _labels.tooltip_actionIsHidden
 
 			},
+			"actionVisibleOnRecordSelection" : {
+				"defValue":false,
+				"type": "checkbox",
+				"label": _labels.lbl_actionVisibleOnRecords,
+				"tooltip": _labels.tooltip_actionVisibleOnRecords
+
+			},
 			"actionIconName" : {
 				"type": "text",
 				"label": _labels.lbl_actionIconName,

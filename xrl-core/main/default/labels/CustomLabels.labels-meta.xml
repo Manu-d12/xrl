@@ -1558,5 +1558,36 @@ return &quot;background-color:#F5F5F5;&quot; //light grey
         <protected>true</protected>
         <shortDescription>tooltip_configSaveAsCancel</shortDescription>
         <value>Cancel Saving new list view</value>
+    <labels>
+        <fullName>lbl_deleteNoRecordSelectedError</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_deleteNoRecordSelectedError</shortDescription>
+        <value>Please Select at least 1 record. If checkbox is not enabled then follow Configure -> Table Settings -> Enable Checkboxes</value>
+    </labels>
+    <labels>
+        <fullName>title_newListView</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>title_newListView</shortDescription>
+        <value>New List View</value>
+    </labels>
+    <labels>
+        <fullName>lbl_actionVisibleOnRecords</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_actionVisibleOnRecords</shortDescription>
+        <value>Action visible only after record selection</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_actionVisibleOnRecords</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_actionVisibleOnRecords</shortDescription>
+        <value>The action will be visible only after the record/records are selected from the grid</value>
     </labels>
 </CustomLabels>

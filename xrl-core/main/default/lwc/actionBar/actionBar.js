@@ -5,6 +5,7 @@ export default class ActionBar extends LightningElement {
     @api actionscfg;
     @track config = {};
     connectedCallback(){
+        this.config.dataTable = libs.getGlobalVar(this.actionscfg._cfgName).listViewConfig[0];
         this.config.actions = [...this.actionscfg.actions];
         this.config.actions = this.sortRecords(this.config.actions, 'actionOrder', true);
     }
