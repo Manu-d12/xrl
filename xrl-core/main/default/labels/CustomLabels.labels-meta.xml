@@ -1558,6 +1558,7 @@ return &quot;background-color:#F5F5F5;&quot; //light grey
         <protected>true</protected>
         <shortDescription>tooltip_configSaveAsCancel</shortDescription>
         <value>Cancel Saving new list view</value>
+    </labels>
     <labels>
         <fullName>lbl_deleteNoRecordSelectedError</fullName>
         <categories>XRL</categories>
