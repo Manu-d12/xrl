@@ -19,7 +19,7 @@
                                 <template if:true={config.sqlBuilder.fields} for:each={config.sqlBuilder.fields} for:item="field" for:index="index">
                                     <li data-id="sqlBuilder:selectItem" onclick={handleBuilderEvent} class={field.css} style="cursor: pointer;" data-ref={field.refObj} data-val={field.fieldName} key={field.fieldName}>
                                         {field.label} 
-                                        <lightning-helptext content={field.value}></lightning-helptext>
+                                        <lightning-helptext content={field.fieldName}></lightning-helptext>
                                     </li>
                                 </template>
                             </ul>
