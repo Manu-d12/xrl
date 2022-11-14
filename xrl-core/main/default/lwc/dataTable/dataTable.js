@@ -32,7 +32,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		});
 
 		if (this.objectApiName.endsWith('Id')) {
-			this.objectApiName = this.objectApiName.replace(/Id/, '');
+			let desc = libs.getGlobalVar(this.cfg).describe;
+			this.objectApiName = desc[this.objectApiName].referenceTo[0];
 			this.recordId = record[this.objectApiName].Id;
 		}else{
 			this.recordId = record[this.objectApiName.replace(/__c/, '__r')].Id;
