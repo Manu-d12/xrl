@@ -1465,6 +1465,54 @@ function(record){
 }</value>
     </labels>
     <labels>
+        <fullName>tooltip_configSave</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_configSave</shortDescription>
+        <value>Save the config changes. The changes will be applied to the grid.</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_configCancel</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_configCancel</shortDescription>
+        <value>Cancel the changes made. No changes will be saved as well as applied</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_configShare</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_configShare</shortDescription>
+        <value>Share this config with other user/public group/role/role and subordinates of this org</value>
+    </labels>
+    <labels>
+        <fullName>title_selectListView</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>title_selectListView</shortDescription>
+        <value>Select your preferred list view from the dropdown</value>
+    </labels>
+    <labels>
+        <fullName>title_newRecord</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>title_newRecord</shortDescription>
+        <value>Create New Record</value>
+    </labels>
+    <labels>
+        <fullName>altTxt_new</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>altTxt_new</shortDescription>
+        <value>New</value>
+    </labels>
+    <labels>
         <fullName>placeHolder_rowCss</fullName>
         <categories>XRL</categories>
         <language>en_US</language>
@@ -1487,6 +1535,29 @@ return &quot;background-color:#F5F5F5;&quot; //light grey
         <shortDescription>lbl_columnFilter</shortDescription>
         <value>Column Filters</value>
     </labels>
+    <labels>
+        <fullName>tooltip_configSaveAs</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_configSaveAs</shortDescription>
+        <value>Save the whole configuration as a new configuration</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_configSaveAsSave</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_configSaveAsSave</shortDescription>
+        <value>Save this listview with this list view name and label</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_configSaveAsCancel</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_configSaveAsCancel</shortDescription>
+        <value>Cancel Saving new list view</value>
     <labels>
         <fullName>lbl_deleteNoRecordSelectedError</fullName>
         <categories>XRL</categories>

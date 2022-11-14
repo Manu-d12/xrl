@@ -80,18 +80,24 @@
 				</div>
 
 				<lightning-button if:true={config.dialog.saveAs} variant="brand" label={config._LABELS.lbl_save} title={config._LABELS.lbl_save} icon-name="utility:save" class="slds-m-left_x-small" data-id="dialog:saveAsFinish" onclick={config.dialog.handleEvent}></lightning-button>
+				<lightning-helptext if:true={config.dialog.saveAs} content={config._LABELS.tooltip_configSaveAsSave}></lightning-helptext>
 				<lightning-button if:true={config.dialog.saveAs} variant="base" label={config._LABELS.lbl_cancel} title={config._LABELS.lbl_cancel} icon-name="utility:error" class="slds-m-left_x-small" data-id="dialog:saveAsCancel" onclick={config.dialog.handleEvent}></lightning-button>
+				<lightning-helptext if:true={config.dialog.saveAs} content={config._LABELS.tooltip_configSaveAsCancel}></lightning-helptext>
 				<!-- Save As dialog Ends -->
 
 				<!-- Save Button -->
 				<lightning-button if:false={config.dialog.saveAs} variant="neutral" label={config._LABELS.lbl_save} title={config._LABELS.title_saveSelectedFields} icon-name="utility:save" class="slds-m-left_x-small" data-id="dialog:save" onclick={config.dialog.handleEvent}></lightning-button>
+				<lightning-helptext if:false={config.dialog.saveAs} content={config._LABELS.tooltip_configSave}></lightning-helptext>
 				<!-- Save As Button -->
 				<lightning-button if:false={config.dialog.saveAs} variant="brand" label={config._LABELS.lbl_saveAs} title={config._LABELS.title_saveSelectedFields} icon-name="utility:save" class="slds-m-left_x-small" data-id="dialog:saveAs" onclick={config.dialog.handleEvent}></lightning-button>
+				<lightning-helptext if:false={config.dialog.saveAs} content={config._LABELS.tooltip_configSaveAs}></lightning-helptext>
 				<!-- Cancel Button -->
 				<lightning-button if:false={config.dialog.saveAs} variant="base" label={config._LABELS.lbl_cancel} title={config._LABELS.lbl_cancel} icon-name="utility:error" class="slds-m-left_x-small" data-id="dialog:close" onclick={config.dialog.handleEvent}></lightning-button>
+				<lightning-helptext if:false={config.dialog.saveAs} content={config._LABELS.tooltip_configCancel}></lightning-helptext>
 				<!-- Share Button -->
 				<lightning-button if:false={config.dialog.saveAs} variant="base" label="Share" title={config._LABELS.lbl_cancel} icon-name="utility:internal_share" class="slds-m-left_x-small" data-id="dialog:config_share" onclick={config.dialog.handleEvent}></lightning-button>
-
+				<lightning-helptext if:false={config.dialog.saveAs} content={config._LABELS.tooltip_configShare}></lightning-helptext>
+				
 				<template if:true={config.buttons} for:each={config.buttons} for:item="btn" for:index="index">
 					<lightning-button key={btn.label} variant={btn.variant} label={btn.label} data-id={btn.dataId} icon-name={btn.iconName} onclick={config.callback} class="slds-m-around_small"></lightning-button>
 				</template>

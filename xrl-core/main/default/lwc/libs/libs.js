@@ -303,7 +303,7 @@ export let libs = {
 				"defValue":'',
 				"type": "function",
 				"label": _labels.lbl_actionCallback,
-				"placeHolder" : _labels.placeholder_actionCallba
+				"placeHolder" : _labels.placeholder_actionCallback
 			},
 			"actionIsHidden" : {
 				"defValue":false,
