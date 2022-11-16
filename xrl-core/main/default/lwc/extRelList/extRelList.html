@@ -38,6 +38,7 @@
 					<lightning-button-menu alternative-text={config._LABELS.altTxt_settings} variant="border-filled" icon-name="utility:settings" class="slds-p-horizontal_xx-small" menu-alignment="right">
 						<lightning-menu-item data-id="cfg:setFields" label={config._LABELS.lbl_selectFields} prefix-icon-name="utility:multi_select_checkbox" onclick={handleEvent}></lightning-menu-item>
 						<lightning-menu-item data-id="help:extRelList" label={config._LABELS.lbl_help} prefix-icon-name="utility:help" onclick={handleEvent}></lightning-menu-item>
+						<lightning-menu-item data-id="CompInterface:Open" label="Comparison Interface" prefix-icon-name="utility:help" onclick={handleEvent}></lightning-menu-item>
 					</lightning-button-menu>
 				</div>
 			</div>
@@ -53,5 +54,30 @@
 	<c-ext-Rel-List-Settings if:true={config.dialog} cfg={name}></c-ext-Rel-List-Settings>
 
 	<c-dialog if:true={showDialog} cfg={dialogCfg} data-id={dialogCfg.data_id} onaction={handleEvent}></c-dialog>
+
+	<!-- Comparison Interface HYPER-125 -->
+	<template if:true={config.showComparisonInterface}>
+		<section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open slds-modal_large">
+			<div class="slds-modal__container">
+				<button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" data-id="CompInterface:Close" onclick={handleEvent}>
+					<svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+						<use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close"></use>
+					</svg>
+					<span class="slds-assistive-text">Cancel and close</span>
+				</button>
+				<div class="slds-modal__header">
+					<h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Modal header</h1>
+				</div>
+				<div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="min-height: 400px;">
+					<c-comparing-interface></c-comparing-interface>
+				</div>
+				<div class="slds-modal__footer">
+					<button class="slds-button slds-button_neutral" aria-label="Cancel and close" data-id="CompInterface:Close" onclick={handleEvent}>Cancel</button>
+					<button class="slds-button slds-button_brand">Save</button>
+				</div>
+			</div>
+		</section>
+		<div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+	</template>
 
 </template>

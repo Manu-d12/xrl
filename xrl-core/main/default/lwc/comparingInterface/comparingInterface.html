@@ -1,0 +1,106 @@
+<template>
+    <!-- Object Selection -->   
+    <div class="slds-grid slds-gutters">
+        <!-- For 1st object and record -->
+        <div class="slds-col slds-size_1-of-2" style="border:1px solid #b6b0b0;">
+            <div class="slds-text-heading_small">First Object Selection1</div>
+            <!-- Object One -->
+            <c-multiselect if:true={config.objList} data-id="objOne" listsize=20 onsearchclicked={handleOpenGrid} onselect={handleSelect} options={config.objList} selectedvalue="Account" label="Select an Object"></c-multiselect>
+            <!-- Record One -->
+            <c-multiselect if:true={config.objRecords.objOne} data-id="recOne" listsize=20 onsearchclicked={handleOpenGrid} onselect={handleSelect} options={config.objRecords.objOne} selectedvalue="Account" label="Select a Record"></c-multiselect>
+        </div>
+        <!-- For 2nd object and record -->
+        <div class="slds-col slds-size_1-of-2" style="border:1px solid #b6b0b0;">
+            <div class="slds-text-heading_small">Second Object Selection</div>
+            <!-- Object Two -->
+            <c-multiselect if:true={config.objList} data-id="objTwo" listsize=20 onsearchclicked={handleOpenGrid} onselect={handleSelect} options={config.objList} selectedvalue="Account" label="Select an Object"></c-multiselect>
+            <!-- Record Two -->
+            <c-multiselect if:true={config.objRecords.objTwo} data-id="recTwo" listsize=20 onsearchclicked={handleOpenGrid} onselect={handleSelect} options={config.objRecords.objTwo} selectedvalue="Account" label="Select a Record"></c-multiselect>
+        </div>
+    </div>
+    <template if:true={config.showComparisonTable}>
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-label="Example default base table of Opportunities">
+            <thead>
+                <tr class="slds-line-height_reset">
+                    <th class="" scope="col">
+                        <div class="slds-truncate" title="Opportunity Name">Opportunity Name</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate" title="Account Name">Account Name</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate" title="Close Date">Close Date</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate" title="Stage">Stage</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate" title="Confidence">Confidence</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate" title="Amount">Amount</div>
+                    </th>
+                    <th class="" scope="col">
+                        <div class="slds-truncate" title="Contact">Contact</div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr class="slds-hint-parent">
+            <th data-label="Opportunity Name" scope="row">
+            <div class="slds-truncate" title="Cloudhub">
+            <a href="#" tabindex="-1">Cloudhub</a>
+            </div>
+            </th>
+            <td data-label="Account Name">
+            <div class="slds-truncate" title="Cloudhub">Cloudhub</div>
+            </td>
+            <td data-label="Close Date">
+            <div class="slds-truncate" title="4/14/2015">4/14/2015</div>
+            </td>
+            <td data-label="Prospecting">
+            <div class="slds-truncate" title="Prospecting">Prospecting</div>
+            </td>
+            <td data-label="Confidence">
+            <div class="slds-truncate" title="20%">20%</div>
+            </td>
+            <td data-label="Amount">
+            <div class="slds-truncate" title="$25k">$25k</div>
+            </td>
+            <td data-label="Contact">
+            <div class="slds-truncate" title="jrogers@cloudhub.com">
+            <a href="#" tabindex="-1">jrogers@cloudhub.com</a>
+            </div>
+            </td>
+            </tr>
+            <tr class="slds-hint-parent">
+            <th data-label="Opportunity Name" scope="row">
+            <div class="slds-truncate" title="Cloudhub + Anypoint Connectors">
+            <a href="#" tabindex="-1">Cloudhub + Anypoint Connectors</a>
+            </div>
+            </th>
+            <td data-label="Account Name">
+            <div class="slds-truncate" title="Cloudhub">Cloudhub</div>
+            </td>
+            <td data-label="Close Date">
+            <div class="slds-truncate" title="4/14/2015">4/14/2015</div>
+            </td>
+            <td data-label="Prospecting">
+            <div class="slds-truncate" title="Prospecting">Prospecting</div>
+            </td>
+            <td data-label="Confidence">
+            <div class="slds-truncate" title="20%">20%</div>
+            </td>
+            <td data-label="Amount">
+            <div class="slds-truncate" title="$25k">$25k</div>
+            </td>
+            <td data-label="Contact">
+            <div class="slds-truncate" title="jrogers@cloudhub.com">
+            <a href="#" tabindex="-1">jrogers@cloudhub.com</a>
+            </div>
+            </td>
+            </tr>
+            </tbody>
+            </table>
+    </template>
+</template>
