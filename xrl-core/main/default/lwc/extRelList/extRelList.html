@@ -8,7 +8,7 @@
 			<div class="slds-grid slds-grid_align-end slds-p-around_x-small">
 				<div class="slds-m-left_xx-small"  if:true={config.listViewConfig}>
 					<div onkeyup={handleEvent} if:true={config.isGlobalSearch}>
-						<lightning-input name="enter-search" variant="label-hidden" value={config.queryTerm} placeholder={config._LABELS.lbl_globalSearch} type="search" data-id="globalSearch" oncommit={handleGlobalSearchClear}></lightning-input>
+						<lightning-input name="enter-search" variant="label-hidden" value={config.queryTerm} placeholder={config._LABELS.lbl_globalSearch} type="search" data-id="globalSearch" oncommit={handleGlobalSearchClear} style="width:17rem;"></lightning-input>
 					</div>
 					
 				</div>
