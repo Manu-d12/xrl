@@ -152,11 +152,6 @@ export let libs = {
 				"type": "checkbox",
 				"label": _labels.lbl_isColumnWrapable
 			},
-			"isClipable": {
-				"defValue": true,
-				"type": "checkbox",
-				"label": _labels.lbl_isColumnClipable
-			},
 			/*'isEditableMethod': {
 				"defValue": false,
 				"type": "function",

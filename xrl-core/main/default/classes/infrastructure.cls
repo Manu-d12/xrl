@@ -438,7 +438,6 @@ global with sharing class infrastructure {
 			'lbl_isColumnSortable' => label.lbl_isColumnSortable,
 			'lbl_isColumnEditable' => label.lbl_isColumnEditable,
 			'lbl_isColumnWrapable' => label.lbl_isColumnWrapable,
-			'lbl_isColumnClipable' => label.lbl_isColumnClipable,
 			'lbl_width' => label.lbl_width,
 			'lbl_selectFieldsForServerFilter' => label.lbl_selectFieldsForServerFilter,
 			'lbl_more' => label.lbl_more,

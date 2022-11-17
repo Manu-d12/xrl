@@ -731,15 +731,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_isColumnWrapable</shortDescription>
-        <value>Is need wrap column?</value>
-    </labels>
-    <labels>
-        <fullName>lbl_isColumnClipable</fullName>
-        <categories>XRL</categories>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>lbl_isColumnClipable</shortDescription>
-        <value>Is need clip?</value>
+        <value>Wrap column content? By default column contents will be clipped.</value>
     </labels>
     <labels>
         <fullName>lbl_width</fullName>
