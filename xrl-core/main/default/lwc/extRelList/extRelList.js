@@ -917,7 +917,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let wb = XLSX.utils.book_new();
 		wb.cellStyles = true;
 		wb.Props = {
-			Title: this.config.sObjLabel,
+			Title: this.config.sObjLabel + ' ' + this.config?.listView?.label,
 			Subject: this.config.sObjLabel + " Export",
 			Author: "Extended Related List",
 			CreatedDate: new Date(),
@@ -976,7 +976,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		console.log(ws);
 		console.log(ws['!cols']);
 		console.log(ws['!ref']);
-		XLSX.utils.book_append_sheet(wb, ws, this.config.sObjLabel);
-		XLSX.writeFile(wb, this.config.sObjLabel + '.xlsx', { cellStyles: true, WTF: 1 });
+		XLSX.utils.book_append_sheet(wb, ws, this.config.sObjLabel + ' '  + this.config?.listView?.label);
+		XLSX.writeFile(wb, this.config.sObjLabel + ' ' + this.config?.listView?.label + '.xlsx', { cellStyles: true, WTF: 1 });
 	}
 }
