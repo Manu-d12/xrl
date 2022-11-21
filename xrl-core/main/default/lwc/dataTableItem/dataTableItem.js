@@ -34,7 +34,7 @@ export default class dataTableItem extends LightningElement {
 			//let val = libs.getLookupValue(this.row, this.col.fieldName);
 			if (this.col.type === 'date' || this.col.type === 'datetime') {
 				//console.log(val);
-				//console.log(locale);
+				console.log(locale);
 				if (val!== undefined && val !=='' && val!==null) {
 					val = new Date(val).toLocaleString(locale,{
 						month : "2-digit",
@@ -42,7 +42,8 @@ export default class dataTableItem extends LightningElement {
 						year: "numeric",
 						hour: "2-digit",
 						minute: "2-digit",
-						second: "2-digit"
+						second: "2-digit",
+						timeZone: libs.getGlobalVar(this.cfg).userInfo.timezone
 					});
 				}
 				//console.log(val);
