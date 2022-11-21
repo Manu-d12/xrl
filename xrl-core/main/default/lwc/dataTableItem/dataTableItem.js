@@ -53,7 +53,8 @@ export default class dataTableItem extends LightningElement {
 					val = new Date(val).toLocaleString(locale,{
 						month : "2-digit",
 						day : "2-digit",
-						year: "numeric"
+						year: "numeric",
+						timeZone: libs.getGlobalVar(this.cfg).userInfo.timezone
 					});
 				}
 			}
