@@ -613,36 +613,13 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			let field = this.config.dialog.listViewConfig.colModel.find(e => {
 				return e.fieldName === this.config.dialog.field;
 			})
-
-			if(param === 'isClipable' && value && field['isWrapable']){
-				field[param] = false;
-				event.target.checked = false;
-				const evt = new ShowToastEvent({
-					title: 'Error',
-					message: this.config._LABELS.errMsg_wrapableAndClipableCanNotBeSelectedTogether,
-					variant: 'error',
-					mode: 'dismissable'
-				});
-				this.dispatchEvent(evt);
-			}else if(param === 'isWrapable' && value && field['isClipable']){
-				field[param] = false;
-				event.target.checked = false;
-				const evt = new ShowToastEvent({
-					title: 'Error',
-					message: this.config._LABELS.errMsg_wrapableAndClipableCanNotBeSelectedTogether,
-					variant: 'error',
-					mode: 'dismissable'
-				});
-				this.dispatchEvent(evt);
-			}else{
-				if (field) {
-					field[param] = value;
-				} /*else {
-					field = { 'fieldName': this.config.dialog.field };
-					field[param] = value;
-					this.config.dialog.listViewConfig.colModel.push(field);
-				}*/ //we will return this part in case that we will have a fieldPiecker component
-			}
+			if (field) {
+				field[param] = value;
+			} /*else {
+				field = { 'fieldName': this.config.dialog.field };
+				field[param] = value;
+				this.config.dialog.listViewConfig.colModel.push(field);
+			}*/ //we will return this part in case that we will have a fieldPiecker component
 		}
 		if (val === 'dialog:setTableParam') {
 			
@@ -917,7 +894,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let wb = XLSX.utils.book_new();
 		wb.cellStyles = true;
 		wb.Props = {
-			Title: this.config.sObjLabel,
+			Title: this.config.sObjLabel + ' ' + this.config?.listView?.label,
 			Subject: this.config.sObjLabel + " Export",
 			Author: "Extended Related List",
 			CreatedDate: new Date(),
@@ -976,7 +953,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		console.log(ws);
 		console.log(ws['!cols']);
 		console.log(ws['!ref']);
-		XLSX.utils.book_append_sheet(wb, ws, this.config.sObjLabel);
-		XLSX.writeFile(wb, this.config.sObjLabel + '.xlsx', { cellStyles: true, WTF: 1 });
+		XLSX.utils.book_append_sheet(wb, ws, this.config.sObjLabel + ' '  + this.config?.listView?.label);
+		XLSX.writeFile(wb, this.config.sObjLabel + ' ' + this.config?.listView?.label + '.xlsx', { cellStyles: true, WTF: 1 });
 	}
 }
