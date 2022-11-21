@@ -32,7 +32,7 @@ export default class dataTableItem extends LightningElement {
 			val = this.col._formatter(row, this.col, val);
 		} else {
 			//let val = libs.getLookupValue(this.row, this.col.fieldName);
-			if (this.col.type === 'date' || this.col.type === 'datetime') {
+			if (this.col.type === 'datetime') {
 				//console.log(val);
 				//console.log(locale);
 				if (val!== undefined && val !=='' && val!==null) {
@@ -46,6 +46,15 @@ export default class dataTableItem extends LightningElement {
 					});
 				}
 				//console.log(val);
+			}
+			if (this.col.type === 'date') {
+				if (val!== undefined && val !=='' && val!==null) {
+					val = new Date(val).toLocaleString(locale,{
+						month : "2-digit",
+						day : "2-digit",
+						year: "numeric"
+					});
+				}
 			}
 			if (this.col.type === 'number') {
 				val = val ? this.formatNumber(val) : null;
