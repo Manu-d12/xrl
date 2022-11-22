@@ -70,7 +70,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			el.sl = ind + 1;
 		});
 
-		if (this.config.grouping && this.config.groupingParams?.field) {
+		if (this.config.groupingParams?.field) {
 
 			let isPager = this.config.pager;
 			if(!this.config.pager.pagerTop && !this.config.pager.pagerBottom){
@@ -85,24 +85,26 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				return result;
 			}
 			else if (isPager) {
+				console.log('HERE>2');
 				let startIndex = (this.config.pager.curPage - 1) * this.config.pager.pageSize;
 				let endIndex = (startIndex + parseInt(this.config.pager.pageSize)) < this.records.length ? (startIndex + parseInt(this.config.pager.pageSize)) : this.records.length;
 				let result = [];
-
+				console.log('stindex ',startIndex + ' ' + endIndex);
 				for (let group of this.groupedRecords) {
-					if (startIndex > group.records[group.records.length - 1].index - 1) continue;
-					if (endIndex <= group.records[0].index - 1) break;
+					if (startIndex > group.records[group.records.length - 1].sl - 1) continue;
+					if (endIndex <= group.records[0].sl - 1) break;
 					let gr = Object.assign({}, group);
 					gr.records = group.records.map(r => r);
-					if (startIndex >= gr.records[0].index) {
-						gr.records.splice(0, startIndex - gr.records[0].index + 1);
+					if (startIndex >= gr.records[0].sl) {
+						gr.records.splice(0, startIndex - (gr.records[0].sl + 1));
 					}					
-					if (endIndex < gr.records[gr.records.length - 1].index) {
-						gr.records.splice(endIndex - gr.records[0].index + 1);
+					if (endIndex < gr.records[gr.records.length - 1].sl) {
+						gr.records.splice(endIndex - (gr.records[0].sl + 1));
 					}
+					console.log('gr ',gr.records.length);
 					result.push(gr);
 				}
-				console.log('result', JSON.parse(JSON.stringify(result)));
+				console.log('result size', JSON.parse(JSON.stringify(result)).length);
 
 				return result;
 			}
@@ -148,7 +150,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 
 	get hasGrouping() {
-		return true;
+		// return this.config.grouping === true;
+		console.log('hasGrouping ',this.config.groupFieldName === '');
+		return this.config.groupFieldName !== undefined && this.config.groupFieldName !== null && this.config.groupFieldName !== '';
 	}
 
 	get groupColspan() {
@@ -172,8 +176,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	setGroupRecords() {
 		let result = new Map();
 		this.config.groupingParams = {
-			field:'Origin',
-			order:'asc'
+			field: this.config.groupFieldName,
+			order: this.config.groupOrder.toLowerCase()
 		}
 		this.records.forEach(r => {
 			let groupName = r[this.config.groupingParams.field] || 'empty';
