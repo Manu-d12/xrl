@@ -436,8 +436,11 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 	rowDblCallback(event) {
 		if(this.config.showStandardEdit){
-			let val = event.target.getAttribute('data-recordind');
-			this.handleEventStandardEdit(val);
+			let rowId = event.srcElement.getAttribute('data-rowind') != null ?
+				event.srcElement.getAttribute('data-rowind') :
+				event.srcElement.parentNode.getAttribute('data-rowind');
+			let calculatedInd = this.hasGrouping ? this.records.findIndex(rec => rowId === rec.Id) : this.calcRowIndex(rowId);
+			this.handleEventStandardEdit(this.records[calculatedInd].Id);
 		} else{
 			let colName = event.srcElement.getAttribute('data-colname') !== null ?
 				event.srcElement.getAttribute('data-colname') :
