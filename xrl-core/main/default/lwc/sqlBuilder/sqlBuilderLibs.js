@@ -48,6 +48,15 @@ export let sqlBuilderLibs = {
 			? actions.find( el => { return el.value === key})
 			: actions;
 	},
+    idFilterActions(labels,key) {
+		const actions = [
+			{ label: labels.lbl_isEqual, value: 'eq' },
+			{ label: labels.lbl_isNotEqual, value: 'neq' },
+		]
+        return (key) 
+			? actions.find( el => { return el.value === key})
+			: actions;
+	},
     picklistFilterActions(labels,key) {
 		const actions = [
 			{ label: labels.lbl_contains, value: 'cn' },
@@ -111,6 +120,15 @@ export let sqlBuilderLibs = {
 				return filter.field + " = NULL";
 			case 'nem': 
 				return filter.field + " != NULL";
+        }
+    },
+    id__condition(filter) {
+        /* eslint-disable */
+        switch (filter.operator.value) {
+			case 'eq':
+				return filter.field + " ='" +  filter.value + "'";
+			case 'neq':
+				return filter.field + " !='" +  filter.value + "'";
         }
     },
 	picklist__condition(filter) {
