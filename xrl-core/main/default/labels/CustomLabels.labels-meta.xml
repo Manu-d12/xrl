@@ -747,7 +747,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>tooltip_widthExample</shortDescription>
-        <value>You can user % or px for definition. Ex: 20px or 5%</value>
+        <value>You can use % or px for definition. Ex: 20px or 5%. Max width is set to 40% or 500px</value>
     </labels>
     <labels>
         <fullName>lbl_selectFieldsForServerFilter</fullName>

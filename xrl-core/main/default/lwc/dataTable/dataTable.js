@@ -261,7 +261,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				}
 			}
 			if (item.width !== undefined) {
-				item._style = 'width: ' + item.width;
+				let maxWidth = item.width.replace(';','').slice(-1) === '%' ? ';max-width: 40%;' : ';max-width: 500px;';
+				item._style = 'width: ' + item.width.replace(';','') + maxWidth;
 			}
 			if (item.isHidden!==true) this.config._countFields ++;
 			item.wrapClass = item.isWrapable
