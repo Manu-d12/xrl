@@ -226,6 +226,18 @@ export let libs = {
 				"tooltip": "In case of bulk edit if any exception occurs should the entire transaction rolled back?",
 				"cmd" : "dialog:setTableParam",
 			},
+			"groupFieldName" : {
+				"type": "string",
+				"label": "Field Name to group records",
+				"tooltip": "Enter the field name by which the records will be grouped",
+				"cmd" : "dialog:setTableParam",
+			},
+			"groupOrder" : {
+				"type": "string",
+				"label": "Grouping Orders",
+				"tooltip": "ASC for Ascending and DESC for Descending",
+				"cmd" : "dialog:setTableParam",
+			},
 			"saveChunkSize" : {
 				"defValue": 200,
 				"type": "string",
