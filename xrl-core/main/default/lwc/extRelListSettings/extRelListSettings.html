@@ -40,8 +40,14 @@
 					<!-- Table Settings Starts -->
 					<lightning-tab label={config._LABELS.lbl_tableSettings} title={config._LABELS.title_youCanDefineAllGeneralTableParameters}>
 						<template for:each={tableItem} for:item="param" for:index="index">
-							<lightning-input if:false={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} type={param.type} label={param.label} disabled={param.isDisabled} value={param.value} data-id={param.cmd} data-param={param.paramName} data-type={param.type} checked={param.isChecked} onchange={config.dialog.handleEvent}></lightning-input>
-							<lightning-textarea if:true={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} data-type={param.type} label={param.label} value={param.value} data-id={param.cmd} data-param={param.paramName} onchange={config.dialog.handleEvent} placeholder={param.placeHolder}></lightning-textarea>
+							<template if:false={param.isComboBox}>
+								<lightning-input if:false={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} type={param.type} label={param.label} disabled={param.isDisabled} value={param.value} data-id={param.cmd} data-param={param.paramName} data-type={param.type} checked={param.isChecked} onchange={config.dialog.handleEvent}></lightning-input>
+								<lightning-textarea if:true={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} data-type={param.type} label={param.label} value={param.value} data-id={param.cmd} data-param={param.paramName} onchange={config.dialog.handleEvent} placeholder={param.placeHolder}></lightning-textarea>
+							</template>
+							<template if:true={param.isComboBox}>
+								<lightning-combobox key={param.paramName} field-level-help={param.tooltip} label={param.label} placeholder={param.placeHolder} disabled={param.isDisabled} value={param.value} data-id={param.cmd} onchange={config.dialog.handleEvent} data-param={param.paramName} options={param.options}>
+								</lightning-combobox>
+							</template>
 						</template>
 					</lightning-tab>	
 					<!-- Table Settings Ends -->

@@ -75,7 +75,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			}
 		});
 
-		if (this.config.groupingParams?.field) {
+		if (this.hasGrouping) {
 
 			let isPager = this.config.pager;
 			if(!this.config.pager.pagerTop && !this.config.pager.pagerBottom){
@@ -156,7 +156,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 	get hasGrouping() {
 		// return this.config.grouping === true;
-		console.log('hasGrouping ',this.config.groupFieldName === '');
+		console.log('hasGrouping ',this.config.groupFieldName !== undefined && this.config.groupFieldName !== null && this.config.groupFieldName !== '');
 		return this.config.groupFieldName !== undefined && this.config.groupFieldName !== null && this.config.groupFieldName !== '';
 	}
 
