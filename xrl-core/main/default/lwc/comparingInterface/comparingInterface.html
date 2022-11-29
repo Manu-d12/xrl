@@ -20,7 +20,7 @@
             <button data-id="btn:compare" if:true={config.objRecords.objTwo} class="slds-button slds-button_brand" onclick={handleEvent} style="float:right;">Compare</button>
         </div>
     </div>
-    <template if:true={config.showComparisonTable}>
+    <!-- <template if:true={config.showComparisonTable}>
         <div class="slds-section slds-is-open">
             <h3 class="slds-section__title">
               <button aria-controls="expando-unique-id" aria-expanded="false" class="slds-button slds-section__title-action">
@@ -59,13 +59,13 @@
                     <tbody>
                         <template if:true={config.compareResult} for:each={config.compareResult} for:item="item" for:index="index">
                             <tr class="slds-hint-parent" key={item}>
-                                <td style={item.css1}>
+                                <td>
                                     <div class="slds-truncate">{item.fieldName1}</div>
                                 </td>
                                 <td style={item.css1}>
                                     <div class="slds-truncate">{item.value1}</div>
                                 </td>
-                                <td style={item.css2}>
+                                <td>
                                     <div class="slds-truncate">{item.fieldName2}</div>
                                 </td>
                                 <td style={item.css2}>
@@ -73,23 +73,64 @@
                                 </td>
                             </tr>
                         </template>
-                        <!-- <tr class="slds-hint-parent">
-                            <td>
-                                <div class="slds-truncate">Cloudhub</div>
-                            </td>
-                            <td data-label="Close Date">
-                                <div class="slds-truncate">4/14/2015</div>
-                            </td>
-                            <td data-label="Prospecting">
-                                <div class="slds-truncate">Prospecting</div>
-                            </td>
-                            <td data-label="Confidence">
-                                <div class="slds-truncate">20%</div>
-                            </td>
-                        </tr> -->
                     </tbody>
                 </table>
             </div>
-          </div>
-    </template>
+        </div>
+        <div class="slds-section slds-is-open">
+            <h3 class="slds-section__title">
+              <button aria-controls="expando-unique-id" aria-expanded="false" class="slds-button slds-section__title-action">
+                <svg class="slds-section__title-action-icon slds-button__icon slds-button__icon_left" aria-hidden="true">
+                  <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#switch"></use>
+                </svg>
+                <span class="slds-truncate" title="Section Title">Child Records Comparison</span>
+              </button>
+            </h3>
+            <div aria-hidden="true"  class="slds-section__content" id="expando-unique-id2">
+                <div class="slds-scrollable_x" style="width:100%;">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered" aria-label="Example default base table of Opportunities">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="" scope="col" colspan="6">
+                                    <div class="slds-truncate">Record 1</div>
+                                </th>
+                                <th class="" scope="col" colspan="6">
+                                    <div class="slds-truncate">Record 2</div>
+                                </th>
+                            </tr>
+                            <tr class="slds-line-height_reset">
+                                <template for:each={config.childFieldsToCompare} for:item="col">
+                                    <th class="" scope="col" key={config.childFieldsToCompare}>
+                                        <div class="slds-truncate">{col}</div>
+                                    </th>
+                                </template>
+                                <template for:each={config.childFieldsToCompare} for:item="col">
+                                    <th class="" scope="col" key={config.childFieldsToCompare}>
+                                        <div class="slds-truncate">{col}</div>
+                                    </th>
+                                </template>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template if:true={config.childRecordsResult} for:each={config.childRecordsResult} for:item="item" for:index="index">
+                                <tr class="slds-hint-parent" key={item}>
+                                    <template for:each={item.record1} for:item="record">
+                                        <td key={record.key} style={record.css}>
+                                            <div class="slds-truncate">{record.value}</div>
+                                        </td>
+                                    </template>
+                                    <template for:each={item.record2} for:item="record2">
+                                        <td key={record2.key} style={record2.css}>
+                                            <div class="slds-truncate">{record2.value}</div>
+                                        </td>
+                                    </template>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </template> -->
+    <c-Data-Table style="width:100%; height:inherit" data-ind={config.sObjApiName} cfg={name}></c-Data-Table>
 </template>

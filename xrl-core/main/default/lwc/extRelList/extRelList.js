@@ -259,26 +259,29 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	loadRecords() {
-		libs.remoteAction(this, 'query', {
-			isNeedDescribe: true,
-			sObjApiName: this.config.sObjApiName,
-			relField: this.config.relField,
-			addCondition: this.config.listViewConfig[0].addCondition,
-			orderBy: this.config.listViewConfig[0].orderBy,
-			fields: this.config.fields,
-			listViewName: this.config?.listView?.name,
-			callback: ((nodeName, data) => {
-				console.log('length', data[nodeName].records);
-				
-				libs.getGlobalVar(this.name).records = data[nodeName].records.length > 0 ? data[nodeName].records : undefined;
-				
-				this.config.records = libs.getGlobalVar(this.name).records;
-				this.allRecords = this.config.records;
-				
-				console.log('loadRecords', libs.getGlobalVar(this.name));
-				this.generateColModel();
-			})
-		});
+		if(this.config?.listView?.name === 'cmpView') this.generateColModel();
+		else{
+			libs.remoteAction(this, 'query', {
+				isNeedDescribe: true,
+				sObjApiName: this.config.sObjApiName,
+				relField: this.config.relField,
+				addCondition: this.config.listViewConfig[0].addCondition,
+				orderBy: this.config.listViewConfig[0].orderBy,
+				fields: this.config.fields,
+				listViewName: this.config?.listView?.name,
+				callback: ((nodeName, data) => {
+					console.log('length', data[nodeName].records);
+					
+					libs.getGlobalVar(this.name).records = data[nodeName].records.length > 0 ? data[nodeName].records : undefined;
+					
+					this.config.records = libs.getGlobalVar(this.name).records;
+					this.allRecords = this.config.records;
+					
+					console.log('loadRecords', libs.getGlobalVar(this.name));
+					this.generateColModel();
+				})
+			});
+		}
 	}
 
 	generateColModel() {
