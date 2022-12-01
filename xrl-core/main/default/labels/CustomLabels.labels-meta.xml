@@ -1557,7 +1557,7 @@ return &quot;background-color:#F5F5F5;&quot; //light grey
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>lbl_deleteNoRecordSelectedError</shortDescription>
-        <value>Please Select at least 1 record. If checkbox is not enabled then follow Configure -> Table Settings -> Enable Checkboxes</value>
+        <value>Please Select at least 1 record. If checkbox is not enabled then follow Configure -&gt; Table Settings -&gt; Enable Checkboxes</value>
     </labels>
     <labels>
         <fullName>title_newListView</fullName>
@@ -1582,5 +1582,21 @@ return &quot;background-color:#F5F5F5;&quot; //light grey
         <protected>true</protected>
         <shortDescription>tooltip_actionVisibleOnRecords</shortDescription>
         <value>The action will be visible only after the record/records are selected from the grid</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_conditionFilteringPattern</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_conditionFilteringPattern</shortDescription>
+        <value>Construct different logical connections between conditions using parentheses and the words &apos;AND&apos; and &apos;OR&apos;.
+
+Example of Patterns
+
+1. (1 OR 2) AND 3 
+ 2. (1 OR 3) AND (2 OR 4)
+ 3. (2 OR 4) AND ((3 OR 6) AND (5 OR 1)) 
+
+Once you are done editing the pattern, click outside the input box.</value>
     </labels>
 </CustomLabels>
