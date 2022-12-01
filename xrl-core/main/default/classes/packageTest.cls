@@ -61,11 +61,12 @@ public class packageTest {
         cs.Subject = 'upd case';
         map < string, object > data = new map < string, object > ();
         data.put('sObjApiName', 'Case');
+        data.put('rollback', false);
         data.put('records', new list < object > {cs});
         test.startTest();
         map < string, object > res = infrastructure.dispatcherAura('saveRecords', data);
         test.stopTest();
-        System.assertNotEquals(null, res.get('saveRecordsResult'));
+        System.assertNotEquals(null, res.size());
         cs = [SELECT Id, Subject FROM Case LIMIT 1];
         System.assertEquals('upd case', cs.Subject);
     }
