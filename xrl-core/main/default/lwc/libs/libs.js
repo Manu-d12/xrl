@@ -227,15 +227,16 @@ export let libs = {
 				"cmd" : "dialog:setTableParam",
 			},
 			"groupFieldName" : {
-				"type": "string",
+				"type": "combobox",
 				"label": "Field Name to group records",
 				"tooltip": "Enter the field name by which the records will be grouped",
 				"cmd" : "dialog:setTableParam",
 			},
 			"groupOrder" : {
-				"type": "string",
+				"type": "combobox",
 				"label": "Grouping Orders",
 				"tooltip": "ASC for Ascending and DESC for Descending",
+				"options": [{label:'ASC',value:'ASC'},{label:'DESC',value:'DESC'}],
 				"cmd" : "dialog:setTableParam",
 			},
 			"saveChunkSize" : {
