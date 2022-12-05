@@ -75,7 +75,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			}
 		});
 
-		if (this.config.groupingParams?.field) {
+		if (this.hasGrouping) {
 
 			let isPager = this.config.pager;
 			if(!this.config.pager.pagerTop && !this.config.pager.pagerBottom){

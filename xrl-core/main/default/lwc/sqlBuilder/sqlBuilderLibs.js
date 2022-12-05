@@ -131,6 +131,19 @@ export let sqlBuilderLibs = {
 				return filter.field + " !='" +  filter.value + "'";
         }
     },
+    boolean__condition(filter) {
+        /* eslint-disable */
+        switch (filter.operator.value) {
+			case 'eq':
+				return filter.field + " =" +  filter.value;
+			case 'neq':
+				return filter.field + " !=" +  filter.value;
+			case 'em': 
+				return filter.field + " = NULL";
+			case 'nem': 
+				return filter.field + " != NULL";
+        }
+    },
 	picklist__condition(filter) {
         /* eslint-disable */
         switch (filter.operator.value) {
