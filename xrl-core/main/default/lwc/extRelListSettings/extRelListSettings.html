@@ -1,6 +1,6 @@
 <template>
 	<section if:true={config.dialog} role="alertdialog" tabindex="0" class="slds-modal slds-fade-in-open slds-modal_prompt slds-modal_small" aria-modal="true">
-		<div class="slds-modal__container slds-scrollable_y" style="max-height:47rem;">
+		<div class="slds-modal__container slds-scrollable_y" style={dialogCss}>
 			<header class={config.dialog.css}>
 				<button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title={config._LABELS.title_close} style="display:block" data-id="dialog:close" onclick={config.dialog.handleEvent}>
 					<svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">

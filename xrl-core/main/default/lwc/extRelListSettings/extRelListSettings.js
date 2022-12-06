@@ -22,6 +22,10 @@ export default class extRelListSettings extends LightningElement {
 		this.config.enableActions = ['actionTip','actionIsHidden','actionIconName','actionOrder','actionVisibleOnRecordSelection'];
 	}
 
+	get dialogCss(){
+		return 'max-height:'+screen.availHeight+'px;';
+	}
+
 	get selectedFields() {
 		let items = [];
 		let allColumns = this.dataTable.colModel;
