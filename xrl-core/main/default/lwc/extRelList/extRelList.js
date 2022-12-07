@@ -130,6 +130,35 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			this.config.dataTableConfig.colModel = [{
 				"fieldName" : "Id"
 			}];
+			if(this.config.sObjApiName.includes('History')){
+				this.config.dataTableConfig.colModel = [
+					{
+					"fieldName" : "Id"
+					},
+					{
+						"label": "New Value",
+						"fieldName": "NewValue",
+					  },
+					  {
+						"label": "Old Value",
+						"fieldName": "OldValue",
+					  },
+					  {
+						"label": "Created Date",
+						"fieldName": "CreatedDate",
+					  },
+					  {
+						"label": "Changed Field",
+						"fieldName": "Field",
+					  },
+					  {
+						"label": this.apiName.split('::')[2].split('.')[0] +  " ID",
+						"fieldName": this.apiName.split('::')[2].split('.')[0] + ".Id",
+					  }
+				];
+				this.config.dataTableConfig.groupFieldName= this.apiName.split('::')[2].split('.')[0] + ".Id";
+				this.config.dataTableConfig.groupOrder= "ASC";
+			}
 		} 
 		console.log('dataTable Config: ', this.config.dataTableConfig.colModel);
 
@@ -259,6 +288,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	loadRecords() {
+		// let condition = this.config.sObjApiName.includes('History') ? 
+		// 				"WHERE Case.Account.Id='"+ this.recordId +"' " :
+		// 				this.config.listViewConfig[0].addCondition;
 		libs.remoteAction(this, 'query', {
 			isNeedDescribe: true,
 			sObjApiName: this.config.sObjApiName,
@@ -339,7 +371,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if (val.startsWith('dialog:')) this.handleEventDialog(event);
 		if (val.startsWith('std:refresh')) {
 			//libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.localConfig.listViewName, callback: this.loadRecords });
-			libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.config?.listView?.name, callback: this.loadCfg });
+			// libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.config?.listView?.name, callback: this.loadCfg });
+			this.loadCfg(true);
 		}
 
 		if (val.startsWith('std:')) this.handleEventActions(event, val);
@@ -884,6 +917,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	handleEventExport(event) {
+		var start = performance.now();
 
 		let records = this.template.querySelector('c-Data-Table').getRecords();
 		let locale = libs.getGlobalVar(this.name).userInfo.locale;
@@ -955,5 +989,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		console.log(ws['!ref']);
 		XLSX.utils.book_append_sheet(wb, ws, this.config.sObjLabel + ' '  + this.config?.listView?.label);
 		XLSX.writeFile(wb, this.config.sObjLabel + ' ' + this.config?.listView?.label + '.xlsx', { cellStyles: true, WTF: 1 });
+		var end = performance.now();
+		var time = end - start;
+		 console.log('time ',time);
+		
 	}
 }

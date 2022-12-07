@@ -30,6 +30,9 @@ global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickLi
 				picklistValues.addRow(
 					new VisualEditor.DataRow(sObjLabel, sObjLabel + '::' + sObjApiName + '::' + sObjField)
 				);
+				picklistValues.addRow(
+					new VisualEditor.DataRow(sObjLabel+': History', sObjLabel + 'History::' + sObjApiName + 'History::' + sObjApiName + '.' + sObjField)
+				);
 			}
 		}
 		return picklistValues;
