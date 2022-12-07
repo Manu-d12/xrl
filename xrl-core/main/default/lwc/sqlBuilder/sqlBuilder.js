@@ -151,6 +151,12 @@ export default class SqlBuilder extends LightningElement {
                 if(selectedField.type === 'picklist'){
                     this.config.sqlBuilder.currentCondition.fieldOptions = selectedField.options;
                 }
+                if(selectedField.type === 'boolean'){
+                    this.config.sqlBuilder.currentCondition.fieldOptions = [
+                        {label:"True",value:"True"},
+                        {label:"False",value:"False"}
+                    ];
+                }
                 if(sqlBuilderLibs[selectedField.type + 'FilterActions']){
                     sqlBuilderLibs[selectedField.type + 'FilterActions'](this.config._LABELS).forEach((el)=>{
                         this.config.sqlBuilder.conditionOperations.push(el);
@@ -162,7 +168,6 @@ export default class SqlBuilder extends LightningElement {
                         { label: 'Not Is Equal', value: 'neq' },
                     ];
                 }
-                console.log(this.config.sqlBuilder.conditionOperations);
                 this.config.sqlBuilder.openConditionInput = false;
             }else{
                 if(this.config.sqlBuilder._objectStack.length <=4 ){
@@ -181,8 +186,9 @@ export default class SqlBuilder extends LightningElement {
         if(val === "sqlBuilder:conditions:selectOperation"){
             let operator = event.target.getAttribute('data-val');     
             this.config.sqlBuilder.currentCondition.operator = sqlBuilderLibs[this.config.sqlBuilder.currentCondition.fieldType + 'FilterActions'](this.config._LABELS).find((el)=> el.value === operator);
+            console.log(this.config.sqlBuilder.currentCondition.fieldType);
             this.config.sqlBuilder.openConditionInput = {
-                isPicklist: this.config.sqlBuilder.currentCondition.fieldType === 'picklist' ? true : false,
+                isPicklist: this.config.sqlBuilder.currentCondition.fieldType === 'picklist' || this.config.sqlBuilder.currentCondition.fieldType === 'boolean' ? true : false,
                 isRange: operator === 'rg' ? true : false
             };
         }
@@ -396,7 +402,8 @@ export default class SqlBuilder extends LightningElement {
         event.stopPropagation()
         const Element = this.template.querySelectorAll('.Items')
         const DragValName = this.template.querySelector('.drag').textContent
-        const DropValName = event.target.textContent
+        const DropValName = event.target.textContent;
+        console.log(DropValName);
 
         if(DragValName === DropValName){ return false }
         const index = this.config.sqlBuilder.selectedFields.findIndex((el)=> el.fieldName === DropValName);
