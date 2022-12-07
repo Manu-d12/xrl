@@ -22,6 +22,10 @@ export default class extRelListSettings extends LightningElement {
 		this.config.enableActions = ['actionTip','actionIsHidden','actionIconName','actionOrder','actionVisibleOnRecordSelection'];
 	}
 
+	get dialogCss(){
+		return 'max-height:'+screen.availHeight+'px;';
+	}
+
 	get selectedFields() {
 		let items = [];
 		let allColumns = this.dataTable.colModel;
@@ -87,6 +91,11 @@ export default class extRelListSettings extends LightningElement {
 				? this.dataTable[item]
 				: item in this.dataTable.pager ? this.dataTable.pager[item] 
 				: tmp[item].defValue;
+			
+			let sFields = [{label:'No Grouping',value:''}];
+			sFields = sFields.concat(this.selectedFields);
+			let options = (tmp[item].type === 'combobox') ?
+							(tmp[item].options) ? (tmp[item].options)  : sFields : '';
 			result.push({
 				"paramName" : item,
 				"type" : tmp[item].type,
@@ -96,6 +105,8 @@ export default class extRelListSettings extends LightningElement {
 				//"isDisabled" : (item === 'fieldName'),
 				"value" : defValue,
 				"isChecked" : (tmp[item].type === 'checkbox') ? defValue : undefined,
+				"isComboBox" : (tmp[item].type === 'combobox'),
+				"options": options,
 				"cmd": tmp[item].cmd,
 				"placeHolder" : tmp[item].placeHolder
 			})

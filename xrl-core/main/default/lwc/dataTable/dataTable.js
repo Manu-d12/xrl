@@ -156,7 +156,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 	get hasGrouping() {
 		// return this.config.grouping === true;
-		console.log('hasGrouping ',this.config.groupFieldName === '');
+		console.log('hasGrouping ',this.config.groupFieldName !== undefined && this.config.groupFieldName !== null && this.config.groupFieldName !== '');
 		return this.config.groupFieldName !== undefined && this.config.groupFieldName !== null && this.config.groupFieldName !== '';
 	}
 
