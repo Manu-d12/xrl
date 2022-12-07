@@ -138,23 +138,36 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					{
 						"label": "New Value",
 						"fieldName": "NewValue",
-					  },
-					  {
+						"updateable": false,
+						"isNameField": false,
+						"isEditable": false,
+					},
+					{
 						"label": "Old Value",
 						"fieldName": "OldValue",
-					  },
-					  {
+						"updateable": false,
+						"isNameField": false,
+						"isEditable": false,
+					},
+					{
 						"label": "Created Date",
 						"fieldName": "CreatedDate",
-					  },
-					  {
+						"type": "datetime",
+						"updateable": false,
+						"isNameField": false,
+						"isEditable": false,
+					},
+					{
 						"label": "Changed Field",
 						"fieldName": "Field",
-					  },
-					  {
+						"updateable": false,
+						"isNameField": false,
+						"isEditable": false,
+					},
+					{
 						"label": this.apiName.split('::')[2].split('.')[0] +  " ID",
 						"fieldName": this.apiName.split('::')[2].split('.')[0] + ".Id",
-					  }
+					}
 				];
 				this.config.dataTableConfig.groupFieldName= this.apiName.split('::')[2].split('.')[0] + ".Id";
 				this.config.dataTableConfig.groupOrder= "ASC";
