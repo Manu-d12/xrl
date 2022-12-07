@@ -65,6 +65,7 @@ export default class SqlBuilder extends LightningElement {
         }
     }
     dialogValues(val){
+        this.config.dialog.listViewConfig.colModel = this.config.sqlBuilder.selectedFields;
         if(this.config.sqlBuilder.conditions.length > 0){
             this.config.dialog.listViewConfig.addCondition = 'AND (' + this.generateCondition() + ')';
             this.config.dialog.listViewConfig.conditionMap = this.config.sqlBuilder.conditions;
@@ -96,7 +97,8 @@ export default class SqlBuilder extends LightningElement {
             let refObj = event.target.getAttribute('data-ref');
             if( refObj === null){
                 this.toggleArrayElement(this.config.sqlBuilder.selectedFields,event.target.getAttribute('data-val'));
-                event.target.classList.toggle('slds-theme_alt-inverse');
+                event.target.classList.add('slds-theme_alt-inverse');
+                this.dialogValues();
             }else{
                 if(this.config.sqlBuilder._objectStack.length <=4 ){
                     this.config.sqlBuilder._objectStack.push({relationShip:event.target.getAttribute('data-val'),referredObj:refObj});
@@ -131,8 +133,8 @@ export default class SqlBuilder extends LightningElement {
         }
         if(val === "sqlBuilder:deleteSelectedField"){
             let field = event.target.getAttribute('data-val');                
-            this.config.sqlBuilder.selectedFields = this.config.sqlBuilder.selectedFields.filter(function(e) { return e.fieldName !== field })
-            this.config.dialog.listViewConfig.colModel = this.config.dialog.listViewConfig.colModel.filter(function(e) { return e.fieldName !== field });
+            this.config.sqlBuilder.selectedFields = this.config.sqlBuilder.selectedFields.filter(function(e) { return e.fieldName !== field });
+            this.dialogValues();
         }
 
         //For Condition Tabs
@@ -296,12 +298,8 @@ export default class SqlBuilder extends LightningElement {
     toggleArrayElement(array, value) {
         let field = this.config.sqlBuilder.allFields.find((el) => el.fieldName === value);
         let isValExists = array.find((el) => el.fieldName === value);
-        if(isValExists){
-            array = array.filter(e => e.fieldName !== value);
-        }else{
+        if(!isValExists){
             array.push(field); 
-            // this.addIntoDialog(field);
-            this.config.dialog.listViewConfig.colModel.push(field);
         }
     }
     loadFields(sObjName){
@@ -362,6 +360,8 @@ export default class SqlBuilder extends LightningElement {
                 } else {
                     fieldMap.isEditable = false;
                 }
+                fieldMap.isFilterable = true;
+                fieldMap.isSortable = true;
                 fields.push(fieldMap);
             }
         }
@@ -374,9 +374,6 @@ export default class SqlBuilder extends LightningElement {
         });
         return condition;
     }
-    // addIntoDialog(field){
-    //     this.config.dialog.listViewConfig.colModel.push(field);
-    // }
     ConditionFilteringClass = "slds-popover slds-popover_tooltip slds-nubbin_bottom-left slds-fall-into-ground slds-hide";
     toggleConditionFilteringHelp() {
         this.ConditionFilteringClass = this.ConditionFilteringClass === 'slds-popover slds-popover_tooltip slds-nubbin_bottom-left slds-fall-into-ground slds-hide' ? "slds-popover slds-popover_tooltip slds-nubbin_bottom-left slds-rise-from-ground" : "slds-popover slds-popover_tooltip slds-nubbin_bottom-left slds-fall-into-ground slds-hide"
@@ -428,7 +425,6 @@ export default class SqlBuilder extends LightningElement {
         this.config.dialog.listViewConfig.colModel = [];
         this.ElementList.forEach((el)=>{
             let item = copySelectedFields.find((e) => e.fieldName === el);
-            // this.addIntoDialog(item);
             this.config.dialog.listViewConfig.colModel.push(item);
             this.config.sqlBuilder.selectedFields.push(item);
         });
