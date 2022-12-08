@@ -1584,6 +1584,14 @@ return &quot;background-color:#F5F5F5;&quot; //light grey
         <value>The action will be visible only after the record/records are selected from the grid</value>
     </labels>
     <labels>
+        <fullName>altTxt_expandView</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>altTxt_expandView</shortDescription>
+        <value>Expand View</value>
+    </labels>
+    <labels>
         <fullName>tooltip_conditionFilteringPattern</fullName>
         <categories>XRL</categories>
         <language>en_US</language>

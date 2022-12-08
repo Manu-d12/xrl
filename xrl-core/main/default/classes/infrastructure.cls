@@ -385,6 +385,7 @@ global with sharing class infrastructure {
 			'altTxt_save' => label.altTxt_save,
 			'altTxt_saveFilter' => label.altTxt_saveFilter,
 			'altTxt_new'=>label.altTxt_new,
+			'altTxt_expandView'=>label.altTxt_expandView,
 			'errMsg_recordsNotFound' => label.errMsg_recordsNotFound,
 			'errMsg_wrapableAndClipableCanNotBeSelectedTogether' => label.errMsg_wrapableAndClipableCanNotBeSelectedTogether,
 			'errMsg_anEmptyMsgCannotBeSent' => label.errMsg_anEmptyMsgCannotBeSent,
