@@ -1599,4 +1599,12 @@ Example of Patterns
 
 Once you are done editing the pattern, click outside the input box.</value>
     </labels>
+    <labels>
+        <fullName>msg_rowDblClickError</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_rowDblClickError</shortDescription>
+        <value>This column is not editable. If you want to edit please enable it from configuration</value>
+    </labels>
 </CustomLabels>
