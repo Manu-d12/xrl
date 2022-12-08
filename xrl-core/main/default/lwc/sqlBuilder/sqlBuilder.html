@@ -33,9 +33,10 @@
                     <div class="slds-scrollable_y" style="height:27rem;border:0.5px solid rgb(183, 180, 180);padding:4px;">
                         <ul class="slds-has-dividers_around-space">
                             <template if:true={config.sqlBuilder.selectedFields} for:each={config.sqlBuilder.selectedFields} for:item="field" for:index="index">
-                                <li class="slds-item Items" key={field.fieldName} style="cursor: pointer;margin-top: 0px;padding:5px;" draggable="true" onchange={Change} ondrop={Drop} ondragstart={DragStart} ondragover={DragOver}>
-                                    <!-- <lightning-icon size="small" icon-name="utility:rows" alternative-text="Rows" title="Rows"></lightning-icon> -->
-                                    {field.fieldName}
+                                <li class="slds-item Items" data-val={field.fieldName} key={field.fieldName} style="cursor: pointer;margin-top: 0px;padding:5px;" draggable="true" onchange={Change} ondrop={Drop} ondragstart={DragStart} ondragover={DragOver}>
+                                    <lightning-icon size="small" icon-name="utility:rows" alternative-text="Rows" title="Rows"></lightning-icon>
+                                    {field.label}
+                                    <lightning-helptext content={field.fieldName}></lightning-helptext>
                                     <lightning-icon size="small" data-id="sqlBuilder:deleteSelectedField" data-val={field.fieldName} onclick={handleBuilderEvent} style="float: right;" icon-name="utility:delete" alternative-text="Delete" title="Delete"></lightning-icon>
                                 </li>
                             </template>
