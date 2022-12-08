@@ -157,7 +157,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		console.log('mergedConfig', userConfig);
 
 		this.config.listViewConfig = userConfig;
-		this.config.listView = data[cmd].listViews.find(v => { return v.isUserConfig;});
+		this.config.listView = data[cmd].listViews.findLast(v => { return v.isUserConfig;});
 		console.log(JSON.stringify(this.config.listView));
 		this.config.currency =  data[cmd].currency;
 		//if (this.config.userInfo.isAdminAccess === true) delete this.localConfig.listViewName;
@@ -339,7 +339,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if (val.startsWith('dialog:')) this.handleEventDialog(event);
 		if (val.startsWith('std:refresh')) {
 			//libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.localConfig.listViewName, callback: this.loadRecords });
-			libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.config?.listView?.name, callback: this.loadCfg });
+			// libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.config?.listView?.name, callback: this.loadCfg });
+			this.loadCfg(false);
 		}
 
 		if (val.startsWith('std:')) this.handleEventActions(event, val);
