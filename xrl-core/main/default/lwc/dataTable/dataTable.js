@@ -722,12 +722,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			}
 			this.config._isFilterOptions = undefined;
 			if (isNeedRefilter) {
-				var start = performance.now();
 				this.filterTable();
 				console.log('column', JSON.stringify(cItem));
-				var end = performance.now();
-				var time = end - start;
-				console.log('time ',time);
 			}
 
 		}

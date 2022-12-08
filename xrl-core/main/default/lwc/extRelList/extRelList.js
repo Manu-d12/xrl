@@ -930,7 +930,6 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	handleEventExport(event) {
-		var start = performance.now();
 
 		let records = this.template.querySelector('c-Data-Table').getRecords();
 		let locale = libs.getGlobalVar(this.name).userInfo.locale;
@@ -1002,9 +1001,6 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		console.log(ws['!ref']);
 		XLSX.utils.book_append_sheet(wb, ws, this.config.sObjLabel + ' '  + this.config?.listView?.label);
 		XLSX.writeFile(wb, this.config.sObjLabel + ' ' + this.config?.listView?.label + '.xlsx', { cellStyles: true, WTF: 1 });
-		var end = performance.now();
-		var time = end - start;
-		 console.log('time ',time);
 		
 	}
 }
