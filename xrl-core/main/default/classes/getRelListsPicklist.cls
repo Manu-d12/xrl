@@ -30,6 +30,21 @@ global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickLi
 				picklistValues.addRow(
 					new VisualEditor.DataRow(sObjLabel, sObjLabel + '::' + sObjApiName + '::' + sObjField)
 				);
+				//only if the history object exists
+				if(gd.containsKey(sObjApiName + 'History') || gd.containsKey(sObjApiName.removeEnd('c') + 'history')){
+					SObjectType objToken = Schema.getGlobalDescribe().get(sObjApiName);
+					//for standard history objects
+					if(objToken  != null && !objToken.getDescribe().isCustom()){
+						picklistValues.addRow(
+							new VisualEditor.DataRow(sObjLabel+': History', sObjLabel + 'History::' + sObjApiName + 'History::' + sObjApiName + '.' + sObjField)
+						);
+					}else if(objToken  != null && objToken.getDescribe().isCustom()){
+						//for custom history objects
+						picklistValues.addRow(
+							new VisualEditor.DataRow(sObjLabel+': History', sObjLabel + 'History::' + sObjApiName.removeEnd('c') + 'history::' + 'Parent.' + sObjField)
+						);
+					}
+				}
 			}
 		}
 		return picklistValues;
