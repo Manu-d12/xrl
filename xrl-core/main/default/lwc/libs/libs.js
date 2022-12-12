@@ -206,7 +206,7 @@ export let libs = {
 				"cmd" : "dialog:setPagerParam"
 			},
 			"pagerBottom" : {
-				"defValue": false,
+				"defValue": true,
 				"type": "checkbox",
 				"label": _labels.lbl_enableBottomPagination,
 				"tooltip": _labels.tooltip_showBottomPagination,
