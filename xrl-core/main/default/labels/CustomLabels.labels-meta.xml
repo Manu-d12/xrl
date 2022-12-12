@@ -1584,6 +1584,14 @@ return &quot;background-color:#F5F5F5;&quot; //light grey
         <value>The action will be visible only after the record/records are selected from the grid</value>
     </labels>
     <labels>
+        <fullName>altTxt_expandView</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>altTxt_expandView</shortDescription>
+        <value>Expand View</value>
+    </labels>
+    <labels>
         <fullName>tooltip_conditionFilteringPattern</fullName>
         <categories>XRL</categories>
         <language>en_US</language>
@@ -1598,5 +1606,13 @@ Example of Patterns
  3. (2 OR 4) AND ((3 OR 6) AND (5 OR 1)) 
 
 Once you are done editing the pattern, click outside the input box.</value>
+    </labels>
+    <labels>
+        <fullName>msg_rowDblClickError</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_rowDblClickError</shortDescription>
+        <value>This column is not editable. If you want to edit please enable it from configuration</value>
     </labels>
 </CustomLabels>

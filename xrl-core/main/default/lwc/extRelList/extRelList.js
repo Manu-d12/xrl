@@ -130,6 +130,48 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			this.config.dataTableConfig.colModel = [{
 				"fieldName" : "Id"
 			}];
+			if(this.config.sObjApiName.toLowerCase().includes('history')){
+				this.config.dataTableConfig.colModel = [
+					{
+					"fieldName" : "Id"
+					},
+					{
+						"label": "New Value",
+						"fieldName": "NewValue",
+						"updateable": false,
+						"isNameField": false,
+						"isEditable": false,
+					},
+					{
+						"label": "Old Value",
+						"fieldName": "OldValue",
+						"updateable": false,
+						"isNameField": false,
+						"isEditable": false,
+					},
+					{
+						"label": "Created Date",
+						"fieldName": "CreatedDate",
+						"type": "datetime",
+						"updateable": false,
+						"isNameField": false,
+						"isEditable": false,
+					},
+					{
+						"label": "Changed Field",
+						"fieldName": "Field",
+						"updateable": false,
+						"isNameField": false,
+						"isEditable": false,
+					},
+					{
+						"label": this.apiName.split('::')[2].split('.')[0] +  " ID",
+						"fieldName": this.apiName.split('::')[2].split('.')[0] + ".Id",
+					}
+				];
+				this.config.dataTableConfig.groupFieldName= this.apiName.split('::')[2].split('.')[0] + ".Id";
+				this.config.dataTableConfig.groupOrder= "ASC";
+			}
 		} 
 		console.log('dataTable Config: ', this.config.dataTableConfig.colModel);
 
@@ -259,6 +301,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	loadRecords() {
+		// let condition = this.config.sObjApiName.includes('History') ? 
+		// 				"WHERE Case.Account.Id='"+ this.recordId +"' " :
+		// 				this.config.listViewConfig[0].addCondition;
 		libs.remoteAction(this, 'query', {
 			isNeedDescribe: true,
 			sObjApiName: this.config.sObjApiName,
@@ -956,5 +1001,6 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		console.log(ws['!ref']);
 		XLSX.utils.book_append_sheet(wb, ws, this.config.sObjLabel + ' '  + this.config?.listView?.label);
 		XLSX.writeFile(wb, this.config.sObjLabel + ' ' + this.config?.listView?.label + '.xlsx', { cellStyles: true, WTF: 1 });
+		
 	}
 }

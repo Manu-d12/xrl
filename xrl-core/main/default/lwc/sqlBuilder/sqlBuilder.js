@@ -401,9 +401,9 @@ export default class SqlBuilder extends LightningElement {
     Drop(event) {
         event.stopPropagation()
         const Element = this.template.querySelectorAll('.Items')
-        const DragValName = this.template.querySelector('.drag').textContent
-        const DropValName = event.target.textContent;
-        console.log(DropValName);
+        const DragValName = this.template.querySelector('.drag').getAttribute('data-val');
+        const DropValName = event.target.getAttribute('data-val');
+        console.log(this.template.querySelector('.drag').getAttribute('data-val'));
 
         if(DragValName === DropValName){ return false }
         const index = this.config.sqlBuilder.selectedFields.findIndex((el)=> el.fieldName === DropValName);

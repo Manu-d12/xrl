@@ -2,6 +2,7 @@ import { LightningElement, api, track } from 'lwc';
 import { libs } from 'c/libs';
 import { filterLibs } from './filterLibs';
 import { NavigationMixin } from "lightning/navigation";
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 const defClass = 'slds-grid slds-grid_align-spread';
 export default class dataTable extends NavigationMixin(LightningElement) {
@@ -96,15 +97,15 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				let result = [];
 				console.log('stindex ',startIndex + ' ' + endIndex);
 				for (let group of this.groupedRecords) {
-					if (startIndex > group.records[group.records.length - 1].sl - 1) continue;
-					if (endIndex <= group.records[0].sl - 1) break;
+					if (startIndex > group.records[group.records.length - 1].index - 1) continue;
+					if (endIndex <= group.records[0].index - 1) break;
 					let gr = Object.assign({}, group);
 					gr.records = group.records.map(r => r);
-					if (startIndex >= gr.records[0].sl) {
-						gr.records.splice(0, startIndex - (gr.records[0].sl + 1));
+					if (startIndex >= gr.records[0].index) {
+						gr.records.splice(0, startIndex - (gr.records[0].index + 1));
 					}					
-					if (endIndex < gr.records[gr.records.length - 1].sl) {
-						gr.records.splice(endIndex - (gr.records[0].sl + 1));
+					if (endIndex < gr.records[gr.records.length - 1].index) {
+						gr.records.splice(endIndex - (gr.records[0].index + 1));
 					}
 					console.log('gr ',gr.records.length);
 					result.push(gr);
@@ -161,7 +162,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 
 	get groupColspan() {
-		return this.config.colModel.filter(col => !col.isHidden).length - 1;
+		let len = this.config.colModel.filter(col => !col.isHidden).length;
+		return len % 2 === 0 ? len -1 : len;
 	}
 
 	_sortSequence = [];
@@ -185,8 +187,13 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			order: this.config.groupOrder.toLowerCase()
 		}
 		this.records.forEach(r => {
-			let groupName = r[this.config.groupingParams.field] || 'empty';
-			console.log('groupNAme',groupName);
+		
+			let groupName;
+			if(this.config.groupingParams.field.split('.')[1]){
+				groupName = r[this.config.groupingParams.field.split('.')[0]][this.config.groupingParams.field.split('.')[1]] || 'empty';
+			}else{
+				groupName = r[this.config.groupingParams.field] || 'empty';
+			}
 			let group = result.has(groupName) ? result.get(groupName) : {
 				title: groupName,
 				isChecked: false,
@@ -477,7 +484,15 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 			let cItem = this.getColItem(colName);
 			
-			if (!cItem || !cItem.isEditable) return;
+			if (!cItem || !cItem.isEditable) {
+				const toast = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.msg_rowDblClickError,
+					variant: 'error'
+				});
+				this.dispatchEvent(toast);
+				return;
+			}
 
 		if (this.config._inlineEdit !== undefined) {
 			this.records[this.config._inlineEdit]._isEditable = false;

@@ -233,6 +233,7 @@ export let libs = {
 				"cmd" : "dialog:setTableParam",
 			},
 			"groupOrder" : {
+				"defValue": "ASC",
 				"type": "combobox",
 				"label": "Grouping Orders",
 				"tooltip": "ASC for Ascending and DESC for Descending",
