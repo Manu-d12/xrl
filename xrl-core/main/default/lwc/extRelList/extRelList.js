@@ -412,13 +412,14 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 			this.config.loopIndex = 0;
 			this.config.resetIndex = 0;
-			let saveChunk = this.config.listViewConfig[0].saveChunk ? this.config.listViewConfig[0].saveChunk : 200; //200 is the default value for saveChunk
+			let saveChunk = this.config.listViewConfig[0].saveChunkSize ? this.config.listViewConfig[0].saveChunkSize : 200; //200 is the default value for saveChunk
 			let index = 0;
-			// console.log('HERE>',JSON.parse(JSON.stringify(this.config.listViewConfig[0])));
 			// console.log("rollback",this.config.listViewConfig[0].rollBack);
 			while(index <= changedItems.length){
-				let chunk = changedItems.slice(index,changedItems[(index+saveChunk)] ? (index+saveChunk) : (changedItems.length));
-				index += changedItems[(index+saveChunk)] ? (saveChunk) : (changedItems.length);
+				let lIndex = changedItems[(parseInt(index)+parseInt(saveChunk))] ? (parseInt(index)+parseInt(saveChunk)) : (changedItems.length);
+				let chunk = changedItems.slice(index,lIndex);
+				index += changedItems[(parseInt(index)+parseInt(saveChunk))] ? parseInt(saveChunk) : (changedItems.length);
+				// index += chunk.length;
 				this.config.loopIndex += 1;
 				libs.remoteAction(this, 'saveRecords', { records: chunk, 
 					sObjApiName: this.config.sObjApiName,
