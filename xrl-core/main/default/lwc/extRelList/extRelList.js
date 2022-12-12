@@ -128,7 +128,12 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			this.config.dataTableConfig = {};
 			this.config.dataTableConfig.cmpName = 'dataTable';
 			this.config.dataTableConfig.colModel = [{
-				"fieldName" : "Id"
+				"fieldName" : "Id",
+				"updateable": false,
+				"isNameField": false,
+				"isEditable": false,
+				"isFilterable": true,
+				"isSortable": true
 			}];
 			if(this.config.sObjApiName.toLowerCase().includes('history')){
 				this.config.dataTableConfig.colModel = [
