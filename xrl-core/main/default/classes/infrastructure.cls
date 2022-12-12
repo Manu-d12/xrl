@@ -505,6 +505,7 @@ global with sharing class infrastructure {
 			'msg_requestWasSent' => label.msg_requestWasSent,
 			'msg_deleteConfirm1'=>label.msg_deleteConfirm1,
 			'msg_deleteConfirm2'=>label.msg_deleteConfirm2,
+			'msg_rowDblClickError'=>label.msg_rowDblClickError,
 			'placeHolder_beforeSaveValidation'=>label.placeHolder_beforeSaveValidation,
 			'placeHolder_beforeDeleteValidation'=>label.placeHolder_beforeDeleteValidation,
 			'placeholder_actionCallback'=> label.placeholder_actionCallback,

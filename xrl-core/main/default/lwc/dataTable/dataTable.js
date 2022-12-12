@@ -2,6 +2,7 @@ import { LightningElement, api, track } from 'lwc';
 import { libs } from 'c/libs';
 import { filterLibs } from './filterLibs';
 import { NavigationMixin } from "lightning/navigation";
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 const defClass = 'slds-grid slds-grid_align-spread';
 export default class dataTable extends NavigationMixin(LightningElement) {
@@ -483,7 +484,15 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 			let cItem = this.getColItem(colName);
 			
-			if (!cItem || !cItem.isEditable) return;
+			if (!cItem || !cItem.isEditable) {
+				const toast = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.msg_rowDblClickError,
+					variant: 'error'
+				});
+				this.dispatchEvent(toast);
+				return;
+			}
 
 		if (this.config._inlineEdit !== undefined) {
 			this.records[this.config._inlineEdit]._isEditable = false;
