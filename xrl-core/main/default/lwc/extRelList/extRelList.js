@@ -546,7 +546,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 								this.dispatchEvent(toast);
 								this.showDialog = false;
 								this.config.records = this.config.records.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
-								this.allRecords = this.config.records;
+								//HYPER-243
+								this.allRecords = this.allRecords.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
 								this.template.querySelector('c-Data-Table').updateView();
 								this.config.listViewConfig[0].rowChecked = false;
 							}
