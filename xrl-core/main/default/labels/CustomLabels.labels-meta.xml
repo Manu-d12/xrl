@@ -1615,4 +1615,12 @@ Once you are done editing the pattern, click outside the input box.</value>
         <shortDescription>msg_rowDblClickError</shortDescription>
         <value>This column is not editable. If you want to edit please enable it from configuration</value>
     </labels>
+    <labels>
+        <fullName>msg_itemsUpdated</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_itemsUpdated</shortDescription>
+        <value>item(s) updated</value>
+    </labels>
 </CustomLabels>
