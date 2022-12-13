@@ -775,12 +775,33 @@ export default class extRelList extends NavigationMixin(LightningElement) {
         }
 	}
 	searchOnObjectValues(obj,sTerm){
+		let dateFields = [];
+		dateFields = this.config.listViewConfig[0].colModel.filter((el)=> el.type === 'date' || el.type === 'datetime');
+		/* eslint-disable */
 		for(let key in obj){
 			if(obj[key] && typeof obj[key] === 'object'){
 				if(this.searchOnObjectValues(obj[key],sTerm)) return true;
 			}
 			else if(obj[key] && obj[key].toString().toLowerCase().indexOf(sTerm)!=-1) {
 				return true;
+			}
+			//to search on date fields with timezone adjusted
+			let field = {};
+			dateFields.forEach((el)=>{
+				if(el.fieldName === key){
+					field = el;
+				}
+			});
+			if(field.type === 'date'){
+				let val = new Date(obj[key]).toLocaleString(this.config.userInfo.locale,{
+					month : "2-digit",
+					day : "2-digit",
+					year: "numeric",
+					timeZone: this.config.userInfo.timezone
+				});
+				if(val.toString().toLowerCase().indexOf(sTerm)!=-1) {
+					return true;
+				}
 			}
 		}
 		return false;
