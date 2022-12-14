@@ -91,7 +91,6 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				return result;
 			}
 			else if (isPager) {
-				console.log('HERE>2');
 				let startIndex = (this.config.pager.curPage - 1) * this.config.pager.pageSize;
 				let endIndex = (startIndex + parseInt(this.config.pager.pageSize)) < this.records.length ? (startIndex + parseInt(this.config.pager.pageSize)) : this.records.length;
 				let result = [];

@@ -2,7 +2,7 @@ export let filterLibs = {
 
     string__filter(filter, record) {
 		let value = this.getValue(filter, record);
-        if (!value && filter._filterOption !== 'ncn') return false;
+        if ((filter._filterOption !== 'em' && filter._filterOption !== 'ncn' && !value)) return false;
 		/*eslint-disable*/
 		switch (filter._filterOption) {
 			case 'cn':
@@ -31,7 +31,7 @@ export let filterLibs = {
 		
 		let value = this.getValue(filter, record);
 		console.log('referece filter', filter, record, value);
-        if (!value && filter._filterOption !== 'ncn') return false;
+        if ((filter._filterOption !== 'em' && filter._filterOption !== 'ncn' && !value)) return false;
 		
 
 		switch (filter._filterOption) {
@@ -85,7 +85,7 @@ export let filterLibs = {
     },
     number__filter(filter, record) {
 		let value = this.getValue(filter, record);
-        if (!value && filter._filterOption !== 'ncn') return false;
+        if ((filter._filterOption !== 'em' && filter._filterOption !== 'ncn' && !value)) return false;
 		switch (filter._filterOption) {
 			case 'cn': 
 				return value.toString().indexOf(filter._filterStr) > -1;
