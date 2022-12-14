@@ -840,7 +840,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		libs.saveConfig(this.apiName, this.localConfig);
 		this.config.dialog = undefined;
 		this.config.records = undefined;
-		libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.config?.listView?.name, callback: this.setConfig });
+		this.loadCfg(false);
+		// libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.config?.listView?.name, callback: this.setConfig });
 	}
 
 	handleEventActions(event, val) {
