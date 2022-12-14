@@ -91,7 +91,6 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				return result;
 			}
 			else if (isPager) {
-				console.log('HERE>2');
 				let startIndex = (this.config.pager.curPage - 1) * this.config.pager.pageSize;
 				let endIndex = (startIndex + parseInt(this.config.pager.pageSize)) < this.records.length ? (startIndex + parseInt(this.config.pager.pageSize)) : this.records.length;
 				let result = [];
@@ -656,6 +655,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 				};
 			this.config._isFilterOptions.filterOption = cItem._filterOption ? cItem._filterOption : 'cn';
+			this.config._isFilterOptions.isUnary = this.config._isFilterOptions.filterOptions.find(item => {return this.config._isFilterOptions.filterOption === item.value}).isUnary;
 			this.config._isFilterOptions.filterStr = cItem._filterStr;
 			this.config._isFilterOptions.filterStrTo = cItem._filterStrTo;
 			this.config._isFilterOptions.isShowStr = cItem.options === undefined;
