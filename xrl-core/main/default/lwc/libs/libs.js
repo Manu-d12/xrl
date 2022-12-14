@@ -358,7 +358,7 @@ export let libs = {
 				console.error(result.exception, result.log);
 				const event = new ShowToastEvent({
 					title: result.exception.title,
-					message: result.exception.message,
+					message: result.exception.message.slice(0, 129),
 					variant: 'error'
 				});
 				scope.dispatchEvent(event);
