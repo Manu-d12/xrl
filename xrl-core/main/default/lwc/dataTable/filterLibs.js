@@ -165,6 +165,45 @@ export let filterLibs = {
 			
 		}
 	},
+	date__filter(filter, record) {
+		let value = this.getValue(filter, record);
+		let filterDate;
+		let recordDate;
+        // if (!value) return false;
+		// else{
+			filterDate = new Date(filter._filterStr).toLocaleString(filter._locale,{
+				month : "2-digit",
+				day : "2-digit",
+				year: "numeric"
+			});
+			recordDate = new Date(value).toLocaleString(filter._locale,{
+				month : "2-digit",
+				day : "2-digit",
+				year: "numeric"
+			});
+		// }
+
+		switch (filter._filterOption) {
+			case 'eq':
+				return recordDate.toString().toLowerCase().indexOf(filterDate)!=-1;
+			case 'neq':
+				return value == undefined || recordDate.toString().toLowerCase().indexOf(filterDate)==-1;
+			case 'em': 
+				return value == undefined;
+			case 'nem': 
+				return value != undefined;
+			case 'gr': 
+				return recordDate > filterDate;
+			case 'gre': 
+				return recordDate >= filterDate;
+			case 'ls':
+				return recordDate < filterDate; 
+			case 'lse': 
+				return recordDate <= filterDate;
+			case 'rg': 
+			
+		}
+	},
     /*
     filterReference(filter, record) {
 		if (!record[filter.fieldName]) return false;
