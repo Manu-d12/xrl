@@ -690,7 +690,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		console.log(event.detail.payload.values);
 		event.detail.value = event.detail.payload.values;
 		this.sValues = JSON.parse(JSON.stringify(event.detail.payload.values));
-		console.log('hii',JSON.parse(JSON.stringify(event.detail.payload.values)));
+		// console.log('hii',JSON.parse(JSON.stringify(event.detail.payload.values)));
 		this.searchOnChange(event);
 	}
 
