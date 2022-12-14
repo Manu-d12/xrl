@@ -33,6 +33,14 @@
         <value>Delete</value>
     </labels>
     <labels>
+        <fullName>altTxt_locked</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>altTxt_locked</shortDescription>
+        <value>Locked</value>
+    </labels>
+    <labels>
         <fullName>altTxt_dynamic</fullName>
         <categories>XRL</categories>
         <language>en_US</language>
