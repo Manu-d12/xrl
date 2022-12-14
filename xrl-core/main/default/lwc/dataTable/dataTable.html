@@ -134,15 +134,16 @@
 					value={config._isFilterOptions.filterStr} data-id="filterStr" options={config._isFilterOptions.cItem.options} class="slds-p-horizontal_xx-small">
 				</lightning-combobox-->
 				<!-- <c-multiselect if:false={config._isFilterOptions.isShowStr} placeholder={config._LABELS.lbl_chooseOperation} onchange={searchOnChange} value={config._isFilterOptions.filterStr} data-id="filterStr" options={config._isFilterOptions.cItem.options} issearchable='true' configoptionssize={config.displayOptionListSize} class="slds-p-horizontal_xx-small"></c-multiselect> -->
-				<c-multiselect if:false={config._isFilterOptions.isShowStr} multiselect=true listsize={config.displayOptionListSize} onselect={handleLocalFilterSelect} 
-                data-id="filterStr" options={config._isFilterOptions.cItem.options} selectedvalues={sValues}></c-multiselect>
+				<template if:false={config._isFilterOptions.isUnary}>
+					<c-multiselect if:false={config._isFilterOptions.isShowStr} multiselect=true listsize={config.displayOptionListSize} onselect={handleLocalFilterSelect} 
+					data-id="filterStr" options={config._isFilterOptions.cItem.options} selectedvalues={sValues}></c-multiselect>
 
-				<lightning-input if:true={config._isFilterOptions.isShowToStr} type={config._isFilterOptions.type} onchange={searchOnChange} value={config._isFilterOptions.filterStrTo}  data-id="filterStrTo" class="slds-p-horizontal_xx-small"></lightning-input>
-				
+					<lightning-input if:true={config._isFilterOptions.isShowToStr} type={config._isFilterOptions.type} onchange={searchOnChange} value={config._isFilterOptions.filterStrTo}  data-id="filterStrTo" class="slds-p-horizontal_xx-small"></lightning-input>
+				</template>
 				<lightning-button-icon icon-name="utility:save" class="slds-m-left_xx-small" alternative-text={config._LABELS.altTxt_saveFilter} title={config._LABELS.title_saveFilter} data-id="saveFilter" onclick={searchOnChange}></lightning-button-icon>
-				<div if:true={config._isFilterOptions.isShowClearBtn} style="display: inline; right: 58px; top: 12px;position: absolute;">
+				<!-- <div if:true={config._isFilterOptions.isShowClearBtn} style="display: inline; right: 58px; top: 12px;position: absolute;"> -->
 					<lightning-button-icon  variant="bare" icon-name="utility:clear"  class="slds-m-left_xx-small" style="padding-top:5px" alternative-text={config._LABELS.altTxt_clearInput} title={config._LABELS.title_clear} onclick={searchClear}></lightning-button-icon>
-				</div>
+				<!-- </div> -->
 			</div>
 		</div>
 		

@@ -58,12 +58,12 @@ export let filterLibs = {
     },
     picklist__filter(filter, record) {
 		let value = this.getValue(filter, record);
-        if (!value) return false;
+        if ((filter._filterOption !== 'em' && filter._filterOption !== 'ncn' && !value)) return false;
 		switch (filter._filterOption) {
 			case 'cn':
 				return filter._filterStr.find(v => {return value.toLowerCase().includes(v.toLowerCase());});				
 			case 'ncn': 
-				return !filter._filterStr.find(v => {return value.toLowerCase().includes(v.toLowerCase());});	
+				return value == undefined || !filter._filterStr.find(v => {return value.toLowerCase().includes(v.toLowerCase());});	
 			/*case 'bn': 
 				return filter._filterStr.find(v => {return value.toLowerCase().startsWith(v.toLowerCase());});
 			case 'nbn': 
