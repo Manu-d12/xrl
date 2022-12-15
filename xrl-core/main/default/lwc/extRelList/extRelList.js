@@ -384,7 +384,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			});
 			this.dispatchEvent(toast);
 			this.config.listViewConfig[0]._changedRecords = undefined;
-			this.template.querySelector('c-Data-Table').updateView();
+			// this.template.querySelector('c-Data-Table').updateView();
+			this.loadCfg(false);
 		}
 	}
 

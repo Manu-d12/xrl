@@ -2,7 +2,7 @@
 	<span style={uStyle}>
 		<!--<span title={value} style={style}><span style="float:inherit">{value}</span></span>-->
 		<!---->
-		<div onkeyup={inlineEditFinish} if:true={iseditmode}>
+		<div onkeyup={inlineEditFinish} if:true={showEdit}>
 			<lightning-combobox if:true={col.isEditableAsPicklist} field-level-help={col.inlineHelpText} value={editValue} onchange={inlineEdit} data-id={col.fieldName} options={col.options} name={col.fieldName} variant="label-hidden" class=""></lightning-combobox>
 			<lightning-input if:true={col.isEditableRegular} type={col.type} field-level-help={col.inlineHelpText} value={editValue} onchange={inlineEdit} data-id={col.fieldName} tabindex="0"></lightning-input>
 
@@ -17,7 +17,7 @@
 				<lightning-input type="checkbox" if:true={col.isEditableBool} checked={editValue} onchange={inlineEdit}> </lightning-input>
 			</span>
 		</div>
-		<span if:false={iseditmode} title={value}>
+		<span if:false={showEdit} title={value}>
 			<lightning-input type="checkbox" if:true={isBool} checked={value} disabled="true"> </lightning-input>
 			<span if:false={isBool}>
 				<lightning-formatted-rich-text value={value} class={style} style={uStyle}></lightning-formatted-rich-text>

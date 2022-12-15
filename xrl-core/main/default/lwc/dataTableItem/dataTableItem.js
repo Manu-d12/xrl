@@ -8,6 +8,7 @@ export default class dataTableItem extends LightningElement {
 	@api iseditmode;
 	isBool = false;
 	@track config = {};
+	@track showEdit = false;
 
 	renderedCallback() {
 		if (this.iseditmode && this.row._focus === this.col.fieldName) setTimeout((() => { this.template.querySelector('[data-id="' + this.col.fieldName + '"]').focus(); }), 100);
@@ -17,6 +18,9 @@ export default class dataTableItem extends LightningElement {
 				this.config.dataTableCfg = el;
 			}
 		});
+		if (this.col.isEditable && this.row._focus === this.col.fieldName && this.config.dataTableCfg._inlineEdit != undefined){
+			this.showEdit = true;
+		}
 	}
 
 	@api
@@ -145,6 +149,7 @@ export default class dataTableItem extends LightningElement {
 		if (event.which == 13) {
 			// let config = libs.getGlobalVar(this.cfg).listViewConfig;
 			// console.log(config);
+			this.showEdit = false;
 			this.config.dataTableCfg._saveEdit(true);
 			// console.log(config);
 		}
