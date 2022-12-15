@@ -654,7 +654,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						]
 
 				};
-			this.config._isFilterOptions.filterOption = cItem._filterOption ? cItem._filterOption : 'cn';
+			this.config._isFilterOptions.filterOption = cItem._filterOption ? cItem._filterOption : 'eq';
 			this.config._isFilterOptions.isUnary = this.config._isFilterOptions.filterOptions.find(item => {return this.config._isFilterOptions.filterOption === item.value}).isUnary;
 			this.config._isFilterOptions.filterStr = cItem._filterStr;
 			this.config._isFilterOptions.filterStrTo = cItem._filterStrTo;
