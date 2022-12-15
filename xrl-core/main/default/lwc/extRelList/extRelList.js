@@ -374,9 +374,15 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 	resetChangedRecords() {
 		this.config.resetIndex += 1;
-		this.template.querySelector('c-Data-Table').setUpdateInfo('• ' + this.config.listViewConfig[0]._changedRecords.length + ' item(s) updated');
+		this.template.querySelector('c-Data-Table').setUpdateInfo('• ' + this.config.listViewConfig[0]._changedRecords.length + ' ' +this.config._LABELS.msg_itemsUpdated);
 		setTimeout((() => { this.template.querySelector('c-Data-Table').setUpdateInfo(''); }), 3000);
 		if(this.config.loopIndex === this.config.resetIndex){
+			const toast = new ShowToastEvent({
+				title: 'Success',
+				message: this.config.listViewConfig[0]._changedRecords.length + ' ' +this.config._LABELS.msg_itemsUpdated,
+				variant: 'success'
+			});
+			this.dispatchEvent(toast);
 			this.config.listViewConfig[0]._changedRecords = undefined;
 			this.template.querySelector('c-Data-Table').updateView();
 		}
@@ -546,7 +552,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 								this.dispatchEvent(toast);
 								this.showDialog = false;
 								this.config.records = this.config.records.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
-								this.allRecords = this.config.records;
+								//HYPER-243
+								this.allRecords = this.allRecords.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
 								this.template.querySelector('c-Data-Table').updateView();
 								this.config.listViewConfig[0].rowChecked = false;
 							}
@@ -840,7 +847,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		libs.saveConfig(this.apiName, this.localConfig);
 		this.config.dialog = undefined;
 		this.config.records = undefined;
-		libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.config?.listView?.name, callback: this.setConfig });
+		this.loadCfg(false);
+		// libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.config?.listView?.name, callback: this.setConfig });
 	}
 
 	handleEventActions(event, val) {

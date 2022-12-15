@@ -2,12 +2,13 @@ export let filterLibs = {
 
     string__filter(filter, record) {
 		let value = this.getValue(filter, record);
-        if (!value) return false;
+        if ((filter._filterOption !== 'em' && filter._filterOption !== 'ncn' && !value)) return false;
+		/*eslint-disable*/
 		switch (filter._filterOption) {
 			case 'cn':
 				return value.toLowerCase().includes(filter._filterStr.toLowerCase());
 			case 'ncn': 
-				return value.toLowerCase().indexOf(filter._filterStr.toLowerCase()) === -1;
+				return value == undefined || value == '' ||  (value.toLowerCase().indexOf(filter._filterStr.toLowerCase()) === -1);
 			case 'bn': 
 				return value.toLowerCase().startsWith(filter._filterStr.toLowerCase()) === true;
 			case 'nbn': 
@@ -30,14 +31,14 @@ export let filterLibs = {
 		
 		let value = this.getValue(filter, record);
 		console.log('referece filter', filter, record, value);
-        if (!value) return false;
+        if ((filter._filterOption !== 'em' && filter._filterOption !== 'ncn' && !value)) return false;
 		
 
 		switch (filter._filterOption) {
 			case 'cn':
 				return value.toLowerCase().includes(filter._filterStr.toLowerCase());
 			case 'ncn': 
-				return value.toLowerCase().indexOf(filter._filterStr.toLowerCase()) === -1;
+				return value == undefined || value == '' ||  (value.toLowerCase().indexOf(filter._filterStr.toLowerCase()) === -1);
 			case 'bn': 
 				return value.toLowerCase().startsWith(filter._filterStr.toLowerCase()) === true;
 			case 'nbn': 
@@ -58,12 +59,12 @@ export let filterLibs = {
     },
     picklist__filter(filter, record) {
 		let value = this.getValue(filter, record);
-        if (!value) return false;
+        if ((filter._filterOption !== 'em' && filter._filterOption !== 'ncn' && !value)) return false;
 		switch (filter._filterOption) {
 			case 'cn':
 				return filter._filterStr.find(v => {return value.toLowerCase().includes(v.toLowerCase());});				
 			case 'ncn': 
-				return !filter._filterStr.find(v => {return value.toLowerCase().includes(v.toLowerCase());});	
+				return value == undefined || !filter._filterStr.find(v => {return value.toLowerCase().includes(v.toLowerCase());});	
 			/*case 'bn': 
 				return filter._filterStr.find(v => {return value.toLowerCase().startsWith(v.toLowerCase());});
 			case 'nbn': 
@@ -84,12 +85,12 @@ export let filterLibs = {
     },
     number__filter(filter, record) {
 		let value = this.getValue(filter, record);
-        if (!value) return false;
+        if ((filter._filterOption !== 'em' && filter._filterOption !== 'ncn' && !value)) return false;
 		switch (filter._filterOption) {
 			case 'cn': 
 				return value.toString().indexOf(filter._filterStr) > -1;
 			case 'ncn': 
-				return value.toString().indexOf(filter._filterStr) === -1;
+				return value == undefined || value.toString().indexOf(filter._filterStr) === -1;
 			case 'bn': 
 				return value.toString().startsWith(filter._filterStr) === true;
 			case 'nbn': 

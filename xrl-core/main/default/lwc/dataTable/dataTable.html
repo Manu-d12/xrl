@@ -19,8 +19,8 @@
 		<table role="grid" if:true={tableRecords} class="slds-table slds-table_bordered slds-table_col-bordered extRelList" style="table-layout: fixed;">
 			<thead>
 				<tr class="slds-line-height_reset">
-					<th scope="col" if:true={config.isShowNumeration} style="width: 2rem;">
-						<div class="">
+					<th scope="col" if:true={config.isShowNumeration} style="width: 3rem;">
+						<div class="slds-cell-wrap">
 						</div>
 					</th>
 					<th scope="col" if:true={config.isShowCheckBoxes} style="width: 2rem;">
@@ -50,7 +50,7 @@
 			<tbody class="extRelListTable">
 				<template if:false={hasGrouping} for:each={tableRecords} for:item="dItem" for:index="index">
 					<tr key={dItem.Id} class={dItem._rowCss} style={dItem._rowStyle} data-rowind={dItem.Id}>
-						<td scope="col" if:true={config.isShowNumeration} style="width: 2rem;" data-rowind={index} class="slds-grid slds-float_right">{dItem.sl}					
+						<td scope="col" if:true={config.isShowNumeration} style="width: 3rem;" data-rowind={index} class="slds-grid slds-truncate">{dItem.sl}					
 						</td>
 						<td scope="col" if:true={config.isShowCheckBoxes} style="width: 2rem;" data-rowind={index}>
 							<lightning-input type="checkbox" data-rowind={index} onchange={checkRow} checked={dItem._isChecked}></lightning-input>
@@ -129,20 +129,21 @@
 
 			<div class="slds-popover__body slds-grid" onkeyup={searchFinish}>
 				<lightning-combobox placeholder={config._LABELS.lbl_chooseOperation} value={config._isFilterOptions.filterOption} data-id="filterOperation" onchange={searchOperationChange} options={config._isFilterOptions.filterOptions} class="slds-p-horizontal_xx-small" style="width:100%"></lightning-combobox>
+				<template if:false={config._isFilterOptions.isUnary}>
 				<lightning-input if:true={config._isFilterOptions.isShowStr} type={config._isFilterOptions.type} onchange={searchOnChange} value={config._isFilterOptions.filterStr} tabindex="0" data-id="filterStr" class="slds-p-horizontal_xx-small"></lightning-input>
-				<!--lightning-combobox if:false={config._isFilterOptions.isShowStr} placeholder="Choose operation" onchange={searchOnChange} 
-					value={config._isFilterOptions.filterStr} data-id="filterStr" options={config._isFilterOptions.cItem.options} class="slds-p-horizontal_xx-small">
-				</lightning-combobox-->
-				<!-- <c-multiselect if:false={config._isFilterOptions.isShowStr} placeholder={config._LABELS.lbl_chooseOperation} onchange={searchOnChange} value={config._isFilterOptions.filterStr} data-id="filterStr" options={config._isFilterOptions.cItem.options} issearchable='true' configoptionssize={config.displayOptionListSize} class="slds-p-horizontal_xx-small"></c-multiselect> -->
-				<c-multiselect if:false={config._isFilterOptions.isShowStr} multiselect=true listsize={config.displayOptionListSize} onselect={handleLocalFilterSelect} 
-                data-id="filterStr" options={config._isFilterOptions.cItem.options} selectedvalues={sValues}></c-multiselect>
+					<!--lightning-combobox if:false={config._isFilterOptions.isShowStr} placeholder="Choose operation" onchange={searchOnChange} 
+						value={config._isFilterOptions.filterStr} data-id="filterStr" options={config._isFilterOptions.cItem.options} class="slds-p-horizontal_xx-small">
+					</lightning-combobox-->
+					<!-- <c-multiselect if:false={config._isFilterOptions.isShowStr} placeholder={config._LABELS.lbl_chooseOperation} onchange={searchOnChange} value={config._isFilterOptions.filterStr} data-id="filterStr" options={config._isFilterOptions.cItem.options} issearchable='true' configoptionssize={config.displayOptionListSize} class="slds-p-horizontal_xx-small"></c-multiselect> -->
+					<c-multiselect if:false={config._isFilterOptions.isShowStr} multiselect=true listsize={config.displayOptionListSize} onselect={handleLocalFilterSelect} 
+					data-id="filterStr" options={config._isFilterOptions.cItem.options} selectedvalues={sValues}></c-multiselect>
 
-				<lightning-input if:true={config._isFilterOptions.isShowToStr} type={config._isFilterOptions.type} onchange={searchOnChange} value={config._isFilterOptions.filterStrTo}  data-id="filterStrTo" class="slds-p-horizontal_xx-small"></lightning-input>
-				
+					<lightning-input if:true={config._isFilterOptions.isShowToStr} type={config._isFilterOptions.type} onchange={searchOnChange} value={config._isFilterOptions.filterStrTo}  data-id="filterStrTo" class="slds-p-horizontal_xx-small"></lightning-input>
+				</template>
 				<lightning-button-icon icon-name="utility:save" class="slds-m-left_xx-small" alternative-text={config._LABELS.altTxt_saveFilter} title={config._LABELS.title_saveFilter} data-id="saveFilter" onclick={searchOnChange}></lightning-button-icon>
-				<div if:true={config._isFilterOptions.isShowClearBtn} style="display: inline; right: 58px; top: 12px;position: absolute;">
+				<!-- <div if:true={config._isFilterOptions.isShowClearBtn} style="display: inline; right: 58px; top: 12px;position: absolute;"> -->
 					<lightning-button-icon  variant="bare" icon-name="utility:clear"  class="slds-m-left_xx-small" style="padding-top:5px" alternative-text={config._LABELS.altTxt_clearInput} title={config._LABELS.title_clear} onclick={searchClear}></lightning-button-icon>
-				</div>
+				<!-- </div> -->
 			</div>
 		</div>
 		
