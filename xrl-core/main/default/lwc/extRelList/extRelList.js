@@ -128,8 +128,55 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			this.config.dataTableConfig = {};
 			this.config.dataTableConfig.cmpName = 'dataTable';
 			this.config.dataTableConfig.colModel = [{
-				"fieldName" : "Id"
+				"fieldName" : "Id",
+				"updateable": false,
+				"isNameField": false,
+				"isEditable": false,
+				"isFilterable": true,
+				"isSortable": true
 			}];
+			if(this.config.sObjApiName.toLowerCase().includes('history')){
+				this.config.dataTableConfig.colModel = [
+					{
+					"fieldName" : "Id"
+					},
+					{
+						"label": "New Value",
+						"fieldName": "NewValue",
+						"updateable": false,
+						"isNameField": false,
+						"isEditable": false,
+					},
+					{
+						"label": "Old Value",
+						"fieldName": "OldValue",
+						"updateable": false,
+						"isNameField": false,
+						"isEditable": false,
+					},
+					{
+						"label": "Created Date",
+						"fieldName": "CreatedDate",
+						"type": "datetime",
+						"updateable": false,
+						"isNameField": false,
+						"isEditable": false,
+					},
+					{
+						"label": "Changed Field",
+						"fieldName": "Field",
+						"updateable": false,
+						"isNameField": false,
+						"isEditable": false,
+					},
+					{
+						"label": this.apiName.split('::')[2].split('.')[0] +  " ID",
+						"fieldName": this.apiName.split('::')[2].split('.')[0] + ".Id",
+					}
+				];
+				this.config.dataTableConfig.groupFieldName= this.apiName.split('::')[2].split('.')[0] + ".Id";
+				this.config.dataTableConfig.groupOrder= "ASC";
+			}
 		} 
 		console.log('dataTable Config: ', this.config.dataTableConfig.colModel);
 
@@ -157,7 +204,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		console.log('mergedConfig', userConfig);
 
 		this.config.listViewConfig = userConfig;
-		this.config.listView = data[cmd].listViews.find(v => { return v.isUserConfig;});
+		this.config.listView = data[cmd].listViews.findLast(v => { return v.isUserConfig;});
 		console.log(JSON.stringify(this.config.listView));
 		this.config.currency =  data[cmd].currency;
 		//if (this.config.userInfo.isAdminAccess === true) delete this.localConfig.listViewName;
@@ -259,6 +306,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	loadRecords() {
+		// let condition = this.config.sObjApiName.includes('History') ? 
+		// 				"WHERE Case.Account.Id='"+ this.recordId +"' " :
+		// 				this.config.listViewConfig[0].addCondition;
 		libs.remoteAction(this, 'query', {
 			isNeedDescribe: true,
 			sObjApiName: this.config.sObjApiName,
@@ -324,10 +374,18 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 	resetChangedRecords() {
 		this.config.resetIndex += 1;
-		this.template.querySelector('c-Data-Table').setUpdateInfo('• ' + this.config.listViewConfig[0]._changedRecords.length + ' item(s) updated');
+		this.template.querySelector('c-Data-Table').setUpdateInfo('• ' + this.config.listViewConfig[0]._changedRecords.length + ' ' +this.config._LABELS.msg_itemsUpdated);
 		setTimeout((() => { this.template.querySelector('c-Data-Table').setUpdateInfo(''); }), 3000);
-		if(this.config.loopIndex === this.config.resetIndex)
+		if(this.config.loopIndex === this.config.resetIndex){
+			const toast = new ShowToastEvent({
+				title: 'Success',
+				message: this.config.listViewConfig[0]._changedRecords.length + ' ' +this.config._LABELS.msg_itemsUpdated,
+				variant: 'success'
+			});
+			this.dispatchEvent(toast);
 			this.config.listViewConfig[0]._changedRecords = undefined;
+			this.template.querySelector('c-Data-Table').updateView();
+		}
 	}
 
 	handleEvent(event) {
@@ -339,7 +397,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if (val.startsWith('dialog:')) this.handleEventDialog(event);
 		if (val.startsWith('std:refresh')) {
 			//libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.localConfig.listViewName, callback: this.loadRecords });
-			libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.config?.listView?.name, callback: this.loadCfg });
+			// libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.config?.listView?.name, callback: this.loadCfg });
+			this.loadCfg(false);
 		}
 
 		if (val.startsWith('std:')) this.handleEventActions(event, val);
@@ -366,13 +425,14 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 			this.config.loopIndex = 0;
 			this.config.resetIndex = 0;
-			let saveChunk = this.config.listViewConfig[0].saveChunk ? this.config.listViewConfig[0].saveChunk : 200; //200 is the default value for saveChunk
+			let saveChunk = this.config.listViewConfig[0].saveChunkSize ? this.config.listViewConfig[0].saveChunkSize : 200; //200 is the default value for saveChunk
 			let index = 0;
-			// console.log('HERE>',JSON.parse(JSON.stringify(this.config.listViewConfig[0])));
 			// console.log("rollback",this.config.listViewConfig[0].rollBack);
 			while(index <= changedItems.length){
-				let chunk = changedItems.slice(index,changedItems[(index+saveChunk)] ? (index+saveChunk) : (changedItems.length));
-				index += changedItems[(index+saveChunk)] ? (saveChunk) : (changedItems.length);
+				let lIndex = changedItems[(parseInt(index)+parseInt(saveChunk))] ? (parseInt(index)+parseInt(saveChunk)) : (changedItems.length);
+				let chunk = changedItems.slice(index,lIndex);
+				index += changedItems[(parseInt(index)+parseInt(saveChunk))] ? parseInt(saveChunk) : (changedItems.length);
+				// index += chunk.length;
 				this.config.loopIndex += 1;
 				libs.remoteAction(this, 'saveRecords', { records: chunk, 
 					sObjApiName: this.config.sObjApiName,
@@ -492,7 +552,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 								this.dispatchEvent(toast);
 								this.showDialog = false;
 								this.config.records = this.config.records.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
-								this.allRecords = this.config.records;
+								//HYPER-243
+								this.allRecords = this.allRecords.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
 								this.template.querySelector('c-Data-Table').updateView();
 								this.config.listViewConfig[0].rowChecked = false;
 							}
@@ -721,12 +782,33 @@ export default class extRelList extends NavigationMixin(LightningElement) {
         }
 	}
 	searchOnObjectValues(obj,sTerm){
+		let dateFields = [];
+		dateFields = this.config.listViewConfig[0].colModel.filter((el)=> el.type === 'date' || el.type === 'datetime');
+		/* eslint-disable */
 		for(let key in obj){
 			if(obj[key] && typeof obj[key] === 'object'){
 				if(this.searchOnObjectValues(obj[key],sTerm)) return true;
 			}
 			else if(obj[key] && obj[key].toString().toLowerCase().indexOf(sTerm)!=-1) {
 				return true;
+			}
+			//to search on date fields with timezone adjusted
+			let field = {};
+			dateFields.forEach((el)=>{
+				if(el.fieldName === key){
+					field = el;
+				}
+			});
+			if(field.type === 'date'){
+				let val = new Date(obj[key]).toLocaleString(this.config.userInfo.locale,{
+					month : "2-digit",
+					day : "2-digit",
+					year: "numeric",
+					timeZone: this.config.userInfo.timezone
+				});
+				if(val.toString().toLowerCase().indexOf(sTerm)!=-1) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -765,7 +847,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		libs.saveConfig(this.apiName, this.localConfig);
 		this.config.dialog = undefined;
 		this.config.records = undefined;
-		libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.config?.listView?.name, callback: this.setConfig });
+		this.loadCfg(false);
+		// libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.config?.listView?.name, callback: this.setConfig });
 	}
 
 	handleEventActions(event, val) {
@@ -955,5 +1038,6 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		console.log(ws['!ref']);
 		XLSX.utils.book_append_sheet(wb, ws, this.config.sObjLabel + ' '  + this.config?.listView?.label);
 		XLSX.writeFile(wb, this.config.sObjLabel + ' ' + this.config?.listView?.label + '.xlsx', { cellStyles: true, WTF: 1 });
+		
 	}
 }

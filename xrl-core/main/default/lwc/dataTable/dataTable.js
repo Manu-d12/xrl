@@ -2,6 +2,7 @@ import { LightningElement, api, track } from 'lwc';
 import { libs } from 'c/libs';
 import { filterLibs } from './filterLibs';
 import { NavigationMixin } from "lightning/navigation";
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 const defClass = 'slds-grid slds-grid_align-spread';
 export default class dataTable extends NavigationMixin(LightningElement) {
@@ -90,21 +91,20 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				return result;
 			}
 			else if (isPager) {
-				console.log('HERE>2');
 				let startIndex = (this.config.pager.curPage - 1) * this.config.pager.pageSize;
 				let endIndex = (startIndex + parseInt(this.config.pager.pageSize)) < this.records.length ? (startIndex + parseInt(this.config.pager.pageSize)) : this.records.length;
 				let result = [];
 				console.log('stindex ',startIndex + ' ' + endIndex);
 				for (let group of this.groupedRecords) {
-					if (startIndex > group.records[group.records.length - 1].sl - 1) continue;
-					if (endIndex <= group.records[0].sl - 1) break;
+					if (startIndex > group.records[group.records.length - 1].index - 1) continue;
+					if (endIndex <= group.records[0].index - 1) break;
 					let gr = Object.assign({}, group);
 					gr.records = group.records.map(r => r);
-					if (startIndex >= gr.records[0].sl) {
-						gr.records.splice(0, startIndex - (gr.records[0].sl + 1));
+					if (startIndex >= gr.records[0].index) {
+						gr.records.splice(0, startIndex - (gr.records[0].index + 1));
 					}					
-					if (endIndex < gr.records[gr.records.length - 1].sl) {
-						gr.records.splice(endIndex - (gr.records[0].sl + 1));
+					if (endIndex < gr.records[gr.records.length - 1].index) {
+						gr.records.splice(endIndex - (gr.records[0].index + 1));
 					}
 					console.log('gr ',gr.records.length);
 					result.push(gr);
@@ -161,7 +161,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 
 	get groupColspan() {
-		return this.config.colModel.filter(col => !col.isHidden).length - 1;
+		let len = this.config.colModel.filter(col => !col.isHidden).length;
+		return len % 2 === 0 ? len -1 : len;
 	}
 
 	_sortSequence = [];
@@ -185,8 +186,13 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			order: this.config.groupOrder.toLowerCase()
 		}
 		this.records.forEach(r => {
-			let groupName = r[this.config.groupingParams.field] || 'empty';
-			console.log('groupNAme',groupName);
+		
+			let groupName;
+			if(this.config.groupingParams.field.split('.')[1]){
+				groupName = r[this.config.groupingParams.field.split('.')[0]][this.config.groupingParams.field.split('.')[1]] || 'empty';
+			}else{
+				groupName = r[this.config.groupingParams.field] || 'empty';
+			}
 			let group = result.has(groupName) ? result.get(groupName) : {
 				title: groupName,
 				isChecked: false,
@@ -477,7 +483,15 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 			let cItem = this.getColItem(colName);
 			
-			if (!cItem || !cItem.isEditable) return;
+			if (!cItem || !cItem.isEditable) {
+				const toast = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.msg_rowDblClickError,
+					variant: 'error'
+				});
+				this.dispatchEvent(toast);
+				return;
+			}
 
 		if (this.config._inlineEdit !== undefined) {
 			this.records[this.config._inlineEdit]._isEditable = false;
@@ -640,7 +654,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						]
 
 				};
-			this.config._isFilterOptions.filterOption = cItem._filterOption ? cItem._filterOption : 'cn';
+			this.config._isFilterOptions.filterOption = cItem._filterOption ? cItem._filterOption : 'eq';
+			this.config._isFilterOptions.isUnary = this.config._isFilterOptions.filterOptions.find(item => {return this.config._isFilterOptions.filterOption === item.value}).isUnary;
 			this.config._isFilterOptions.filterStr = cItem._filterStr;
 			this.config._isFilterOptions.filterStrTo = cItem._filterStrTo;
 			this.config._isFilterOptions.isShowStr = cItem.options === undefined;
@@ -675,7 +690,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		console.log(event.detail.payload.values);
 		event.detail.value = event.detail.payload.values;
 		this.sValues = JSON.parse(JSON.stringify(event.detail.payload.values));
-		console.log('hii',JSON.parse(JSON.stringify(event.detail.payload.values)));
+		// console.log('hii',JSON.parse(JSON.stringify(event.detail.payload.values)));
 		this.searchOnChange(event);
 	}
 
@@ -767,6 +782,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						if(filter.type === 'reference' && record[(filter.fieldName).slice(0,-2)]){
 							return filterLibs[filter.type + '__filter'](filter, record);
 						}else{
+							filter._locale = libs.getGlobalVar(this.cfg).userInfo.locale;
+							filter._timeZone = libs.getGlobalVar(this.cfg).userInfo.timeZone;
 							return filterLibs[filter.type + '__filter'](filter, record);
 						}
 					})

@@ -206,7 +206,7 @@ export let libs = {
 				"cmd" : "dialog:setPagerParam"
 			},
 			"pagerBottom" : {
-				"defValue": false,
+				"defValue": true,
 				"type": "checkbox",
 				"label": _labels.lbl_enableBottomPagination,
 				"tooltip": _labels.tooltip_showBottomPagination,
@@ -233,6 +233,7 @@ export let libs = {
 				"cmd" : "dialog:setTableParam",
 			},
 			"groupOrder" : {
+				"defValue": "ASC",
 				"type": "combobox",
 				"label": "Grouping Orders",
 				"tooltip": "ASC for Ascending and DESC for Descending",
@@ -357,7 +358,7 @@ export let libs = {
 				console.error(result.exception, result.log);
 				const event = new ShowToastEvent({
 					title: result.exception.title,
-					message: result.exception.message,
+					message: result.exception.message.slice(0, 129),
 					variant: 'error'
 				});
 				scope.dispatchEvent(event);
