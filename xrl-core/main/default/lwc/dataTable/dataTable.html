@@ -29,7 +29,7 @@
 						</div>
 					</th>
 					<template for:each={config.colModel} if:false={hItem.isHidden} for:item="hItem" for:index="index" key={hItem.label}>
-						<th aria-sort="none" if:false={hItem.isActions} class="slds-is-sortable slds-text-title_caps" style={hItem._style} aria-label={hItem.label} scope="col" key={hItem.label}>
+						<th aria-sort="none" if:false={hItem.isActions} class="slds-is-sortable slds-text-title_caps slds-truncate" style={hItem._style} aria-label={hItem.label} scope="col" key={hItem.label}>
 							<span data-id={hItem.fieldName} class="slds-th__action">
 								<lightning-icon if:true={hItem.isFilterable} variant={hItem._filterVariant} title={hItem._filterCondition} data-id={hItem.fieldName} icon-name="utility:filterList" size="xx-small" alternative-text="Filter Column" onclick={setFilter} aria-describedby={hItem.fieldName}>&nbsp;</lightning-icon>
 								
