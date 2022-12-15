@@ -168,21 +168,19 @@ export let filterLibs = {
 	},
 	date__filter(filter, record) {
 		let value = this.getValue(filter, record);
+		if ((filter._filterOption !== 'em' && filter._filterOption !== 'neq' && !value)) return false;
 		let filterDate;
 		let recordDate;
-        // if (!value) return false;
-		// else{
-			filterDate = new Date(filter._filterStr).toLocaleString(filter._locale,{
-				month : "2-digit",
-				day : "2-digit",
-				year: "numeric"
-			});
-			recordDate = new Date(value).toLocaleString(filter._locale,{
-				month : "2-digit",
-				day : "2-digit",
-				year: "numeric"
-			});
-		// }
+		filterDate = new Date(filter._filterStr).toLocaleString(filter._locale,{
+			month : "2-digit",
+			day : "2-digit",
+			year: "numeric"
+		});
+		recordDate = new Date(value).toLocaleString(filter._locale,{
+			month : "2-digit",
+			day : "2-digit",
+			year: "numeric"
+		});
 
 		switch (filter._filterOption) {
 			case 'eq':
@@ -202,6 +200,12 @@ export let filterLibs = {
 			case 'lse': 
 				return recordDate <= filterDate;
 			case 'rg': 
+				let filterTwoDate = new Date(filter._filterStrTo).toLocaleString(filter._locale,{
+					month : "2-digit",
+					day : "2-digit",
+					year: "numeric"
+				});
+				return recordDate >= filterDate && recordDate <= filterTwoDate;
 			
 		}
 	},
