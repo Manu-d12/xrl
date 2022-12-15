@@ -782,6 +782,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						if(filter.type === 'reference' && record[(filter.fieldName).slice(0,-2)]){
 							return filterLibs[filter.type + '__filter'](filter, record);
 						}else{
+							filter._locale = libs.getGlobalVar(this.cfg).userInfo.locale;
+							filter._timeZone = libs.getGlobalVar(this.cfg).userInfo.timeZone;
 							return filterLibs[filter.type + '__filter'](filter, record);
 						}
 					})
