@@ -654,13 +654,17 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						]
 
 				};
-			this.config._isFilterOptions.filterOption = cItem._filterOption ? cItem._filterOption : 'eq';
-			this.config._isFilterOptions.isUnary = this.config._isFilterOptions.filterOptions.find(item => {return this.config._isFilterOptions.filterOption === item.value}).isUnary;
-			this.config._isFilterOptions.filterStr = cItem._filterStr;
-			this.config._isFilterOptions.filterStrTo = cItem._filterStrTo;
-			this.config._isFilterOptions.isShowStr = cItem.options === undefined;
-			this.config._isFilterOptions.isShowToStr = this.config._isFilterOptions.filterOption === 'rg';
-			this.config._isFilterOptions.isShowClearBtn = (cItem._filterStr && cItem._filterStr.length > 0)
+			if(this.config._isFilterOptions != undefined){
+				this.config._isFilterOptions.filterOption = cItem._filterOption ? cItem._filterOption : 'eq';
+				this.config._isFilterOptions.isUnary = this.config._isFilterOptions.filterOptions.find(item => {return this.config._isFilterOptions.filterOption === item.value}).isUnary != undefined ?
+														this.config._isFilterOptions.filterOptions.find(item => {return this.config._isFilterOptions.filterOption === item.value}).isUnary :
+														false;
+				this.config._isFilterOptions.filterStr = cItem._filterStr;
+				this.config._isFilterOptions.filterStrTo = cItem._filterStrTo;
+				this.config._isFilterOptions.isShowStr = cItem.options === undefined;
+				this.config._isFilterOptions.isShowToStr = this.config._isFilterOptions.filterOption === 'rg';
+				this.config._isFilterOptions.isShowClearBtn = (cItem._filterStr && cItem._filterStr.length > 0);
+			}
 
 			setTimeout((() => { 
 				if (this.template.querySelector('[data-id="filterStr"]')) {
