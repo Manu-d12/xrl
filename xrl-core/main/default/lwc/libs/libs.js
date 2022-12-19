@@ -358,7 +358,7 @@ export let libs = {
 				console.error(result.exception, result.log);
 				//HYPER-247
 				let formattedErrMsg = '';
-				if(result.exception.message.includes('Update failed')){
+				if(result.exception.message.includes('Update failed') && result.exception.message.includes('max length')){
 					formattedErrMsg = (result.exception.message.substring(
 						result.exception.message.indexOf(";") + 1, 
 						result.exception.message.lastIndexOf("):")
