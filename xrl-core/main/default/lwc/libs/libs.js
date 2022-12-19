@@ -356,9 +356,19 @@ export let libs = {
 			scope.config.isSpinner = false;
 			if ('exception' in result) {
 				console.error(result.exception, result.log);
+				//HYPER-247
+				let formattedErrMsg = '';
+				if(result.exception.message.includes('Update failed')){
+					formattedErrMsg = (result.exception.message.substring(
+						result.exception.message.indexOf(";") + 1, 
+						result.exception.message.lastIndexOf("):")
+					) + ')').replaceAll('&quot;','"');
+				}else{
+					formattedErrMsg = result.exception.message;
+				}
 				const event = new ShowToastEvent({
 					title: result.exception.title,
-					message: result.exception.message.slice(0, 129),
+					message: formattedErrMsg,
 					variant: 'error'
 				});
 				scope.dispatchEvent(event);
