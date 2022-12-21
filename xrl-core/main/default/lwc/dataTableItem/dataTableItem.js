@@ -82,6 +82,9 @@ export default class dataTableItem extends LightningElement {
 			if (this.col.type === 'boolean'){
 				this.isBool = true;
 			}
+			if (this.col.type === 'encryptedstring'){
+				val = val ? "*".repeat(val.length) : '';
+			}
 
 			if (this.col.isNameField === true) {
 				//console.log(this.col.fieldName, JSON.stringify(row), val);

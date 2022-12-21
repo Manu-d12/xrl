@@ -129,6 +129,9 @@ export let filterLibs = {
 	double__filter(filter, record) {
         return filterLibs.number__filter(filter, record);
     },
+	encryptedstring__filter(filter, record) {
+        return filterLibs.string__filter(filter, record);
+    },
 	boolean__filter(filter, record) {
 		let value = this.getValue(filter, record);
         // if (value === null) return false;
@@ -289,6 +292,9 @@ export let filterLibs = {
         return (key) 
 			? actions.find( el => { return el.value === key})
 			: actions;
+	},
+	encryptedstringFilterActions(key) {
+        return filterLibs.stringFilterActions(key);
 	},
 
 	picklistFilterActions(key) {
