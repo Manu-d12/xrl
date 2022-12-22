@@ -2,8 +2,10 @@
 	<span style={uStyle}>
 		<!--<span title={value} style={style}><span style="float:inherit">{value}</span></span>-->
 		<!---->
-		<div onkeyup={inlineEditFinish} if:true={showEdit}>
-			<lightning-combobox if:true={col.isEditableAsPicklist} field-level-help={col.inlineHelpText} value={editValue} onchange={inlineEdit} data-id={col.fieldName} options={col.options} name={col.fieldName} variant="label-hidden" class=""></lightning-combobox>
+		<div onkeyup={inlineEditFinish} if:true={showEdit} class="editDiv">
+			<!-- <lightning-combobox if:true={col.isEditableAsPicklist} field-level-help={col.inlineHelpText} value={editValue} onchange={inlineEdit} data-id={col.fieldName} options={col.options} name={col.fieldName} variant="label-hidden" class=""></lightning-combobox> -->
+			<c-multiselect if:true={col.isEditableAsPicklist} listsize={config.dataTableCfg.displayOptionListSize} onselect={inlineEdit} 
+				options={col.options} selectedvalues={editValue}></c-multiselect>
 			<lightning-input if:true={col.isEditableRegular} type={col.type} field-level-help={col.inlineHelpText} value={editValue} onchange={inlineEdit} data-id={col.fieldName} tabindex="0"></lightning-input>
 
 			<span if:false={col.isEditable} title={value} style={uStyle}>

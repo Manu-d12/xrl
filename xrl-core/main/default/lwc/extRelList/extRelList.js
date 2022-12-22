@@ -362,6 +362,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			}
 		});
 		this.config.isServerFilter = true;
+		console.log('ColModel', JSON.parse(JSON.stringify(this.config.listViewConfig[0].colModel)));
 	}
 
 	get changedRecords() {

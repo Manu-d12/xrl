@@ -346,16 +346,17 @@ export default class SqlBuilder extends LightningElement {
                     updateable: describe[key].updateable,
                     isNameField: describe[key] && describe[key].nameField === true
                 };
-                if(describe[key].type === 'picklist'){
+                if(describe[key].type === 'picklist' || describe[key].type === 'multipicklist'){
                     fieldMap.options = [];
                     describe[key].picklistValues.forEach(field => {
                         fieldMap.options.push(
                             { label: field.label, value: field.value }
                         )
                     });
+                    console.log('HERE>');
                 }
                 if (describe[key].updateable) {
-                    if (fieldMap.type === 'picklist' || fieldMap.type === 'reference') {
+                    if (fieldMap.type === 'picklist' || fieldMap.type === 'reference' || fieldMap.type === 'multipicklist') {
                         fieldMap.isEditableAsPicklist = true;
                         console.log('picklist', fieldMap);
                     } else if (fieldMap.type === 'boolean') {

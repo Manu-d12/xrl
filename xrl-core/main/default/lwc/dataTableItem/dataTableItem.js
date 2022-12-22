@@ -21,6 +21,11 @@ export default class dataTableItem extends LightningElement {
 		if (this.col.isEditable && this.row._focus === this.col.fieldName && this.config.dataTableCfg._inlineEdit != undefined){
 			this.showEdit = true;
 		}
+		window.addEventListener('keydown', (event) => {
+			if (this.col.type === 'multipicklist' && event.which == 13) {
+				this.inlineEditFinish(event);
+			}
+		});
 	}
 
 	@api
@@ -119,7 +124,11 @@ export default class dataTableItem extends LightningElement {
 		if (this.col.type === 'boolean'){
 			this.isBool = true;
 		}
-		[row,val] = libs.getLookupRow(this.row, this.col.fieldName);
+		// if(this.col.type === 'multiselect'){
+		// 	val = row[this.col.fieldName].split(';');
+		// }else{
+			[row,val] = libs.getLookupRow(this.row, this.col.fieldName);
+		// }
 		return val;
 	}
 
@@ -134,12 +143,16 @@ export default class dataTableItem extends LightningElement {
 		// console.log(event);
 		// let config = libs.getGlobalVar(this.cfg).listViewConfig;
 		// console.log(config);
-		this.config.dataTableCfg._saveEdit(true, this.col.fieldName, this.col.isEditableBool ? event.target.checked : event.target.value);
-		// console.log(config);
+		// let value = this.col.isEditableBool ? event.target.checked : this.col.type === 'picklist'? event.detail.payload.value : this.col.type === 'multipicklist' ? event.detail.payload.values : event.target.value;
+		// if(this.col.type === 'multipicklist'){
+		// 	value = event.detail.payload.values;
+		// }
+		console.log('HERE>',event.detail.payload.value);
+		this.config.dataTableCfg._saveEdit(true, this.col.fieldName, this.col.isEditableBool ? event.target.checked : this.col.type === 'picklist'? event.detail.payload.value : this.col.type === 'multipicklist' ? event.detail.payload.values : event.target.value);
 	}
 	
 	inlineEditFinish(event) {
-		console.log(event.which);
+		console.log('event ',event.which);
 		if (event.which == 27) {
 			// let config = libs.getGlobalVar(this.cfg).listViewConfig;
 			// console.log(config);
@@ -150,6 +163,7 @@ export default class dataTableItem extends LightningElement {
 			// let config = libs.getGlobalVar(this.cfg).listViewConfig;
 			// console.log(config);
 			this.showEdit = false;
+			console.log('HERE');
 			this.config.dataTableCfg._saveEdit(true);
 			// console.log(config);
 		}
