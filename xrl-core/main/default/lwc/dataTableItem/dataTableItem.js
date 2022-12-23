@@ -11,7 +11,7 @@ export default class dataTableItem extends LightningElement {
 	@track showEdit = false;
 
 	renderedCallback() {
-		if (this.iseditmode && this.row._focus === this.col.fieldName) setTimeout((() => { this.template.querySelector('[data-id="' + this.col.fieldName + '"]').focus(); }), 100);
+		if (this.iseditmode && this.template.querySelector('[data-id="' + this.col.fieldName + '"]') != undefined && this.row._focus === this.col.fieldName) setTimeout((() => { this.template.querySelector('[data-id="' + this.col.fieldName + '"]').focus(); }), 100);
 		//console.log(this.col.options);
 		libs.getGlobalVar(this.cfg).listViewConfig.forEach((el)=>{
 			if(el.cmpName === 'dataTable'){
@@ -81,6 +81,9 @@ export default class dataTableItem extends LightningElement {
 			}
 			if (this.col.type === 'boolean'){
 				this.isBool = true;
+			}
+			if (this.col.type === 'encryptedstring'){
+				val = val ? "*".repeat(val.length) : '';
 			}
 
 			if (this.col.isNameField === true) {
