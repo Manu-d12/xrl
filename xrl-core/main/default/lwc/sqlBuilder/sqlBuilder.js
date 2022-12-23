@@ -437,4 +437,8 @@ export default class SqlBuilder extends LightningElement {
         });
         return this.ElementList
     }
+    tabChanged(){
+        this.loadFields(this.config.sObjApiName);
+        this.config.sqlBuilder._objectStack = [{relationShip:this.config.sObjApiName,referredObj:this.config.sObjApiName}];
+    }
 }
