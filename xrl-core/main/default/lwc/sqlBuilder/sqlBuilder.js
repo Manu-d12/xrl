@@ -178,6 +178,7 @@ export default class SqlBuilder extends LightningElement {
                 if(this.config.sqlBuilder._objectStack.length <=4 ){
                     this.config.sqlBuilder._objectStack.push({relationShip:event.target.getAttribute('data-val'),referredObj:refObj});
                     this.loadFields(refObj);
+                    this.config.sqlBuilder.isBackNeeded = this.config.sqlBuilder._objectStack.length > 1;
                 }else{
                     const toast = new ShowToastEvent({
                         title: 'Error',
@@ -271,6 +272,7 @@ export default class SqlBuilder extends LightningElement {
                 if(this.config.sqlBuilder._objectStack.length <=4 ){
                     this.config.sqlBuilder._objectStack.push({relationShip:event.target.getAttribute('data-val'),referredObj:refObj});
                     this.loadFields(refObj);
+                    this.config.sqlBuilder.isBackNeeded = this.config.sqlBuilder._objectStack.length > 1;
                 }else{
                     const toast = new ShowToastEvent({
                         title: 'Error',
@@ -443,6 +445,7 @@ export default class SqlBuilder extends LightningElement {
         return this.ElementList
     }
     tabChanged(){
+        this.config.sqlBuilder.isBackNeeded = false;
         this.loadFields(this.config.sObjApiName);
         this.config.sqlBuilder._objectStack = [{relationShip:this.config.sObjApiName,referredObj:this.config.sObjApiName}];
     }
