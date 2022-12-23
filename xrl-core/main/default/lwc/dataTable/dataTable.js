@@ -162,7 +162,10 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 	get groupColspan() {
 		let len = this.config.colModel.filter(col => !col.isHidden).length;
-		return len % 2 === 0 ? len -1 : len;
+		len += this.config.isShowCheckBoxes ? -1 : 0;
+		len += this.config.isShowNumeration ? 1 : 0;
+		len += this.config.isShowNumeration && !this.config.isShowCheckBoxes ? -1 : 0;
+		return len;
 	}
 
 	_sortSequence = [];
