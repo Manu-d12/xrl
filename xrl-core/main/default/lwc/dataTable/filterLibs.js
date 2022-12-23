@@ -171,12 +171,12 @@ export let filterLibs = {
 		if ((filter._filterOption !== 'em' && filter._filterOption !== 'neq' && !value)) return false;
 		let filterDate;
 		let recordDate;
-		filterDate = new Date(filter._filterStr).toLocaleString(filter._locale,{
+		filterDate = new Date(filter._filterStr).setHours(0, 0, 0, 0).toLocaleString(filter._locale,{
 			month : "2-digit",
 			day : "2-digit",
 			year: "numeric"
 		});
-		recordDate = new Date(value).toLocaleString(filter._locale,{
+		recordDate = new Date(value).setHours(0, 0, 0, 0).toLocaleString(filter._locale,{
 			month : "2-digit",
 			day : "2-digit",
 			year: "numeric"
