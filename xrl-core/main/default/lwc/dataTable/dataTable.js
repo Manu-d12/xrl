@@ -183,7 +183,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		let result = new Map();
 		this.config.groupingParams = {
 			field: this.config.groupFieldName,
-			order: this.config.groupOrder.toLowerCase()
+			order: this.config.groupOrder ? this.config.groupOrder.toLowerCase() : 'ASC'
 		}
 		this.records.forEach(r => {
 		
