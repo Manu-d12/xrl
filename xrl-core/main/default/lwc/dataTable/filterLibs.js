@@ -27,6 +27,18 @@ export let filterLibs = {
 				return value !== null && value !== undefined;	
 		}
     },
+	textarea__filter(filter, record) {
+        return filterLibs.string__filter(filter, record);
+    },
+	email__filter(filter, record) {
+        return filterLibs.string__filter(filter, record);
+    },
+	url__filter(filter, record) {
+        return filterLibs.string__filter(filter, record);
+    },
+	phone__filter(filter, record) {
+        return filterLibs.string__filter(filter, record);
+    },
 	reference__filter(filter, record) {
 		
 		let value = this.getValue(filter, record);
@@ -145,24 +157,56 @@ export let filterLibs = {
 	},
 	datetime__filter(filter, record) {
 		let value = this.getValue(filter, record);
-        if (!value) return false;
-		
-		let locale = libs.getGlobalVar('config').userInfo.locale;
-		let filterDate = new Date(filter._filterStr); // gets passed with timezone 0, in filter timezone - +1 - user timezone
-		let recordDate = new Date(new Date(value).toLocaleString(locale));
+		if ((filter._filterOption !== 'em' && filter._filterOption !== 'neq' && !value)) return false;
+		let filterDate;
+		let recordDate;
+		filterDate = new Date(filter._filterStr).toLocaleString(filter._locale,{
+			month : "2-digit",
+			day : "2-digit",
+			year: "numeric",
+			hour: "2-digit",
+			minute: "2-digit",
+			second: "2-digit",
+			timeZone: filter._timezone
+		});
+		recordDate = new Date(value).toLocaleString(filter._locale,{
+			month : "2-digit",
+			day : "2-digit",
+			year: "numeric",
+			hour: "2-digit",
+			minute: "2-digit",
+			second: "2-digit",
+			timeZone: filter._timezone
+		});
 
 		switch (filter._filterOption) {
 			case 'eq':
-				return Math.abs(filterDate - recordDate) / 60000 <= 15;
+				return recordDate.toString().toLowerCase().indexOf(filterDate)!=-1;
 			case 'neq':
-				return Math.abs(filterDate - recordDate) / 60000 > 15;
+				return value == undefined || recordDate.toString().toLowerCase().indexOf(filterDate)==-1;
 			case 'em': 
+				return value == undefined;
 			case 'nem': 
+				return value != undefined;
 			case 'gr': 
+				return recordDate > filterDate;
 			case 'gre': 
-			case 'ls': 
+				return recordDate >= filterDate;
+			case 'ls':
+				return recordDate < filterDate; 
 			case 'lse': 
+				return recordDate <= filterDate;
 			case 'rg': 
+				let filterTwoDate = new Date(filter._filterStrTo).toLocaleString(filter._locale,{
+					month : "2-digit",
+					day : "2-digit",
+					year: "numeric",
+					hour: "2-digit",
+					minute: "2-digit",
+					second: "2-digit",
+					timeZone: libs.getGlobalVar(this.cfg).userInfo.timezone
+				});
+				return recordDate >= filterDate && recordDate <= filterTwoDate;
 			
 		}
 	},
@@ -344,6 +388,18 @@ export let filterLibs = {
 	
 	intFilterActions(key) {
         return filterLibs.numberFilterActions(key);
+	},
+	textareaFilterActions(key) {
+        return filterLibs.stringFilterActions(key);
+	},
+	emailFilterActions(key) {
+        return filterLibs.stringFilterActions(key);
+	},
+	urlFilterActions(key) {
+        return filterLibs.stringFilterActions(key);
+	},
+	phoneFilterActions(key) {
+        return filterLibs.stringFilterActions(key);
 	},
 
 	referenceFilterActions(key) {
