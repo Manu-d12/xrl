@@ -12,7 +12,7 @@
                             <li data-id="sqlBuilder:back" onclick={handleBuilderEvent} class="slds-item slds-theme_shade" >
                                 <lightning-input data-id="sqlBuilder:fieldSearch" onkeyup={handleBuilderEvent} value={config.sqlBuilder.searchTerm} variant="label-hidden" placeholder={config._LABELS.lbl_enterSearchTermHere} type="text"></lightning-input>
                             </li>
-                            <li data-id="sqlBuilder:back" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class="slds-item slds-theme_shade" ><lightning-icon onclick={handleBuilderEvent} data-id="sqlBuilder:back" size="small" icon-name="utility:reply" alternative-text={config._LABELS.lbl_back} title={config._LABELS.lbl_back}></lightning-icon> {config._LABELS.lbl_back}</li>
+                            <li if:true={config.sqlBuilder.isBackNeeded} data-id="sqlBuilder:back" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class="slds-item slds-theme_shade" ><lightning-icon onclick={handleBuilderEvent} data-id="sqlBuilder:back" size="small" icon-name="utility:reply" alternative-text={config._LABELS.lbl_back} title={config._LABELS.lbl_back}></lightning-icon> {config._LABELS.lbl_back}</li>
                         </ul>
                         <div class="slds-scrollable_y" style="height:22rem;padding:4px;">
                             <ul class="slds-has-dividers_around-space">
@@ -60,7 +60,7 @@
                                 <li data-id="sqlBuilder:back" onclick={handleBuilderEvent} class="slds-item slds-theme_shade" >
                                     <lightning-input data-id="sqlBuilder:fieldSearch" onkeyup={handleBuilderEvent} value={config.sqlBuilder.searchTerm} variant="label-hidden" placeholder={config._LABELS.lbl_enterSearchTermHere} type="text"></lightning-input>
                                 </li>
-                                <li data-id="sqlBuilder:back" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class="slds-item slds-theme_shade" ><lightning-icon onclick={handleBuilderEvent} data-id="sqlBuilder:back" size="small" icon-name="utility:reply" alternative-text={config._LABELS.lbl_back} title={config._LABELS.lbl_back}></lightning-icon>  {config._LABELS.lbl_back}</li>
+                                <li if:true={config.sqlBuilder.isBackNeeded} data-id="sqlBuilder:back" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class="slds-item slds-theme_shade" ><lightning-icon onclick={handleBuilderEvent} data-id="sqlBuilder:back" size="small" icon-name="utility:reply" alternative-text={config._LABELS.lbl_back} title={config._LABELS.lbl_back}></lightning-icon>  {config._LABELS.lbl_back}</li>
 
                             </ul>
                             <div class="slds-scrollable_y" style="height:20rem;padding:4px;">
@@ -210,7 +210,7 @@
                                 <li data-id="sqlBuilder:back" onclick={handleBuilderEvent} class="slds-item slds-theme_shade" >
                                     <lightning-input data-id="sqlBuilder:fieldSearch" onkeyup={handleBuilderEvent} value={config.sqlBuilder.searchTerm} variant="label-hidden" placeholder={config._LABELS.lbl_enterSearchTermHere} type="text"></lightning-input>
                                 </li>
-                                <li data-id="sqlBuilder:back" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class="slds-item slds-theme_shade" ><lightning-icon onclick={handleBuilderEvent} data-id="sqlBuilder:back" size="small" icon-name="utility:reply" alternative-text={config._LABELS.lbl_back} title={config._LABELS.lbl_back}></lightning-icon>  {config._LABELS.lbl_back}</li>
+                                <li if:true={config.sqlBuilder.isBackNeeded} data-id="sqlBuilder:back" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class="slds-item slds-theme_shade" ><lightning-icon onclick={handleBuilderEvent} data-id="sqlBuilder:back" size="small" icon-name="utility:reply" alternative-text={config._LABELS.lbl_back} title={config._LABELS.lbl_back}></lightning-icon>  {config._LABELS.lbl_back}</li>
                             </ul>
                             <div class="slds-scrollable_y" style="height:20rem">
                                 <ul class="slds-has-dividers_around-space">
