@@ -121,7 +121,6 @@ export default class SqlBuilder extends LightningElement {
                 this.loadFields(this.config.sqlBuilder._objectStack[this.config.sqlBuilder._objectStack.length-1].referredObj);
                 this.config.sqlBuilder.isBackNeeded = this.config.sqlBuilder._objectStack.length !== 1;
             }else{
-                console.log('Size ', this.config.sqlBuilder._objectStack.length);
                 this.config.sqlBuilder.isBackNeeded = false;
             }
             this.config.sqlBuilder.searchTerm = '';
