@@ -677,7 +677,7 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>tooltip_customFunctionExample</shortDescription>
-        <value>//Example - To use this example please remove the slashes(//) from the beginning of the return statement
+        <value>//Example
 function(row, col, val) { 
 //return val;
 }</value>
@@ -696,7 +696,7 @@ function(row, col, val) {
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_customFunctionStyleExample</shortDescription>
-        <value>//Example - To use this example please remove the slashes(//) from the beginning of the return statement
+        <value>//Example
 function(row,col,val){
 //return &quot;color:#FF0000&quot;;
 }</value>
