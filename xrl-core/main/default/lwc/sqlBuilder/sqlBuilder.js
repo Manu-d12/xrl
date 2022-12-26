@@ -232,7 +232,6 @@ export default class SqlBuilder extends LightningElement {
         if(val === "sqlBuilder:conditions:editSelectedCondition"){
             let indexVal = event.target.getAttribute('data-val'); 
             let selectedCondition = this.config.sqlBuilder.conditions.find((el)=> el.index.toString() === indexVal);
-            console.log('HERE>',JSON.parse(JSON.stringify(selectedCondition)));
             this.config.sqlBuilder.conditionOperations = [];
             // if(selectedCondition.fieldType === 'picklist'){
             //     this.config.sqlBuilder.currentCondition.fieldOptions = selectedCondition.options;
@@ -359,7 +358,6 @@ export default class SqlBuilder extends LightningElement {
                             { label: field.label, value: field.value }
                         )
                     });
-                    console.log('HERE>');
                 }
                 if (describe[key].updateable) {
                     if (fieldMap.type === 'picklist' || fieldMap.type === 'reference' || fieldMap.type === 'multipicklist') {

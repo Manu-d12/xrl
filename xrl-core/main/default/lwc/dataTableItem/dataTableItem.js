@@ -22,7 +22,7 @@ export default class dataTableItem extends LightningElement {
 			this.showEdit = true;
 		}
 		window.addEventListener('keydown', (event) => {
-			if (this.col.type === 'multipicklist' && event.which == 13) {
+			if (this.col.type === 'multipicklist' && (event.which == 13 || event.which == 27)) {
 				this.inlineEditFinish(event);
 			}
 		});
@@ -127,12 +127,16 @@ export default class dataTableItem extends LightningElement {
 		if (this.col.type === 'boolean'){
 			this.isBool = true;
 		}
-		// if(this.col.type === 'multiselect'){
-		// 	val = row[this.col.fieldName].split(';');
-		// }else{
+		if(this.col.type === 'multipicklist'){
+			val = this.row[this.col.fieldName] != undefined ? this.row[this.col.fieldName].split(';') : [];
+		}else{
 			[row,val] = libs.getLookupRow(this.row, this.col.fieldName);
-		// }
+		}
 		return val;
+	}
+	//this returns in case of picklist or multipicklist
+	get picklistType(){
+		return this.col.type === 'multipicklist';
 	}
 
 	formatNumber(num) {
@@ -146,12 +150,8 @@ export default class dataTableItem extends LightningElement {
 		// console.log(event);
 		// let config = libs.getGlobalVar(this.cfg).listViewConfig;
 		// console.log(config);
-		// let value = this.col.isEditableBool ? event.target.checked : this.col.type === 'picklist'? event.detail.payload.value : this.col.type === 'multipicklist' ? event.detail.payload.values : event.target.value;
-		// if(this.col.type === 'multipicklist'){
-		// 	value = event.detail.payload.values;
-		// }
-		console.log('HERE>',event.detail.payload.value);
-		this.config.dataTableCfg._saveEdit(true, this.col.fieldName, this.col.isEditableBool ? event.target.checked : this.col.type === 'picklist'? event.detail.payload.value : this.col.type === 'multipicklist' ? event.detail.payload.values : event.target.value);
+		let value = this.col.isEditableBool ? event.target.checked : this.col.type === 'picklist'? event.detail.payload.value : this.col.type === 'multipicklist' ? event.detail.payload.values.join(';') : event.target.value;
+		this.config.dataTableCfg._saveEdit(true, this.col.fieldName, value);
 	}
 	
 	inlineEditFinish(event) {
@@ -166,7 +166,6 @@ export default class dataTableItem extends LightningElement {
 			// let config = libs.getGlobalVar(this.cfg).listViewConfig;
 			// console.log(config);
 			this.showEdit = false;
-			console.log('HERE');
 			this.config.dataTableCfg._saveEdit(true);
 			// console.log(config);
 		}
