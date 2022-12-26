@@ -923,6 +923,13 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 
 	handleEventBulk() {
+		//HYPER-267
+		this.config.isSpinner = true;
+		setTimeout((() => { 
+			this.executeBulk();
+		}), 10);
+	}
+	executeBulk(){
 		function changeItem(that, item, fieldName, v, refNode, refNodeValue) {
 			
 			
@@ -971,6 +978,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		this.config._bulkEdit = undefined;
 
 		if (this.hasGrouping) this.setGroupRecords();
+		this.config.isSpinner = false;
 	}
 	@api
 	updateView(){
