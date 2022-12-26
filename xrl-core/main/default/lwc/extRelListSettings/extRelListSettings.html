@@ -59,13 +59,14 @@
 					<!-- Action Starts  -->
 					<lightning-tab label="Actions">
 						<template if:false={config.openNewAction}>
-							<lightning-button if:false={config.dialog.action} variant="brand" label="New Action" title="New Action" class="slds-m-right_x-small" onclick={handleNewAction}></lightning-button>
+							<lightning-button if:false={config.dialog.action} variant="brand" label="New Action" title="New Action" class="slds-m-right_x-small" data-val="openNewAction" onclick={handleNewAction}></lightning-button>
 							<lightning-combobox name="status" label="Select Action" placeholder="Choose Action" value={config.dialog.allActions} data-id="dialog:setAction" onchange={config.dialog.handleEvent} options={config.dialog.allActions}>
 							</lightning-combobox>
 						</template>
 						<template if:true={config.openNewAction}>
-							<lightning-input id="newActionId" type="text" label="Unique Action Id" onfocusout={handleNewActionSave}></lightning-input>
-							<lightning-button variant="brand" label="Save" title="Save" class="slds-m-right_x-small" onclick={handleNewActionSave}></lightning-button>
+							<lightning-input class="newActionId" id="newActionId" type="text" label="Unique Action Id"></lightning-input>
+							<br>
+							<lightning-button variant="brand" label="Save" title="Save" class="slds-m-right_x-small" data-val="actionSave" onclick={handleNewAction}></lightning-button>
 						</template>
 						<template if:true={config.dialog.action} for:each={actionItem} for:item="param" for:index="index">
 							<lightning-input if:false={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} type={param.type} label={param.label} disabled={param.isDisabled} value={param.value} data-id="dialog:setActionParam" data-param={param.paramName} data-type={param.type} checked={param.isChecked} onchange={config.dialog.handleEvent}></lightning-input>

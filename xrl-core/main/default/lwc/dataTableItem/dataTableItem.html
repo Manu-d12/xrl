@@ -20,9 +20,9 @@
 			</span>
 		</div>
 		<span if:false={showEdit} title={value}>
-			<lightning-input type="checkbox" if:true={isBool} checked={value} disabled="true"> </lightning-input>
+			<lightning-input type="checkbox" if:true={isBool} checked={value} disabled="true" data-id={col.fieldName}> </lightning-input>
 			<span if:false={isBool}>
-				<lightning-formatted-rich-text value={value} class={style} style={uStyle}></lightning-formatted-rich-text>
+				<lightning-formatted-rich-text value={value} class={style} data-id={col.fieldName} style={uStyle}></lightning-formatted-rich-text>
 			</span>
 		</span>
 	</span>

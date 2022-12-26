@@ -150,15 +150,19 @@ export default class extRelListSettings extends LightningElement {
 		}
 		return result;
 	}
-	handleNewAction(){
-		this.config.openNewAction = true;
-	}
-	handleNewActionSave(event){
-		this.config.dialog.action = event.target.value;
-		this.config.dialog.listViewConfig.actions.push({actionId:event.target.value});
-		this.config.openNewAction = false;
+	handleNewAction(event){
+		let dataId = event.target.getAttribute('data-val')
+		if(dataId === 'openNewAction'){
+			this.config.openNewAction = true;
+		}
+		if(dataId === 'actionSave'){
+			let actionId = this.template.querySelector('.newActionId').value;
+			this.config.dialog.action = actionId;
+			this.config.dialog.listViewConfig.actions.push({actionId:actionId});
+			this.config.openNewAction = false;
+		}
 	}
 	addNewUseExampleParam(event){
-		this.config.dialog.useExampleParams[event.target.getAttribute('data-param')] = event.target.getAttribute('data-val').replaceAll("//","");
+		this.config.dialog.useExampleParams[event.target.getAttribute('data-param')] = event.target.getAttribute('data-val').substring(event.target.getAttribute('data-val').indexOf('function')).replaceAll("//","");
 	}
 }
