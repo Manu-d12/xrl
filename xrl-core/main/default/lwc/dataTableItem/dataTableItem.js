@@ -21,6 +21,11 @@ export default class dataTableItem extends LightningElement {
 		if (this.col.isEditable && this.row._focus === this.col.fieldName && this.config.dataTableCfg._inlineEdit != undefined){
 			this.showEdit = true;
 		}
+		window.addEventListener('keydown', (event) => {
+			if (this.col.type === 'multipicklist' && (event.which == 13 || event.which == 27)) {
+				this.inlineEditFinish(event);
+			}
+		});
 	}
 
 	@api
@@ -122,8 +127,16 @@ export default class dataTableItem extends LightningElement {
 		if (this.col.type === 'boolean'){
 			this.isBool = true;
 		}
-		[row,val] = libs.getLookupRow(this.row, this.col.fieldName);
+		if(this.col.type === 'multipicklist'){
+			val = this.row[this.col.fieldName] != undefined ? this.row[this.col.fieldName].split(';') : [];
+		}else{
+			[row,val] = libs.getLookupRow(this.row, this.col.fieldName);
+		}
 		return val;
+	}
+	//this returns in case of picklist or multipicklist
+	get picklistType(){
+		return this.col.type === 'multipicklist';
 	}
 
 	formatNumber(num) {
@@ -137,12 +150,12 @@ export default class dataTableItem extends LightningElement {
 		// console.log(event);
 		// let config = libs.getGlobalVar(this.cfg).listViewConfig;
 		// console.log(config);
-		this.config.dataTableCfg._saveEdit(true, this.col.fieldName, this.col.isEditableBool ? event.target.checked : event.target.value);
-		// console.log(config);
+		let value = this.col.isEditableBool ? event.target.checked : this.col.type === 'picklist'? event.detail.payload.value : this.col.type === 'multipicklist' ? event.detail.payload.values.join(';') : event.target.value;
+		this.config.dataTableCfg._saveEdit(true, this.col.fieldName, value);
 	}
 	
 	inlineEditFinish(event) {
-		console.log(event.which);
+		console.log('event ',event.which);
 		if (event.which == 27) {
 			// let config = libs.getGlobalVar(this.cfg).listViewConfig;
 			// console.log(config);

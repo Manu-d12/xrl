@@ -584,7 +584,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			let record = this.records[calculatedInd];
 			record._isEditable = true;
 			record._focus = colName;
-			cItem.wrapClass = cItem.type === 'picklist' ? 'slds-cell-wrap' : cItem.wrapClass;
+			cItem.wrapClass = cItem.type === 'picklist' || cItem.type === 'multipicklist' ? 'slds-cell-wrap' : cItem.wrapClass;
 			this.config._inlineEdit = calculatedInd;
 
 				if (this.hasGrouping) {

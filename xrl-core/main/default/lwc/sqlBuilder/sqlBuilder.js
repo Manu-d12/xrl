@@ -232,7 +232,6 @@ export default class SqlBuilder extends LightningElement {
         if(val === "sqlBuilder:conditions:editSelectedCondition"){
             let indexVal = event.target.getAttribute('data-val'); 
             let selectedCondition = this.config.sqlBuilder.conditions.find((el)=> el.index.toString() === indexVal);
-            console.log('HERE>',JSON.parse(JSON.stringify(selectedCondition)));
             this.config.sqlBuilder.conditionOperations = [];
             // if(selectedCondition.fieldType === 'picklist'){
             //     this.config.sqlBuilder.currentCondition.fieldOptions = selectedCondition.options;
@@ -352,7 +351,7 @@ export default class SqlBuilder extends LightningElement {
                     updateable: describe[key].updateable,
                     isNameField: describe[key] && describe[key].nameField === true
                 };
-                if(describe[key].type === 'picklist'){
+                if(describe[key].type === 'picklist' || describe[key].type === 'multipicklist'){
                     fieldMap.options = [];
                     describe[key].picklistValues.forEach(field => {
                         fieldMap.options.push(
@@ -361,7 +360,7 @@ export default class SqlBuilder extends LightningElement {
                     });
                 }
                 if (describe[key].updateable) {
-                    if (fieldMap.type === 'picklist' || fieldMap.type === 'reference') {
+                    if (fieldMap.type === 'picklist' || fieldMap.type === 'reference' || fieldMap.type === 'multipicklist') {
                         fieldMap.isEditableAsPicklist = true;
                         console.log('picklist', fieldMap);
                     } else if (fieldMap.type === 'boolean') {
