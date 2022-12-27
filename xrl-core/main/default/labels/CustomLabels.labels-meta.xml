@@ -1631,4 +1631,20 @@ Once you are done editing the pattern, click outside the input box.</value>
         <shortDescription>msg_itemsUpdated</shortDescription>
         <value>item(s) updated</value>
     </labels>
+    <labels>
+        <fullName>msg_actionHideError</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_actionHideError</shortDescription>
+        <value>You can't select this option as you've already selected "Action visible only after record selection". Please deselect that to select this option</value>
+    </labels>
+    <labels>
+        <fullName>msg_actionVisibleOnRecordSelectionError</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_actionVisibleOnRecordSelectionError</shortDescription>
+        <value>You can't select this option as you've already selected "Hide this action". Please deselect that to select this option</value>
+    </labels>
 </CustomLabels>

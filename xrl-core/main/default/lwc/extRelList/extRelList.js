@@ -662,10 +662,29 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 			let field = this.config.dialog.listViewConfig.actions.find(e => {
 				return e.actionId === this.config.dialog.action;
-			})
+			});
 
-			if (field) {
-				field[param] = value;
+			if(param === 'actionVisibleOnRecordSelection' && value && field.actionIsHidden){
+				event.target.checked = false;
+				const msgEvent = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.msg_actionVisibleOnRecordSelectionError,
+					variant: 'error'
+				});
+				this.dispatchEvent(msgEvent);
+			}else if(param === 'actionIsHidden' && value && field.actionVisibleOnRecordSelection){
+				const msgEvent2 = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.msg_actionHideError,
+					variant: 'error'
+				});
+				this.dispatchEvent(msgEvent2);
+				event.target.checked = false;
+			}else{
+
+				if (field) {
+					field[param] = value;
+				}
 			}
 		}
 		if (val === 'dialog:setFieldParam') {
