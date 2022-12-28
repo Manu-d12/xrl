@@ -5,7 +5,7 @@
             <div class="slds-grid slds-gutters">
                 <div class="slds-col slds-size_6-of-12">
                     <div class="slds-text-heading_small"><b>{config._LABELS.lbl_availableFieldsFrom}</b> {breadcrumb}
-                        <lightning-helptext content={config._LABELS.hlpTxt_selectFields}></lightning-helptext>
+                        <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_selectFields}></lightning-helptext>
                     </div>
                     <div style="border:0.5px solid rgb(183, 180, 180);">
                         <ul if:true={config.sqlBuilder._objectStack} class="slds-has-dividers_around-space">
@@ -14,12 +14,12 @@
                             </li>
                             <li if:true={config.sqlBuilder.isBackNeeded} data-id="sqlBuilder:back" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class="slds-item slds-theme_shade" ><lightning-icon onclick={handleBuilderEvent} data-id="sqlBuilder:back" size="small" icon-name="utility:reply" alternative-text={config._LABELS.lbl_back} title={config._LABELS.lbl_back}></lightning-icon> {config._LABELS.lbl_back}</li>
                         </ul>
-                        <div class="slds-scrollable_y" style="height:22rem;padding:4px;">
+                        <div class="slds-scrollable_y" style="height:24rem;padding:4px;">
                             <ul class="slds-has-dividers_around-space">
                                 <template if:true={config.sqlBuilder.fields} for:each={config.sqlBuilder.fields} for:item="field" for:index="index">
                                     <li data-id="sqlBuilder:selectItem" onclick={handleBuilderEvent} class={field.css} style="cursor: pointer;margin-top: 0px;padding:5px;" data-ref={field.refObj} data-val={field.fieldName} key={field.fieldName}>
                                         {field.label} 
-                                        <lightning-helptext content={field.fieldName}></lightning-helptext>
+                                        <lightning-helptext class="placeTopItem" content={field.fieldName}></lightning-helptext>
                                     </li>
                                 </template>
                             </ul>
@@ -28,15 +28,15 @@
                 </div>
                 <div class="slds-col slds-size_6-of-12">
                     <div class="slds-text-heading_small"><b>{config._LABELS.lbl_selectedFields}</b>
-                        <lightning-helptext content={config._LABELS.hlpTxt_selectedFields}></lightning-helptext>
+                        <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_selectedFields}></lightning-helptext>
                     </div>
                     <div class="slds-scrollable_y" style="height:27rem;border:0.5px solid rgb(183, 180, 180);padding:4px;">
                         <ul class="slds-has-dividers_around-space">
                             <template if:true={config.sqlBuilder.selectedFields} for:each={config.sqlBuilder.selectedFields} for:item="field" for:index="index">
                                 <li class="slds-item Items" data-val={field.fieldName} key={field.fieldName} style="cursor: pointer;margin-top: 0px;padding:5px;" draggable="true" onchange={Change} ondrop={Drop} ondragstart={DragStart} ondragover={DragOver}>
-                                    <lightning-icon size="small" icon-name="utility:rows" alternative-text="Rows" title="Rows"></lightning-icon>
+                                    <lightning-icon size="small" data-val={field.fieldName} icon-name="utility:rows" alternative-text="Rows" title="Rows"></lightning-icon>
                                     {field.label}
-                                    <lightning-helptext content={field.fieldName}></lightning-helptext>
+                                    <lightning-helptext class="placeTopItem" content={field.fieldName}></lightning-helptext>
                                     <lightning-icon if:false={field.locked} size="small" data-id="sqlBuilder:deleteSelectedField" data-val={field.fieldName} onclick={handleBuilderEvent} style="float: right;" icon-name="utility:delete" alternative-text={config._LABELS.altTxt_delete} title={config._LABELS.altTxt_delete}></lightning-icon>
                                     <lightning-icon if:true={field.locked} size="small" data-val={field.fieldName} onclick={handleBuilderEvent} style="float: right;" icon-name="utility:lock" alternative-text={config._LABELS.altTxt_locked} title={config._LABELS.altTxt_locked}></lightning-icon>
                                 </li>
@@ -53,7 +53,7 @@
                 <div class="slds-grid slds-gutters">
                     <div class="slds-col slds-size_5-of-12">
                         <div class="slds-text-heading_small"><b>{config._LABELS.lbl_availableFieldsFrom}</b> {breadcrumb}
-                            <lightning-helptext content={config._LABELS.hlpTxt_applyCondition}></lightning-helptext>
+                            <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_applyCondition}></lightning-helptext>
                         </div>
                         <div style="border:0.5px solid rgb(183, 180, 180);">
                             <ul if:true={config.sqlBuilder._objectStack} class="slds-has-dividers_around-space">
@@ -63,11 +63,11 @@
                                 <li if:true={config.sqlBuilder.isBackNeeded} data-id="sqlBuilder:back" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class="slds-item slds-theme_shade" ><lightning-icon onclick={handleBuilderEvent} data-id="sqlBuilder:back" size="small" icon-name="utility:reply" alternative-text={config._LABELS.lbl_back} title={config._LABELS.lbl_back}></lightning-icon>  {config._LABELS.lbl_back}</li>
 
                             </ul>
-                            <div class="slds-scrollable_y" style="height:20rem;padding:4px;">
+                            <div class="slds-scrollable_y" style="height:24rem;padding:4px;">
                                 <ul class="slds-has-dividers_around-space">
                                     <template if:true={config.sqlBuilder.fields} for:each={config.sqlBuilder.fields} for:item="field" for:index="index">
                                         <li data-id="sqlBuilder:conditions:selectItem" onclick={handleBuilderEvent} style="cursor: pointer;margin-top: 0px;padding:5px;" class={field.css} data-ref={field.refObj} data-val={field.fieldName} key={field.fieldName}>{field.label} 
-                                            <lightning-helptext content={field.fieldName}></lightning-helptext>
+                                            <lightning-helptext class="placeTopItem" content={field.fieldName}></lightning-helptext>
                                         </li>
                                     </template>
                                 </ul>
@@ -83,7 +83,7 @@
                                 <div class="slds-col slds-size_6-of-12">
                                     <div if:true={config.sqlBuilder.conditionOperations} class="slds-text-heading_small slds-text-align_center">
                                         <b>{config._LABELS.lbl_availableOperations}</b> for {config.sqlBuilder.currentCondition.field}
-                                        <lightning-helptext content={config._LABELS.hlpTxt_availableOperationTooltip}></lightning-helptext>
+                                        <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_availableOperationTooltip}></lightning-helptext>
                                     </div>
                                     <br/>
                                     <div class="slds-scrollable_y" style="height:25rem">
@@ -97,7 +97,7 @@
                                 <div class="slds-col slds-size_6-of-12">
                                     <div if:true={config.sqlBuilder.openConditionInput} class="slds-text-heading_small slds-text-align_center">
                                         <b>{config.sqlBuilder.currentCondition.operator.label}</b>
-                                        <lightning-helptext content={config._LABELS.hlpTxt_applyConditionInput}></lightning-helptext>
+                                        <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_applyConditionInput}></lightning-helptext>
                                     </div>
                                     <br/>
                                     <template if:true={config.sqlBuilder.openConditionInput}>
@@ -119,7 +119,7 @@
                 <div class="slds-grid slds-gutters">
                     <div class="slds-col">
                         <div class="slds-text-heading_small"><b>{config._LABELS.lbl_appliedConditions}</b>
-                            <lightning-helptext content={config._LABELS.hlpTxt_appliedConditions}></lightning-helptext>
+                            <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_appliedConditions}></lightning-helptext>
                         </div>
                         <table if:true={config.sqlBuilder.conditions} class="slds-table slds-table_cell-buffer slds-table_bordered" aria-labelledby="element-with-table-label other-element-with-table-label">
                             <thead>
@@ -138,7 +138,7 @@
                                 </th>
                                 <th class="" scope="col">
                                     <div class="slds-truncate" title={config._LABELS.lbl_actions}>{config._LABELS.lbl_actions}
-                                        <lightning-helptext content={config._LABELS.hlpTxt_appliedConditionsActionsHelp}></lightning-helptext>
+                                        <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_appliedConditionsActionsHelp}></lightning-helptext>
                                     </div>
                                 </th>
                                 </tr>
@@ -185,7 +185,15 @@
                                     <div class={ConditionFilteringClass} role="tooltip" id="help"
                                         style="position:absolute;top:-150px;left:-15px;width:250px">
                                         <div class="slds-popover__body">
-                                            {config._LABELS.tooltip_conditionFilteringPattern}
+                                            <!-- {config._LABELS.tooltip_conditionFilteringPattern} -->
+                                            Construct different logical connections between conditions using parentheses and the words '<b>AND</b>' and '<b>OR</b>'.<br>
+                                            Example of Patterns<br>
+
+                                                1. (1 OR 2) AND 3<br>
+                                                2. (1 OR 3) AND (2 OR 4)<br>
+                                                3. (2 OR 4) AND ((3 OR 6) AND (5 OR 1))<br>         
+
+                                            Once you are done editing the pattern, click outside the input box.<br>
                                         </div>
                                     </div>
                                 </div>
@@ -203,7 +211,7 @@
                 <div class="slds-grid slds-gutters">
                     <div class="slds-col slds-size_5-of-12">
                         <div class="slds-text-heading_small"><b>{config._LABELS.lbl_availableFieldsFrom}</b> {breadcrumb}
-                            <lightning-helptext content={config._LABELS.hlpTxt_applyOrdering}></lightning-helptext>
+                            <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_applyOrdering}></lightning-helptext>
                         </div>
                         <div style="border:0.5px solid rgb(183, 180, 180);">
                             <ul if:true={config.sqlBuilder._objectStack} class="slds-has-dividers_around-space">
@@ -212,7 +220,7 @@
                                 </li>
                                 <li if:true={config.sqlBuilder.isBackNeeded} data-id="sqlBuilder:back" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class="slds-item slds-theme_shade" ><lightning-icon onclick={handleBuilderEvent} data-id="sqlBuilder:back" size="small" icon-name="utility:reply" alternative-text={config._LABELS.lbl_back} title={config._LABELS.lbl_back}></lightning-icon>  {config._LABELS.lbl_back}</li>
                             </ul>
-                            <div class="slds-scrollable_y" style="height:20rem">
+                            <div class="slds-scrollable_y" style="height:22rem">
                                 <ul class="slds-has-dividers_around-space">
                                     <template if:true={config.sqlBuilder.fields} for:each={config.sqlBuilder.fields} for:item="field" for:index="index">
                                         <li data-id="sqlBuilder:ordering:selectItem" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class={field.css} data-ref={field.refObj} data-val={field.fieldName} key={field.fieldName}>{field.label} 
@@ -236,7 +244,7 @@
                     </div>
                     <div class="slds-col slds-size_4-of-12">
                         <div class="slds-text-heading_small"><b>{config._LABELS.lbl_appliedOrderings}</b>
-                            <lightning-helptext content={config._LABELS.hlpTxt_appliedOrderings}></lightning-helptext>
+                            <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_appliedOrderings}></lightning-helptext>
                         </div>
                         <div class="slds-scrollable_y" style="height:25rem;border:0.5px solid rgb(183, 180, 180);padding:4px;">
                             <ul class="slds-has-dividers_around-space">

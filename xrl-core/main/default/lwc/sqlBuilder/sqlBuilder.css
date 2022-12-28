@@ -1,0 +1,8 @@
+.placeTop{
+    position: relative;
+    top:-4px;
+}
+.placeTopItem{
+    position: relative;
+    top:-2px;
+}

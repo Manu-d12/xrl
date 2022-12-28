@@ -24,3 +24,7 @@
 .groupRow:focus {
 	background-color: #91c4ec;
 }
+.placeTop{
+    position: relative;
+    top:3px;
+}
