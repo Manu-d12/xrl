@@ -969,6 +969,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 						variant: 'success'
 					});
 					this.dispatchEvent(event);
+					this.loadCfg();
 				} else {
 					const event = new ShowToastEvent({
 						title: 'Error',

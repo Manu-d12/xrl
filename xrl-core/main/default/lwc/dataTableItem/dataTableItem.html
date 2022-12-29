@@ -7,10 +7,10 @@
 			<template if:true={col.isEditableAsPicklist}>
 				<!-- For Multi Picklist type -->
 				<c-multiselect if:true={picklistType} multiselect=true listsize={config.dataTableCfg.displayOptionListSize} onselect={inlineEdit} 
-				options={col.options} selectedvalues={editValue}></c-multiselect>
+				options={col.options} selectedvalues={editValue} data-id={col.fieldName}></c-multiselect>
 				<!-- For SingleSelect/Picklist type -->
 				<c-multiselect if:false={picklistType} listsize={config.dataTableCfg.displayOptionListSize} onselect={inlineEdit} 
-				options={col.options} selectedvalue={editValue}></c-multiselect>
+				options={col.options} selectedvalue={editValue} data-id={col.fieldName}></c-multiselect>
 			</template>
 			<lightning-input if:true={col.isEditableRegular} type={col.type} field-level-help={col.inlineHelpText} value={editValue} onchange={inlineEdit} data-id={col.fieldName} tabindex="0"></lightning-input>
 
