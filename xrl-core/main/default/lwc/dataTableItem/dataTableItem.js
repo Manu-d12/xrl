@@ -22,7 +22,7 @@ export default class dataTableItem extends LightningElement {
 			this.showEdit = true;
 		}
 		window.addEventListener('keydown', (event) => {
-			if (this.col.type === 'multipicklist' && (event.which == 13 || event.which == 27)) {
+			if ((this.col.type === 'multipicklist' || this.col.type === 'picklist') && (event.which == 13 || event.which == 27)) {
 				this.inlineEditFinish(event);
 			}
 		});
