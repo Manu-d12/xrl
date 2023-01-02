@@ -374,21 +374,19 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	resetChangedRecords() {
-		this.config.resetIndex += 1;
+		// this.config.resetIndex += 1;
 		if(this.template.querySelector('c-Data-Table')){
 			this.template.querySelector('c-Data-Table').setUpdateInfo('• ' + this.config.listViewConfig[0]._changedRecords.length + ' ' +this.config._LABELS.msg_itemsUpdated);
 		}
 		setTimeout((() => { this.template.querySelector('c-Data-Table').setUpdateInfo(''); }), 3000);
-		if(this.config.loopIndex === this.config.resetIndex){
-			const toast = new ShowToastEvent({
-				title: 'Success',
-				message: this.config.listViewConfig[0]._changedRecords.length + ' ' +this.config._LABELS.msg_itemsUpdated,
-				variant: 'success'
-			});
-			this.dispatchEvent(toast);
-			this.config.listViewConfig[0]._changedRecords = undefined;
-			this.template.querySelector('c-Data-Table').updateView();
-		}
+		const toast = new ShowToastEvent({
+			title: 'Success',
+			message: this.config.listViewConfig[0]._changedRecords.length + ' ' +this.config._LABELS.msg_itemsUpdated,
+			variant: 'success'
+		});
+		this.dispatchEvent(toast);
+		this.config.listViewConfig[0]._changedRecords = undefined;
+		this.template.querySelector('c-Data-Table').updateView();
 	}
 
 	handleEvent(event) {
@@ -407,41 +405,40 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if (val.startsWith('std:')) this.handleEventActions(event, val);
 
 		if (val.startsWith(':save')) {
-
-
+			this.prepareRecordsForSave();
 			//libs.getGlobalVar(this.name).records = undefined;
 
-			let changedItems = this.template.querySelector('c-Data-Table').getRecords().filter(el => {
-				// In thiscase need merge to libs.getGlobalVar(this.name).records;
-				return this.config.listViewConfig[0]._changedRecords.indexOf(el.Id) > -1
-			})
+			// let changedItems = this.template.querySelector('c-Data-Table').getRecords().filter(el => {
+			// 	// In thiscase need merge to libs.getGlobalVar(this.name).records;
+			// 	return this.config.listViewConfig[0]._changedRecords.indexOf(el.Id) > -1
+			// })
 			
-			if(this.config.listViewConfig[0].beforeSaveValidation !== undefined && 
-				this.config.listViewConfig[0].beforeSaveValidation !== ""){
-				changedItems.forEach((el)=>{
-					let rec = eval('('+this.config.listViewConfig[0].beforeSaveValidation+')')(el);
-					if(rec){
-						el = rec;
-					}
-				});
-			}
+			// if(this.config.listViewConfig[0].beforeSaveValidation !== undefined && 
+			// 	this.config.listViewConfig[0].beforeSaveValidation !== ""){
+			// 	changedItems.forEach((el)=>{
+			// 		let rec = eval('('+this.config.listViewConfig[0].beforeSaveValidation+')')(el);
+			// 		if(rec){
+			// 			el = rec;
+			// 		}
+			// 	});
+			// }
 
-			this.config.loopIndex = 0;
-			this.config.resetIndex = 0;
-			let saveChunk = this.config.listViewConfig[0].saveChunkSize ? this.config.listViewConfig[0].saveChunkSize : 200; //200 is the default value for saveChunk
-			let index = 0;
-			// console.log("rollback",this.config.listViewConfig[0].rollBack);
-			while(index <= changedItems.length){
-				let lIndex = changedItems[(parseInt(index)+parseInt(saveChunk))] ? (parseInt(index)+parseInt(saveChunk)) : (changedItems.length);
-				let chunk = changedItems.slice(index,lIndex);
-				index += changedItems[(parseInt(index)+parseInt(saveChunk))] ? parseInt(saveChunk) : (changedItems.length);
-				// index += chunk.length;
-				this.config.loopIndex += 1;
-				libs.remoteAction(this, 'saveRecords', { records: chunk, 
-					sObjApiName: this.config.sObjApiName,
-					rollback:this.config.listViewConfig[0].rollBack ? this.config.listViewConfig[0].rollBack : true,
-					callback: this.resetChangedRecords });
-			}
+			// this.config.loopIndex = 0;
+			// this.config.resetIndex = 0;
+			// let saveChunk = this.config.listViewConfig[0].saveChunkSize ? this.config.listViewConfig[0].saveChunkSize : 200; //200 is the default value for saveChunk
+			// let index = 0;
+			// // console.log("rollback",this.config.listViewConfig[0].rollBack);
+			// while(index <= changedItems.length){
+			// 	let lIndex = changedItems[(parseInt(index)+parseInt(saveChunk))] ? (parseInt(index)+parseInt(saveChunk)) : (changedItems.length);
+			// 	let chunk = changedItems.slice(index,lIndex);
+			// 	index += changedItems[(parseInt(index)+parseInt(saveChunk))] ? parseInt(saveChunk) : (changedItems.length);
+			// 	// index += chunk.length;
+			// 	this.config.loopIndex += 1;
+			// 	libs.remoteAction(this, 'saveRecords', { records: chunk, 
+			// 		sObjApiName: this.config.sObjApiName,
+			// 		rollback:this.config.listViewConfig[0].rollBack ? this.config.listViewConfig[0].rollBack : true,
+			// 		callback: this.resetChangedRecords });
+			// }
 		}
 
 		if (val.startsWith(':change_view')) {
@@ -571,7 +568,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 		const toast = new ShowToastEvent({
 			title: 'Success',
-			message: "Successfully deleted",
+			message: this.config._LABELS.msg_successfullyDeleted,
 			variant: 'success'
 		});
 		this.dispatchEvent(toast);
@@ -590,6 +587,47 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		try{
 			const a = await libs.remoteAction(this, 'delRecords', { records: chunk, 
 				sObjApiName: this.config.sObjApiName
+			});
+		} catch (error) {
+			console.log(error);
+		}
+	}
+	async prepareRecordsForSave(){
+		let changedItems = this.template.querySelector('c-Data-Table').getRecords().filter(el => {
+			return this.config.listViewConfig[0]._changedRecords.indexOf(el.Id) > -1
+		});
+		
+		let validatedRecords = [];
+
+		if(this.config.listViewConfig[0].beforeSaveValidation !== undefined && 
+			this.config.listViewConfig[0].beforeSaveValidation !== ""){
+			changedItems.forEach((el)=>{
+				let rec = eval('('+this.config.listViewConfig[0].beforeSaveValidation+')')(el);
+				if(rec){
+					validatedRecords.push(el);
+				}
+			});
+		}else{
+			validatedRecords = changedItems;
+		}
+
+		let saveChunk = this.config.listViewConfig[0].saveChunkSize ? this.config.listViewConfig[0].saveChunkSize : 200; //200 is the default value for saveChunk
+		let index = 0;
+
+		while(index <= validatedRecords.length){
+			let lIndex = validatedRecords[(parseInt(index)+parseInt(saveChunk))] ? (parseInt(index)+parseInt(saveChunk)) : (validatedRecords.length);
+			let chunk = validatedRecords.slice(index,lIndex);
+			index += validatedRecords[(parseInt(index)+parseInt(saveChunk))] ? parseInt(saveChunk) : (validatedRecords.length);
+			await this.saveRecords(chunk);
+		}
+		this.resetChangedRecords();
+	}
+	async saveRecords(chunk){
+		try{
+			await libs.remoteAction(this, 'saveRecords', { records: chunk, 
+				sObjApiName: this.config.sObjApiName,
+				rollback:this.config.listViewConfig[0].rollBack ? this.config.listViewConfig[0].rollBack : true,
+				beforeSaveAction: this.config.listViewConfig[0].beforeSaveApexAction ? this.config.listViewConfig[0].beforeSaveApexAction : ''
 			});
 		} catch (error) {
 			console.log(error);

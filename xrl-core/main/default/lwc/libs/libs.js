@@ -254,6 +254,12 @@ export let libs = {
 				"placeHolder": _labels.placeHolder_beforeSaveValidation,
 				"cmd" : "dialog:setTableParam"
 			},
+			"beforeSaveApexAction": {
+				"type": "string",
+				"label": _labels.lbl_beforeSaveApexAction,
+				"tooltip": _labels.tooltip_beforeSaveApexAction,
+				"cmd" : "dialog:setTableParam"
+			},
 			"deleteChunkSize" : {
 				"defValue": 200,
 				"type": "string",

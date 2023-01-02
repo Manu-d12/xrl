@@ -148,9 +148,10 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			return el._isChecked === true;
 		});
 		if (selected.length !== 0) {
-			return selected.length + ' item(s) selected of ' + this.records.length + ' item(s)';
+			// return selected.length + ' item(s) selected of ' + this.records.length + ' item(s)';
+			return libs.formatStr(this.config._LABELS.msg_recordSelection,[selected.length,this.records.length]);
 		} else {
-			return this.records.length + ' item(s)';
+			return this.records.length + ' ' +this.config._LABELS.lbl_items;
 		}
 	}
 
