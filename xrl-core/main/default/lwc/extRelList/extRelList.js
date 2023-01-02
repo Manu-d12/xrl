@@ -508,62 +508,91 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			if (event.detail.action === 'cancel') this.showDialog = false;
 			else {
 				event.target.setLoading(true);
-				let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
-				console.log(records);
-
-				//user validation callback
-				if(this.config.listViewConfig[0].beforeDeleteValidation !== undefined && 
-					this.config.listViewConfig[0].beforeDeleteValidation !== ""){
-					let copyRecords = records;
-					records = [];
-					copyRecords.forEach((el)=>{
-						let rec = eval('('+this.config.listViewConfig[0].beforeDeleteValidation+')')(el);
-						if(rec){
-							records.push(el);
-						}
-					});
-				}
-
-				//chunking the data and sending it to apex
-				this.config.deleteIndex = 0;
-				this.config.recordsLen = records.length;
-				let deleteChunk = this.config.listViewConfig[0].deleteChunkSize ? this.config.listViewConfig[0].deleteChunkSize : 200; //200 is the default value for saveChunk
-				let index = 0;
-
-				while(index < records.length){
-					let chunk = records.slice(index,records[(index+deleteChunk)] ? (index+deleteChunk) : (records.length));
-					index += records[(index+deleteChunk)] ? (deleteChunk) : (records.length);
-					libs.remoteAction(this, 'delRecords', { records: chunk, 
-						sObjApiName: this.config.sObjApiName,
-						callback: function(cmd,result){
-							if(result.delRecordsResult.error.startsWith('Error')){
-								const toast = new ShowToastEvent({
-									title: 'Error',
-									message: result.delRecordsResult.error,
-									variant: 'error'
-								});
-								this.dispatchEvent(toast);
-							}else{
-								this.config.deleteIndex += result.delRecordsResult.length;
-							}
-							if(!result.delRecordsResult.error.startsWith('Error') && this.config.deleteIndex === (parseInt(this.config.recordsLen))){
-								const toast = new ShowToastEvent({
-									title: 'Success',
-									message: "Successfully deleted",
-									variant: 'success'
-								});
-								this.dispatchEvent(toast);
-								this.showDialog = false;
-								this.config.records = this.config.records.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
-								//HYPER-243
-								this.allRecords = this.allRecords.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
-								this.template.querySelector('c-Data-Table').updateView();
-								this.config.listViewConfig[0].rowChecked = false;
-							}
-				 		} 
-					});
-				}
+				this.prepareRecordsToDelete();
 			}
+		}
+	}
+	async prepareRecordsToDelete(){
+		let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
+		console.log(records);
+
+		//user validation callback
+		if(this.config.listViewConfig[0].beforeDeleteValidation !== undefined && 
+			this.config.listViewConfig[0].beforeDeleteValidation !== ""){
+			let copyRecords = records;
+			records = [];
+			copyRecords.forEach((el)=>{
+				let rec = eval('('+this.config.listViewConfig[0].beforeDeleteValidation+')')(el);
+				if(rec){
+					records.push(el);
+				}
+			});
+		}
+
+		//chunking the data and sending it to apex
+		this.config.deleteIndex = 0;
+		this.config.recordsLen = records.length;
+		let deleteChunk = this.config.listViewConfig[0].deleteChunkSize ? this.config.listViewConfig[0].deleteChunkSize : 200; //200 is the default value for saveChunk
+		let index = 0;
+
+		while(index < records.length){
+			let chunk = records.slice(index,records[(parseInt(index)+parseInt(deleteChunk))] ? (parseInt(index)+parseInt(deleteChunk)) : (records.length));
+			index += records[(parseInt(index)+parseInt(deleteChunk))] ? parseInt(deleteChunk) : (records.length);
+			await this.deleteRecords(chunk);
+			// libs.remoteAction(this, 'delRecords', { records: chunk, 
+			// 	sObjApiName: this.config.sObjApiName,
+			// 	callback: function(cmd,result){
+			// 		if(result.delRecordsResult.error.startsWith('Error')){
+			// 			const toast = new ShowToastEvent({
+			// 				title: 'Error',
+			// 				message: result.delRecordsResult.error,
+			// 				variant: 'error'
+			// 			});
+			// 			this.dispatchEvent(toast);
+			// 		}else{
+			// 			this.config.deleteIndex += result.delRecordsResult.length;
+			// 		}
+			// 		if(!result.delRecordsResult.error.startsWith('Error') && this.config.deleteIndex === (parseInt(this.config.recordsLen))){
+			// 			const toast = new ShowToastEvent({
+			// 				title: 'Success',
+			// 				message: "Successfully deleted",
+			// 				variant: 'success'
+			// 			});
+			// 			this.dispatchEvent(toast);
+			// 			this.showDialog = false;
+			// 			this.config.records = this.config.records.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
+			// 			//HYPER-243
+			// 			this.allRecords = this.allRecords.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
+			// 			this.template.querySelector('c-Data-Table').updateView();
+			// 			this.config.listViewConfig[0].rowChecked = false;
+			// 		}
+			// 	} 
+			// });
+		}
+		const toast = new ShowToastEvent({
+			title: 'Success',
+			message: "Successfully deleted",
+			variant: 'success'
+		});
+		this.dispatchEvent(toast);
+		this.showDialog = false;
+		if(records.length < 1000){
+			this.config.records = this.config.records.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
+			// //HYPER-243
+			this.allRecords = this.allRecords.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
+			this.template.querySelector('c-Data-Table').updateView();
+			this.config.listViewConfig[0].rowChecked = false;
+		}else{
+			this.loadCfg(false);
+		}
+	}
+	async deleteRecords(chunk){
+		try{
+			const a = await libs.remoteAction(this, 'delRecords', { records: chunk, 
+				sObjApiName: this.config.sObjApiName
+			});
+		} catch (error) {
+			console.log(error);
 		}
 	}
 
