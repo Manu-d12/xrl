@@ -152,6 +152,7 @@ export default class SqlBuilder extends LightningElement {
                 this.config.sqlBuilder.currentCondition = {};
                 this.config.sqlBuilder.currentCondition.field = fieldVal;
                 this.config.sqlBuilder.currentCondition.fieldType = selectedField.type;
+                this.config.sqlBuilder.noOperationError = false;
                 if(selectedField.type === 'picklist'){
                     this.config.sqlBuilder.currentCondition.fieldOptions = selectedField.options;
                 }
@@ -166,11 +167,7 @@ export default class SqlBuilder extends LightningElement {
                         this.config.sqlBuilder.conditionOperations.push(el);
                     });
                 }else{
-                    this.config.sqlBuilder.conditionOperations = [
-                        { label: 'Contains', value: 'cn' },
-                        { label: 'Is Equal', value: 'eq' },
-                        { label: 'Not Is Equal', value: 'neq' },
-                    ];
+                    this.config.sqlBuilder.noOperationError = true;
                 }
                 this.config.sqlBuilder.openConditionInput = false;
             }else{
