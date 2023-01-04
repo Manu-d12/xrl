@@ -330,13 +330,13 @@ export default class SqlBuilder extends LightningElement {
                 callback: function(cmd,data){
                     let objectFields = JSON.parse(data[cmd].describe);
                     this.config.describeMap[sObjName] = objectFields;
-                    this.config.sqlBuilder.fields = this.generateFields(objectFields,objStr);   
+                    this.config.sqlBuilder.fields = this.generateFields(objectFields,objStr,sObjName);   
                     this.config.sqlBuilder.fields = libs.sortRecords(this.config.sqlBuilder.fields, 'label', true);
                     this.config.sqlBuilder.allFields = this.config.sqlBuilder.fields;    
                 } });
         }
     }
-    generateFields(describe,objStr){
+    generateFields(describe,objStr,sObjName){
         let fields = [];
         for (let key in describe) {
             if (describe[key].type === 'reference') {
@@ -349,7 +349,8 @@ export default class SqlBuilder extends LightningElement {
                     css: itemCss, 
                     type: describe[key].type,
                     updateable: describe[key].updateable,
-                    isNameField: describe[key] && describe[key].nameField === true
+                    isNameField: describe[key] && describe[key].nameField === true,
+                    referenceTo: sObjName
                 };
                 if(describe[key].type === 'picklist' || describe[key].type === 'multipicklist'){
                     fieldMap.options = [];
