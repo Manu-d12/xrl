@@ -47,8 +47,12 @@ global with sharing class infrastructure {
 				}
 				when 'objectList' {
 					resultMethod = objectList();
-				}when 'objectFieldList' {
+				}
+				when 'objectFieldList' {
 					resultMethod = objectFieldList(data);
+				}
+				when 'deleteConfig' {
+					resultMethod = deleteConfig(data);
 				}				
 				when
 				else {
@@ -229,6 +233,19 @@ global with sharing class infrastructure {
 			'isMultyCurrencyOrg' => UserInfo.isMultiCurrencyOrganization()
 		});
 
+		return result;
+	}
+	private static object deleteConfig(map < string, object > data) {
+		string configId = (string) data.get('configId');
+
+		map < string, object > result = new map < string, object > ();
+
+		try{
+			delete [SELECT Id FROM extRelListConfig__c WHERE Id= :configId];
+			result.put('status','Success');
+		}catch(DmlException e){
+			result.put('status',e.getMessage());
+		}
 		return result;
 	}
 
@@ -511,6 +528,9 @@ global with sharing class infrastructure {
 			'msg_itemsUpdated'=>label.msg_itemsUpdated,
 			'msg_actionHideError'=>label.msg_actionHideError,
 			'msg_actionVisibleOnRecordSelectionError'=>label.msg_actionVisibleOnRecordSelectionError,
+			'msg_noListViewFound'=>label.msg_noListViewFound,
+			'msg_confirmConfigDelete'=>label.msg_confirmConfigDelete,
+			'msg_successfullyDeleted'=>label.msg_successfullyDeleted,
 			'placeHolder_beforeSaveValidation'=>label.placeHolder_beforeSaveValidation,
 			'placeHolder_beforeDeleteValidation'=>label.placeHolder_beforeDeleteValidation,
 			'placeholder_actionCallback'=> label.placeholder_actionCallback,
