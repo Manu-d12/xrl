@@ -161,9 +161,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 	get groupColspan() {
 		let len = this.config.colModel.filter(col => !col.isHidden).length;
-		len += this.config.isShowCheckBoxes ? -1 : 0;
-		len += this.config.isShowNumeration ? 1 : 0;
-		len += this.config.isShowNumeration && !this.config.isShowCheckBoxes ? -1 : 0;
+		len += !this.config.isShowNumeration ? -1 : 0;
 		return len;
 	}
 
