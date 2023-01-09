@@ -254,6 +254,12 @@ export let libs = {
 				"placeHolder": _labels.placeHolder_beforeSaveValidation,
 				"cmd" : "dialog:setTableParam"
 			},
+			"beforeSaveApexAction": {
+				"type": "string",
+				"label": _labels.lbl_beforeSaveApexAction,
+				"tooltip": _labels.tooltip_beforeSaveApexAction,
+				"cmd" : "dialog:setTableParam"
+			},
 			"deleteChunkSize" : {
 				"defValue": 200,
 				"type": "string",
@@ -346,12 +352,12 @@ export let libs = {
 		}
 		return defParams;
 	},
-	remoteAction: function(scope, cmd, params) {
+	remoteAction: async function(scope, cmd, params) {
 		scope.config.isSpinner = true;
 		let outParams = {};
 		Object.assign(outParams, params, { recordId: scope.recordId });
 		delete outParams.callback;
-		apexInterface({ cmd: cmd, data: outParams }).then(result => {
+		await apexInterface({ cmd: cmd, data: outParams }).then(result => {
 			console.log(result);
 			scope.config.isSpinner = false;
 			if ('exception' in result) {

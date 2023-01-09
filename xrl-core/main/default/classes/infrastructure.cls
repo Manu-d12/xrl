@@ -503,6 +503,8 @@ global with sharing class infrastructure {
 			'lbl_columnFilter'=>label.lbl_columnFilter,
 			'lbl_deleteNoRecordSelectedError'=>label.lbl_deleteNoRecordSelectedError,
 			'lbl_actionVisibleOnRecords'=>label.lbl_actionVisibleOnRecords,
+			'lbl_beforeSaveApexAction'=>label.lbl_beforeSaveApexAction,
+			'lbl_items'=>label.lbl_items,
 			'msg_lisViewWasUpdated' => label.msg_lisViewWasUpdated,
 			'msg_requestWasSent' => label.msg_requestWasSent,
 			'msg_deleteConfirm1'=>label.msg_deleteConfirm1,
@@ -511,6 +513,8 @@ global with sharing class infrastructure {
 			'msg_itemsUpdated'=>label.msg_itemsUpdated,
 			'msg_actionHideError'=>label.msg_actionHideError,
 			'msg_actionVisibleOnRecordSelectionError'=>label.msg_actionVisibleOnRecordSelectionError,
+			'msg_successfullyDeleted'=>label.msg_successfullyDeleted,
+			'msg_recordSelection'=>label.msg_recordSelection,
 			'placeHolder_beforeSaveValidation'=>label.placeHolder_beforeSaveValidation,
 			'placeHolder_beforeDeleteValidation'=>label.placeHolder_beforeDeleteValidation,
 			'placeholder_actionCallback'=> label.placeholder_actionCallback,
@@ -569,6 +573,7 @@ global with sharing class infrastructure {
 			'tooltip_configSaveAsSave'=>label.tooltip_configSaveAsSave,
 			'tooltip_configSaveAsCancel'=>label.tooltip_configSaveAsCancel,
 			'tooltip_actionVisibleOnRecords'=>label.tooltip_actionVisibleOnRecords,
+			'tooltip_beforeSaveApexAction'=>label.tooltip_beforeSaveApexAction,
 			'srcLbl_available' => label.srcLbl_available,
 			'srcLbl_optional' => label.srcLbl_optional
 		};
