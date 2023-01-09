@@ -1671,4 +1671,36 @@ Once you are done editing the pattern, click outside the input box.</value>
         <shortDescription>msg_successfullyDeleted</shortDescription>
         <value>Successfully Deleted</value>
     </labels>
+    <labels>
+        <fullName>lbl_beforeSaveApexAction</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_beforeSaveApexAction</shortDescription>
+        <value>Class and Method name to be executed</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_beforeSaveApexAction</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_beforeSaveApexAction</shortDescription>
+        <value>This class method will be executed before the save action</value>
+    </labels>
+    <labels>
+        <fullName>msg_recordSelection</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_recordSelection</shortDescription>
+        <value>{0} item(s) selected of {1} item(s)</value>
+    </labels>
+    <labels>
+        <fullName>lbl_items</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_items</shortDescription>
+        <value> item(s)</value>
+    </labels>
 </CustomLabels>

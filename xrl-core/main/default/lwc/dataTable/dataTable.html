@@ -59,11 +59,11 @@
 							<span if:false={hItem.isActions} class="slds-grid slds-grid_align-spread">
 
 								<!--<lightning-input if:true={hItem.isEditable} type={hItem.type} field-level-help={hItem.inlineHelpText} data-rowind={index} data-colname={hItem.fieldName} onchange={inlineEdit}></lightning-input>-->
-								<template if:true={hItem._isReference}>
+								<template if:true={hItem.isNameField}>
 									<c-data-Table-Item if:false={dItem._isEditable} row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} data-recordind={dItem.Id} cfg={cfg} class={hItem.wrapClass} style="width:100%" onmouseover={showPop} onmouseout={hidePop}></c-data-Table-Item>
 									<c-data-Table-Item if:true={dItem._isEditable} iseditmode="true" row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} class={hItem.wrapClass} data-recordind={dItem.Id} cfg={cfg} style="width:100%"></c-data-Table-Item>
 								</template>
-								<template if:false={hItem._isReference}>
+								<template if:false={hItem.isNameField}>
 									<c-data-Table-Item if:false={dItem._isEditable} row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} data-recordind={dItem.Id} cfg={cfg} class={hItem.wrapClass} style="width:100%"></c-data-Table-Item>
 									<c-data-Table-Item if:true={dItem._isEditable} iseditmode="true" row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} class={hItem.wrapClass} data-recordind={dItem.Id} cfg={cfg} style="width:100%"></c-data-Table-Item>
 								</template>

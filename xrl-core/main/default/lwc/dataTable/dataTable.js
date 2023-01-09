@@ -32,15 +32,15 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			return el.Id === event.target.getAttribute('data-recordind')
 		});
 
-		if (this.objectApiName.endsWith('Id')) {
-			let desc = libs.getGlobalVar(this.cfg).describe;
-			this.objectApiName = desc[this.objectApiName].referenceTo[0];
-			this.recordId = record[this.objectApiName].Id;
-		}else{
-			this.recordId = record[this.objectApiName.replace(/__c/, '__r')].Id;
+		let col = this.config.colModel.find((el)=>{
+			return el.fieldName === this.objectApiName
+		});
+
+		if (col.referenceTo) {
+			this.objectApiName = col.referenceTo;
+			this.recordId = record[col.fieldName.split('.')[0]].Id;
 		}
 
-		console.log(this.objectApiName);
 	}
 	hidePop(event){
 		this.showPopOver=false;
@@ -91,17 +91,16 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				return result;
 			}
 			else if (isPager) {
-				let startIndex = (this.config.pager.curPage - 1) * this.config.pager.pageSize;
-				let endIndex = (startIndex + parseInt(this.config.pager.pageSize)) < this.records.length ? (startIndex + parseInt(this.config.pager.pageSize)) : this.records.length;
+				let startIndex = ((this.config.pager.curPage - 1) * this.config.pager.pageSize) + 1; 
+				let endIndex = ((startIndex + parseInt(this.config.pager.pageSize)) < this.records.length ? (startIndex + parseInt(this.config.pager.pageSize)) : this.records.length) + 1; 
 				let result = [];
-				console.log('stindex ',startIndex + ' ' + endIndex);
 				for (let group of this.groupedRecords) {
 					if (startIndex > group.records[group.records.length - 1].index - 1) continue;
-					if (endIndex <= group.records[0].index - 1) break;
+					if (endIndex <= group.records[0].index - 1) break;   
 					let gr = Object.assign({}, group);
 					gr.records = group.records.map(r => r);
 					if (startIndex >= gr.records[0].index) {
-						gr.records.splice(0, startIndex - (gr.records[0].index + 1));
+						gr.records.splice(0, startIndex - (gr.records[0].index));
 					}					
 					if (endIndex < gr.records[gr.records.length - 1].index) {
 						gr.records.splice(endIndex - (gr.records[0].index + 1));
@@ -110,7 +109,6 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					result.push(gr);
 				}
 				console.log('result size', JSON.parse(JSON.stringify(result)).length);
-
 				return result;
 			}
 			// Need for pagination;
@@ -148,9 +146,10 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			return el._isChecked === true;
 		});
 		if (selected.length !== 0) {
-			return selected.length + ' item(s) selected';
+			// return selected.length + ' item(s) selected of ' + this.records.length + ' item(s)';
+			return libs.formatStr(this.config._LABELS.msg_recordSelection,[selected.length,this.records.length]);
 		} else {
-			return this.records.length + ' item(s)';
+			return this.records.length + ' ' +this.config._LABELS.lbl_items;
 		}
 	}
 
@@ -277,7 +276,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			item.wrapClass = item.isWrapable
 								? 'slds-cell-wrap'
 								: 'slds-truncate';
-			item._isReference = (item.type === 'reference') ? true : false;
+			// item._isReference = (item.isNameField) ? true : false;
 			item._filterCondition = item._filterCondition ? item._filterCondition : this.config._LABELS.lbl_columnFilter;
 		});
 		//this.config.colModel = JSON.parse(JSON.stringify(this.config.colModel));
@@ -475,15 +474,6 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			
 			console.log(rowInd + ' ' + rowId);
 
-			let groupInd;
-			let groupRowInd;
-			if (this.hasGrouping) {
-				groupInd = this.groupedRecords.findIndex(gr => gr.title === event.target.parentNode.dataset.groupind);
-				groupRowInd = this.groupedRecords[groupInd].records.findIndex(r => r.Id === rowId);
-			}
-
-			let calculatedInd = this.hasGrouping ? this.records.findIndex(rec => rowId === rec.Id) : this.calcRowIndex(rowInd);
-
 			let cItem = this.getColItem(colName);
 			
 			if (!cItem || !cItem.isEditable) {
@@ -495,6 +485,15 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				this.dispatchEvent(toast);
 				return;
 			}
+
+			let groupInd;
+			let groupRowInd;
+			if (this.hasGrouping) {
+				groupInd = this.groupedRecords.findIndex(gr => gr.title === event.target.parentNode.dataset.groupind);
+				groupRowInd = this.groupedRecords[groupInd].records.findIndex(r => r.Id === rowId);
+			}
+
+			let calculatedInd = this.hasGrouping ? this.records.findIndex(rec => rowId === rec.Id) : this.calcRowIndex(rowInd);
 
 		if (this.config._inlineEdit !== undefined) {
 			this.records[this.config._inlineEdit]._isEditable = false;
