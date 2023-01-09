@@ -91,17 +91,16 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				return result;
 			}
 			else if (isPager) {
-				let startIndex = (this.config.pager.curPage - 1) * this.config.pager.pageSize;
-				let endIndex = (startIndex + parseInt(this.config.pager.pageSize)) < this.records.length ? (startIndex + parseInt(this.config.pager.pageSize)) : this.records.length;
+				let startIndex = ((this.config.pager.curPage - 1) * this.config.pager.pageSize) + 1; 
+				let endIndex = ((startIndex + parseInt(this.config.pager.pageSize)) < this.records.length ? (startIndex + parseInt(this.config.pager.pageSize)) : this.records.length) + 1; 
 				let result = [];
-				console.log('stindex ',startIndex + ' ' + endIndex);
 				for (let group of this.groupedRecords) {
 					if (startIndex > group.records[group.records.length - 1].index - 1) continue;
-					if (endIndex <= group.records[0].index - 1) break;
+					if (endIndex <= group.records[0].index - 1) break;   
 					let gr = Object.assign({}, group);
 					gr.records = group.records.map(r => r);
 					if (startIndex >= gr.records[0].index) {
-						gr.records.splice(0, startIndex - (gr.records[0].index + 1));
+						gr.records.splice(0, startIndex - (gr.records[0].index));
 					}					
 					if (endIndex < gr.records[gr.records.length - 1].index) {
 						gr.records.splice(endIndex - (gr.records[0].index + 1));
@@ -110,7 +109,6 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					result.push(gr);
 				}
 				console.log('result size', JSON.parse(JSON.stringify(result)).length);
-
 				return result;
 			}
 			// Need for pagination;
