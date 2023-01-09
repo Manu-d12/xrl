@@ -203,7 +203,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		userConfig[0] = this.config.dataTableConfig;
 		console.log('mergedConfig', userConfig);
 
-		this.config.listViewConfig = userConfig;
+		this.config.listViewConfig = JSON.parse(JSON.stringify(userConfig));
 		this.config.listView = data[cmd].listViews.findLast(v => { return v.isUserConfig;});
 		console.log(JSON.stringify(this.config.listView));
 		this.config.currency =  data[cmd].currency;

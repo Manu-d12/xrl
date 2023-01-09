@@ -32,15 +32,15 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			return el.Id === event.target.getAttribute('data-recordind')
 		});
 
-		if (this.objectApiName.endsWith('Id')) {
-			let desc = libs.getGlobalVar(this.cfg).describe;
-			this.objectApiName = desc[this.objectApiName].referenceTo[0];
-			this.recordId = record[this.objectApiName].Id;
-		}else{
-			this.recordId = record[this.objectApiName.replace(/__c/, '__r')].Id;
+		let col = this.config.colModel.find((el)=>{
+			return el.fieldName === this.objectApiName
+		});
+
+		if (col.referenceTo) {
+			this.objectApiName = col.referenceTo;
+			this.recordId = record[col.fieldName.split('.')[0]].Id;
 		}
 
-		console.log(this.objectApiName);
 	}
 	hidePop(event){
 		this.showPopOver=false;
@@ -277,7 +277,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			item.wrapClass = item.isWrapable
 								? 'slds-cell-wrap'
 								: 'slds-truncate';
-			item._isReference = (item.type === 'reference') ? true : false;
+			// item._isReference = (item.isNameField) ? true : false;
 			item._filterCondition = item._filterCondition ? item._filterCondition : this.config._LABELS.lbl_columnFilter;
 		});
 		//this.config.colModel = JSON.parse(JSON.stringify(this.config.colModel));
