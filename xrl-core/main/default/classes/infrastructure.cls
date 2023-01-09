@@ -266,7 +266,7 @@ global with sharing class infrastructure {
 		boolean isAdminConf = listViewName == '_admin' ? isAdminAccess : listViewAdmin;
 
 		RecordType rt = [SELECT Id FROM RecordType WHERE Name = 'Config'
-			AND(SobjectType = 'TTNAMESPACE__extRelListConfig__c'
+			AND(SobjectType = 'extRelListConfig__c'
 				OR SobjectType = 'XRL__extRelListConfig__c') limit 1];
 
 		extRelListConfig__c listView = new extRelListConfig__c(
