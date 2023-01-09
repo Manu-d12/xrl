@@ -1648,6 +1648,22 @@ Once you are done editing the pattern, click outside the input box.</value>
         <value>You can't select this option as you've already selected "Hide this action". Please deselect that to select this option</value>
     </labels>
     <labels>
+        <fullName>msg_noListViewFound</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_noListViewFound</shortDescription>
+        <value>No ListView Found</value>
+    </labels>
+    <labels>
+        <fullName>msg_confirmConfigDelete</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_confirmConfigDelete</shortDescription>
+        <value>Are you sure you want to delete this config?</value>
+    </labels>
+    <labels>
         <fullName>msg_successfullyDeleted</fullName>
         <categories>XRL</categories>
         <language>en_US</language>

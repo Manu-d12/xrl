@@ -632,6 +632,35 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		} catch (error) {
 			console.log(error);
 		}
+		if (val.startsWith('deleteConfig:dialog')) {
+			if (event.detail.action === 'cancel') this.showDialog = false;
+			else{
+				console.log('Deleting Config ',this.config.listView.id + ' ' + this.config.listView.label);
+				libs.remoteAction(this, 'deleteConfig', { 
+					configId: this.config.listView.id,  
+					callback: function(cmd,data){
+						// console.log('Status: ',data[cmd].status);
+						if(data[cmd].status.includes('Success')){
+							const evnt = new ShowToastEvent({
+								title: 'Success',
+								message: this.config.listView.label + ' ' +this.config._LABELS.msg_successfullyDeleted,
+								variant: 'Success'
+							});
+							this.dispatchEvent(evnt);
+							this.loadCfg(true);
+						}else{
+							const evnt = new ShowToastEvent({
+								title: 'Error',
+								message: data[cmd].status,
+								variant: 'error'
+							});
+							this.dispatchEvent(evnt);
+						}
+					} 
+				});
+				this.showDialog = false;
+			}
+		}
 	}
 
 	handleEventCfg(event) {
@@ -672,6 +701,42 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		// });
 		let val = event.target.getAttribute('data-id');
 		if (val === 'dialog:close') this.config.dialog = undefined;
+		if(val === 'dialog:config_delete'){
+			if(this.config.listView.id != undefined){
+				this.dialogCfg = {
+					title: this.config._LABELS.lbl_confirmDelete,
+					contents: [
+						{
+							isMessage: true,
+							name: 'deleteConfigConfirm',
+							text: this.config._LABELS.msg_confirmConfigDelete
+						}
+					],
+					buttons: [
+						{
+							name: 'cancel',
+							label: this.config._LABELS.lbl_cancel,
+							variant: 'neutral'
+						},
+						{
+							name: 'Delete',
+							label: this.config._LABELS.title_delete,
+							variant: 'brand',
+							class: 'slds-m-left_x-small'
+						}
+					],
+					data_id: "deleteConfig:dialog"
+				};
+				this.showDialog = true;
+			}else{
+				const evnt = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.msg_noListViewFound,
+					variant: 'error'
+				});
+				this.dispatchEvent(evnt);
+			}
+		}
 		if(val === 'dialog:config_share'){
 			console.log(this.config.listView.id);
 			this[NavigationMixin.Navigate]({
