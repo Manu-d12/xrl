@@ -474,15 +474,6 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			
 			console.log(rowInd + ' ' + rowId);
 
-			let groupInd;
-			let groupRowInd;
-			if (this.hasGrouping) {
-				groupInd = this.groupedRecords.findIndex(gr => gr.title === event.target.parentNode.dataset.groupind);
-				groupRowInd = this.groupedRecords[groupInd].records.findIndex(r => r.Id === rowId);
-			}
-
-			let calculatedInd = this.hasGrouping ? this.records.findIndex(rec => rowId === rec.Id) : this.calcRowIndex(rowInd);
-
 			let cItem = this.getColItem(colName);
 			
 			if (!cItem || !cItem.isEditable) {
@@ -494,6 +485,15 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				this.dispatchEvent(toast);
 				return;
 			}
+
+			let groupInd;
+			let groupRowInd;
+			if (this.hasGrouping) {
+				groupInd = this.groupedRecords.findIndex(gr => gr.title === event.target.parentNode.dataset.groupind);
+				groupRowInd = this.groupedRecords[groupInd].records.findIndex(r => r.Id === rowId);
+			}
+
+			let calculatedInd = this.hasGrouping ? this.records.findIndex(rec => rowId === rec.Id) : this.calcRowIndex(rowInd);
 
 		if (this.config._inlineEdit !== undefined) {
 			this.records[this.config._inlineEdit]._isEditable = false;
