@@ -508,6 +508,36 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				this.prepareRecordsToDelete();
 			}
 		}
+		//config delete
+		if (val.startsWith('deleteConfig:dialog')) {
+			if (event.detail.action === 'cancel') this.showDialog = false;
+			else{
+				console.log('Deleting Config ',this.config.listView.id + ' ' + this.config.listView.label);
+				libs.remoteAction(this, 'deleteConfig', { 
+					configId: this.config.listView.id,  
+					callback: function(cmd,data){
+						// console.log('Status: ',data[cmd].status);
+						if(data[cmd].status.includes('Success')){
+							const evnt = new ShowToastEvent({
+								title: 'Success',
+								message: this.config.listView.label + ' ' +this.config._LABELS.msg_successfullyDeleted,
+								variant: 'Success'
+							});
+							this.dispatchEvent(evnt);
+							this.loadCfg(true);
+						}else{
+							const evnt = new ShowToastEvent({
+								title: 'Error',
+								message: data[cmd].status,
+								variant: 'error'
+							});
+							this.dispatchEvent(evnt);
+						}
+					} 
+				});
+				this.showDialog = false;
+			}
+		}
 	}
 	async prepareRecordsToDelete(){
 		let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
@@ -631,35 +661,6 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			});
 		} catch (error) {
 			console.log(error);
-		}
-		if (val.startsWith('deleteConfig:dialog')) {
-			if (event.detail.action === 'cancel') this.showDialog = false;
-			else{
-				console.log('Deleting Config ',this.config.listView.id + ' ' + this.config.listView.label);
-				libs.remoteAction(this, 'deleteConfig', { 
-					configId: this.config.listView.id,  
-					callback: function(cmd,data){
-						// console.log('Status: ',data[cmd].status);
-						if(data[cmd].status.includes('Success')){
-							const evnt = new ShowToastEvent({
-								title: 'Success',
-								message: this.config.listView.label + ' ' +this.config._LABELS.msg_successfullyDeleted,
-								variant: 'Success'
-							});
-							this.dispatchEvent(evnt);
-							this.loadCfg(true);
-						}else{
-							const evnt = new ShowToastEvent({
-								title: 'Error',
-								message: data[cmd].status,
-								variant: 'error'
-							});
-							this.dispatchEvent(evnt);
-						}
-					} 
-				});
-				this.showDialog = false;
-			}
 		}
 	}
 
