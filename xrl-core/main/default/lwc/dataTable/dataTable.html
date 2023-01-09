@@ -19,6 +19,12 @@
 		<table role="grid" if:true={tableRecords} class="slds-table slds-table_bordered slds-table_col-bordered extRelList" style="table-layout: fixed;">
 			<thead>
 				<tr class="slds-line-height_reset">
+					<template if:true={hasGrouping}>
+						<th scope="col" style="width: 3rem;">
+							<div class="slds-cell-wrap">
+							</div>
+						</th>
+					</template>
 					<th scope="col" if:true={config.isShowNumeration} style="width: 3rem;">
 						<div class="slds-cell-wrap">
 						</div>
@@ -91,6 +97,9 @@
 					</tr>
 					<template if:true={group.isOpened} for:each={group.records} for:item="dItem" for:index="index">			
 						<tr key={dItem.Id} class={dItem._rowCss} style={rowStyle} data-rowind={index}>
+							<td scope="col" style="width: 2rem;" data-rowind={index} class="numeration">
+								&nbsp;
+							</td>
 							<td scope="col" if:true={config.isShowNumeration} style="width: 2rem;" data-rowind={index} class="numeration">
 								{dItem.index}
 							</td>
