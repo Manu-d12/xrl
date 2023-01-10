@@ -203,7 +203,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		userConfig[0] = this.config.dataTableConfig;
 		console.log('mergedConfig', userConfig);
 
-		this.config.listViewConfig = userConfig;
+		this.config.listViewConfig = JSON.parse(JSON.stringify(userConfig));
 		this.config.listView = data[cmd].listViews.findLast(v => { return v.isUserConfig;});
 		console.log(JSON.stringify(this.config.listView));
 		this.config.currency =  data[cmd].currency;
@@ -374,21 +374,19 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	resetChangedRecords() {
-		this.config.resetIndex += 1;
+		// this.config.resetIndex += 1;
 		if(this.template.querySelector('c-Data-Table')){
 			this.template.querySelector('c-Data-Table').setUpdateInfo('• ' + this.config.listViewConfig[0]._changedRecords.length + ' ' +this.config._LABELS.msg_itemsUpdated);
 		}
 		setTimeout((() => { this.template.querySelector('c-Data-Table').setUpdateInfo(''); }), 3000);
-		if(this.config.loopIndex === this.config.resetIndex){
-			const toast = new ShowToastEvent({
-				title: 'Success',
-				message: this.config.listViewConfig[0]._changedRecords.length + ' ' +this.config._LABELS.msg_itemsUpdated,
-				variant: 'success'
-			});
-			this.dispatchEvent(toast);
-			this.config.listViewConfig[0]._changedRecords = undefined;
-			this.template.querySelector('c-Data-Table').updateView();
-		}
+		const toast = new ShowToastEvent({
+			title: 'Success',
+			message: this.config.listViewConfig[0]._changedRecords.length + ' ' +this.config._LABELS.msg_itemsUpdated,
+			variant: 'success'
+		});
+		this.dispatchEvent(toast);
+		this.config.listViewConfig[0]._changedRecords = undefined;
+		this.template.querySelector('c-Data-Table').updateView();
 	}
 
 	handleEvent(event) {
@@ -407,41 +405,40 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if (val.startsWith('std:')) this.handleEventActions(event, val);
 
 		if (val.startsWith(':save')) {
-
-
+			this.prepareRecordsForSave();
 			//libs.getGlobalVar(this.name).records = undefined;
 
-			let changedItems = this.template.querySelector('c-Data-Table').getRecords().filter(el => {
-				// In thiscase need merge to libs.getGlobalVar(this.name).records;
-				return this.config.listViewConfig[0]._changedRecords.indexOf(el.Id) > -1
-			})
+			// let changedItems = this.template.querySelector('c-Data-Table').getRecords().filter(el => {
+			// 	// In thiscase need merge to libs.getGlobalVar(this.name).records;
+			// 	return this.config.listViewConfig[0]._changedRecords.indexOf(el.Id) > -1
+			// })
 			
-			if(this.config.listViewConfig[0].beforeSaveValidation !== undefined && 
-				this.config.listViewConfig[0].beforeSaveValidation !== ""){
-				changedItems.forEach((el)=>{
-					let rec = eval('('+this.config.listViewConfig[0].beforeSaveValidation+')')(el);
-					if(rec){
-						el = rec;
-					}
-				});
-			}
+			// if(this.config.listViewConfig[0].beforeSaveValidation !== undefined && 
+			// 	this.config.listViewConfig[0].beforeSaveValidation !== ""){
+			// 	changedItems.forEach((el)=>{
+			// 		let rec = eval('('+this.config.listViewConfig[0].beforeSaveValidation+')')(el);
+			// 		if(rec){
+			// 			el = rec;
+			// 		}
+			// 	});
+			// }
 
-			this.config.loopIndex = 0;
-			this.config.resetIndex = 0;
-			let saveChunk = this.config.listViewConfig[0].saveChunkSize ? this.config.listViewConfig[0].saveChunkSize : 200; //200 is the default value for saveChunk
-			let index = 0;
-			// console.log("rollback",this.config.listViewConfig[0].rollBack);
-			while(index <= changedItems.length){
-				let lIndex = changedItems[(parseInt(index)+parseInt(saveChunk))] ? (parseInt(index)+parseInt(saveChunk)) : (changedItems.length);
-				let chunk = changedItems.slice(index,lIndex);
-				index += changedItems[(parseInt(index)+parseInt(saveChunk))] ? parseInt(saveChunk) : (changedItems.length);
-				// index += chunk.length;
-				this.config.loopIndex += 1;
-				libs.remoteAction(this, 'saveRecords', { records: chunk, 
-					sObjApiName: this.config.sObjApiName,
-					rollback:this.config.listViewConfig[0].rollBack ? this.config.listViewConfig[0].rollBack : true,
-					callback: this.resetChangedRecords });
-			}
+			// this.config.loopIndex = 0;
+			// this.config.resetIndex = 0;
+			// let saveChunk = this.config.listViewConfig[0].saveChunkSize ? this.config.listViewConfig[0].saveChunkSize : 200; //200 is the default value for saveChunk
+			// let index = 0;
+			// // console.log("rollback",this.config.listViewConfig[0].rollBack);
+			// while(index <= changedItems.length){
+			// 	let lIndex = changedItems[(parseInt(index)+parseInt(saveChunk))] ? (parseInt(index)+parseInt(saveChunk)) : (changedItems.length);
+			// 	let chunk = changedItems.slice(index,lIndex);
+			// 	index += changedItems[(parseInt(index)+parseInt(saveChunk))] ? parseInt(saveChunk) : (changedItems.length);
+			// 	// index += chunk.length;
+			// 	this.config.loopIndex += 1;
+			// 	libs.remoteAction(this, 'saveRecords', { records: chunk, 
+			// 		sObjApiName: this.config.sObjApiName,
+			// 		rollback:this.config.listViewConfig[0].rollBack ? this.config.listViewConfig[0].rollBack : true,
+			// 		callback: this.resetChangedRecords });
+			// }
 		}
 
 		if (val.startsWith(':change_view')) {
@@ -508,62 +505,162 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			if (event.detail.action === 'cancel') this.showDialog = false;
 			else {
 				event.target.setLoading(true);
-				let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
-				console.log(records);
-
-				//user validation callback
-				if(this.config.listViewConfig[0].beforeDeleteValidation !== undefined && 
-					this.config.listViewConfig[0].beforeDeleteValidation !== ""){
-					let copyRecords = records;
-					records = [];
-					copyRecords.forEach((el)=>{
-						let rec = eval('('+this.config.listViewConfig[0].beforeDeleteValidation+')')(el);
-						if(rec){
-							records.push(el);
-						}
-					});
-				}
-
-				//chunking the data and sending it to apex
-				this.config.deleteIndex = 0;
-				this.config.recordsLen = records.length;
-				let deleteChunk = this.config.listViewConfig[0].deleteChunkSize ? this.config.listViewConfig[0].deleteChunkSize : 200; //200 is the default value for saveChunk
-				let index = 0;
-
-				while(index < records.length){
-					let chunk = records.slice(index,records[(index+deleteChunk)] ? (index+deleteChunk) : (records.length));
-					index += records[(index+deleteChunk)] ? (deleteChunk) : (records.length);
-					libs.remoteAction(this, 'delRecords', { records: chunk, 
-						sObjApiName: this.config.sObjApiName,
-						callback: function(cmd,result){
-							if(result.delRecordsResult.error.startsWith('Error')){
-								const toast = new ShowToastEvent({
-									title: 'Error',
-									message: result.delRecordsResult.error,
-									variant: 'error'
-								});
-								this.dispatchEvent(toast);
-							}else{
-								this.config.deleteIndex += result.delRecordsResult.length;
-							}
-							if(!result.delRecordsResult.error.startsWith('Error') && this.config.deleteIndex === (parseInt(this.config.recordsLen))){
-								const toast = new ShowToastEvent({
-									title: 'Success',
-									message: "Successfully deleted",
-									variant: 'success'
-								});
-								this.dispatchEvent(toast);
-								this.showDialog = false;
-								this.config.records = this.config.records.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
-								//HYPER-243
-								this.allRecords = this.allRecords.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
-								this.template.querySelector('c-Data-Table').updateView();
-								this.config.listViewConfig[0].rowChecked = false;
-							}
-				 		} 
-					});
-				}
+				this.prepareRecordsToDelete();
 			}
+		}
+		//config delete
+		if (val.startsWith('deleteConfig:dialog')) {
+			if (event.detail.action === 'cancel') this.showDialog = false;
+			else{
+				console.log('Deleting Config ',this.config.listView.id + ' ' + this.config.listView.label);
+				libs.remoteAction(this, 'deleteConfig', { 
+					configId: this.config.listView.id,  
+					callback: function(cmd,data){
+						// console.log('Status: ',data[cmd].status);
+						if(data[cmd].status.includes('Success')){
+							const evnt = new ShowToastEvent({
+								title: 'Success',
+								message: this.config.listView.label + ' ' +this.config._LABELS.msg_successfullyDeleted,
+								variant: 'Success'
+							});
+							this.dispatchEvent(evnt);
+							this.loadCfg(true);
+						}else{
+							const evnt = new ShowToastEvent({
+								title: 'Error',
+								message: data[cmd].status,
+								variant: 'error'
+							});
+							this.dispatchEvent(evnt);
+						}
+					} 
+				});
+				this.showDialog = false;
+			}
+		}
+	}
+	async prepareRecordsToDelete(){
+		let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
+		console.log(records);
+
+		//user validation callback
+		if(this.config.listViewConfig[0].beforeDeleteValidation !== undefined && 
+			this.config.listViewConfig[0].beforeDeleteValidation !== ""){
+			let copyRecords = records;
+			records = [];
+			copyRecords.forEach((el)=>{
+				let rec = eval('('+this.config.listViewConfig[0].beforeDeleteValidation+')')(el);
+				if(rec){
+					records.push(el);
+				}
+			});
+		}
+
+		//chunking the data and sending it to apex
+		this.config.deleteIndex = 0;
+		this.config.recordsLen = records.length;
+		let deleteChunk = this.config.listViewConfig[0].deleteChunkSize ? this.config.listViewConfig[0].deleteChunkSize : 200; //200 is the default value for saveChunk
+		let index = 0;
+
+		while(index < records.length){
+			let chunk = records.slice(index,records[(parseInt(index)+parseInt(deleteChunk))] ? (parseInt(index)+parseInt(deleteChunk)) : (records.length));
+			index += records[(parseInt(index)+parseInt(deleteChunk))] ? parseInt(deleteChunk) : (records.length);
+			await this.deleteRecords(chunk);
+			// libs.remoteAction(this, 'delRecords', { records: chunk, 
+			// 	sObjApiName: this.config.sObjApiName,
+			// 	callback: function(cmd,result){
+			// 		if(result.delRecordsResult.error.startsWith('Error')){
+			// 			const toast = new ShowToastEvent({
+			// 				title: 'Error',
+			// 				message: result.delRecordsResult.error,
+			// 				variant: 'error'
+			// 			});
+			// 			this.dispatchEvent(toast);
+			// 		}else{
+			// 			this.config.deleteIndex += result.delRecordsResult.length;
+			// 		}
+			// 		if(!result.delRecordsResult.error.startsWith('Error') && this.config.deleteIndex === (parseInt(this.config.recordsLen))){
+			// 			const toast = new ShowToastEvent({
+			// 				title: 'Success',
+			// 				message: "Successfully deleted",
+			// 				variant: 'success'
+			// 			});
+			// 			this.dispatchEvent(toast);
+			// 			this.showDialog = false;
+			// 			this.config.records = this.config.records.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
+			// 			//HYPER-243
+			// 			this.allRecords = this.allRecords.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
+			// 			this.template.querySelector('c-Data-Table').updateView();
+			// 			this.config.listViewConfig[0].rowChecked = false;
+			// 		}
+			// 	} 
+			// });
+		}
+		const toast = new ShowToastEvent({
+			title: 'Success',
+			message: this.config._LABELS.msg_successfullyDeleted,
+			variant: 'success'
+		});
+		this.dispatchEvent(toast);
+		this.showDialog = false;
+		if(records.length < 1000){
+			this.config.records = this.config.records.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
+			// //HYPER-243
+			this.allRecords = this.allRecords.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
+			this.template.querySelector('c-Data-Table').updateView();
+			this.config.listViewConfig[0].rowChecked = false;
+		}else{
+			this.loadCfg(false);
+		}
+	}
+	async deleteRecords(chunk){
+		try{
+			const a = await libs.remoteAction(this, 'delRecords', { records: chunk, 
+				sObjApiName: this.config.sObjApiName
+			});
+		} catch (error) {
+			console.log(error);
+		}
+	}
+	async prepareRecordsForSave(){
+		let changedItems = this.template.querySelector('c-Data-Table').getRecords().filter(el => {
+			return this.config.listViewConfig[0]._changedRecords.indexOf(el.Id) > -1
+		});
+		
+		let validatedRecords = [];
+
+		if(this.config.listViewConfig[0].beforeSaveValidation !== undefined && 
+			this.config.listViewConfig[0].beforeSaveValidation !== ""){
+			changedItems.forEach((el)=>{
+				let rec = eval('('+this.config.listViewConfig[0].beforeSaveValidation+')')(el);
+				if(rec){
+					validatedRecords.push(el);
+				}
+			});
+		}else{
+			validatedRecords = changedItems;
+		}
+
+		let saveChunk = this.config.listViewConfig[0].saveChunkSize ? this.config.listViewConfig[0].saveChunkSize : 200; //200 is the default value for saveChunk
+		let index = 0;
+
+		while(index <= validatedRecords.length){
+			let lIndex = validatedRecords[(parseInt(index)+parseInt(saveChunk))] ? (parseInt(index)+parseInt(saveChunk)) : (validatedRecords.length);
+			let chunk = validatedRecords.slice(index,lIndex);
+			index += validatedRecords[(parseInt(index)+parseInt(saveChunk))] ? parseInt(saveChunk) : (validatedRecords.length);
+			await this.saveRecords(chunk);
+		}
+		this.resetChangedRecords();
+	}
+	async saveRecords(chunk){
+		try{
+			await libs.remoteAction(this, 'saveRecords', { records: chunk, 
+				sObjApiName: this.config.sObjApiName,
+				rollback:this.config.listViewConfig[0].rollBack ? this.config.listViewConfig[0].rollBack : true,
+				beforeSaveAction: this.config.listViewConfig[0].beforeSaveApexAction ? this.config.listViewConfig[0].beforeSaveApexAction : ''
+			});
+		} catch (error) {
+			console.log(error);
 		}
 	}
 
@@ -605,6 +702,42 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		// });
 		let val = event.target.getAttribute('data-id');
 		if (val === 'dialog:close') this.config.dialog = undefined;
+		if(val === 'dialog:config_delete'){
+			if(this.config.listView.id != undefined){
+				this.dialogCfg = {
+					title: this.config._LABELS.lbl_confirmDelete,
+					contents: [
+						{
+							isMessage: true,
+							name: 'deleteConfigConfirm',
+							text: this.config._LABELS.msg_confirmConfigDelete
+						}
+					],
+					buttons: [
+						{
+							name: 'cancel',
+							label: this.config._LABELS.lbl_cancel,
+							variant: 'neutral'
+						},
+						{
+							name: 'Delete',
+							label: this.config._LABELS.title_delete,
+							variant: 'brand',
+							class: 'slds-m-left_x-small'
+						}
+					],
+					data_id: "deleteConfig:dialog"
+				};
+				this.showDialog = true;
+			}else{
+				const evnt = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.msg_noListViewFound,
+					variant: 'error'
+				});
+				this.dispatchEvent(evnt);
+			}
+		}
 		if(val === 'dialog:config_share'){
 			console.log(this.config.listView.id);
 			this[NavigationMixin.Navigate]({

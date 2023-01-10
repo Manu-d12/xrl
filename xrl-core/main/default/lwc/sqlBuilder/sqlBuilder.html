@@ -12,14 +12,14 @@
                             <li onclick={handleBuilderEvent} class="slds-item slds-theme_shade" >
                                 <lightning-input data-id="sqlBuilder:fieldSearch" onkeyup={handleBuilderEvent} value={config.sqlBuilder.searchTerm} variant="label-hidden" placeholder={config._LABELS.lbl_enterSearchTermHere} type="text"></lightning-input>
                             </li>
-                            <li if:true={config.sqlBuilder.isBackNeeded} data-id="sqlBuilder:back" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class="slds-item slds-theme_shade" ><lightning-icon onclick={handleBuilderEvent} data-id="sqlBuilder:back" size="small" icon-name="utility:reply" alternative-text={config._LABELS.lbl_back} title={config._LABELS.lbl_back}></lightning-icon> {config._LABELS.lbl_back}</li>
+                            <li if:true={config.sqlBuilder.isBackNeeded} data-id="sqlBuilder:back" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class="slds-item slds-theme_shade" ><lightning-icon if:true={config.sqlBuilder.isBackNeeded} onclick={handleBuilderEvent} data-id="sqlBuilder:back" size="small" icon-name="utility:reply" alternative-text={config._LABELS.lbl_back} title={config._LABELS.lbl_back}></lightning-icon> {config._LABELS.lbl_back}</li>
                         </ul>
                         <div class="slds-scrollable_y" style="height:24rem;padding:4px;">
                             <ul class="slds-has-dividers_around-space">
                                 <template if:true={config.sqlBuilder.fields} for:each={config.sqlBuilder.fields} for:item="field" for:index="index">
                                     <li data-id="sqlBuilder:selectItem" onclick={handleBuilderEvent} class={field.css} style="cursor: pointer;margin-top: 0px;padding:5px;" data-ref={field.refObj} data-val={field.fieldName} key={field.fieldName}>
-                                        {field.label} 
                                         <lightning-helptext class="placeTopItem" content={field.fieldName}></lightning-helptext>
+                                        &nbsp;{field.label} 
                                     </li>
                                 </template>
                             </ul>
@@ -35,8 +35,8 @@
                             <template if:true={config.sqlBuilder.selectedFields} for:each={config.sqlBuilder.selectedFields} for:item="field" for:index="index">
                                 <li class="slds-item Items" data-val={field.fieldName} key={field.fieldName} style="cursor: pointer;margin-top: 0px;padding:5px;" draggable="true" onchange={Change} ondrop={Drop} ondragstart={DragStart} ondragover={DragOver}>
                                     <lightning-icon size="small" data-val={field.fieldName} icon-name="utility:rows" alternative-text="Rows" title="Rows"></lightning-icon>
-                                    {field.label}
-                                    <lightning-helptext class="placeTopItem" content={field.fieldName}></lightning-helptext>
+                                    &nbsp;<lightning-helptext class="placeTopItem" content={field.fieldName}></lightning-helptext>
+                                    &nbsp;{field.label}
                                     <lightning-icon if:false={field.locked} size="small" data-id="sqlBuilder:deleteSelectedField" data-val={field.fieldName} onclick={handleBuilderEvent} style="float: right;" icon-name="utility:delete" alternative-text={config._LABELS.altTxt_delete} title={config._LABELS.altTxt_delete}></lightning-icon>
                                     <lightning-icon if:true={field.locked} size="small" data-val={field.fieldName} onclick={handleBuilderEvent} style="float: right;" icon-name="utility:lock" alternative-text={config._LABELS.altTxt_locked} title={config._LABELS.altTxt_locked}></lightning-icon>
                                 </li>
@@ -60,14 +60,15 @@
                                 <li onclick={handleBuilderEvent} class="slds-item slds-theme_shade" >
                                     <lightning-input data-id="sqlBuilder:fieldSearch" onkeyup={handleBuilderEvent} value={config.sqlBuilder.searchTerm} variant="label-hidden" placeholder={config._LABELS.lbl_enterSearchTermHere} type="text"></lightning-input>
                                 </li>
-                                <li if:true={config.sqlBuilder.isBackNeeded} data-id="sqlBuilder:back" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class="slds-item slds-theme_shade" ><lightning-icon onclick={handleBuilderEvent} data-id="sqlBuilder:back" size="small" icon-name="utility:reply" alternative-text={config._LABELS.lbl_back} title={config._LABELS.lbl_back}></lightning-icon>  {config._LABELS.lbl_back}</li>
+                                <li if:true={config.sqlBuilder.isBackNeeded} data-id="sqlBuilder:back" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class="slds-item slds-theme_shade" ><lightning-icon if:true={config.sqlBuilder.isBackNeeded} onclick={handleBuilderEvent} data-id="sqlBuilder:back" size="small" icon-name="utility:reply" alternative-text={config._LABELS.lbl_back} title={config._LABELS.lbl_back}></lightning-icon>  {config._LABELS.lbl_back}</li>
 
                             </ul>
                             <div class="slds-scrollable_y" style="height:24rem;padding:4px;">
                                 <ul class="slds-has-dividers_around-space">
                                     <template if:true={config.sqlBuilder.fields} for:each={config.sqlBuilder.fields} for:item="field" for:index="index">
-                                        <li data-id="sqlBuilder:conditions:selectItem" onclick={handleBuilderEvent} style="cursor: pointer;margin-top: 0px;padding:5px;" class={field.css} data-ref={field.refObj} data-val={field.fieldName} key={field.fieldName}>{field.label} 
+                                        <li data-id="sqlBuilder:conditions:selectItem" onclick={handleBuilderEvent} style="cursor: pointer;margin-top: 0px;padding:5px;" class={field.css} data-ref={field.refObj} data-val={field.fieldName} key={field.fieldName}>
                                             <lightning-helptext class="placeTopItem" content={field.fieldName}></lightning-helptext>
+                                            &nbsp;{field.label}                            
                                         </li>
                                     </template>
                                 </ul>
@@ -85,6 +86,7 @@
                                         <b>{config._LABELS.lbl_availableOperations}</b> for {config.sqlBuilder.currentCondition.field}
                                         <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_availableOperationTooltip}></lightning-helptext>
                                     </div>
+                                    <div if:true={config.sqlBuilder.noOperationError}>No Operation Available</div>
                                     <br/>
                                     <div class="slds-scrollable_y" style="height:25rem">
                                         <ul class="slds-has-dividers_around-space">
@@ -210,13 +212,14 @@
                                 <li onclick={handleBuilderEvent} class="slds-item slds-theme_shade" >
                                     <lightning-input data-id="sqlBuilder:fieldSearch" onkeyup={handleBuilderEvent} value={config.sqlBuilder.searchTerm} variant="label-hidden" placeholder={config._LABELS.lbl_enterSearchTermHere} type="text"></lightning-input>
                                 </li>
-                                <li if:true={config.sqlBuilder.isBackNeeded} data-id="sqlBuilder:back" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class="slds-item slds-theme_shade" ><lightning-icon onclick={handleBuilderEvent} data-id="sqlBuilder:back" size="small" icon-name="utility:reply" alternative-text={config._LABELS.lbl_back} title={config._LABELS.lbl_back}></lightning-icon>  {config._LABELS.lbl_back}</li>
+                                <li if:true={config.sqlBuilder.isBackNeeded} data-id="sqlBuilder:back" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class="slds-item slds-theme_shade" ><lightning-icon if:true={config.sqlBuilder.isBackNeeded} onclick={handleBuilderEvent} data-id="sqlBuilder:back" size="small" icon-name="utility:reply" alternative-text={config._LABELS.lbl_back} title={config._LABELS.lbl_back}></lightning-icon>  {config._LABELS.lbl_back}</li>
                             </ul>
                             <div class="slds-scrollable_y" style="height:22rem">
                                 <ul class="slds-has-dividers_around-space">
                                     <template if:true={config.sqlBuilder.fields} for:each={config.sqlBuilder.fields} for:item="field" for:index="index">
-                                        <li data-id="sqlBuilder:ordering:selectItem" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class={field.css} data-ref={field.refObj} data-val={field.fieldName} key={field.fieldName}>{field.label} 
-                                            <lightning-helptext content={field.fieldName}></lightning-helptext>
+                                        <li data-id="sqlBuilder:ordering:selectItem" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class={field.css} data-ref={field.refObj} data-val={field.fieldName} key={field.fieldName}>
+                                            <lightning-helptext class="placeTop" content={field.fieldName}></lightning-helptext>
+                                            &nbsp;{field.label} 
                                         </li>
                                     </template>
                                 </ul>

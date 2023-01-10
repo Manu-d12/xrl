@@ -152,6 +152,7 @@ export default class SqlBuilder extends LightningElement {
                 this.config.sqlBuilder.currentCondition = {};
                 this.config.sqlBuilder.currentCondition.field = fieldVal;
                 this.config.sqlBuilder.currentCondition.fieldType = selectedField.type;
+                this.config.sqlBuilder.noOperationError = false;
                 if(selectedField.type === 'picklist'){
                     this.config.sqlBuilder.currentCondition.fieldOptions = selectedField.options;
                 }
@@ -166,11 +167,7 @@ export default class SqlBuilder extends LightningElement {
                         this.config.sqlBuilder.conditionOperations.push(el);
                     });
                 }else{
-                    this.config.sqlBuilder.conditionOperations = [
-                        { label: 'Contains', value: 'cn' },
-                        { label: 'Is Equal', value: 'eq' },
-                        { label: 'Not Is Equal', value: 'neq' },
-                    ];
+                    this.config.sqlBuilder.noOperationError = true;
                 }
                 this.config.sqlBuilder.openConditionInput = false;
             }else{
@@ -330,13 +327,13 @@ export default class SqlBuilder extends LightningElement {
                 callback: function(cmd,data){
                     let objectFields = JSON.parse(data[cmd].describe);
                     this.config.describeMap[sObjName] = objectFields;
-                    this.config.sqlBuilder.fields = this.generateFields(objectFields,objStr);   
+                    this.config.sqlBuilder.fields = this.generateFields(objectFields,objStr,sObjName);   
                     this.config.sqlBuilder.fields = libs.sortRecords(this.config.sqlBuilder.fields, 'label', true);
                     this.config.sqlBuilder.allFields = this.config.sqlBuilder.fields;    
                 } });
         }
     }
-    generateFields(describe,objStr){
+    generateFields(describe,objStr,sObjName){
         let fields = [];
         for (let key in describe) {
             if (describe[key].type === 'reference') {
@@ -349,7 +346,8 @@ export default class SqlBuilder extends LightningElement {
                     css: itemCss, 
                     type: describe[key].type,
                     updateable: describe[key].updateable,
-                    isNameField: describe[key] && describe[key].nameField === true
+                    isNameField: describe[key] && describe[key].nameField === true,
+                    referenceTo: sObjName
                 };
                 if(describe[key].type === 'picklist' || describe[key].type === 'multipicklist'){
                     fieldMap.options = [];

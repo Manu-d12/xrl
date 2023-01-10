@@ -104,8 +104,11 @@
 				<lightning-helptext if:false={config.dialog.saveAs} class="placeTop" content={config._LABELS.tooltip_configCancel}></lightning-helptext>
 				<!-- Share Button -->
 				<lightning-button if:false={config.dialog.saveAs} variant="base" label="Share" title={config._LABELS.lbl_cancel} icon-name="utility:internal_share" class="slds-m-left_x-small" data-id="dialog:config_share" onclick={config.dialog.handleEvent}></lightning-button>
+				<lightning-helptext if:false={config.dialog.saveAs} class="placeTop" content={config._LABELS.tooltip_configShare}></lightning-helptext>				
+				<!-- Delete Config Button -->
+				<lightning-button if:false={config.dialog.saveAs} variant="destructive" label="Delete" title="Delete" icon-name="utility:delete" class="slds-m-left_x-small" data-id="dialog:config_delete" onclick={config.dialog.handleEvent}></lightning-button>
 				<lightning-helptext if:false={config.dialog.saveAs} class="placeTop" content={config._LABELS.tooltip_configShare}></lightning-helptext>
-				
+
 				<template if:true={config.buttons} for:each={config.buttons} for:item="btn" for:index="index">
 					<lightning-button key={btn.label} variant={btn.variant} label={btn.label} data-id={btn.dataId} icon-name={btn.iconName} onclick={config.callback} class="slds-m-around_small"></lightning-button>
 				</template>
