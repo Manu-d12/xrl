@@ -203,7 +203,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		userConfig[0] = this.config.dataTableConfig;
 		console.log('mergedConfig', userConfig);
 
-		this.config.listViewConfig = JSON.parse(JSON.stringify(userConfig));
+		this.config.listViewConfig = userConfig;
 		this.config.listView = data[cmd].listViews.findLast(v => { return v.isUserConfig;});
 		console.log(JSON.stringify(this.config.listView));
 		this.config.currency =  data[cmd].currency;
@@ -643,6 +643,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 		let saveChunk = this.config.listViewConfig[0].saveChunkSize ? this.config.listViewConfig[0].saveChunkSize : 200; //200 is the default value for saveChunk
 		let index = 0;
+
+		console.log('HERE>ext',JSON.parse(JSON.stringify(validatedRecords[0])));
 
 		while(index <= validatedRecords.length){
 			let lIndex = validatedRecords[(parseInt(index)+parseInt(saveChunk))] ? (parseInt(index)+parseInt(saveChunk)) : (validatedRecords.length);

@@ -307,8 +307,15 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if (isNeedSave === true) {
 			if (rowName !== undefined) {
 				if (!this.config._inlineEditRow) this.config._inlineEditRow = JSON.parse(JSON.stringify(this.records[this.config._inlineEdit]));
-				if(rowName.includes('.')){
-					this.config._inlineEditRow[rowName.split('.')[0]][rowName.split('.')[1]] = value;
+				let cItem = this.getColItem(rowName);
+				if(rowName.includes('.') && cItem._editOptions){
+					this.config._inlineEditRow[rowName.split('.')[0]+'Id'] = value;
+					let newVal = cItem._editOptions.find((el)=>{
+						return el.value === value;
+					});
+					this.config._inlineEditRow[rowName.split('.')[0]].Id = newVal.value;
+					this.config._inlineEditRow[rowName.split('.')[0]].Name = newVal.label;
+					console.log('HERE>',value);
 				}else{
 					this.config._inlineEditRow[rowName] = value;
 				}
