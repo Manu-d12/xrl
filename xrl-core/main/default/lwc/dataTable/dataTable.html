@@ -61,7 +61,7 @@
 						<td scope="col" if:true={config.isShowCheckBoxes} style="width: 2rem;" data-rowind={index}>
 							<lightning-input type="checkbox" data-rowind={index} onchange={checkRow} checked={dItem._isChecked}></lightning-input>
 						</td>
-						<td for:each={config.colModel} if:false={hItem.isHidden} for:item="hItem" for:index="hIndex" key={hItem.Id} role="gridcell" data-rowind={index} data-colname={hItem.fieldName} ondblclick={rowDblCallback} class={hItem._cellCss}>
+						<td for:each={config.colModel} if:false={hItem.isHidden} for:item="hItem" for:index="hIndex" key={hItem.fieldName} role="gridcell" data-rowind={index} data-colname={hItem.fieldName} ondblclick={rowDblCallback} class={hItem._cellCss}>
 							<span if:false={hItem.isActions} class="slds-grid slds-grid_align-spread">
 
 								<!--<lightning-input if:true={hItem.isEditable} type={hItem.type} field-level-help={hItem.inlineHelpText} data-rowind={index} data-colname={hItem.fieldName} onchange={inlineEdit}></lightning-input>-->
