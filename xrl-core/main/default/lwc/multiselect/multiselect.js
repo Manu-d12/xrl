@@ -3,7 +3,7 @@ import { LightningElement, track, api } from 'lwc';
 export default class Multiselect extends LightningElement {
     
     @api options;
-    @api selectedValue;
+    @api selectedvalue;
     @api selectedvalues = [];
     @api label;
     @api disabled = false;
@@ -17,7 +17,7 @@ export default class Multiselect extends LightningElement {
         this.mSelectConfig.showOptionCount = true;
         this.mSelectConfig.minChar = 2;
         var optionData = this.options ? (JSON.parse(JSON.stringify(this.options))) : null;
-        var value = this.selectedValue ? (JSON.parse(JSON.stringify(this.selectedValue))) : null;
+        var value = this.selectedvalue ? (JSON.parse(JSON.stringify(this.selectedvalue))) : null;
         var values = this.selectedvalues ? (JSON.parse(JSON.stringify(this.selectedvalues))) : null;
 		if(value || values) {
             var searchString;

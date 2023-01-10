@@ -6,7 +6,7 @@
     <div class="slds-combobox_container">
         <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open" aria-expanded="true" aria-haspopup="listbox" role="combobox">
             <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
-                <lightning-input disabled={disabled} class="inputBox" placeholder="Select an Option" onblur={blurEvent} onclick={showOptions} onkeyup={filterOptions} value={mSelectConfig.searchString} auto-complete="off" variant="label-hidden" id="combobox-id-1" ></lightning-input>
+                <lightning-input disabled={disabled} class="inputBox" placeholder="Select an Option" onblur={blurEvent} onclick={showOptions} onkeyup={filterOptions} value={mSelectConfig.searchString} variant="label-hidden" id="combobox-id-1" ></lightning-input>
                 <lightning-icon class="slds-input__icon" icon-name="utility:down" size="x-small" alternative-text="search"></lightning-icon>
             </div>
             <template if:true={mSelectConfig.showDropdown}>
