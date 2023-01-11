@@ -39,7 +39,7 @@
 							<span data-id={hItem.fieldName} class="slds-th__action">
 								<lightning-icon if:true={hItem.isFilterable} variant={hItem._filterVariant} title={hItem._filterCondition} data-id={hItem.fieldName} icon-name="utility:filterList" size="xx-small" alternative-text="Filter Column" onclick={setFilter} aria-describedby={hItem.fieldName}>&nbsp;</lightning-icon>
 								
-								<span data-id={hItem.fieldName} class="slds-th__action slds-text-link_reset" href="javascript:void(0);" role="button" onclick={changeSort} style="width:100%">
+								<span data-id={hItem.fieldName} class="slds-th__action slds-text-link_reset" href="javascript:void(0);" role="button" onclick={changeSort} style="width:80%">
 									<span class="slds-truncate" data-id={hItem.fieldName} title={hItem.label}>{hItem.label}</span>
 									<span if:true={hItem.isSortable} data-id={hItem.fieldName} class="slds-col_bump-left">
 										<lightning-icon data-id={hItem.fieldName} if:true={hItem._sortIcon} icon-name={hItem._sortIcon} size="xx-small" title={config._LABELS.title_sortColumn}></lightning-icon>
