@@ -28,3 +28,6 @@
     position: relative;
     top:3px;
 }
+.alignBulkEditCheckbox{
+	right: -4px;
+}
