@@ -111,7 +111,7 @@
 								<span if:false={hItem.isActions} data-groupind={group.title} data-rowid={dItem.Id} class="slds-grid slds-grid_align-spread">
 									
 									<c-data-Table-Item if:false={dItem._isEditable} row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} cfg={cfg} class="slds-truncate" style="width:100%"></c-data-Table-Item>
-									<c-data-Table-Item if:true={dItem._isEditable} iseditmode="true" row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} cfg={cfg} style="width:100%"></c-data-Table-Item>
+									<c-data-Table-Item if:true={dItem._isEditable} iseditmode="true" row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} cfg={cfg} style="width:100%" data-recordind={dItem.Id}></c-data-Table-Item>
 
 								</span>
 							</td>
