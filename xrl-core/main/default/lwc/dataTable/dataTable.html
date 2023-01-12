@@ -109,10 +109,14 @@
 							</td>
 							<td for:each={config.colModel} if:false={hItem.isHidden} for:item="hItem" for:index="hIndex" key={hItem.Id} role="gridcell" data-rowind={index} data-rowid={dItem.Id} data-colname={hItem.fieldName} ondblclick={rowDblCallback} class={hItem._cellCss}>
 								<span if:false={hItem.isActions} data-groupind={group.title} data-rowid={dItem.Id} class="slds-grid slds-grid_align-spread">
-									
-									<c-data-Table-Item if:false={dItem._isEditable} row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} cfg={cfg} class="slds-truncate" style="width:100%"></c-data-Table-Item>
-									<c-data-Table-Item if:true={dItem._isEditable} iseditmode="true" row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} cfg={cfg} style="width:100%"></c-data-Table-Item>
-
+									<template if:true={hItem.isNameField}>
+										<c-data-Table-Item if:false={dItem._isEditable} row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} data-recordind={dItem.Id} cfg={cfg} class={hItem.wrapClass} style="width:100%" onmouseover={showPop} onmouseout={hidePop}></c-data-Table-Item>
+										<c-data-Table-Item if:true={dItem._isEditable} iseditmode="true" row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} class={hItem.wrapClass} data-recordind={dItem.Id} cfg={cfg} style="width:100%"></c-data-Table-Item>
+									</template>
+									<template if:false={hItem.isNameField}>
+										<c-data-Table-Item if:false={dItem._isEditable} row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} cfg={cfg} class={hItem.wrapClass} style="width:100%"></c-data-Table-Item>
+										<c-data-Table-Item if:true={dItem._isEditable} iseditmode="true" row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} cfg={cfg} class={hItem.wrapClass} style="width:100%"></c-data-Table-Item>
+									</template>
 								</span>
 							</td>
 						</tr>
