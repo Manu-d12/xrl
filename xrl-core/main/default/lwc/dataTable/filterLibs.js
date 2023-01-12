@@ -247,7 +247,7 @@ export let filterLibs = {
 			case 'lse': 
 				return recordDate <= filterDate;
 			case 'rg': 
-				let filterTwoDate = new Date(filter._filterStrTo).toLocaleString(filter._locale,{
+				let filterTwoDate = new Date(filter._filterStrTo).setHours(0, 0, 0, 0).toLocaleString(filter._locale,{
 					month : "2-digit",
 					day : "2-digit",
 					year: "numeric"
