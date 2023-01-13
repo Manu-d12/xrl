@@ -1711,4 +1711,12 @@ Once you are done editing the pattern, click outside the input box.</value>
         <shortDescription>msg_unsaveRecordsCannotPerformOtherAction</shortDescription>
         <value>There is unsaved records. Please save those before performing next operation</value>
     </labels>
+    <labels>
+        <fullName>msg_youCantaddMoreThan20Fields</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_youCantaddMoreThan20Fields</shortDescription>
+        <value>You can not add more than 20 columns</value>
+    </labels>
 </CustomLabels>
