@@ -11,7 +11,7 @@
 		<div if:true={config.pager.pagerTop} class="slds-align_absolute-center slds-m-around_xx-small">
 			<lightning-button-icon variant="brand" size="small" data-id=":pagerFirst" onclick={handleEventPager} icon-name="utility:arrow_left"></lightning-button-icon>&nbsp;
 			<lightning-button-icon variant="brand" size="small" data-id=":pagerPrev" onclick={handleEventPager} icon-name="utility:chevronleft"></lightning-button-icon>&nbsp;&nbsp;
-			Page&nbsp;<lightning-input variant="label-hidden" data-id=":pagerCurPage" onchange={handleEventPager} type="number" value={config.pager.curPage} style="width:40px"></lightning-input>&nbsp;of {config.pager.numPages}&nbsp;&nbsp;
+			Page&nbsp;<lightning-input variant="label-hidden" data-id=":pagerCurPage" onchange={handleEventPager} type="number" value={config.pager.curPage} style="width:60px"></lightning-input>&nbsp;of {config.pager.numPages}&nbsp;&nbsp;
 			<lightning-button-icon variant="brand" size="small" data-id=":pagerNext" onclick={handleEventPager} icon-name="utility:chevronright"></lightning-button-icon>&nbsp;
 			<lightning-button-icon variant="brand" size="small"  data-id=":pagerLast" onclick={handleEventPager} icon-name="utility:arrow_right"></lightning-button-icon>
 			<lightning-combobox variant="label-hidden" data-id=":pagerPageSize" placeholder="Choose count" value={config.pager.pageSize} options={config.pager.pageSizeOptions} onchange={handleEventPager} class="slds-p-horizontal_xx-small" style="width:80px"></lightning-combobox>
@@ -109,10 +109,14 @@
 							</td>
 							<td for:each={config.colModel} if:false={hItem.isHidden} for:item="hItem" for:index="hIndex" key={hItem.Id} role="gridcell" data-rowind={index} data-rowid={dItem.Id} data-colname={hItem.fieldName} ondblclick={rowDblCallback} class={hItem._cellCss}>
 								<span if:false={hItem.isActions} data-groupind={group.title} data-rowid={dItem.Id} class="slds-grid slds-grid_align-spread">
-									
-									<c-data-Table-Item if:false={dItem._isEditable} row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} cfg={cfg} class="slds-truncate" style="width:100%"></c-data-Table-Item>
-									<c-data-Table-Item if:true={dItem._isEditable} iseditmode="true" row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} cfg={cfg} style="width:100%" data-recordind={dItem.Id}></c-data-Table-Item>
-
+									<template if:true={hItem.isNameField}>
+										<c-data-Table-Item if:false={dItem._isEditable} row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} data-recordind={dItem.Id} cfg={cfg} class={hItem.wrapClass} style="width:100%" onmouseover={showPop} onmouseout={hidePop}></c-data-Table-Item>
+										<c-data-Table-Item if:true={dItem._isEditable} iseditmode="true" row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} class={hItem.wrapClass} data-recordind={dItem.Id} cfg={cfg} style="width:100%"></c-data-Table-Item>
+									</template>
+									<template if:false={hItem.isNameField}>
+										<c-data-Table-Item if:false={dItem._isEditable} row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} cfg={cfg} class={hItem.wrapClass} style="width:100%"></c-data-Table-Item>
+										<c-data-Table-Item if:true={dItem._isEditable} iseditmode="true" row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} cfg={cfg} class={hItem.wrapClass} data-recordind={dItem.Id} style="width:100%"></c-data-Table-Item>
+									</template>
 								</span>
 							</td>
 						</tr>
@@ -124,7 +128,7 @@
 		<div if:true={config.pager.pagerBottom} class="slds-align_absolute-center slds-m-around_xx-small">
 			<lightning-button-icon variant="brand" size="small" data-id=":pagerFirst" onclick={handleEventPager} icon-name="utility:arrow_left"></lightning-button-icon>&nbsp;
 			<lightning-button-icon variant="brand" size="small" data-id=":pagerPrev" onclick={handleEventPager} icon-name="utility:chevronleft"></lightning-button-icon>&nbsp;&nbsp;
-			Page&nbsp;<lightning-input variant="label-hidden" data-id=":pagerCurPage" onchange={handleEventPager} type="number" value={config.pager.curPage} style="width:40px"></lightning-input>&nbsp;of {config.pager.numPages}&nbsp;&nbsp;
+			Page&nbsp;<lightning-input variant="label-hidden" data-id=":pagerCurPage" onchange={handleEventPager} type="number" value={config.pager.curPage} style="width:60px"></lightning-input>&nbsp;of {config.pager.numPages}&nbsp;&nbsp;
 			<lightning-button-icon variant="brand" size="small" data-id=":pagerNext" onclick={handleEventPager} icon-name="utility:chevronright"></lightning-button-icon>&nbsp;
 			<lightning-button-icon variant="brand" size="small"  data-id=":pagerLast" onclick={handleEventPager} icon-name="utility:arrow_right"></lightning-button-icon>
 			<lightning-combobox variant="label-hidden" data-id=":pagerPageSize" placeholder="Choose count" value={config.pager.pageSize} options={config.pager.pageSizeOptions} onchange={handleEventPager} class="slds-p-horizontal_xx-small" style="width:80px"></lightning-combobox>
