@@ -249,6 +249,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		this.config._LABELS = libs.getGlobalVar(this.cfg)._LABELS;
 		
 		this.config._saveEdit = this.saveEditCallback.bind(this);
+		this.config._selectedRecords = this.getSelectedRecords.bind(this);
+		this.config._updateView = this.updateView.bind(this);
 		this.config._countFields = this.config.isShowCheckBoxes === true ? 1 : 0;
 		console.log(JSON.parse(JSON.stringify(this.config.colModel)));
 		this.config.colModel.forEach(item => {

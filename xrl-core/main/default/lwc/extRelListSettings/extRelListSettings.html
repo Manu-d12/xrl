@@ -60,7 +60,7 @@
 					<lightning-tab label="Actions">
 						<template if:false={config.openNewAction}>
 							<lightning-button if:false={config.dialog.action} variant="brand" label="New Action" title="New Action" class="slds-m-right_x-small" data-val="openNewAction" onclick={handleNewAction}></lightning-button>
-							<lightning-combobox name="status" label="Select Action" placeholder="Choose Action" value={config.dialog.allActions} data-id="dialog:setAction" onchange={config.dialog.handleEvent} options={config.dialog.allActions}>
+							<lightning-combobox name="status" label="Select Action" placeholder="Choose Action" value={config.dialog.action} data-id="dialog:setAction" onchange={config.dialog.handleEvent} options={config.dialog.allActions}>
 							</lightning-combobox>
 						</template>
 						<template if:true={config.openNewAction}>
