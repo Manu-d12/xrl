@@ -535,6 +535,7 @@ global with sharing class infrastructure {
 			'msg_successfullyDeleted'=>label.msg_successfullyDeleted,
 			'msg_recordSelection'=>label.msg_recordSelection,
 			'msg_unsaveRecordsCannotPerformOtherAction'=>label.msg_unsaveRecordsCannotPerformOtherAction,
+			'msg_youCantaddMoreThan20Fields'=>label.msg_youCantaddMoreThan20Fields,
 			'placeHolder_beforeSaveValidation'=>label.placeHolder_beforeSaveValidation,
 			'placeHolder_beforeDeleteValidation'=>label.placeHolder_beforeDeleteValidation,
 			'placeholder_actionCallback'=> label.placeholder_actionCallback,

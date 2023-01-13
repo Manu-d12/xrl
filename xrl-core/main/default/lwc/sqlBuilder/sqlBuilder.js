@@ -96,9 +96,19 @@ export default class SqlBuilder extends LightningElement {
             console.log(event.target.getAttribute('data-val'));
             let refObj = event.target.getAttribute('data-ref');
             if( refObj === null){
-                this.toggleArrayElement(this.config.sqlBuilder.selectedFields,event.target.getAttribute('data-val'));
-                event.target.classList.add('slds-theme_alt-inverse');
-                this.dialogValues();
+                //adding the validation of 20 max columns
+                if(this.config.sqlBuilder.selectedFields.length < 20){
+                    this.toggleArrayElement(this.config.sqlBuilder.selectedFields,event.target.getAttribute('data-val'));
+                    event.target.classList.add('slds-theme_alt-inverse');
+                    this.dialogValues();
+                }else{
+                    const toast = new ShowToastEvent({
+                        title: 'Error',
+                        message: this.config._LABELS.msg_youCantaddMoreThan20Fields,
+                        variant: 'error'
+                    });
+                    this.dispatchEvent(toast);
+                }
             }else{
                 if(this.config.sqlBuilder._objectStack.length <=4 ){
                     this.config.sqlBuilder._objectStack.push({relationShip:event.target.getAttribute('data-val'),referredObj:refObj});
