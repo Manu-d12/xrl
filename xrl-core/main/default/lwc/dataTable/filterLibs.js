@@ -141,6 +141,9 @@ export let filterLibs = {
 	double__filter(filter, record) {
         return filterLibs.number__filter(filter, record);
     },
+	percent__filter(filter, record) {
+        return filterLibs.number__filter(filter, record);
+    },
 	encryptedstring__filter(filter, record) {
         return filterLibs.string__filter(filter, record);
     },
@@ -391,7 +394,9 @@ export let filterLibs = {
 	doubleFilterActions(key) {
         return filterLibs.numberFilterActions(key);
 	},
-	
+	percentFilterActions(key) {
+        return filterLibs.numberFilterActions(key);
+	},
 	intFilterActions(key) {
         return filterLibs.numberFilterActions(key);
 	},
