@@ -48,212 +48,211 @@
         </lightning-tab>
         <!-- Select Field Tab Ends-->
         <!-- Condition Tab Starts-->
-        <template if:true={config.userInfo.isAdminAccess}>
-            <lightning-tab label={config._LABELS.lbl_applyConditions} value="2" onactive={tabChanged}>
-                <div class="slds-grid slds-gutters">
-                    <div class="slds-col slds-size_5-of-12">
-                        <div class="slds-text-heading_small"><b>{config._LABELS.lbl_availableFieldsFrom}</b> {breadcrumb}
-                            <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_applyCondition}></lightning-helptext>
-                        </div>
-                        <div style="border:0.5px solid rgb(183, 180, 180);">
-                            <ul if:true={config.sqlBuilder._objectStack} class="slds-has-dividers_around-space">
-                                <li onclick={handleBuilderEvent} class="slds-item slds-theme_shade" >
-                                    <lightning-input data-id="sqlBuilder:fieldSearch" onkeyup={handleBuilderEvent} value={config.sqlBuilder.searchTerm} variant="label-hidden" placeholder={config._LABELS.lbl_enterSearchTermHere} type="text"></lightning-input>
-                                </li>
-                                <li if:true={config.sqlBuilder.isBackNeeded} data-id="sqlBuilder:back" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class="slds-item slds-theme_shade" ><lightning-icon if:true={config.sqlBuilder.isBackNeeded} data-id="sqlBuilder:back" size="small" icon-name="utility:reply" alternative-text={config._LABELS.lbl_back} title={config._LABELS.lbl_back}></lightning-icon>  {config._LABELS.lbl_back}</li>
+        <lightning-tab label={config._LABELS.lbl_applyConditions} value="2" onactive={tabChanged}>
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_5-of-12">
+                    <div class="slds-text-heading_small"><b>{config._LABELS.lbl_availableFieldsFrom}</b> {breadcrumb}
+                        <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_applyCondition}></lightning-helptext>
+                    </div>
+                    <div style="border:0.5px solid rgb(183, 180, 180);">
+                        <ul if:true={config.sqlBuilder._objectStack} class="slds-has-dividers_around-space">
+                            <li onclick={handleBuilderEvent} class="slds-item slds-theme_shade" >
+                                <lightning-input data-id="sqlBuilder:fieldSearch" onkeyup={handleBuilderEvent} value={config.sqlBuilder.searchTerm} variant="label-hidden" placeholder={config._LABELS.lbl_enterSearchTermHere} type="text"></lightning-input>
+                            </li>
+                            <li if:true={config.sqlBuilder.isBackNeeded} data-id="sqlBuilder:back" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class="slds-item slds-theme_shade" ><lightning-icon if:true={config.sqlBuilder.isBackNeeded} data-id="sqlBuilder:back" size="small" icon-name="utility:reply" alternative-text={config._LABELS.lbl_back} title={config._LABELS.lbl_back}></lightning-icon>  {config._LABELS.lbl_back}</li>
 
-                            </ul>
-                            <div class="slds-scrollable_y" style="height:24rem;padding:4px;">
-                                <ul class="slds-has-dividers_around-space">
-                                    <template if:true={config.sqlBuilder.fields} for:each={config.sqlBuilder.fields} for:item="field" for:index="index">
-                                        <li data-id="sqlBuilder:conditions:selectItem" onclick={handleBuilderEvent} style="cursor: pointer;margin-top: 0px;padding:5px;" class={field.css} data-ref={field.refObj} data-val={field.fieldName} key={field.fieldName}>
-                                            <lightning-helptext class="placeTopItem" content={field.fieldName}></lightning-helptext>
-                                            &nbsp;{field.label}                            
-                                        </li>
-                                    </template>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="slds-col slds-size_7-of-12">
-                        <div if:false={config.sqlBuilder.conditionOperations} class="slds-text-body_regular slds-text-align_center">
-                            {config._LABELS.hlpTxt_applyConditionGetStartedText}
-                        </div>
-                        <div style="border:0.5px solid rgb(183, 180, 180);">
-                            <div class="slds-grid slds-gutters">
-                                <div class="slds-col slds-size_6-of-12">
-                                    <div if:true={config.sqlBuilder.conditionOperations} class="slds-text-heading_small slds-text-align_center">
-                                        <b>{config._LABELS.lbl_availableOperations}</b> for {config.sqlBuilder.currentCondition.field}
-                                        <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_availableOperationTooltip}></lightning-helptext>
-                                    </div>
-                                    <div if:true={config.sqlBuilder.noOperationError}>No Operation Available</div>
-                                    <br/>
-                                    <div class="slds-scrollable_y" style="height:25rem">
-                                        <ul class="slds-has-dividers_around-space">
-                                            <template for:each={config.sqlBuilder.conditionOperations} for:item="operation" for:index="index">
-                                                <li data-id="sqlBuilder:conditions:selectOperation" onclick={handleBuilderEvent} style="cursor: pointer;margin-top: 0px;padding:5px;" data-val={operation.value} key={operation.value} class="slds-item">{operation.label}</li>
-                                            </template> 
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="slds-col slds-size_6-of-12">
-                                    <div if:true={config.sqlBuilder.openConditionInput} class="slds-text-heading_small slds-text-align_center">
-                                        <b>{config.sqlBuilder.currentCondition.operator.label}</b>
-                                        <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_applyConditionInput}></lightning-helptext>
-                                    </div>
-                                    <br/>
-                                    <template if:true={config.sqlBuilder.openConditionInput}>
-                                        <template if:false={config.sqlBuilder.currentCondition.operator.isUnary}>
-                                            <lightning-input if:false={config.sqlBuilder.openConditionInput.isPicklist} data-id="sqlBuilder:conditions:conditionText" onchange={handleBuilderEvent} type={config.sqlBuilder.currentCondition.fieldType} label={config._LABELS.lbl_enterValue} value={config.sqlBuilder.currentCondition.value}></lightning-input>
-                                            <lightning-combobox if:true={config.sqlBuilder.openConditionInput.isPicklist} data-id="sqlBuilder:conditions:conditionText" onchange={handleBuilderEvent} options={config.sqlBuilder.currentCondition.fieldOptions} value={config.sqlBuilder.currentCondition.value} label="Select"></lightning-combobox>
-                                        </template>
-                                        <template if:true={config.sqlBuilder.openConditionInput.isRange}>
-                                            <lightning-input data-id="sqlBuilder:conditions:conditionTextRange" onchange={handleBuilderEvent} type={config.sqlBuilder.currentCondition.fieldType} label={config._LABELS.lbl_enterValue}></lightning-input>
-                                        </template>
-                                    </template>
-                                    <br/>
-                                    <button if:true={config.sqlBuilder.openConditionInput} data-id="sqlBuilder:conditions:addCondition" onclick={handleBuilderEvent} class="slds-button slds-button_brand" title={config._LABELS.title_addConditionBtn}>{config._LABELS.lbl_addCondition}</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="slds-grid slds-gutters">
-                    <div class="slds-col">
-                        <div class="slds-text-heading_small"><b>{config._LABELS.lbl_appliedConditions}</b>
-                            <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_appliedConditions}></lightning-helptext>
-                        </div>
-                        <table if:true={config.sqlBuilder.conditions} class="slds-table slds-table_cell-buffer slds-table_bordered" aria-labelledby="element-with-table-label other-element-with-table-label">
-                            <thead>
-                                <tr class="slds-line-height_reset">
-                                <th class="" scope="col">
-                                    <div class="slds-truncate" title={config._LABELS.lbl_slNo}>{config._LABELS.lbl_slNo}</div>
-                                </th>
-                                <th class="" scope="col">
-                                    <div class="slds-truncate" title={config._LABELS.lbl_fieldName}>{config._LABELS.lbl_fieldName}</div>
-                                </th>
-                                <th class="" scope="col">
-                                    <div class="slds-truncate" title={config._LABELS.lbl_operator}>{config._LABELS.lbl_operator}</div>
-                                </th>
-                                <th class="" scope="col">
-                                    <div class="slds-truncate" title={config._LABELS.lbl_value}>{config._LABELS.lbl_value}</div>
-                                </th>
-                                <th class="" scope="col">
-                                    <div class="slds-truncate" title={config._LABELS.lbl_actions}>{config._LABELS.lbl_actions}
-                                        <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_appliedConditionsActionsHelp}></lightning-helptext>
-                                    </div>
-                                </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <template if:true={config.sqlBuilder.conditions} for:each={config.sqlBuilder.conditions} for:item="condition" for:index="index">
-                                <tr class="slds-hint-parent" key={condition.key}>
-                                    <th scope="row">
-                                    <div class="slds-truncate">
-                                        {condition.index}
-                                    </div>
-                                    </th>
-                                    <td>
-                                    <div class="slds-truncate">{condition.field}</div>
-                                    </td>
-                                    <td>
-                                    <div class="slds-truncate">{condition.operator.label}</div>
-                                    </td>
-                                    <td>
-                                    <div if:false={condition.valueRange} class="slds-truncate">{condition.value} </div>
-                                    <div if:true={condition.valueRange} class="slds-truncate">Between {condition.value} and {condition.valueRange}</div>
-                                    </td>
-                                    <td>
-                                        <div class="slds-truncate">
-                                            <lightning-icon size="small" data-id="sqlBuilder:conditions:editSelectedCondition" data-val={condition.index} onclick={handleBuilderEvent} icon-name="utility:record_update" alternative-text="Edit" title={config._LABELS.title_appliedConditionsActionEdit}></lightning-icon>
-                                            <lightning-icon size="small" data-id="sqlBuilder:conditions:deleteSelectedCondition" data-val={condition.index} onclick={handleBuilderEvent} icon-name="utility:delete" alternative-text="Delete" title={config._LABELS.title_appliedConditionsActionDelete}></lightning-icon>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </template>
-                            </tbody>
-                            </table>
-                            <br/>
-                            <div style="position:relative;width:100%">
-                                <div class="slds-form-element">
-                                <label class="slds-form-element__label" for="text-input-id-1"><b>{config._LABELS.lbl_conditionFilteringPattern}</b></label>
-                                <div class="slds-form-element__icon">
-                                    <button class="slds-button slds-button_icon" onmouseover={toggleConditionFilteringHelp}
-                                        onmouseout={toggleConditionFilteringHelp}>
-                                        <lightning-icon icon-name="utility:info" alternative-text="Info" size="xx-small"
-                                            title="">
-                                        </lightning-icon>
-                                    </button>
-                                    <div class={ConditionFilteringClass} role="tooltip" id="help"
-                                        style="position:absolute;top:-150px;left:-15px;width:250px">
-                                        <div class="slds-popover__body">
-                                            {config._LABELS.tooltip_conditionFilteringPattern}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="slds-form-element__control">
-                                    <input style="width: 100%;" data-id="sqlBuilder:conditions:orderingConditions" value={config.sqlBuilder.conditionOrdering} 
-                                    onfocusout={handleBuilderEvent} type="text"/>
-                                </div>
-                            </div>
-                            </div>
-                    </div>
-                </div>
-            </lightning-tab>
-            <!-- Condition Tab Ends-->
-            <lightning-tab label={config._LABELS.lbl_applyOrdering} value="3" onactive={tabChanged}>
-                <div class="slds-grid slds-gutters">
-                    <div class="slds-col slds-size_5-of-12">
-                        <div class="slds-text-heading_small"><b>{config._LABELS.lbl_availableFieldsFrom}</b> {breadcrumb}
-                            <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_applyOrdering}></lightning-helptext>
-                        </div>
-                        <div style="border:0.5px solid rgb(183, 180, 180);">
-                            <ul if:true={config.sqlBuilder._objectStack} class="slds-has-dividers_around-space">
-                                <li onclick={handleBuilderEvent} class="slds-item slds-theme_shade" >
-                                    <lightning-input data-id="sqlBuilder:fieldSearch" onkeyup={handleBuilderEvent} value={config.sqlBuilder.searchTerm} variant="label-hidden" placeholder={config._LABELS.lbl_enterSearchTermHere} type="text"></lightning-input>
-                                </li>
-                                <li if:true={config.sqlBuilder.isBackNeeded} data-id="sqlBuilder:back" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class="slds-item slds-theme_shade" ><lightning-icon if:true={config.sqlBuilder.isBackNeeded} data-id="sqlBuilder:back" size="small" icon-name="utility:reply" alternative-text={config._LABELS.lbl_back} title={config._LABELS.lbl_back}></lightning-icon>  {config._LABELS.lbl_back}</li>
-                            </ul>
-                            <div class="slds-scrollable_y" style="height:22rem">
-                                <ul class="slds-has-dividers_around-space">
-                                    <template if:true={config.sqlBuilder.fields} for:each={config.sqlBuilder.fields} for:item="field" for:index="index">
-                                        <li data-id="sqlBuilder:ordering:selectItem" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class={field.css} data-ref={field.refObj} data-val={field.fieldName} key={field.fieldName}>
-                                            <lightning-helptext class="placeTop" content={field.fieldName}></lightning-helptext>
-                                            &nbsp;{field.label} 
-                                        </li>
-                                    </template>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="slds-col slds-size_3-of-12">
-                        <template if:true={config.sqlBuilder.currentOrder}>
-                            <div class="slds-text-heading_small"><b>{config._LABELS.lbl_configure}</b></div>
-                            <div style="height:25rem;">
-                                    <lightning-combobox if:true={config.sqlBuilder.currentOrder} data-id="sqlBuilder:ordering:sortOrder" onchange={handleBuilderEvent} options={config.sqlBuilder.sortOrderOptions} value={value} label={config._LABELS.lbl_selectSortOrder}></lightning-combobox>
-                                    <lightning-combobox if:true={config.sqlBuilder.currentOrder} data-id="sqlBuilder:ordering:emptyFieldPosition" onchange={handleBuilderEvent} options={config.sqlBuilder.emptyFieldOptions} value={value} label={config._LABELS.lbl_selectEmptyFieldLocation}></lightning-combobox>
-                                    <br/>
-                                    <button data-id="sqlBuilder:ordering:addOrdering" onclick={handleBuilderEvent} class="slds-button slds-button_brand" title={config._LABELS.title_addOrdering}>{config._LABELS.lbl_addOrdering}</button>
-                            </div>
-                        </template>
-                    </div>
-                    <div class="slds-col slds-size_4-of-12">
-                        <div class="slds-text-heading_small"><b>{config._LABELS.lbl_appliedOrderings}</b>
-                            <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_appliedOrderings}></lightning-helptext>
-                        </div>
-                        <div class="slds-scrollable_y" style="height:25rem;border:0.5px solid rgb(183, 180, 180);padding:4px;">
+                        </ul>
+                        <div class="slds-scrollable_y" style="height:24rem;padding:4px;">
                             <ul class="slds-has-dividers_around-space">
-                                <template if:true={config.sqlBuilder.orderings} for:each={config.sqlBuilder.orderings} for:item="field" for:index="index">
-                                    <li class="slds-item" key={field.value} style="margin-top: 0px;padding:5px;">{field.field.label} {field.sortOrder} {field.emptyField} 
-                                        <lightning-icon style="float:right;" size="small" data-id="sqlBuilder:ordering:delete" data-val={field.field.fieldName} onclick={handleBuilderEvent} icon-name="utility:delete" alternative-text="Delete" title="Delete"></lightning-icon>
+                                <template if:true={config.sqlBuilder.fields} for:each={config.sqlBuilder.fields} for:item="field" for:index="index">
+                                    <li data-id="sqlBuilder:conditions:selectItem" onclick={handleBuilderEvent} style="cursor: pointer;margin-top: 0px;padding:5px;" class={field.css} data-ref={field.refObj} data-val={field.fieldName} key={field.fieldName}>
+                                        <lightning-helptext class="placeTopItem" content={field.fieldName}></lightning-helptext>
+                                        &nbsp;{field.label}                            
                                     </li>
                                 </template>
                             </ul>
                         </div>
                     </div>
                 </div>
-            </lightning-tab>
-        </template>					
+                <div class="slds-col slds-size_7-of-12">
+                    <div if:false={config.sqlBuilder.conditionOperations} class="slds-text-body_regular slds-text-align_center">
+                        {config._LABELS.hlpTxt_applyConditionGetStartedText}
+                    </div>
+                    <div style="border:0.5px solid rgb(183, 180, 180);">
+                        <div class="slds-grid slds-gutters">
+                            <div class="slds-col slds-size_6-of-12">
+                                <div if:true={config.sqlBuilder.conditionOperations} class="slds-text-heading_small slds-text-align_center">
+                                    <b>{config._LABELS.lbl_availableOperations}</b> for {config.sqlBuilder.currentCondition.field}
+                                    <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_availableOperationTooltip}></lightning-helptext>
+                                </div>
+                                <div if:true={config.sqlBuilder.noOperationError}>No Operation Available</div>
+                                <br/>
+                                <div class="slds-scrollable_y" style="height:25rem">
+                                    <ul class="slds-has-dividers_around-space">
+                                        <template for:each={config.sqlBuilder.conditionOperations} for:item="operation" for:index="index">
+                                            <li data-id="sqlBuilder:conditions:selectOperation" onclick={handleBuilderEvent} style="cursor: pointer;margin-top: 0px;padding:5px;" data-val={operation.value} key={operation.value} class="slds-item">{operation.label}</li>
+                                        </template> 
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_6-of-12">
+                                <div if:true={config.sqlBuilder.openConditionInput} class="slds-text-heading_small slds-text-align_center">
+                                    <b>{config.sqlBuilder.currentCondition.operator.label}</b>
+                                    <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_applyConditionInput}></lightning-helptext>
+                                </div>
+                                <br/>
+                                <template if:true={config.sqlBuilder.openConditionInput}>
+                                    <template if:false={config.sqlBuilder.currentCondition.operator.isUnary}>
+                                        <lightning-input if:false={config.sqlBuilder.openConditionInput.isPicklist} data-id="sqlBuilder:conditions:conditionText" onchange={handleBuilderEvent} type={config.sqlBuilder.currentCondition.fieldType} label={config._LABELS.lbl_enterValue} value={config.sqlBuilder.currentCondition.value}></lightning-input>
+                                        <lightning-combobox if:true={config.sqlBuilder.openConditionInput.isPicklist} data-id="sqlBuilder:conditions:conditionText" onchange={handleBuilderEvent} options={config.sqlBuilder.currentCondition.fieldOptions} value={config.sqlBuilder.currentCondition.value} label="Select"></lightning-combobox>
+                                    </template>
+                                    <template if:true={config.sqlBuilder.openConditionInput.isRange}>
+                                        <lightning-input data-id="sqlBuilder:conditions:conditionTextRange" onchange={handleBuilderEvent} type={config.sqlBuilder.currentCondition.fieldType} label={config._LABELS.lbl_enterValue}></lightning-input>
+                                    </template>
+                                </template>
+                                <br/>
+                                <button if:true={config.sqlBuilder.openConditionInput} data-id="sqlBuilder:conditions:addCondition" onclick={handleBuilderEvent} class="slds-button slds-button_brand" title={config._LABELS.title_addConditionBtn}>{config._LABELS.lbl_addCondition}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col">
+                    <div class="slds-text-heading_small"><b>{config._LABELS.lbl_appliedConditions}</b>
+                        <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_appliedConditions}></lightning-helptext>
+                    </div>
+                    <table if:true={config.sqlBuilder.conditions} class="slds-table slds-table_cell-buffer slds-table_bordered" aria-labelledby="element-with-table-label other-element-with-table-label">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title={config._LABELS.lbl_slNo}>{config._LABELS.lbl_slNo}</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title={config._LABELS.lbl_fieldName}>{config._LABELS.lbl_fieldName}</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title={config._LABELS.lbl_operator}>{config._LABELS.lbl_operator}</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title={config._LABELS.lbl_value}>{config._LABELS.lbl_value}</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title={config._LABELS.lbl_actions}>{config._LABELS.lbl_actions}
+                                    <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_appliedConditionsActionsHelp}></lightning-helptext>
+                                </div>
+                            </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template if:true={config.sqlBuilder.conditions} for:each={config.sqlBuilder.conditions} for:item="condition" for:index="index">
+                            <tr class="slds-hint-parent" key={condition.key}>
+                                <th scope="row">
+                                <div class="slds-truncate">
+                                    {condition.index}
+                                </div>
+                                </th>
+                                <td>
+                                <div class="slds-truncate">{condition.field}</div>
+                                </td>
+                                <td>
+                                <div class="slds-truncate">{condition.operator.label}</div>
+                                </td>
+                                <td>
+                                <div if:false={condition.valueRange} class="slds-truncate">{condition.value} </div>
+                                <div if:true={condition.valueRange} class="slds-truncate">Between {condition.value} and {condition.valueRange}</div>
+                                </td>
+                                <td>
+                                    <div class="slds-truncate">
+                                        <lightning-icon size="small" data-id="sqlBuilder:conditions:editSelectedCondition" data-val={condition.index} onclick={handleBuilderEvent} icon-name="utility:record_update" alternative-text="Edit" title={config._LABELS.title_appliedConditionsActionEdit}></lightning-icon>
+                                        <lightning-icon size="small" data-id="sqlBuilder:conditions:deleteSelectedCondition" data-val={condition.index} onclick={handleBuilderEvent} icon-name="utility:delete" alternative-text="Delete" title={config._LABELS.title_appliedConditionsActionDelete}></lightning-icon>
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+                        </tbody>
+                        </table>
+                        <br/>
+                        <div style="position:relative;width:100%">
+                            <div class="slds-form-element">
+                            <label class="slds-form-element__label" for="text-input-id-1"><b>{config._LABELS.lbl_conditionFilteringPattern}</b></label>
+                            <div class="slds-form-element__icon">
+                                <button class="slds-button slds-button_icon" onmouseover={toggleConditionFilteringHelp}
+                                    onmouseout={toggleConditionFilteringHelp}>
+                                    <lightning-icon icon-name="utility:info" alternative-text="Info" size="xx-small"
+                                        title="">
+                                    </lightning-icon>
+                                </button>
+                                <div class={ConditionFilteringClass} role="tooltip" id="help"
+                                    style="position:absolute;top:-150px;left:-15px;width:250px">
+                                    <div class="slds-popover__body">
+                                        {config._LABELS.tooltip_conditionFilteringPattern}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form-element__control">
+                                <input style="width: 100%;" data-id="sqlBuilder:conditions:orderingConditions" value={config.sqlBuilder.conditionOrdering} 
+                                onfocusout={handleBuilderEvent} type="text"/>
+                            </div>
+                        </div>
+                        </div>
+                </div>
+            </div>
+        </lightning-tab>
+        <!-- Condition Tab Ends-->
+        <lightning-tab label={config._LABELS.lbl_applyOrdering} value="3" onactive={tabChanged}>
+            <div class="slds-grid slds-gutters">
+                <div class="slds-col slds-size_5-of-12">
+                    <div class="slds-text-heading_small"><b>{config._LABELS.lbl_availableFieldsFrom}</b> {breadcrumb}
+                        <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_applyOrdering}></lightning-helptext>
+                    </div>
+                    <div style="border:0.5px solid rgb(183, 180, 180);">
+                        <ul if:true={config.sqlBuilder._objectStack} class="slds-has-dividers_around-space">
+                            <li onclick={handleBuilderEvent} class="slds-item slds-theme_shade" >
+                                <lightning-input data-id="sqlBuilder:fieldSearch" onkeyup={handleBuilderEvent} value={config.sqlBuilder.searchTerm} variant="label-hidden" placeholder={config._LABELS.lbl_enterSearchTermHere} type="text"></lightning-input>
+                            </li>
+                            <li if:true={config.sqlBuilder.isBackNeeded} data-id="sqlBuilder:back" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class="slds-item slds-theme_shade" ><lightning-icon if:true={config.sqlBuilder.isBackNeeded} data-id="sqlBuilder:back" size="small" icon-name="utility:reply" alternative-text={config._LABELS.lbl_back} title={config._LABELS.lbl_back}></lightning-icon>  {config._LABELS.lbl_back}</li>
+                        </ul>
+                        <div class="slds-scrollable_y" style="height:22rem">
+                            <ul class="slds-has-dividers_around-space">
+                                <template if:true={config.sqlBuilder.fields} for:each={config.sqlBuilder.fields} for:item="field" for:index="index">
+                                    <li data-id="sqlBuilder:ordering:selectItem" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class={field.css} data-ref={field.refObj} data-val={field.fieldName} key={field.fieldName}>
+                                        <lightning-helptext class="placeTop" content={field.fieldName}></lightning-helptext>
+                                        &nbsp;{field.label} 
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_3-of-12">
+                    <template if:true={config.sqlBuilder.currentOrder}>
+                        <div class="slds-text-heading_small"><b>{config._LABELS.lbl_configure}</b></div>
+                        <div style="height:25rem;">
+                                <lightning-combobox if:true={config.sqlBuilder.currentOrder} data-id="sqlBuilder:ordering:sortOrder" onchange={handleBuilderEvent} options={config.sqlBuilder.sortOrderOptions} value={value} label={config._LABELS.lbl_selectSortOrder}></lightning-combobox>
+                                <lightning-combobox if:true={config.sqlBuilder.currentOrder} data-id="sqlBuilder:ordering:emptyFieldPosition" onchange={handleBuilderEvent} options={config.sqlBuilder.emptyFieldOptions} value={value} label={config._LABELS.lbl_selectEmptyFieldLocation}></lightning-combobox>
+                                <br/>
+                                <button data-id="sqlBuilder:ordering:addOrdering" onclick={handleBuilderEvent} class="slds-button slds-button_brand" title={config._LABELS.title_addOrdering}>{config._LABELS.lbl_addOrdering}</button>
+                        </div>
+                    </template>
+                </div>
+                <div class="slds-col slds-size_4-of-12">
+                    <div class="slds-text-heading_small"><b>{config._LABELS.lbl_appliedOrderings}</b>
+                        <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_appliedOrderings}></lightning-helptext>
+                    </div>
+                    <div class="slds-scrollable_y" style="height:25rem;border:0.5px solid rgb(183, 180, 180);padding:4px;">
+                        <ul class="slds-has-dividers_around-space">
+                            <template if:true={config.sqlBuilder.orderings} for:each={config.sqlBuilder.orderings} for:item="field" for:index="index">
+                                <li class="slds-item" key={field.value} style="margin-top: 0px;padding:5px;">{field.field.label} {field.sortOrder} {field.emptyField} 
+                                    <lightning-icon style="float:right;" size="small" data-id="sqlBuilder:ordering:delete" data-val={field.field.fieldName} onclick={handleBuilderEvent} icon-name="utility:delete" alternative-text="Delete" title="Delete"></lightning-icon>
+                                </li>
+                            </template>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </lightning-tab>
+			
     </lightning-tabset>
     <p style="float: left;" if:true={config.sqlBuilder.selectedFields}>{config._LABELS.lbl_liveQuery} <b>{livequery}</b></p>
 </template>
