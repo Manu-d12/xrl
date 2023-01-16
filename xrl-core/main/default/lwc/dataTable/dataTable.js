@@ -611,9 +611,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						});
 					})
 				});
+				cItem._isLookUpEdit = true;
 			}
 			record._isEditable = true;
-			cItem.isLookUpEdit = true;
 			this.config._inlineEdit = calculatedInd;
 
 				if (this.hasGrouping) {

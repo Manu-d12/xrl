@@ -12,7 +12,7 @@
 				<c-multiselect if:false={picklistType} listsize={config.dataTableCfg.displayOptionListSize} onselect={inlineEdit} 
 				options={col.options} selectedvalue={editValue} data-id={col.fieldName}></c-multiselect>
 			</template>
-			<template if:false={col.isLookUpEdit}>
+			<template if:false={col._isLookUpEdit}>
 				<lightning-input if:true={col.isEditableRegular} type={col.type} field-level-help={col.inlineHelpText} value={editValue} onchange={inlineEdit} data-id={col.fieldName} tabindex="0"></lightning-input>
 			</template>
 			<!-- <span if:false={col.isEditable} title={value} style={uStyle}>
@@ -21,7 +21,7 @@
 					<lightning-formatted-rich-text if:false={isBool} value={value} class={style}></lightning-formatted-rich-text>
 				</span>
 			</span> -->
-			<template if:true={col.isLookUpEdit}>
+			<template if:true={col._isLookUpEdit}>
 				<c-multiselect if:true={col._editOptions} listsize={config.dataTableCfg.displayOptionListSize} onselect={inlineEdit} 
 				options={col._editOptions} selectedvalue={sValue} data-id={col.fieldName}></c-multiselect>
 			</template>
