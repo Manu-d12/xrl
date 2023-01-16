@@ -306,9 +306,6 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	loadRecords() {
-		// let condition = this.config.sObjApiName.includes('History') ? 
-		// 				"WHERE Case.Account.Id='"+ this.recordId +"' " :
-		// 				this.config.listViewConfig[0].addCondition;
 		libs.remoteAction(this, 'query', {
 			isNeedDescribe: true,
 			sObjApiName: this.config.sObjApiName,
@@ -361,7 +358,6 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				}
 			}
 		});
-		this.config.isServerFilter = true;
 		console.log('ColModel', JSON.parse(JSON.stringify(this.config.listViewConfig[0].colModel)));
 	}
 

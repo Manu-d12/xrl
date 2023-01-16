@@ -159,6 +159,7 @@ export default class extRelListSettings extends LightningElement {
 			let actionId = this.template.querySelector('.newActionId').value;
 			this.config.dialog.action = actionId;
 			this.config.dialog.listViewConfig.actions.push({actionId:actionId});
+			this.config.dialog.allActions.push({label:actionId,value:actionId});
 			this.config.openNewAction = false;
 		}
 	}
