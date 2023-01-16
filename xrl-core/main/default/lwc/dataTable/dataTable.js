@@ -309,7 +309,25 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if (isNeedSave === true) {
 			if (rowName !== undefined) {
 				if (!this.config._inlineEditRow) this.config._inlineEditRow = JSON.parse(JSON.stringify(this.records[this.config._inlineEdit]));
-				this.config._inlineEditRow[rowName] = value;
+				let cItem = this.getColItem(rowName);
+				if(rowName.includes('.') && cItem._editOptions){
+					this.config._inlineEditRow[rowName.split('.')[0]+'Id'] = value;
+					let newVal = cItem._editOptions.find((el)=>{
+						return el.value === value;
+					});
+					if(this.config._inlineEditRow[rowName.split('.')[0]]){
+						this.config._inlineEditRow[rowName.split('.')[0]].Id = newVal.value;
+						this.config._inlineEditRow[rowName.split('.')[0]].Name = newVal.label;
+					}else{
+						this.config._inlineEditRow[rowName.split('.')[0]] ={
+							Id: newVal.value,
+							Name: newVal.label
+						};
+					}
+					
+				}else{
+					this.config._inlineEditRow[rowName] = value;
+				}
 			} else {
 				let isNeedSaveData = this.config._inlineEditRow !== undefined && JSON.stringify(this.records[this.config._inlineEdit]) !== JSON.stringify(this.config._inlineEditRow);
 
@@ -325,13 +343,16 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				//delete this.records[this.config._inlineEdit];
 				//delete this.config._inlineEdit;
 				
-				this.records[this.config._inlineEdit]._isEditable = false;
-				if (this.hasGrouping) {
-					let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
-					this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
+				
+				if(this.config._inlineEdit != undefined){
+					this.records[this.config._inlineEdit]._isEditable = false;
+					if (this.hasGrouping) {
+						let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
+						this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
+					}
+					this.config._inlineEdit = undefined;
+					this.config._inlineEditRow = undefined;
 				}
-				this.config._inlineEdit = undefined;
-				this.config._inlineEditRow = undefined;
 			}
 		} else {
 			this.records[this.config._inlineEdit]._isEditable = false;
@@ -452,7 +473,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		console.log('row click', event, colName, rowId);
 	}
 
-	rowDblCallback(event) {
+	async rowDblCallback(event) {
 		let colName = event.srcElement.getAttribute('data-colname') !== null ?
 				event.srcElement.getAttribute('data-colname') :
 				event.srcElement.parentNode.getAttribute('data-colname');
@@ -576,9 +597,25 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		} else {
 			// Need get all visible references fields and get data for thise fields
 			let record = this.records[calculatedInd];
-			record._isEditable = true;
 			record._focus = colName;
-			cItem.wrapClass = cItem.type === 'picklist' || cItem.type === 'multipicklist' ? 'slds-cell-wrap' : cItem.wrapClass;
+			cItem.wrapClass = cItem.type === 'picklist' || cItem.type === 'multipicklist' || (cItem.fieldName.split('.')[1] && cItem.isNameField) ? 'slds-cell-wrap' : cItem.wrapClass;
+
+			if(cItem.fieldName.split('.')[1] && cItem.isNameField && !cItem._editOptions){
+				cItem._editOptions = [];
+				await libs.remoteAction(this, 'query', {
+					fields: ['Id','Name'],
+					relField: '',
+					sObjApiName: cItem.fieldName.split('.')[0],
+					callback: ((nodeName, data) => {
+						console.log('accountRecords', data[nodeName].records.length);
+						data[nodeName].records.forEach((el)=>{
+							cItem._editOptions.push({"label":el.Name,"value":el.Id});
+						});
+					})
+				});
+				cItem._isLookUpEdit = true;
+			}
+			record._isEditable = true;
 			this.config._inlineEdit = calculatedInd;
 
 				if (this.hasGrouping) {
