@@ -313,9 +313,16 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					let newVal = cItem._editOptions.find((el)=>{
 						return el.value === value;
 					});
-					this.config._inlineEditRow[rowName.split('.')[0]].Id = newVal.value;
-					this.config._inlineEditRow[rowName.split('.')[0]].Name = newVal.label;
-					console.log('HERE>',value);
+					if(this.config._inlineEditRow[rowName.split('.')[0]]){
+						this.config._inlineEditRow[rowName.split('.')[0]].Id = newVal.value;
+						this.config._inlineEditRow[rowName.split('.')[0]].Name = newVal.label;
+					}else{
+						this.config._inlineEditRow[rowName.split('.')[0]] ={
+							Id: newVal.value,
+							Name: newVal.label
+						};
+					}
+					
 				}else{
 					this.config._inlineEditRow[rowName] = value;
 				}
@@ -334,13 +341,16 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				//delete this.records[this.config._inlineEdit];
 				//delete this.config._inlineEdit;
 				
-				this.records[this.config._inlineEdit]._isEditable = false;
-				if (this.hasGrouping) {
-					let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
-					this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
+				
+				if(this.config._inlineEdit != undefined){
+					this.records[this.config._inlineEdit]._isEditable = false;
+					if (this.hasGrouping) {
+						let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
+						this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
+					}
+					this.config._inlineEdit = undefined;
+					this.config._inlineEditRow = undefined;
 				}
-				this.config._inlineEdit = undefined;
-				this.config._inlineEditRow = undefined;
 			}
 		} else {
 			this.records[this.config._inlineEdit]._isEditable = false;
@@ -593,7 +603,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			record._focus = colName;
 			cItem.wrapClass = cItem.type === 'picklist' || cItem.type === 'multipicklist' || (cItem.fieldName.split('.')[1] && cItem.isNameField) ? 'slds-cell-wrap' : cItem.wrapClass;
 
-			if(cItem.fieldName.split('.')[1] && cItem.isNameField){
+			if(cItem.fieldName.split('.')[1] && cItem.isNameField && !cItem._editOptions){
 				cItem._editOptions = [];
 				await libs.remoteAction(this, 'query', {
 					fields: ['Id','Name'],

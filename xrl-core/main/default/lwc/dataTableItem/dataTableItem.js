@@ -9,6 +9,7 @@ export default class dataTableItem extends LightningElement {
 	isBool = false;
 	@track config = {};
 	@track showEdit = false;
+	sValue = '';
 
 	renderedCallback() {
 		if (this.iseditmode && this.template.querySelector('[data-id="' + this.col.fieldName + '"]') != undefined && this.row._focus === this.col.fieldName) setTimeout((() => { this.template.querySelector('[data-id="' + this.col.fieldName + '"]').focus(); }), 100);
@@ -41,7 +42,7 @@ export default class dataTableItem extends LightningElement {
 			val = this.col._formatter(row, this.col, val);
 		} 
 		else if(this.showEdit && this.col.isNameField && this.col.fieldName.split('.')[1]){
-			console.log('HERE>>dt');
+			// console.log('HERE>>dt');
 		}
 		else {
 			//let val = libs.getLookupValue(this.row, this.col.fieldName);
@@ -155,8 +156,8 @@ export default class dataTableItem extends LightningElement {
 		// let config = libs.getGlobalVar(this.cfg).listViewConfig;
 		// console.log(config);
 		let value = this.col.isEditableBool ? event.target.checked : (this.col.type === 'picklist' || this.col._isLookUpEdit) ? event.detail.payload.value : this.col.type === 'multipicklist' ? event.detail.payload.values.join(';') : event.target.value;
-		console.log('HERE>ie', event.detail.payload.value);
-		value = event.detail.payload.value;
+		// console.log('HERE>ie', event.detail.payload.value);
+		// value = event.detail.payload.value;
 		this.config.dataTableCfg._saveEdit(true, this.col.fieldName, value);
 	}
 	
