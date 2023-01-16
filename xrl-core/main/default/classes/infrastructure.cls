@@ -565,6 +565,7 @@ global with sharing class infrastructure {
 			'title_selectListView'=>label.title_selectListView,
 			'title_newRecord'=>label.title_newRecord,
 			'title_newListView'=>label.title_newListView,
+			'title_expandView'=>label.title_expandView,
 			'tooltip_addNumerationColumnToTable' => label.tooltip_addNumerationColumnToTable,
 			'tooltip_addCheckBoxColumnToTable' => label.tooltip_addCheckBoxColumnToTable,
 			'tooltip_showGlobalTableSearch' => label.tooltip_showGlobalTableSearch,
