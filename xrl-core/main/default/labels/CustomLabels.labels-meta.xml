@@ -1600,6 +1600,14 @@ return &quot;background-color:#F5F5F5;&quot; //light grey
         <value>Expand View</value>
     </labels>
     <labels>
+        <fullName>title_expandView</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>title_expandView</shortDescription>
+        <value>Expand View</value>
+    </labels>
+    <labels>
         <fullName>tooltip_conditionFilteringPattern</fullName>
         <categories>XRL</categories>
         <language>en_US</language>
