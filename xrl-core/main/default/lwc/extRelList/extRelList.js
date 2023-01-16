@@ -397,9 +397,16 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if (val.startsWith('cfg:')) this.handleEventCfg(event);
 		if (val.startsWith('dialog:')) this.handleEventDialog(event);
 		if (val.startsWith('std:refresh')) {
-			//libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.localConfig.listViewName, callback: this.loadRecords });
-			// libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.config?.listView?.name, callback: this.loadCfg });
-			this.loadCfg(false);
+			if(!this.isThereUnsavedRecords()){
+				this.loadCfg(false);
+			}else{
+				const eventErr = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.msg_unsaveRecordsCannotPerformOtherAction,
+					variant: 'error'
+				});
+				this.dispatchEvent(eventErr);
+			}
 		}
 
 		if (val.startsWith('std:')) this.handleEventActions(event, val);
@@ -442,38 +449,57 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 
 		if (val.startsWith(':change_view')) {
-			this.name = event.target.value;
-			this.loadCfg(false);
+			if(!this.isThereUnsavedRecords()){
+				this.name = event.target.value;
+				this.loadCfg(false);
+			}else{
+				event.target.value = this.config.listView.name;
+				const eventErr = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.msg_unsaveRecordsCannotPerformOtherAction,
+					variant: 'error'
+				});
+				this.dispatchEvent(eventErr);
+			}
 		}
 		if (val.startsWith('std:request_open')) {
-			this.dialogCfg = {
-				title: this.config._LABELS.title_reqAFeature,
-				contents: [
-					{
-						required: true,
-						isTextarea: true,
-						name: 'featureText',
-						variant: 'label-hidden',
-						placeholder: this.config._LABELS.lbl_pleaseDescribeFeature,
-						messageWhenValueMissing: this.config._LABELS.errMsg_anEmptyMsgCannotBeSent
-					}
-				],
-				buttons: [
-					{
-						name: 'cancel',
-						label: 'Cancel',
-						variant: 'neutral'
-					},
-					{
-						name: 'send',
-						label: 'Send',
-						variant: 'brand',
-						class: 'slds-m-left_x-small'
-					}
-				],
-				data_id: "reqFeature:dialog"
-			};
-			this.showDialog = true;
+			if(!this.isThereUnsavedRecords()){
+				this.dialogCfg = {
+					title: this.config._LABELS.title_reqAFeature,
+					contents: [
+						{
+							required: true,
+							isTextarea: true,
+							name: 'featureText',
+							variant: 'label-hidden',
+							placeholder: this.config._LABELS.lbl_pleaseDescribeFeature,
+							messageWhenValueMissing: this.config._LABELS.errMsg_anEmptyMsgCannotBeSent
+						}
+					],
+					buttons: [
+						{
+							name: 'cancel',
+							label: 'Cancel',
+							variant: 'neutral'
+						},
+						{
+							name: 'send',
+							label: 'Send',
+							variant: 'brand',
+							class: 'slds-m-left_x-small'
+						}
+					],
+					data_id: "reqFeature:dialog"
+				};
+				this.showDialog = true;
+			}else{
+				const eventErr = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.msg_unsaveRecordsCannotPerformOtherAction,
+					variant: 'error'
+				});
+				this.dispatchEvent(eventErr);
+			}
 		}
 		if (val.startsWith('reqFeature:dialog')) {
 			if (event.detail.action === 'cancel') this.showDialog = false;
@@ -665,34 +691,46 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			console.log(error);
 		}
 	}
+	isThereUnsavedRecords(){
+		return this.config.listViewConfig[0]._changedRecords ? true : false;
+	}
 
 	handleEventCfg(event) {
-		this.config = libs.getGlobalVar(this.name);
-		let variant = this.config.userInfo.isAdminAccess === true ? 'error' : 'shade'; // shade, error, warning, info, confirm
-		let fields = [];
-		for (let key in this.config.describe) {
-			fields.push({ label: this.config.describe[key].label, value: this.config.describe[key].name });
+		if(!this.isThereUnsavedRecords()){
+			this.config = libs.getGlobalVar(this.name);
+			let variant = this.config.userInfo.isAdminAccess === true ? 'error' : 'shade'; // shade, error, warning, info, confirm
+			let fields = [];
+			for (let key in this.config.describe) {
+				fields.push({ label: this.config.describe[key].label, value: this.config.describe[key].name });
+			}
+			let lockedOptions = [];
+			for (let col of this.config.listViewConfig[0].colModel) {
+				lockedOptions.push({ label: col.label, value: col.fieldName });
+			}
+			//this.config.listViewConfig.isShowCheckBoxes = true;
+			this.config.dialog = {
+				"title": this.config.userInfo.isAdminAccess === true ? this.config._LABELS.title_listViewConfiguration + ' ' +  this.config?.listView?.name: this.config._LABELS.title_selectFieldToDisplay + ' ' +  this.config?.listView?.name,
+				"variant": variant,
+				"css": 'slds-modal__header slds-theme_{1} slds-theme_alert-texture'.replace('{1}', variant),
+				"options": libs.sortRecords(fields, 'label', true),
+				"selectedFields": this.config.fields,
+				"requiredOptions": this.config.lockedFields,
+				"lockedOptions": libs.sortRecords(lockedOptions, 'label', true),
+				"lockedFields": this.config.lockedFields,
+				"handleEvent": this.handleEventDialog.bind(this),
+				"listViewConfig": JSON.parse(JSON.stringify(this.config.listViewConfig[0])),
+				"listViewName": this.config?.listView?.name,
+				"listViewLabel": this.config?.listView?.label,
+				"listViewAdmin": this.config?.listView?.isAdminConfig ?? false
+			};
+		}else{
+			const eventErr = new ShowToastEvent({
+				title: 'Error',
+				message: this.config._LABELS.msg_unsaveRecordsCannotPerformOtherAction,
+				variant: 'error'
+			});
+			this.dispatchEvent(eventErr);
 		}
-		let lockedOptions = [];
-		for (let col of this.config.listViewConfig[0].colModel) {
-			lockedOptions.push({ label: col.label, value: col.fieldName });
-		}
-		//this.config.listViewConfig.isShowCheckBoxes = true;
-		this.config.dialog = {
-			"title": this.config.userInfo.isAdminAccess === true ? this.config._LABELS.title_listViewConfiguration + ' ' +  this.config?.listView?.name: this.config._LABELS.title_selectFieldToDisplay + ' ' +  this.config?.listView?.name,
-			"variant": variant,
-			"css": 'slds-modal__header slds-theme_{1} slds-theme_alert-texture'.replace('{1}', variant),
-			"options": libs.sortRecords(fields, 'label', true),
-			"selectedFields": this.config.fields,
-			"requiredOptions": this.config.lockedFields,
-			"lockedOptions": libs.sortRecords(lockedOptions, 'label', true),
-			"lockedFields": this.config.lockedFields,
-			"handleEvent": this.handleEventDialog.bind(this),
-			"listViewConfig": JSON.parse(JSON.stringify(this.config.listViewConfig[0])),
-			"listViewName": this.config?.listView?.name,
-			"listViewLabel": this.config?.listView?.label,
-			"listViewAdmin": this.config?.listView?.isAdminConfig ?? false
-		};
 	}
 
 	handleEventDialog(event) {
@@ -1009,40 +1047,60 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	handleEventActions(event, val) {
-		if (val.startsWith('std:export')) this.handleEventExport(event);
-		if (val.startsWith('std:delete')) {
-			let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
-
-			if(records.length > 0){
-				this.dialogCfg = {
-					title: this.config._LABELS.lbl_confirmDelete,
-					contents: [
-						{
-							isMessage: true,
-							name: 'deleteConfirm',
-							text: this.config._LABELS.msg_deleteConfirm1 + ' ' + records.length + ' ' + this.config._LABELS.msg_deleteConfirm2
-						}
-					],
-					buttons: [
-						{
-							name: 'cancel',
-							label: this.config._LABELS.lbl_cancel,
-							variant: 'neutral'
-						},
-						{
-							name: 'Delete',
-							label: this.config._LABELS.title_delete,
-							variant: 'brand',
-							class: 'slds-m-left_x-small'
-						}
-					],
-					data_id: "delete:dialog"
-				};
-				this.showDialog = true;
+		if (val.startsWith('std:export')) {
+			if(!this.isThereUnsavedRecords()){
+				this.handleEventExport(event);
 			}else{
 				const event = new ShowToastEvent({
 					title: 'Error',
-					message: this.config._LABELS.lbl_deleteNoRecordSelectedError,
+					message: this.config._LABELS.msg_unsaveRecordsCannotPerformOtherAction,
+					variant: 'error'
+				});
+				this.dispatchEvent(event);
+			}
+		}
+		if (val.startsWith('std:delete')) {
+			if(!this.isThereUnsavedRecords()){
+				let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
+
+				if(records.length > 0){
+					this.dialogCfg = {
+						title: this.config._LABELS.lbl_confirmDelete,
+						contents: [
+							{
+								isMessage: true,
+								name: 'deleteConfirm',
+								text: this.config._LABELS.msg_deleteConfirm1 + ' ' + records.length + ' ' + this.config._LABELS.msg_deleteConfirm2
+							}
+						],
+						buttons: [
+							{
+								name: 'cancel',
+								label: this.config._LABELS.lbl_cancel,
+								variant: 'neutral'
+							},
+							{
+								name: 'Delete',
+								label: this.config._LABELS.title_delete,
+								variant: 'brand',
+								class: 'slds-m-left_x-small'
+							}
+						],
+						data_id: "delete:dialog"
+					};
+					this.showDialog = true;
+				}else{
+					const event = new ShowToastEvent({
+						title: 'Error',
+						message: this.config._LABELS.lbl_deleteNoRecordSelectedError,
+						variant: 'error'
+					});
+					this.dispatchEvent(event);
+				}
+			}else{
+				const event = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.msg_unsaveRecordsCannotPerformOtherAction,
 					variant: 'error'
 				});
 				this.dispatchEvent(event);
@@ -1050,38 +1108,56 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 
 		if (val.startsWith('std:new')) {
+			if(!this.isThereUnsavedRecords()){
 
-			let defValue = {};
-			defValue[this.config.relField] = this.recordId;
+				let defValue = {};
+				defValue[this.config.relField] = this.recordId;
 
-			this[NavigationMixin.Navigate]({
-				type: 'standard__objectPage',
-				attributes: {
-					/*recordId: this.recordId, // pass the record id here.*/
-					objectApiName: this.config.sObjApiName,
-					actionName: 'new',
-				},
-				state: {
-					defaultFieldValues: encodeDefaultFieldValues(defValue)
-				}
-			});
+				this[NavigationMixin.Navigate]({
+					type: 'standard__objectPage',
+					attributes: {
+						/*recordId: this.recordId, // pass the record id here.*/
+						objectApiName: this.config.sObjApiName,
+						actionName: 'new',
+					},
+					state: {
+						defaultFieldValues: encodeDefaultFieldValues(defValue)
+					}
+				});
+			}else{
+				const event = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.msg_unsaveRecordsCannotPerformOtherAction,
+					variant: 'error'
+				});
+				this.dispatchEvent(event);
+			}
 		}
 		if (val.startsWith('std:expand_view')) {
 
-			if(this.isFullscreen){
-				history.back();
+			if(!this.isThereUnsavedRecords()){
+				if(this.isFullscreen){
+					history.back();
+				}else{
+					this[NavigationMixin.Navigate]({
+						type: 'standard__navItemPage',
+						attributes: {
+							apiName: 'XRL__EXRL',
+						},
+						state: {
+							c__apiName: btoa(this.apiName),
+							c__name: btoa(this.name),
+							c__recordId: btoa(this.recordId)
+						}
+					});
+				}
 			}else{
-				this[NavigationMixin.Navigate]({
-					type: 'standard__navItemPage',
-					attributes: {
-						apiName: 'XRL__EXRL',
-					},
-					state: {
-						c__apiName: btoa(this.apiName),
-						c__name: btoa(this.name),
-						c__recordId: btoa(this.recordId)
-					}
+				const event = new ShowToastEvent({
+					title: 'Error',
+					message: 'There is unsaved records. Please save those before performing next operation',
+					variant: 'error'
 				});
+				this.dispatchEvent(event);
 			}
 		}
 

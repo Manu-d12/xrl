@@ -1703,4 +1703,12 @@ Once you are done editing the pattern, click outside the input box.</value>
         <shortDescription>lbl_items</shortDescription>
         <value> item(s)</value>
     </labels>
+    <labels>
+        <fullName>msg_unsaveRecordsCannotPerformOtherAction</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_unsaveRecordsCannotPerformOtherAction</shortDescription>
+        <value>There is unsaved records. Please save those before performing next operation</value>
+    </labels>
 </CustomLabels>

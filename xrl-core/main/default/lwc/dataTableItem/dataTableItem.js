@@ -25,6 +25,7 @@ export default class dataTableItem extends LightningElement {
 		window.addEventListener('keydown', (event) => {
 			if ((this.col.type === 'multipicklist' || this.col.type === 'picklist' || this.col._isLookUpEdit) && (event.which == 13 || event.which == 27)) {
 				this.inlineEditFinish(event);
+				console.log('In event Listener dataTableItem');
 			}
 		});
 	}

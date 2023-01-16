@@ -472,39 +472,34 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 
 	async rowDblCallback(event) {
-		if(this.config.showStandardEdit){
-			let rowId = event.srcElement.getAttribute('data-rowind') != null ?
-				event.srcElement.getAttribute('data-rowind') :
-				event.srcElement.parentNode.getAttribute('data-rowind');
-			let calculatedInd = this.hasGrouping ? this.records.findIndex(rec => rowId === rec.Id) : this.calcRowIndex(rowId);
-			this.handleEventStandardEdit(this.records[calculatedInd].Id);
-		} else{
-			let colName = event.srcElement.getAttribute('data-colname') !== null ?
+		let colName = event.srcElement.getAttribute('data-colname') !== null ?
 				event.srcElement.getAttribute('data-colname') :
 				event.srcElement.parentNode.getAttribute('data-colname');
 
-			let rowInd = event.srcElement.getAttribute('data-rowind') != null ?
-				event.srcElement.getAttribute('data-rowind') :
-				event.srcElement.parentNode.getAttribute('data-rowind');
+		let rowInd = event.srcElement.getAttribute('data-rowind') != null ?
+			event.srcElement.getAttribute('data-rowind') :
+			event.srcElement.parentNode.getAttribute('data-rowind');
 
-			let rowId = event.srcElement.getAttribute('data-rowid') != null ?
-				event.srcElement.getAttribute('data-rowid') :
-				event.srcElement.parentNode.getAttribute('data-rowid');
-			
-			console.log(rowInd + ' ' + rowId);
+		let rowId = event.srcElement.getAttribute('data-rowid') != null ?
+			event.srcElement.getAttribute('data-rowid') :
+			event.srcElement.parentNode.getAttribute('data-rowid');
+		
+		console.log(rowInd + ' ' + rowId);
 
-			let cItem = this.getColItem(colName);
-			
-			if (!cItem || !cItem.isEditable) {
-				const toast = new ShowToastEvent({
-					title: 'Error',
-					message: this.config._LABELS.msg_rowDblClickError,
-					variant: 'error'
-				});
-				this.dispatchEvent(toast);
-				return;
-			}
-
+		let cItem = this.getColItem(colName);
+		if (!cItem || !cItem.isEditable) {
+			const toast = new ShowToastEvent({
+				title: 'Error',
+				message: this.config._LABELS.msg_rowDblClickError,
+				variant: 'error'
+			});
+			this.dispatchEvent(toast);
+			return;
+		}
+		if(this.config.showStandardEdit){
+			let calculatedInd = this.hasGrouping ? this.records.findIndex(rec => rowId === rec.Id) : this.calcRowIndex(rowInd);
+			this.handleEventStandardEdit(this.records[calculatedInd].Id);
+		} else{
 			let groupInd;
 			let groupRowInd;
 			if (this.hasGrouping) {
