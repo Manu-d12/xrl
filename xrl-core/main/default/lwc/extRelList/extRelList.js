@@ -1266,7 +1266,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		console.log(ws);
 		console.log(ws['!cols']);
 		console.log(ws['!ref']);
-		XLSX.utils.book_append_sheet(wb, ws, this.config.sObjLabel + ' '  + this.config?.listView?.label);
+		XLSX.utils.book_append_sheet(wb, ws, (this.config.sObjLabel + ' '  + this.config?.listView?.label).length > 30 ? (this.config.sObjLabel + ' '  + this.config?.listView?.label).substring(0,30):(this.config.sObjLabel + ' '  + this.config?.listView?.label));
 		XLSX.writeFile(wb, this.config.sObjLabel + ' ' + this.config?.listView?.label + '.xlsx', { cellStyles: true, WTF: 1 });
 		
 	}
