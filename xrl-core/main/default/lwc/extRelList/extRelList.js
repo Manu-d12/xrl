@@ -1198,7 +1198,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 	handleEventExport(event) {
 
-		let records = this.template.querySelector('c-Data-Table').getRecords();
+		let records = this.template.querySelector('c-Data-Table').getSelectedRecords().length != 0 ?
+						this.template.querySelector('c-Data-Table').getSelectedRecords() :
+						this.template.querySelector('c-Data-Table').getRecords();
 		let locale = libs.getGlobalVar(this.name).userInfo.locale;
 
 		console.log(JSON.parse(JSON.stringify(this.config)));
@@ -1269,5 +1271,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		XLSX.utils.book_append_sheet(wb, ws, (this.config.sObjLabel + ' '  + this.config?.listView?.label).length > 30 ? (this.config.sObjLabel + ' '  + this.config?.listView?.label).substring(0,30):(this.config.sObjLabel + ' '  + this.config?.listView?.label));
 		XLSX.writeFile(wb, this.config.sObjLabel + ' ' + this.config?.listView?.label + '.xlsx', { cellStyles: true, WTF: 1 });
 		
+		//deselecting the records if there is any
+		this.template.querySelector('c-Data-Table').updateView();
 	}
 }
