@@ -926,15 +926,15 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				this.config.pager.pageSize = value;
 				
 				this.setNumPages(value);
+				this.config.pager.pageSize = value;
 			}
 			if (fieldName === ':pagerCurPage') {
 				
 				this.config.pager.curPage = value;
-				if (value < 1) this.config.pager.curPage = 1;
+				if (value <= 1) this.config.pager.curPage = 1;
 				if (value > this.config.pager.numPages) this.config.pager.curPage = this.config.pager.numPages;
 			}
-			this.config.pager.pageSize = value;
-			console.log(value);
+			console.log('curPage ',this.config.pager.curPage);
 			return;
 		}
 		switch (fieldName) {
