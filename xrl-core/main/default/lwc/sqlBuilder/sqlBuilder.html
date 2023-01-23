@@ -118,49 +118,49 @@
                 </div>
             </div>
             <div class="slds-grid slds-gutters">
-                <div class="slds-col">
+                <div class="slds-col slds-size_12-of-12">
                     <div class="slds-text-heading_small"><b>{config._LABELS.lbl_appliedConditions}</b>
                         <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_appliedConditions}></lightning-helptext>
                     </div>
-                    <table if:true={config.sqlBuilder.conditions} class="slds-table slds-table_cell-buffer slds-table_bordered" aria-labelledby="element-with-table-label other-element-with-table-label">
+                    <table if:true={config.sqlBuilder.conditions} class="slds-table slds-table_cell-buffer slds-table_bordered extRelListTable" aria-labelledby="element-with-table-label other-element-with-table-label" style="width:100%;">
                         <thead>
                             <tr class="slds-line-height_reset">
-                            <th class="" scope="col">
+                            <th class="slds-truncate" style="width:2rem;" scope="col">
                                 <div class="slds-truncate" title={config._LABELS.lbl_slNo}>{config._LABELS.lbl_slNo}</div>
                             </th>
-                            <th class="" scope="col">
+                            <th class="slds-truncate" style="width:2rem;" scope="col">
                                 <div class="slds-truncate" title={config._LABELS.lbl_fieldName}>{config._LABELS.lbl_fieldName}</div>
                             </th>
-                            <th class="" scope="col">
+                            <th class="slds-truncate" style="width:2rem;" scope="col">
                                 <div class="slds-truncate" title={config._LABELS.lbl_operator}>{config._LABELS.lbl_operator}</div>
                             </th>
-                            <th class="" scope="col">
+                            <th class="slds-truncate" style="width:2rem;" scope="col">
                                 <div class="slds-truncate" title={config._LABELS.lbl_value}>{config._LABELS.lbl_value}</div>
                             </th>
-                            <th class="" scope="col">
+                            <th class="slds-truncate" style="width:2rem;" scope="col">
                                 <div class="slds-truncate" title={config._LABELS.lbl_actions}>{config._LABELS.lbl_actions}
                                     <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_appliedConditionsActionsHelp}></lightning-helptext>
                                 </div>
                             </th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="extRelListTable">
                             <template if:true={config.sqlBuilder.conditions} for:each={config.sqlBuilder.conditions} for:item="condition" for:index="index">
                             <tr class="slds-hint-parent" key={condition.key}>
                                 <th scope="row">
-                                <div class="slds-truncate">
-                                    {condition.index}
-                                </div>
+                                    <div class="slds-truncate">
+                                        {condition.index}
+                                    </div>
                                 </th>
                                 <td>
-                                <div class="slds-truncate">{condition.field}</div>
+                                    <div class="slds-truncate" style="max-width:10rem;" title={condition.field}>{condition.field}</div>
                                 </td>
                                 <td>
-                                <div class="slds-truncate">{condition.operator.label}</div>
+                                    <div class="slds-truncate">{condition.operator.label}</div>
                                 </td>
-                                <td>
-                                <div if:false={condition.valueRange} class="slds-truncate">{condition.value} </div>
-                                <div if:true={condition.valueRange} class="slds-truncate">Between {condition.value} and {condition.valueRange}</div>
+                                <td class="slds-truncate">
+                                    <div if:false={condition.valueRange} class="slds-truncate" style="max-width:20rem;" title={condition.value}>{condition.value} </div>
+                                    <div if:true={condition.valueRange} class="slds-truncate" style="max-width:20rem;" title={condition.valueRange}>Between {condition.value} and {condition.valueRange}</div>
                                 </td>
                                 <td>
                                     <div class="slds-truncate">
@@ -171,10 +171,10 @@
                             </tr>
                         </template>
                         </tbody>
-                        </table>
-                        <br/>
-                        <div style="position:relative;width:100%">
-                            <div class="slds-form-element">
+                    </table>
+                    <br/>
+                    <div style="position:relative;width:100%">
+                        <div class="slds-form-element">
                             <label class="slds-form-element__label" for="text-input-id-1"><b>{config._LABELS.lbl_conditionFilteringPattern}</b></label>
                             <div class="slds-form-element__icon">
                                 <button class="slds-button slds-button_icon" onmouseover={toggleConditionFilteringHelp}
@@ -195,7 +195,7 @@
                                 onfocusout={handleBuilderEvent} type="text"/>
                             </div>
                         </div>
-                        </div>
+                    </div>
                 </div>
             </div>
         </lightning-tab>
