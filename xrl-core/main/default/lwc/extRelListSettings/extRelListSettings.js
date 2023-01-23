@@ -130,7 +130,6 @@ export default class extRelListSettings extends LightningElement {
 
 		/* eslint-disable */
 		for (let item in tmp) {
-			if((tmp[item].type === 'function') && (fieldParams['isActionStandard'])) continue;
 			let defValue = (item === 'actionId') 
 			? this.config.dialog.action 
 			: fieldParams[item] === undefined
