@@ -66,8 +66,9 @@ export default class SqlBuilder extends LightningElement {
     }
     dialogValues(val){
         this.config.dialog.listViewConfig.colModel = this.config.sqlBuilder.selectedFields;
-        if(this.config.sqlBuilder.conditions.length > 0){
-            this.config.dialog.listViewConfig.addCondition = 'AND (' + this.generateCondition() + ')';
+        let conStr = this.generateCondition();
+        if(this.config.sqlBuilder.conditions.length > 0 && conStr.length > 0){
+            this.config.dialog.listViewConfig.addCondition = 'AND (' + conStr  + ')';
             this.config.dialog.listViewConfig.conditionMap = this.config.sqlBuilder.conditions;
             this.config.dialog.listViewConfig.conditionOrdering = this.config.sqlBuilder.conditionOrdering;
         }else{
