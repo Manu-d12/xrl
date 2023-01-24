@@ -455,5 +455,6 @@ export default class SqlBuilder extends LightningElement {
         this.config.sqlBuilder.isBackNeeded = false;
         this.loadFields(this.config.sObjApiName);
         this.config.sqlBuilder._objectStack = [{relationShip:this.config.sObjApiName,referredObj:this.config.sObjApiName}];
+        this.config.sqlBuilder.searchTerm = '';
     }
 }
