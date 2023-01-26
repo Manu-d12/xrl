@@ -230,68 +230,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		
 		this.config.isGlobalSearch=this.config.listViewConfig[0].isGlobalSearch;
 		if(!this.config.listViewConfig[0].actions){
-			this.config.listViewConfig[0].actions = [
-				{
-				  "actionId": "std:delete",
-				  "actionLabel": this.config._LABELS.altTxt_delete,
-				  "actionTip": this.config._LABELS.title_delete,
-				  "actionCallBack": this.config._LABELS.placeholder_actionCallback,
-				  "actionIsHidden": false,
-				  "actionIconName": "utility:delete",
-				  "isActionStandard":true,
-				  "actionOrder":10
-				},
-				{
-				  "actionId": "std:export",
-				  "actionLabel": this.config._LABELS.altTxt_export,
-				  "actionTip": this.config._LABELS.title_export,
-				  "actionCallBack": this.config._LABELS.placeholder_actionCallback,
-				  "actionIsHidden": false,
-				  "actionIconName": "utility:download",
-				  "isActionStandard":true,
-				  "actionOrder":20
-				},
-				{
-				  "actionId": "std:new",
-				  "actionLabel": this.config._LABELS.altTxt_new,
-				  "actionTip": this.config._LABELS.title_newRecord,
-				  "actionCallBack": this.config._LABELS.placeholder_actionCallback,
-				  "actionIsHidden": false,
-				  "actionIconName": "utility:new",
-				  "isActionStandard":true,
-				  "actionOrder":30
-				},
-				{
-				  "actionId": "std:refresh",
-				  "actionLabel": this.config._LABELS.title_refresh,
-				  "actionTip": this.config._LABELS.altTxt_refreshListView,
-				  "actionCallBack": this.config._LABELS.placeholder_actionCallback,
-				  "actionIsHidden": false,
-				  "actionIconName": "utility:refresh",
-				  "isActionStandard":true,
-				  "actionOrder":40
-				},
-				{
-				  "actionId": "std:request_open",
-				  "actionLabel": this.config._LABELS.altTxt_requestAFeature,
-				  "actionTip": this.config._LABELS.title_requestAFeature,
-				  "actionCallBack": this.config._LABELS.placeholder_actionCallback,
-				  "actionIsHidden": false,
-				  "actionIconName": "utility:email",
-				  "isActionStandard":true,
-				  "actionOrder":50
-				},
-				{
-				  "actionId": "std:expand_view",
-				  "actionLabel": this.config._LABELS.altTxt_expandView,
-				  "actionTip": this.config._LABELS.title_expandView,
-				  "actionCallBack": this.config._LABELS.placeholder_actionCallback,
-				  "actionIsHidden": false,
-				  "actionIconName": "utility:expand",
-				  "isActionStandard":true,
-				  "actionOrder":60
-				}
-			  ];
+			this.config.listViewConfig[0].actions = libs.standardActions();
 		}
 		this.config.listViewConfig[0].rowChecked = false;
 		this.config.actionsBar = {
@@ -1159,7 +1098,32 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			}else{
 				const event = new ShowToastEvent({
 					title: 'Error',
-					message: 'There is unsaved records. Please save those before performing next operation',
+					message: this.config._LABELS.msg_unsaveRecordsCannotPerformOtherAction,
+					variant: 'error'
+				});
+				this.dispatchEvent(event);
+			}
+		}
+		if (val.startsWith('std:reset_filters')) {
+			if(!this.isThereUnsavedRecords()){
+				this.config.listViewConfig[0].colModel.forEach( e=>  {
+					if(e._filterStrLastChangeDate !== undefined){
+						e._isFilterOptions = undefined;
+						e._filterStrLastChangeDate = undefined;
+						e.filterStr = '';
+						e.filterStrTo = '';
+						e.isShowClearBtn = false;
+						e._filterCondition = '';
+						e._filterVariant = '';
+						e._filterStr = [];
+						e._filterOption = undefined;
+					}
+				});
+				this.template.querySelector('c-Data-Table').updateView();
+			}else{
+				const event = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.msg_unsaveRecordsCannotPerformOtherAction,
 					variant: 'error'
 				});
 				this.dispatchEvent(event);
