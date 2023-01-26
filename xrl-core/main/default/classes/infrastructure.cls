@@ -523,6 +523,7 @@ global with sharing class infrastructure {
 			'lbl_actionVisibleOnRecords'=>label.lbl_actionVisibleOnRecords,
 			'lbl_beforeSaveApexAction'=>label.lbl_beforeSaveApexAction,
 			'lbl_items'=>label.lbl_items,
+			'msg_enterUniqueActionId'=>label.msg_enterUniqueActionId,
 			'msg_lisViewWasUpdated' => label.msg_lisViewWasUpdated,
 			'msg_requestWasSent' => label.msg_requestWasSent,
 			'msg_deleteConfirm1'=>label.msg_deleteConfirm1,

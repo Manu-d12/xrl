@@ -1640,6 +1640,14 @@ Once you are done editing the pattern, click outside the input box.</value>
         <value>item(s) updated</value>
     </labels>
     <labels>
+        <fullName>msg_enterUniqueActionId</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_enterUniqueActionId</shortDescription>
+        <value>Please enter a unique Action Id to save</value>
+    </labels>
+    <labels>
         <fullName>msg_actionHideError</fullName>
         <categories>XRL</categories>
         <language>en_US</language>
