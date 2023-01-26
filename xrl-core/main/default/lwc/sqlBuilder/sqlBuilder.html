@@ -81,11 +81,11 @@
                     <div style="border:0.5px solid rgb(183, 180, 180);">
                         <div class="slds-grid slds-gutters">
                             <div class="slds-col slds-size_6-of-12">
-                                <div if:true={config.sqlBuilder.conditionOperations} class="slds-text-heading_small slds-text-align_center">
+                                <div if:true={config.sqlBuilder.conditionOperations} class="slds-text-heading_small slds-text-align_center" style="padding-left: 5px;">
                                     <b>{config._LABELS.lbl_availableOperations}</b> for {config.sqlBuilder.currentCondition.field}
                                     <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_availableOperationTooltip}></lightning-helptext>
                                 </div>
-                                <div if:true={config.sqlBuilder.noOperationError}>No Operation Available</div>
+                                <div if:true={config.sqlBuilder.noOperationError} style="padding-left: 5px;">{config._LABELS.msg_noOperationAvailable}</div>
                                 <br/>
                                 <div class="slds-scrollable_y" style="height:25rem">
                                     <ul class="slds-has-dividers_around-space">
