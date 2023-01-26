@@ -8,4 +8,9 @@
         <target>lightning__RecordPage</target>
         <target>lightning__HomePage</target>
     </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage">
+            <property required="true" default="" name="configId" type="String" label="Select Config" description="Please select the Config name" datasource="apex://getConfigs"/>
+        </targetConfig>
+    </targetConfigs>
 </LightningComponentBundle>
