@@ -1,4 +1,5 @@
 import { LightningElement, api, track } from 'lwc';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { libs } from 'c/libs'
 
 export default class extRelListSettings extends LightningElement {
@@ -130,7 +131,6 @@ export default class extRelListSettings extends LightningElement {
 
 		/* eslint-disable */
 		for (let item in tmp) {
-			if((tmp[item].type === 'function') && (fieldParams['isActionStandard'])) continue;
 			let defValue = (item === 'actionId') 
 			? this.config.dialog.action 
 			: fieldParams[item] === undefined
@@ -157,9 +157,21 @@ export default class extRelListSettings extends LightningElement {
 		}
 		if(dataId === 'actionSave'){
 			let actionId = this.template.querySelector('.newActionId').value;
-			this.config.dialog.action = actionId;
-			this.config.dialog.listViewConfig.actions.push({actionId:actionId});
-			this.config.dialog.allActions.push({label:actionId,value:actionId});
+			if(actionId != ''){
+				this.config.dialog.action = actionId;
+				this.config.dialog.listViewConfig.actions.push({actionId:actionId});
+				this.config.dialog.allActions.push({label:actionId,value:actionId});
+				this.config.openNewAction = false;
+			}else{
+				const eventErr = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.msg_enterUniqueActionId,
+					variant: 'error'
+				});
+				this.dispatchEvent(eventErr);
+			}
+		}
+		if(dataId === 'actionCancel'){
 			this.config.openNewAction = false;
 		}
 	}
