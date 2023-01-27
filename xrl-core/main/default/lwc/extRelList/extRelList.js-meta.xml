@@ -16,5 +16,13 @@
             <!--property required="false" name="AddCondition" type="String" label="Addtitional Condition for WHERE cause" description="Please provide additional condition. Must starts from AND or OR"/-->
             <!-- <property required="false" name="defaultListView" type="String" label="List view name" description="Please provide default list view name."/> -->
         </targetConfig>
+        <targetConfig targets="lightning__HomePage">
+            <property required="true" default="" name="apiName" type="String" label="Related List" description="Choose Needed RelatedList." datasource="apex://getRelListsPicklist"/>
+            <property required="true" default="" name="name" type="String" label="Uniq name" description="Enter uniq name of RelatedList."/>
+        </targetConfig>
+        <targetConfig targets="lightning__AppPage">
+            <property required="true" default="" name="apiName" type="String" label="Related List" description="Choose Needed RelatedList." datasource="apex://getRelListsPicklist"/>
+            <property required="true" default="" name="name" type="String" label="Uniq name" description="Enter uniq name of RelatedList."/>
+        </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>
