@@ -95,7 +95,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				let endIndex = ((startIndex + parseInt(this.config.pager.pageSize)) < this.records.length ? (startIndex + parseInt(this.config.pager.pageSize)) : this.records.length) + 1; 
 				let result = [];
 				for (let group of this.groupedRecords) {
-					if (startIndex > group.records[group.records.length - 1].index - 1) continue;
+					if (startIndex > group.records[group.records.length - 1].index) continue;
 					if (endIndex <= group.records[0].index - 1) break;   
 					let gr = Object.assign({}, group);
 					gr.records = group.records.map(r => r);

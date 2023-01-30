@@ -73,6 +73,11 @@
 							<lightning-input if:false={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} type={param.type} label={param.label} disabled={param.isDisabled} value={param.value} data-id="dialog:setActionParam" data-param={param.paramName} data-type={param.type} checked={param.isChecked} onchange={config.dialog.handleEvent}></lightning-input>
 							<lightning-textarea if:true={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} data-type={param.type} label={param.label} value={param.value} data-id="dialog:setActionParam" data-param={param.paramName} onchange={config.dialog.handleEvent} placeholder={param.placeHolder}></lightning-textarea>
 						</template>
+						<template if:true={config.dialog.action}>
+							<br>
+							<lightning-button if:false={isActionStandard} variant="destructive" label="Delete" title="Delete" icon-name="utility:delete" class="slds-m-left_x-small" data-val="actionDeleteOpenConfirmation" onclick={handleNewAction}></lightning-button>
+							<lightning-helptext if:false={isActionStandard} class="placeTop" content={config._LABELS.tooltip_deleteCustomAction}></lightning-helptext>
+						</template>
 					</lightning-tab>
 					<!-- Action Ends  -->
 				</lightning-tabset>
@@ -117,4 +122,5 @@
 		</div>
 	</section>
 	<div class="slds-backdrop slds-backdrop_open"></div>
+	<c-dialog if:true={showDialog} cfg={dialogCfg} data-val={dialogCfg.data_id} onaction={handleNewAction}></c-dialog>
 </template>

@@ -540,6 +540,7 @@ global with sharing class infrastructure {
 			'msg_unsaveRecordsCannotPerformOtherAction'=>label.msg_unsaveRecordsCannotPerformOtherAction,
 			'msg_youCantaddMoreThan20Fields'=>label.msg_youCantaddMoreThan20Fields,
 			'msg_noOperationAvailable'=>label.msg_noOperationAvailable,
+			'msg_deleteCustomActionConfirmation'=>label.msg_deleteCustomActionConfirmation,
 			'placeHolder_beforeSaveValidation'=>label.placeHolder_beforeSaveValidation,
 			'placeHolder_beforeDeleteValidation'=>label.placeHolder_beforeDeleteValidation,
 			'placeholder_actionCallback'=> label.placeholder_actionCallback,
@@ -571,6 +572,7 @@ global with sharing class infrastructure {
 			'title_newListView'=>label.title_newListView,
 			'title_expandView'=>label.title_expandView,
 			'title_resetFilters'=>label.title_resetFilters,
+			'title_deleteCustomAction'=>label.title_deleteCustomAction,
 			'tooltip_addNumerationColumnToTable' => label.tooltip_addNumerationColumnToTable,
 			'tooltip_addCheckBoxColumnToTable' => label.tooltip_addCheckBoxColumnToTable,
 			'tooltip_showGlobalTableSearch' => label.tooltip_showGlobalTableSearch,
@@ -601,6 +603,7 @@ global with sharing class infrastructure {
 			'tooltip_configSaveAsCancel'=>label.tooltip_configSaveAsCancel,
 			'tooltip_actionVisibleOnRecords'=>label.tooltip_actionVisibleOnRecords,
 			'tooltip_beforeSaveApexAction'=>label.tooltip_beforeSaveApexAction,
+			'tooltip_deleteCustomAction'=>label.tooltip_deleteCustomAction,
 			'srcLbl_available' => label.srcLbl_available,
 			'srcLbl_optional' => label.srcLbl_optional
 		};

@@ -1767,4 +1767,28 @@ Once you are done editing the pattern, click outside the input box.</value>
         <shortDescription>msg_invalidInputSqlBuilderConditionFormat</shortDescription>
         <value>Invalid Format</value>
     </labels>
+    <labels>
+        <fullName>tooltip_deleteCustomAction</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_deleteCustomAction</shortDescription>
+        <value>Delete this Custom Action</value>
+    </labels>
+    <labels>
+        <fullName>msg_deleteCustomActionConfirmation</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_deleteCustomActionConfirmation</shortDescription>
+        <value>Are you sure you want to delete this custom action? This action can not be undone.</value>
+    </labels>
+    <labels>
+        <fullName>title_deleteCustomAction</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>title_deleteCustomAction</shortDescription>
+        <value>Delete Custom Action</value>
+    </labels>
 </CustomLabels>

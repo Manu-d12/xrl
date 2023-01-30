@@ -6,6 +6,7 @@ export default class extRelListSettings extends LightningElement {
 	@api cfg;
 	@track config;
 	@track dataTable;
+	@track showDialog = false;
 
 	connectedCallback() {
 		console.log(this.cfg);
@@ -150,6 +151,16 @@ export default class extRelListSettings extends LightningElement {
 		}
 		return result;
 	}
+	get isActionStandard(){
+		if(this.config.dialog.action){
+			let fieldParams = this.config.dialog.listViewConfig.actions.find( e=>{
+				return e.actionId === this.config.dialog.action;
+			});
+			return fieldParams['isActionStandard'];
+		}else{
+			return false;
+		}
+	}
 	handleNewAction(event){
 		let dataId = event.target.getAttribute('data-val')
 		if(dataId === 'openNewAction'){
@@ -174,7 +185,45 @@ export default class extRelListSettings extends LightningElement {
 		if(dataId === 'actionCancel'){
 			this.config.openNewAction = false;
 		}
+		if(dataId === 'actionDeleteOpenConfirmation'){
+			this.dialogCfg = {
+				title: this.config._LABELS.title_deleteCustomAction,
+				contents: [
+					{
+						isMessage: true,
+						name: 'deleteCustomActionConfirm',
+						text: this.config._LABELS.msg_deleteCustomActionConfirmation
+					}
+				],
+				buttons: [
+					{
+						name: 'cancel',
+						label: this.config._LABELS.lbl_cancel,
+						variant: 'neutral'
+					},
+					{
+						name: 'Delete',
+						label: this.config._LABELS.title_delete,
+						variant: 'brand',
+						class: 'slds-m-left_x-small'
+					}
+				],
+				data_id: "actionDelete"
+			};
+			this.showDialog = true;
+		}
+		if(dataId === 'actionDelete'){
+			if (event.detail.action === 'cancel') this.showDialog = false;
+			else{
+				this.config.dialog.listViewConfig.actions = this.config.dialog.listViewConfig.actions.filter(e => e.actionId != this.config.dialog.action);
+				this.config.dialog.allActions = this.config.dialog.allActions.filter(e => e.value != this.config.dialog.action);
+				this.config.dialog.action = false;
+				this.config.openNewAction = false;
+				this.showDialog = false;
+			}
+		}
 	}
+
 	addNewUseExampleParam(event){
 		this.config.dialog.useExampleParams[event.target.getAttribute('data-param')] = event.target.getAttribute('data-val').substring(event.target.getAttribute('data-val').indexOf('function')).replaceAll("//","");
 	}
