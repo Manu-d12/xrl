@@ -536,6 +536,7 @@ global with sharing class infrastructure {
 			'msg_confirmConfigDelete'=>label.msg_confirmConfigDelete,
 			'msg_successfullyDeleted'=>label.msg_successfullyDeleted,
 			'msg_recordSelection'=>label.msg_recordSelection,
+			'msg_invalidInputSqlBuilderConditionFormat'=>label.msg_invalidInputSqlBuilderConditionFormat,
 			'msg_unsaveRecordsCannotPerformOtherAction'=>label.msg_unsaveRecordsCannotPerformOtherAction,
 			'msg_youCantaddMoreThan20Fields'=>label.msg_youCantaddMoreThan20Fields,
 			'msg_noOperationAvailable'=>label.msg_noOperationAvailable,
