@@ -2,11 +2,10 @@ import { LightningElement, api, track } from 'lwc';
 import { libs } from 'c/libs';
 
 export default class Layout extends LightningElement {
-    @track apiName;
-	@track name;
 	@api recordId;
 	@api defaultListView;	
 	@api configuration;
+	@api configId;
 
 	@track config = {};
 	@track localConfig = {};
@@ -18,11 +17,13 @@ export default class Layout extends LightningElement {
 	@track dialogCfg;
 	@track dataTableConfig;
     @track components;
-	@track configId;
+	@track name;
 
     connectedCallback() {
 		console.log('RENDERED');
-		// this.loadCfg(true);
+		this.name = this.configId.split('::')[1];
+		this.configId = this.configId.split('::')[0];
+		this.loadCfg(true);
 	}
 
 	setCustomLabels(cmd, data) {
@@ -32,28 +33,14 @@ export default class Layout extends LightningElement {
 
 	loadCfg(isInit) {
 		libs.remoteAction(this, 'getCustomLabels', {callback: this.setCustomLabels.bind(this) });
-		let apiNames = this.apiName.split(':');
-		console.log(apiNames);
 		this.localConfig = {};
 
 		let cfg = libs.loadConfig(this.name);
 		if (cfg !== undefined) {
 			this.localConfig = cfg;
-			libs.setGlobalVar(this.name, {
-				"sObjLabel": apiNames[0],
-				"sObjApiName": apiNames[1],
-				"relField": apiNames[2],
-				//"fields": ['Id', 'LastModifiedDate'],
-				"iconName": "/img/icon/t4v35/standard/custom_120.png"
-			});
+			libs.setGlobalVar(this.name, {});
 		} else {
-			libs.setGlobalVar(this.name, {
-				"sObjLabel": apiNames[0],
-				"sObjApiName": apiNames[1],
-				"relField": apiNames[2],
-				"fields": ['Id', 'LastModifiedDate'],
-				"iconName": "/img/icon/t4v35/standard/custom_120.png"
-			});
+			libs.setGlobalVar(this.name, {});
 		}
 		this.config = libs.getGlobalVar(this.name);
 		
@@ -61,11 +48,10 @@ export default class Layout extends LightningElement {
 		if (this.configuration) {
 			this.setConfig('getConfigResult', this.configuration);
 		} else {
-			libs.remoteAction(this, 'getConfigById', { configId: this.apiName, callback: this.getWholeConfig.bind(this) });
+			libs.remoteAction(this, 'getConfigById', { configId: this.configId, callback: this.getWholeConfig.bind(this) });
 		}
 	}
 	getWholeConfig(cmd,data){
-		console.log('my',JSON.parse(JSON.stringify(data[cmd].listViews)));
 		let jsonDetails = JSON.parse(JSON.stringify(data[cmd].listViews));
 		this.config.listViewName = jsonDetails[0].name;
 		this.config.sObjApiName = jsonDetails[0].sObjApiName;
@@ -85,12 +71,6 @@ export default class Layout extends LightningElement {
 
 		let dataTableConfig;
 		let adminDataTableConfig = adminConfig;
-		// adminConfig = JSON.parse(adminConfig);
-		// adminConfig.forEach((el)=>{
-		// 	if(el.cmpName === 'dataTable') {
-		// 		adminDataTableConfig = el;
-		// 	}
-		// });
 		userConfig = JSON.parse(userConfig);
 		userConfig.forEach((el)=>{
 			if(el.cmpName === 'dataTable') {
@@ -239,11 +219,4 @@ export default class Layout extends LightningElement {
 	handleGlobalMessage(event){
 
 	}
-	unsubscribeToMessageChannel() {
-        unsubscribe(this.subscription);
-        this.subscription = null;
-    }
-	disconnectedCallback() {
-        this.unsubscribeToMessageChannel();
-    }
 }
