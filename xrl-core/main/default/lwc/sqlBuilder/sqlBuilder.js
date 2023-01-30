@@ -262,9 +262,11 @@ export default class SqlBuilder extends LightningElement {
             };
         }
         if(val === "sqlBuilder:conditions:orderingConditions"){
-            console.log('sqlBuilder:conditions:orderingConditions', this.config.sqlBuilder);
-            this.config.sqlBuilder.conditionOrdering = event.target.value;
-            this.dialogValues(true);
+            console.log('sqlBuilder:conditions:orderingConditions', event.target.value);
+            if(this.isStrAllowed(event.target.value)){
+                this.config.sqlBuilder.conditionOrdering = event.target.value;
+                this.dialogValues(true);
+            }
         }
         //For ordering
         if(val === "sqlBuilder:ordering:selectItem"){
@@ -456,5 +458,52 @@ export default class SqlBuilder extends LightningElement {
         this.loadFields(this.config.sObjApiName);
         this.config.sqlBuilder._objectStack = [{relationShip:this.config.sObjApiName,referredObj:this.config.sObjApiName}];
         this.config.sqlBuilder.searchTerm = '';
+    }
+    isStrAllowed(val){
+        console.log('Balanced',this.areBracketsBalanced(val));
+        for(let i = 0; i < val.length; i++){
+            let char = val[i];
+            if(char == ')' || char == '(' || char == ' ') continue;
+            if(/^\d+$/.test(char)){
+                //need to add space after
+            }
+            if((char == 'A' || char == 'a') && val[i]+2 != undefined && (val[i]+2 == 'D' || val[i]+2 == 'd')){
+
+            }
+            if((char == 'A' || char == 'a') && val[i]+2 != undefined && (val[i]+2 == 'D' || val[i]+2 == 'd')){
+
+            }
+        }
+    }
+    areBracketsBalanced(expr)
+    {
+        
+        let stack = [];
+    
+        for(let i = 0; i < expr.length; i++)
+        {
+            let x = expr[i];
+    
+            if (x == '(')
+            {
+                
+                stack.push(x);
+                continue;
+            }
+    
+            if (x == ')' && stack.length == 0)
+                return false;
+                
+            let check;
+            switch (x){
+            case ')':
+                check = stack.pop();
+                if (check == '{' || check == '[')
+                    return false;
+                break;
+            }
+        }
+    
+        return (stack.length == 0);
     }
 }
