@@ -19,13 +19,13 @@ export default class dataTableItem extends LightningElement {
 				this.config.dataTableCfg = el;
 			}
 		});
-		if (this.col.isEditable && this.row._focus === this.col.fieldName && this.config.dataTableCfg._inlineEdit != undefined){
+		if (this.col.isEditable && this.row._focus === this.col.fieldName && this.config.dataTableCfg._inlineEdit != undefined && this.row._isEditable){
 			this.showEdit = true;
 		}
 		window.addEventListener('keydown', (event) => {
-			if ((this.col.type === 'multipicklist' || this.col.type === 'picklist' || this.col._isLookUpEdit) && (event.which == 13 || event.which == 27)) {
+			if (this.showEdit && (this.col.type === 'multipicklist' || this.col.type === 'picklist' || this.col._isLookUpEdit) && (event.which == 13 || event.which == 27)) {
 				this.inlineEditFinish(event);
-				console.log('In event Listener dataTableItem');
+				console.log('In event Listener dataTableItem', this.showEdit, this.col.fieldName);
 			}
 		});
 	}

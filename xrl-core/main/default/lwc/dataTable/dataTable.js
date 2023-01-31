@@ -308,7 +308,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	saveEditCallback(isNeedSave, rowName, value) {
 		if (isNeedSave === true) {
 			if (rowName !== undefined) {
-				if (!this.config._inlineEditRow) this.config._inlineEditRow = JSON.parse(JSON.stringify(this.records[this.config._inlineEdit]));
+				this.config._inlineEditRow = JSON.parse(JSON.stringify(this.records[this.config._inlineEdit]));
 				let cItem = this.getColItem(rowName);
 				if(rowName.includes('.') && cItem._editOptions){
 					this.config._inlineEditRow[rowName.split('.')[0]+'Id'] = value;
@@ -355,12 +355,14 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				}
 			}
 		} else {
-			this.records[this.config._inlineEdit]._isEditable = false;
-			if (this.hasGrouping) {
-				let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
-				this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
+			if(this.config._inlineEdit != undefined){
+				this.records[this.config._inlineEdit]._isEditable = false;
+				if (this.hasGrouping) {
+					let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
+					this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
+				}
+				this.config._inlineEdit = undefined;
 			}
-			this.config._inlineEdit = undefined;
 		}
 		if (this.hasGrouping) this.setGroupRecords();
 	}
@@ -555,74 +557,76 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				let record = this.records[calculatedInd];
 				record._isEditable = true;
 				record._focus = colName;
-				this.config._inlineEdit = calculatedInd;
-		if (this.config._inlineEdit !== undefined) {
-			this.records[this.config._inlineEdit]._isEditable = false;
-			if (this.hasGrouping) {
-				let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
-				this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
-			}
-		}
-		
-		if (this.getSelectedRecords().length > 1) {
-			let table = this.template.querySelector('.extRelListTable');
-			console.log('bulk', table.offsetHeight, event.y, table, event.srcElement.parentElement.parentElement.offsetTop, this.config);
-
-			if (cItem.type === 'reference' && cItem.options === undefined) {
-				let describe = libs.getGlobalVar(this.cfg).describe[cItem.fieldName];
-				libs.remoteAction(this, 'query', {
-					isNeedDescribe: false,
-					sObjApiName: describe.referenceTo[0],
-					fields: ['Id', 'Name'],
-					callback: ((nodeName, data) => {
-						console.log('length', data[nodeName].records);
-						cItem.options = [];
-						data[nodeName].records.forEach(e => {
-							cItem.options.push({label: e.Name, value: e.Id});
-						});
-						cItem.refNodeOptions = data[nodeName].records; 
-					})
-				});
-			}
-			this.config._bulkEdit = {
-				rowId : calculatedInd,
-				cItem : cItem,
-				type : cItem.type,
-				value : this.records[calculatedInd][cItem.fieldName],
-				chBoxLabel : libs.formatStr('Update {0} items', [this.getSelectedRecords().length]),
-				chBoxValue : false,
-				style: libs.formatStr("position:absolute;top:{0}px;left:{1}px", [(-table.offsetHeight + event.srcElement.parentElement.parentElement.offsetTop - (this.config.pager.pagerTop === true ? 110 : 40)), (event.x - 60)]),
-			}
-			//this.config._isBulkEdit = true;
-		} else {
-			// Need get all visible references fields and get data for thise fields
-			let record = this.records[calculatedInd];
-			record._focus = colName;
-			cItem.wrapClass = cItem.type === 'picklist' || cItem.type === 'multipicklist' || (cItem.fieldName.split('.')[1] && cItem.isNameField) ? 'slds-cell-wrap' : cItem.wrapClass;
-
-			if(cItem.fieldName.split('.')[1] && cItem.isNameField && !cItem._editOptions){
-				cItem._editOptions = [];
-				await libs.remoteAction(this, 'query', {
-					fields: ['Id','Name'],
-					relField: '',
-					sObjApiName: cItem.fieldName.split('.')[0],
-					callback: ((nodeName, data) => {
-						console.log('accountRecords', data[nodeName].records.length);
-						data[nodeName].records.forEach((el)=>{
-							cItem._editOptions.push({"label":el.Name,"value":el.Id});
-						});
-					})
-				});
-				cItem._isLookUpEdit = true;
-			}
-			record._isEditable = true;
-			this.config._inlineEdit = calculatedInd;
-
-				if (this.hasGrouping) {
-					this.groupedRecords[groupInd].records[groupRowInd]._isEditable = true;
-					this.groupedRecords[groupInd].records[groupRowInd]._focus = colName;
+				if (this.config._inlineEdit !== undefined) {
+					this.records[this.config._inlineEdit]._isEditable = false;
+					if (this.hasGrouping) {
+						let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
+						this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
+					}
 				}
-			}
+				this.config._inlineEdit = calculatedInd;
+		
+				if (this.getSelectedRecords().length > 1) {
+					let table = this.template.querySelector('.extRelListTable');
+					console.log('bulk', table.offsetHeight, event.y, table, event.srcElement.parentElement.parentElement.offsetTop, this.config);
+
+					if (cItem.type === 'reference' && cItem.options === undefined) {
+						let describe = libs.getGlobalVar(this.cfg).describe[cItem.fieldName];
+						libs.remoteAction(this, 'query', {
+							isNeedDescribe: false,
+							sObjApiName: describe.referenceTo[0],
+							fields: ['Id', 'Name'],
+							callback: ((nodeName, data) => {
+								console.log('length', data[nodeName].records);
+								cItem.options = [];
+								data[nodeName].records.forEach(e => {
+									cItem.options.push({label: e.Name, value: e.Id});
+								});
+								cItem.refNodeOptions = data[nodeName].records; 
+							})
+						});
+					}
+					this.config._bulkEdit = {
+						rowId : calculatedInd,
+						cItem : cItem,
+						type : cItem.type,
+						value : this.records[calculatedInd][cItem.fieldName],
+						chBoxLabel : libs.formatStr('Update {0} items', [this.getSelectedRecords().length]),
+						chBoxValue : false,
+						style: libs.formatStr("position:absolute;top:{0}px;left:{1}px", [(-table.offsetHeight + event.srcElement.parentElement.parentElement.offsetTop - (this.config.pager.pagerTop === true ? 110 : 40)), (event.x - 60)]),
+					}
+					//this.config._isBulkEdit = true;
+				} else {
+					// Need get all visible references fields and get data for thise fields
+					// let record = this.records[calculatedInd];
+					// record._focus = colName;
+					cItem.wrapClass = cItem.type === 'picklist' || cItem.type === 'multipicklist' || (cItem.fieldName.split('.')[1] && cItem.isNameField) ? 'slds-cell-wrap' : cItem.wrapClass;
+
+					if(cItem.fieldName.split('.')[1] && cItem.isNameField && !cItem._editOptions){
+						cItem._editOptions = [];
+						await libs.remoteAction(this, 'query', {
+							fields: ['Id','Name'],
+							relField: '',
+							sObjApiName: cItem.fieldName.split('.')[0],
+							callback: ((nodeName, data) => {
+								console.log('accountRecords', data[nodeName].records.length);
+								data[nodeName].records.forEach((el)=>{
+									cItem._editOptions.push({"label":el.Name,"value":el.Id});
+								});
+							})
+						});
+						cItem._isLookUpEdit = true;
+					}
+					// record._isEditable = true;
+
+
+					// this.config._inlineEdit = calculatedInd;
+
+						if (this.hasGrouping) {
+							this.groupedRecords[groupInd].records[groupRowInd]._isEditable = true;
+							this.groupedRecords[groupInd].records[groupRowInd]._focus = colName;
+						}
+				}
 		}
 	}
 
