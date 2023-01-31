@@ -1640,6 +1640,14 @@ Once you are done editing the pattern, click outside the input box.</value>
         <value>item(s) updated</value>
     </labels>
     <labels>
+        <fullName>msg_enterUniqueActionId</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_enterUniqueActionId</shortDescription>
+        <value>Please enter a unique Action Id to save</value>
+    </labels>
+    <labels>
         <fullName>msg_actionHideError</fullName>
         <categories>XRL</categories>
         <language>en_US</language>
@@ -1688,6 +1696,22 @@ Once you are done editing the pattern, click outside the input box.</value>
         <value>Class and Method name to be executed</value>
     </labels>
     <labels>
+        <fullName>altTxt_resetFilters</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>altTxt_resetFilters</shortDescription>
+        <value>Reset Filters</value>
+    </labels>
+    <labels>
+        <fullName>title_resetFilters</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>title_resetFilters</shortDescription>
+        <value>Reset Filters</value>
+    </labels>
+    <labels>
         <fullName>tooltip_beforeSaveApexAction</fullName>
         <categories>XRL</categories>
         <language>en_US</language>
@@ -1726,5 +1750,37 @@ Once you are done editing the pattern, click outside the input box.</value>
         <protected>true</protected>
         <shortDescription>msg_youCantaddMoreThan20Fields</shortDescription>
         <value>You can not add more than 20 columns</value>
+    </labels>
+    <labels>
+        <fullName>msg_noOperationAvailable</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_noOperationAvailable</shortDescription>
+        <value>No Operation Available</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_deleteCustomAction</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_deleteCustomAction</shortDescription>
+        <value>Delete this Custom Action</value>
+    </labels>
+    <labels>
+        <fullName>msg_deleteCustomActionConfirmation</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_deleteCustomActionConfirmation</shortDescription>
+        <value>Are you sure you want to delete this custom action? This action can not be undone.</value>
+    </labels>
+    <labels>
+        <fullName>title_deleteCustomAction</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>title_deleteCustomAction</shortDescription>
+        <value>Delete Custom Action</value>
     </labels>
 </CustomLabels>

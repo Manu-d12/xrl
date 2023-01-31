@@ -389,6 +389,82 @@ export let libs = {
 		// Need to open a new tab and redirect user to specific article
 		return 'in test';
 	},
+	standardActions: function(){
+		let _labels = globalVars[Object.keys(globalVars)[0]]._LABELS;
+		let actions = [
+			{
+				"actionId": "std:reset_filters",
+				"actionLabel": _labels.altTxt_resetFilters,
+				"actionTip": _labels.title_resetFilters,
+				"actionCallBack": _labels.placeholder_actionCallback,
+				"actionIsHidden": false,
+				"actionIconName": "utility:filterList",
+				"isActionStandard":true,
+				"actionOrder":5
+			  },
+			  {
+				"actionId": "std:delete",
+				"actionLabel": _labels.altTxt_delete,
+				"actionTip": _labels.title_delete,
+				"actionCallBack": _labels.placeholder_actionCallback,
+				"actionIsHidden": false,
+				"actionIconName": "utility:delete",
+				"isActionStandard":true,
+				"actionOrder":10
+			},
+			{
+			  "actionId": "std:export",
+			  "actionLabel": _labels.altTxt_export,
+			  "actionTip": _labels.title_export,
+			  "actionCallBack": _labels.placeholder_actionCallback,
+			  "actionIsHidden": false,
+			  "actionIconName": "utility:download",
+			  "isActionStandard":true,
+			  "actionOrder":20
+			},
+			{
+			  "actionId": "std:new",
+			  "actionLabel": _labels.altTxt_new,
+			  "actionTip": _labels.title_newRecord,
+			  "actionCallBack": _labels.placeholder_actionCallback,
+			  "actionIsHidden": false,
+			  "actionIconName": "utility:new",
+			  "isActionStandard":true,
+			  "actionOrder":30
+			},
+			{
+			  "actionId": "std:refresh",
+			  "actionLabel": _labels.title_refresh,
+			  "actionTip": _labels.altTxt_refreshListView,
+			  "actionCallBack": _labels.placeholder_actionCallback,
+			  "actionIsHidden": false,
+			  "actionIconName": "utility:refresh",
+			  "isActionStandard":true,
+			  "actionOrder":40
+			},
+			{
+			  "actionId": "std:request_open",
+			  "actionLabel": _labels.altTxt_requestAFeature,
+			  "actionTip": _labels.title_requestAFeature,
+			  "actionCallBack": _labels.placeholder_actionCallback,
+			  "actionIsHidden": false,
+			  "actionIconName": "utility:email",
+			  "isActionStandard":true,
+			  "actionOrder":50
+			},
+			{
+			  "actionId": "std:expand_view",
+			  "actionLabel": _labels.altTxt_expandView,
+			  "actionTip": _labels.title_expandView,
+			  "actionCallBack": _labels.placeholder_actionCallback,
+			  "actionIsHidden": false,
+			  "actionIconName": "utility:expand",
+			  "isActionStandard":true,
+			  "actionOrder":60
+			}
+		  ];
+		  return actions;
+	},
 	currencyMap: function(cur) {
 		let map = {
 			AED: 'د.إ',
