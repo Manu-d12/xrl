@@ -19,7 +19,7 @@ export default class dataTableItem extends LightningElement {
 				this.config.dataTableCfg = el;
 			}
 		});
-		if (this.col.isEditable && this.row._focus === this.col.fieldName && this.config.dataTableCfg._inlineEdit != undefined){
+		if (this.col.isEditable && this.row._focus === this.col.fieldName && this.config.dataTableCfg._inlineEdit != undefined && this.row._isEditable){
 			this.showEdit = true;
 		}
 		window.addEventListener('keydown', (event) => {

@@ -611,7 +611,6 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let saveChunk = this.config.listViewConfig[0].saveChunkSize ? this.config.listViewConfig[0].saveChunkSize : 200; //200 is the default value for saveChunk
 		let index = 0;
 
-		console.log('HERE>ext',JSON.parse(JSON.stringify(validatedRecords[0])));
 
 		while(index <= validatedRecords.length){
 			let lIndex = validatedRecords[(parseInt(index)+parseInt(saveChunk))] ? (parseInt(index)+parseInt(saveChunk)) : (validatedRecords.length);
