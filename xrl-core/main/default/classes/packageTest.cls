@@ -121,6 +121,18 @@ public class packageTest {
         System.assertNotEquals(null, rows);
     }
     @isTest
+    public static void testGetConfigs() {
+        VisualEditor.DesignTimePageContext ctx = new VisualEditor.DesignTimePageContext();
+        ctx.entityName = 'Account';
+        getConfigs grp = new getConfigs(ctx);
+        test.startTest();
+        VisualEditor.DataRow row = grp.getDefaultValue();
+        VisualEditor.DynamicPickListRows rows = grp.getValues();
+        test.stopTest();
+        System.assertNotEquals(null, row);
+        System.assertNotEquals(null, rows);
+    }
+    @isTest
     public static void testGetCustomLabels() {
         map < string, object > data = new map < string, object > ();
         data.put('sObjApiName', 'Case');
