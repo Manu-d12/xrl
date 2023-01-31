@@ -1,4 +1,5 @@
 import { LightningElement,api,track } from 'lwc';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { libs } from 'c/libs';
 
 export default class ActionBar extends LightningElement {
@@ -38,6 +39,12 @@ export default class ActionBar extends LightningElement {
                 // fn(event);
             }else{
                 console.log('No Action Configured');
+                const eventErr = new ShowToastEvent({
+					title: 'Error',
+					message: libs.getGlobalVar(this.actionscfg._cfgName)._LABELS.msg_noCustomActionConfigured,
+					variant: 'error'
+				});
+				this.dispatchEvent(eventErr);
             }
         }else{
             console.log('Action Error');

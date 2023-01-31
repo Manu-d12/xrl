@@ -540,6 +540,7 @@ global with sharing class infrastructure {
 			'msg_youCantaddMoreThan20Fields'=>label.msg_youCantaddMoreThan20Fields,
 			'msg_noOperationAvailable'=>label.msg_noOperationAvailable,
 			'msg_deleteCustomActionConfirmation'=>label.msg_deleteCustomActionConfirmation,
+			'msg_noCustomActionConfigured'=>label.msg_noCustomActionConfigured,
 			'placeHolder_beforeSaveValidation'=>label.placeHolder_beforeSaveValidation,
 			'placeHolder_beforeDeleteValidation'=>label.placeHolder_beforeDeleteValidation,
 			'placeholder_actionCallback'=> label.placeholder_actionCallback,
