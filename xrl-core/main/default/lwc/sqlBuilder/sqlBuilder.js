@@ -210,9 +210,9 @@ export default class SqlBuilder extends LightningElement {
             this.config.sqlBuilder.conditionOperations = undefined;
             this.config.sqlBuilder.currentCondition.key = this.config.sqlBuilder.conditions.field + this.config.sqlBuilder.conditions.length;
             if(this.config.sqlBuilder.currentCondition.index === undefined){
-                this.config.sqlBuilder.currentCondition.index = this.config.sqlBuilder.conditions.length + 1;
+                this.config.sqlBuilder.currentCondition.index = '#' + (this.config.sqlBuilder.conditions.length + 1);
                 this.config.sqlBuilder.conditionOrdering += (this.config.sqlBuilder.conditions.length + 1) === 1 ?
-                (this.config.sqlBuilder.conditions.length + 1) : ' AND ' + (this.config.sqlBuilder.conditions.length + 1);
+                '#' + (this.config.sqlBuilder.conditions.length + 1) : ' AND #' + (this.config.sqlBuilder.conditions.length + 1);
                 this.config.sqlBuilder.conditions.push(this.config.sqlBuilder.currentCondition);
             }else{
                 let fieldInd = this.config.sqlBuilder.conditions.findIndex((el)=> el.index.toString() === this.config.sqlBuilder.currentCondition.index);
@@ -262,9 +262,11 @@ export default class SqlBuilder extends LightningElement {
             };
         }
         if(val === "sqlBuilder:conditions:orderingConditions"){
-            console.log('sqlBuilder:conditions:orderingConditions', this.config.sqlBuilder);
-            this.config.sqlBuilder.conditionOrdering = event.target.value;
-            this.dialogValues(true);
+            console.log('sqlBuilder:conditions:orderingConditions', event.target.value);
+            if(this.isStrAllowed(event.target.value)){
+                this.config.sqlBuilder.conditionOrdering = event.target.value;
+                this.dialogValues(true);
+            }
         }
         //For ordering
         if(val === "sqlBuilder:ordering:selectItem"){
@@ -390,7 +392,7 @@ export default class SqlBuilder extends LightningElement {
     generateCondition(){
         let condition = this.config.sqlBuilder.conditionOrdering;
         this.config.sqlBuilder.conditions.forEach((el)=>{
-            condition = condition.replace(el.index.toString(),'('+sqlBuilderLibs[el.fieldType + '__condition'](el) + ')');
+            condition = condition.replaceAll(el.index.toString(),'('+sqlBuilderLibs[el.fieldType + '__condition'](el) + ')');
         });
         return condition;
     }
@@ -456,5 +458,68 @@ export default class SqlBuilder extends LightningElement {
         this.loadFields(this.config.sObjApiName);
         this.config.sqlBuilder._objectStack = [{relationShip:this.config.sObjApiName,referredObj:this.config.sObjApiName}];
         this.config.sqlBuilder.searchTerm = '';
+    }
+    //need to improve this function
+    isStrAllowed(val){
+        if(this.areBracketsBalanced(val)){
+            let status = true;
+            for(let i = 0; i < val.length; i++){
+                let char = val[i];
+                if(char == ')' || char == '(' || char == ' ' || char == '#') continue;
+                else if(/^\d+$/.test(char)){
+                    //checking if it is number
+                }
+                else if((char == 'A' || char == 'a') && val[i+2] != undefined && (val[i+2] == 'D' || val[i+2] == 'd')){
+                    i =i+2;
+                }
+                else if((char == 'O' || char == 'o') && val[i+1] != undefined && (val[i+1] == 'R' || val[i+1] == 'r')){
+                    i = i +1;
+                }else{
+                    console.log('NOt Valid', char);
+                    status = false;
+                    const toast = new ShowToastEvent({
+                        title: 'Error',
+                        message: this.config._LABELS.msg_invalidInputSqlBuilderConditionFormat,
+                        variant: 'error'
+                    });
+                    this.dispatchEvent(toast);
+                    break;
+                }
+            }
+            return status;
+        }else{
+            console.log('Brackets mismatched');
+            const toast = new ShowToastEvent({
+                title: 'Error',
+                message: this.config._LABELS.msg_invalidInputSqlBuilderConditionFormat,
+                variant: 'error'
+            });
+            this.dispatchEvent(toast);
+            return false;
+        }
+    }
+    areBracketsBalanced(expr){
+        let stack = [];
+        for(let i = 0; i < expr.length; i++){
+            let x = expr[i];
+            if (x == '('){ 
+                stack.push(x);
+                continue;
+            }
+
+            if (x == ')' && stack.length == 0)
+                return false;
+                
+            let check;
+            switch (x){
+            case ')':
+                check = stack.pop();
+                if (check == '{' || check == '[')
+                    return false;
+                break;
+            }
+        }
+    
+        return (stack.length == 0);
     }
 }

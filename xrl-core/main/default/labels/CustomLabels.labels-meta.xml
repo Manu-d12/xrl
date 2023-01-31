@@ -1760,6 +1760,14 @@ Once you are done editing the pattern, click outside the input box.</value>
         <value>No Operation Available</value>
     </labels>
     <labels>
+        <fullName>msg_invalidInputSqlBuilderConditionFormat</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_invalidInputSqlBuilderConditionFormat</shortDescription>
+        <value>Invalid Format</value>
+    </labels>
+    <labels>
         <fullName>tooltip_deleteCustomAction</fullName>
         <categories>XRL</categories>
         <language>en_US</language>
