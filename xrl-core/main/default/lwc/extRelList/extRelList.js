@@ -136,46 +136,26 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				"isSortable": true
 			}];
 			if(this.config.sObjApiName.toLowerCase().includes('history')){
-				this.config.dataTableConfig.colModel = [
-					{
-					"fieldName" : "Id"
+				this.config.dataTableConfig.colModel = libs.historyGrid(this.apiName);
+				this.config.dataTableConfig.orderBy = " ORDER BY CreatedDate DESC NULLS FIRST";
+				this.config.dataTableConfig.orderMap=  [
+				  {
+					"field": {
+							"label": "Created Date",
+							"fieldName": "CreatedDate",
+							"css": "slds-item slds-theme_alt-inverse",
+							"type": "datetime",
+							"updateable": false,
+							"isNameField": false,
+							"isEditable": false,
+							"isFilterable": true,
+							"isSortable": true,
+							"index": 4
 					},
-					{
-						"label": "New Value",
-						"fieldName": "NewValue",
-						"updateable": false,
-						"isNameField": false,
-						"isEditable": false,
-					},
-					{
-						"label": "Old Value",
-						"fieldName": "OldValue",
-						"updateable": false,
-						"isNameField": false,
-						"isEditable": false,
-					},
-					{
-						"label": "Created Date",
-						"fieldName": "CreatedDate",
-						"type": "datetime",
-						"updateable": false,
-						"isNameField": false,
-						"isEditable": false,
-					},
-					{
-						"label": "Changed Field",
-						"fieldName": "Field",
-						"updateable": false,
-						"isNameField": false,
-						"isEditable": false,
-					},
-					{
-						"label": this.apiName.split('::')[2].split('.')[0] +  " ID",
-						"fieldName": this.apiName.split('::')[2].split('.')[0] + ".Id",
-					}
+					"emptyField": "NULLS FIRST",
+					"sortOrder": "DESC"
+				  }
 				];
-				this.config.dataTableConfig.groupFieldName= this.apiName.split('::')[2].split('.')[0] + ".Id";
-				this.config.dataTableConfig.groupOrder= "ASC";
 			}
 		} 
 		console.log('dataTable Config: ', this.config.dataTableConfig.colModel);
@@ -231,6 +211,14 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		this.config.isGlobalSearch=this.config.listViewConfig[0].isGlobalSearch;
 		if(!this.config.listViewConfig[0].actions){
 			this.config.listViewConfig[0].actions = libs.standardActions();
+			//disabling delete and new standard action incase of history grid
+			let notAllowedActions = ['std:delete','std:new'];
+			if(this.config.sObjApiName.toLowerCase().includes('history')){
+				this.config.listViewConfig[0].actions = this.config.listViewConfig[0].actions.filter( (el) =>{
+					if(notAllowedActions.includes(el.actionId)) return false;
+					else return true;
+				} );
+			}
 		}
 		this.config.listViewConfig[0].rowChecked = false;
 		this.config.actionsBar = {
@@ -1208,6 +1196,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				ws[cell_ref] = {
 					s: i % 2 ? evenStyle : oddStyle
 				};
+				console.log('HERE',rec[col.referenceTo] ? JSON.parse(JSON.stringify(rec[col.referenceTo]))[col.fieldName.split('.')[1]] : 'null');
 				switch (col.type) {
 					case 'reference':
 						let [r, v] = libs.getLookupRow(rec, col.fieldName);
@@ -1217,21 +1206,40 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 						break;
 					case 'date':
 					case 'datetime':
-						ws[cell_ref].v = new Date(rec[col.fieldName]);
+						// ws[cell_ref].v = col.referenceTo ? new Date(rec[col.fieldName.split('.')[0]][col.fieldName.split('.')[1]]) : new Date(rec[col.fieldName]);
 						//.toLocaleString(locale);
+						if(rec[col.fieldName.split('.')[0]] && rec[col.fieldName.split('.')[0]][col.fieldName.split('.')[1]]){
+							ws[cell_ref].v = new Date(rec[col.fieldName.split('.')[0]][col.fieldName.split('.')[1]]);
+						}else{
+							ws[cell_ref].v = col.referenceTo != undefined ? rec[col.referenceTo][col.fieldName.split('.')[1]] ? new Date(rec[col.referenceTo][col.fieldName.split('.')[1]]) : '' : rec[col.fieldName] ? new Date(rec[col.fieldName]) : '';
+						}
 						ws[cell_ref].t = 'd';
 
 						break;
 					case 'number':
-						ws[cell_ref].v = rec[col.fieldName] ? Number(rec[col.fieldName]) : '';
+						// ws[cell_ref].v = rec[col.fieldName] ? Number(rec[col.fieldName]) : '';
+						if(rec[col.fieldName.split('.')[0]] && rec[col.fieldName.split('.')[0]][col.fieldName.split('.')[1]]){
+							ws[cell_ref].v = Number(rec[col.fieldName.split('.')[0]][col.fieldName.split('.')[1]]);
+						}else{
+							ws[cell_ref].v = col.referenceTo != undefined ? rec[col.referenceTo][col.fieldName.split('.')[1]] ? Number(rec[col.referenceTo][col.fieldName.split('.')[1]]) : '' : rec[col.fieldName] ? Number(rec[col.fieldName]) : '';
+						}
 						ws[cell_ref].t = 'n';
 						break;
 					case 'boolean':
-						ws[cell_ref].v = Boolean(rec[col.fieldName]);
+						// ws[cell_ref].v = Boolean(rec[col.fieldName]);
+						if(rec[col.fieldName.split('.')[0]] && rec[col.fieldName.split('.')[0]][col.fieldName.split('.')[1]]){
+							ws[cell_ref].v = Boolean(rec[col.fieldName.split('.')[0]][col.fieldName.split('.')[1]]);
+						}else{
+							ws[cell_ref].v = col.referenceTo != undefined ? rec[col.referenceTo][col.fieldName.split('.')[1]] ? Boolean(rec[col.referenceTo][col.fieldName.split('.')[1]]) : '' : rec[col.fieldName] ? Boolean(rec[col.fieldName]) : '';
+						}
 						ws[cell_ref].t = 'b';
 						break;
 					default:
-						ws[cell_ref].v = rec[col.fieldName] ? rec[col.fieldName] : '';
+						if(rec[col.fieldName.split('.')[0]] && rec[col.fieldName.split('.')[0]][col.fieldName.split('.')[1]]){
+							ws[cell_ref].v = rec[col.fieldName.split('.')[0]][col.fieldName.split('.')[1]];
+						}else{
+							ws[cell_ref].v = col.referenceTo != undefined ? rec[col.referenceTo][col.fieldName.split('.')[1]] ? rec[col.referenceTo][col.fieldName.split('.')[1]] : '' : rec[col.fieldName] ? rec[col.fieldName] : '';
+						}
 						ws[cell_ref].t = 's';
 				}
 			});

@@ -465,6 +465,75 @@ export let libs = {
 		  ];
 		  return actions;
 	},
+	historyGrid: function(apiName){
+		let defFields = [
+			{
+				"fieldName" : "Id",
+				"updateable": false,
+				"isFilterable": true,
+				"isSortable": true,
+				"isNameField": false,
+				"isEditable": false,
+			},
+			{
+				"label": "New Value",
+				"fieldName": "NewValue",
+				"updateable": false,
+				"isFilterable": true,
+				"isSortable": true,
+				"isNameField": false,
+				"isEditable": false,
+			},
+			{
+				"label": "Old Value",
+				"fieldName": "OldValue",
+				"updateable": false,
+				"isFilterable": true,
+				"isSortable": true,
+				"isNameField": false,
+				"isEditable": false,
+			},
+			{
+				"label": "Created Date",
+				"fieldName": "CreatedDate",
+				"type": "datetime",
+				"updateable": false,
+				"isFilterable": true,
+				"isSortable": true,
+				"isNameField": false,
+				"isEditable": false,
+			},
+			{
+				"label": "Changed Field",
+				"fieldName": "Field",
+				"updateable": false,
+				"isFilterable": true,
+				"isSortable": true,
+				"isNameField": false,
+				"isEditable": false,
+			},
+			{
+				"label": apiName.split('::')[2].split('.')[0] +  " ID",
+				"fieldName": apiName.split('::')[2].split('.')[0] + ".Id",
+				"referenceTo": apiName.split('::')[2].split('.')[0],
+				"isFilterable": true,
+				"isSortable": true,
+			},
+			{
+				"label": "Full Name",
+				"fieldName": "CreatedBy.Name",
+				"css": "slds-item",
+				"type": "string",
+				"updateable": false,
+				"isNameField": true,
+				"referenceTo": "User",
+				"isEditable": false,
+				"isFilterable": true,
+				"isSortable": true,
+			}
+		];
+		return defFields;
+	},
 	currencyMap: function(cur) {
 		let map = {
 			AED: 'د.إ',
