@@ -263,10 +263,21 @@ export default class SqlBuilder extends LightningElement {
         }
         if(val === "sqlBuilder:conditions:orderingConditions"){
             console.log('sqlBuilder:conditions:orderingConditions', event.target.value);
-            if(this.isStrAllowed(event.target.value)){
-                this.config.sqlBuilder.conditionOrdering = event.target.value;
-                this.dialogValues(true);
+            if(event.target.value == '' &&  this.config.dialog.listViewConfig.conditionMap.length > 0){
+                const toast = new ShowToastEvent({
+                    title: 'Error',
+                    message: this.config._LABELS.msg_cannotKeepThisBlank,
+                    variant: 'error'
+                });
+                this.dispatchEvent(toast);
+                event.target.value = this.config.sqlBuilder.conditionOrdering;
+            }else{
+                if(this.isStrAllowed(event.target.value)){
+                    this.config.sqlBuilder.conditionOrdering = event.target.value;
+                    this.dialogValues(true);
+                }
             }
+
         }
         //For ordering
         if(val === "sqlBuilder:ordering:selectItem"){
