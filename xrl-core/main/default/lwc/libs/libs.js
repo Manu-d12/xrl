@@ -469,6 +469,7 @@ export let libs = {
 		let defFields = [
 			{
 				"fieldName" : "Id",
+				"type": "string",
 				"updateable": false,
 				"isFilterable": true,
 				"isSortable": true,
@@ -478,6 +479,7 @@ export let libs = {
 			{
 				"label": "New Value",
 				"fieldName": "NewValue",
+				"type": "anyType",
 				"updateable": false,
 				"isFilterable": true,
 				"isSortable": true,
@@ -487,6 +489,7 @@ export let libs = {
 			{
 				"label": "Old Value",
 				"fieldName": "OldValue",
+				"type": "anyType",
 				"updateable": false,
 				"isFilterable": true,
 				"isSortable": true,
@@ -506,6 +509,7 @@ export let libs = {
 			{
 				"label": "Changed Field",
 				"fieldName": "Field",
+				"type": "anyType",
 				"updateable": false,
 				"isFilterable": true,
 				"isSortable": true,
@@ -515,6 +519,7 @@ export let libs = {
 			{
 				"label": apiName.split('::')[2].split('.')[0] +  " ID",
 				"fieldName": apiName.split('::')[2].split('.')[0] + ".Id",
+				"type": "string",
 				"referenceTo": apiName.split('::')[2].split('.')[0],
 				"isFilterable": true,
 				"isSortable": true,
