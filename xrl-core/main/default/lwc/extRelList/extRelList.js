@@ -209,12 +209,19 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		this.config.currency =  data[cmd].currency;
 		//if (this.config.userInfo.isAdminAccess === true) delete this.localConfig.listViewName;
 		this.config.describe = data[cmd].describe ? JSON.parse(data[cmd].describe) : {};
-		if (this.config.userInfo.isAdminAccess) {
-			this.listViews = data[cmd].listViews.map(v => {return {label: v.label ? v.label : v.name, value: v.name};});
-		} else {
-			this.listViews = data[cmd].listViews.filter(v => { return !v.isAdminConfig;}).map(v => {return {label: v.label ? v.label : v.name, value: v.name};});
-		}		
-
+		// if (this.config.userInfo.isAdminAccess) {
+		// 	this.listViews = data[cmd].listViews.map(v => {return {label: v.label ? v.label + ' - ' + v.createdBy : v.name, value: v.name};});
+		// } else {
+		// 	this.listViews = data[cmd].listViews.filter(v => { return !v.isAdminConfig;}).map(v => {return {label: v.label ? v.label + ' - ' + v.createdBy : v.name, value: v.name};});
+		// }
+		console.log('ListViews ', data[cmd].listViews);
+		if(data[cmd].listViews.length !== 0){
+			this.listViews = data[cmd].listViews.map(v => {return {label: v.label ? v.label + ' - ' + v.createdBy : v.name, value: v.name};});		
+		}else{
+			this.config.listView = {
+				'hasEditAccess':true
+			}
+		}
 		this.config.fields = [];
 		this.config.lockedFields = [];
 		
