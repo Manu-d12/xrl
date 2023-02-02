@@ -162,16 +162,19 @@ global with sharing class infrastructure {
 		map < string, object > result = new map < string, object > {};
 
 		list < map < string, object >> listViews = new list < map < string, object >> {};
+		List<String> extIds = new List<String>();
 
-		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c FROM extRelListConfig__c WHERE sObjApiName__c =: sObjApiName AND relFieldApiName__c =: relField AND(CreatedById =: userInfo.getUserID() OR isAdminConfig__c = TRUE) AND Is_Active__c = TRUE AND RecordType.Name = 'Config'
+		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c, CreatedBy.Name FROM extRelListConfig__c WHERE sObjApiName__c =: sObjApiName AND relFieldApiName__c =: relField AND Is_Active__c = TRUE AND RecordType.Name = 'Config'
 			ORDER BY isAdminConfig__c DESC, listViewName__c ASC LIMIT 20];
 		for (integer i = 0; i < lst.size(); i++) {
 			extRelListConfig__c item = lst[i];
+			extIds.add(item.Id);
 			map < string, object > view = new map < string, object > {
 				'id' => item.Id,
 				'name' => item.listViewName__c,
 				'label' => item.listViewLabel__c,
-				'isAdminConfig' => item.isAdminConfig__c
+				'isAdminConfig' => item.isAdminConfig__c,
+				'createdBy' => item.CreatedBy.Name
 			};
 			if (item.listViewName__c == listViewName || string.isEmpty(listViewName) || (i == lst.size() - 1 && result.get('userConfig') == null)) {
 				view.put('isUserConfig', true);
@@ -179,6 +182,10 @@ global with sharing class infrastructure {
 			}
 			if (item.isAdminConfig__c) result.put('baseConfig', item.JSON__c);
 			listViews.add(view);
+		}
+		Map<Id, UserRecordAccess> extRecordAccess = new Map<Id, UserRecordAccess>([SELECT RecordId, HasEditAccess FROM UserRecordAccess WHERE UserId = :UserInfo.getUserId() AND RecordId IN :extIds]);
+		for(map < string, object > singleView : listViews){
+			singleView.put('hasEditAccess', (extRecordAccess.get((string) singleView.get('id'))).get('HasEditAccess'));
 		}
 		result.put('listViews', listViews);
 
