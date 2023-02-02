@@ -542,6 +542,7 @@ global with sharing class infrastructure {
 			'msg_noOperationAvailable'=>label.msg_noOperationAvailable,
 			'msg_deleteCustomActionConfirmation'=>label.msg_deleteCustomActionConfirmation,
 			'msg_noCustomActionConfigured'=>label.msg_noCustomActionConfigured,
+			'msg_cannotKeepThisBlank'=>label.msg_cannotKeepThisBlank,
 			'placeHolder_beforeSaveValidation'=>label.placeHolder_beforeSaveValidation,
 			'placeHolder_beforeDeleteValidation'=>label.placeHolder_beforeDeleteValidation,
 			'placeholder_actionCallback'=> label.placeholder_actionCallback,

@@ -1799,4 +1799,12 @@ Once you are done editing the pattern, click outside the input box.</value>
         <shortDescription>msg_noCustomActionConfigured</shortDescription>
         <value>No flow or callback (action) configured.</value>
     </labels>
+    <labels>
+        <fullName>msg_cannotKeepThisBlank</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_cannotKeepThisBlank</shortDescription>
+        <value>You can not keep this blank</value>
+    </labels>
 </CustomLabels>
