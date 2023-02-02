@@ -30,6 +30,9 @@ export let filterLibs = {
 	textarea__filter(filter, record) {
         return filterLibs.string__filter(filter, record);
     },
+	anyType__filter(filter, record) {
+        return filterLibs.string__filter(filter, record);
+    },
 	email__filter(filter, record) {
         return filterLibs.string__filter(filter, record);
     },
@@ -341,6 +344,9 @@ export let filterLibs = {
 			: actions;
 	},
 	encryptedstringFilterActions(key) {
+        return filterLibs.stringFilterActions(key);
+	},
+	anyTypeFilterActions(key) {
         return filterLibs.stringFilterActions(key);
 	},
 
