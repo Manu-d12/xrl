@@ -771,6 +771,22 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			let field = this.config.dialog.listViewConfig.actions.find(e => {
 				return e.actionId === this.config.dialog.action;
 			});
+			//checking if other actions has same order
+			if(param === 'actionOrder'){
+				let isOtherActionExists = this.config.dialog.listViewConfig.actions.find(e => {
+					return e.actionOrder == value;
+				});
+				if(isOtherActionExists !== undefined){
+					const msgEvent = new ShowToastEvent({
+						title: 'Error',
+						message: this.config._LABELS.lbl_actionWithThisOrderAlreadyExists,
+						variant: 'error'
+					});
+					this.dispatchEvent(msgEvent);
+					event.target.value = field.actionOrder;
+					value = field.actionOrder;
+				}
+			}
 
 			if(param === 'actionVisibleOnRecordSelection' && value && field.actionIsHidden){
 				event.target.checked = false;

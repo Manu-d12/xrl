@@ -926,6 +926,14 @@ function(row,col,val){
         <value>Configure</value>
     </labels>
     <labels>
+        <fullName>lbl_actionWithThisOrderAlreadyExists</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_actionWithThisOrderAlreadyExists</shortDescription>
+        <value>Action with this order already exists</value>
+    </labels>
+    <labels>
         <fullName>lbl_selectSortOrder</fullName>
         <categories>XRL</categories>
         <language>en_US</language>
