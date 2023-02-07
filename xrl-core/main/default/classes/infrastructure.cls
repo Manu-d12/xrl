@@ -294,7 +294,6 @@ global with sharing class infrastructure {
 			shareRecord(listView.Id);
 		}
 
-
 		return data;
 	}
 	private static boolean shareRecord(Id recordId){

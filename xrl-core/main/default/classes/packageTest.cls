@@ -47,12 +47,25 @@ public class packageTest {
         data.put('sObjApiName', 'Contact');
         data.put('relField', 'AccountId');
         data.put('config', '{}');
+        data.put('listViewName', 'users');
+        test.startTest();
+        map < string, object > res = infrastructure.dispatcherAura('saveListView', data);
+        test.stopTest();
+        // System.assertNotEquals(null, res.get('saveListViewResult'));
+        System.assertEquals(1, [SELECT Id FROM extRelListConfig__c].size());
+    }
+    @isTest
+    public static void testSaveListViewEqualsAdmin() {
+        map < string, object > data = new map < string, object > ();
+        data.put('sObjApiName', 'Contact');
+        data.put('relField', 'AccountId');
+        data.put('config', '{}');
         data.put('listViewName', '_admin');
         test.startTest();
         map < string, object > res = infrastructure.dispatcherAura('saveListView', data);
         test.stopTest();
-        System.assertNotEquals(null, res.get('saveListViewResult'));
-        //System.assertEquals(2, [SELECT Id FROM extRelListConfig__c].size());
+        // System.assertNotEquals(null, res.get('saveListViewResult'));
+        System.assertEquals(2, [SELECT Id FROM extRelListConfig__c].size());
     }
 
     @isTest
