@@ -288,8 +288,32 @@ global with sharing class infrastructure {
 		);
 
 		upsert listView uniqKey__c;
+
+		//sharing _admin/_default record with all org users
+		if(listViewName.equals('_admin') || listViewName.equals('_default')){
+			shareRecord(listView.Id);
+		}
+
+
 		return data;
 	}
+	private static boolean shareRecord(Id recordId){
+		List<extRelListConfig__Share> shrObj = new List<extRelListConfig__Share>();
+
+		for(User u:  [SELECT Id,name,ProfileId,IsActive FROM User WHERE Profile.UserLicense.Name != null AND Id != :UserInfo.getUserId()] ){
+			extRelListConfig__Share jobShr  = new extRelListConfig__Share();
+
+			jobShr.ParentId = recordId;
+			jobShr.UserOrGroupId = u.Id;
+			jobShr.AccessLevel = 'Read';
+			jobShr.RowCause = Schema.extRelListConfig__Share.RowCause.Manual;
+			shrObj.add(jobShr);
+		}
+		  
+		insert shrObj;
+  
+		return true;
+	 }
 
 	private static object saveRecords(map < string, object > data) {
 		//https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_Security.htm#apex_System_Security_stripInaccessible
