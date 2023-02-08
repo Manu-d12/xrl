@@ -1282,7 +1282,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let action = actionData ? actionData : this.config.listViewConfig[0].actions.find((el)=>{
 			return el.actionId == val;
 		});
-		if(action.actionCallBack != ''){
+		if(action.actionCallBack != undefined && action.actionCallBack != ''){
+			console.log('Callback defined: ', action.actionCallBack);
 			eval('(' + action.actionCallBack + ')')(this.template.querySelector('c-Data-Table').getSelectedRecords());
 		}
 	}
