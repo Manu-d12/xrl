@@ -114,8 +114,9 @@ global with sharing class infrastructure {
 			result.put('describe', JSON.serialize(describeResult));
 		}*/
 
-		if (UserInfo.isMultiCurrencyOrganization() == true) {
-			fields.add('CurrencyIsoCode');
+		if (UserInfo.isMultiCurrencyOrganization()) {
+			System.debug('Multi Currency');
+			soqlFields.add('CurrencyIsoCode');
 		}
 
 		string SOQL = (relField != '') ?
