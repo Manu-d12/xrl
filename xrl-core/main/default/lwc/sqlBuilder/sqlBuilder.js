@@ -356,7 +356,6 @@ export default class SqlBuilder extends LightningElement {
                     this.config.sqlBuilder.allFields = this.config.sqlBuilder.fields;    
                 } });
         }
-        console.log('HERE>',this.config.sqlBuilder.allFields);
     }
     generateFields(describe,objStr,sObjName){
         let fields = [];
