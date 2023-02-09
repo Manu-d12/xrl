@@ -140,8 +140,8 @@ export default class SqlBuilder extends LightningElement {
             this.config.sqlBuilder.searchTerm = event.target.value.toLowerCase();                
             this.config.sqlBuilder.fields = [];
             this.config.sqlBuilder.allFields.forEach((el)=>{
-                if(el['label'].toString().toLowerCase().indexOf(this.config.sqlBuilder.searchTerm) != -1 
-                || el.fieldName.toString().toLowerCase().indexOf(this.config.sqlBuilder.searchTerm) != -1){
+                if((el.label != null && el.label.toString().toLowerCase().indexOf(this.config.sqlBuilder.searchTerm) != -1) 
+                ||(el.fieldName != null && el.fieldName.toString().toLowerCase().indexOf(this.config.sqlBuilder.searchTerm) != -1)){
                     this.config.sqlBuilder.fields.push(el);
                 }
             });
@@ -356,6 +356,7 @@ export default class SqlBuilder extends LightningElement {
                     this.config.sqlBuilder.allFields = this.config.sqlBuilder.fields;    
                 } });
         }
+        console.log('HERE>',this.config.sqlBuilder.allFields);
     }
     generateFields(describe,objStr,sObjName){
         let fields = [];
