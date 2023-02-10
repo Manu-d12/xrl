@@ -377,7 +377,7 @@ export default class SqlBuilder extends LightningElement {
                     fieldMap.options = [];
                     describe[key].picklistValues.forEach(field => {
                         fieldMap.options.push(
-                            { label: field.label, value: field.value }
+                            { label: field.label != null ? field.label : field.value, value: field.value }
                         )
                     });
                 }
