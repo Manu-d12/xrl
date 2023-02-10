@@ -130,17 +130,20 @@ export let libs = {
 			"isHidden": {
 				"defValue": false,
 				"type": "checkbox",
-				"label": _labels.lbl_isColumnHidden
+				"label": _labels.lbl_isColumnHidden,
+				"tooltip": _labels.tooltip_isColumnHidden
 			},
 			"isFilterable": {
 				"defValue": true,
 				"type": "checkbox",
-				"label": _labels.lbl_isColumnFilterable
+				"label": _labels.lbl_isColumnFilterable,
+				"tooltip": _labels.tooltip_isColumnFilterable
 			},
 			"isSortable": {
 				"defValue": true,
 				"type": "checkbox",
-				"label": _labels.lbl_isColumnSortable
+				"label": _labels.lbl_isColumnSortable,
+				"tooltip": _labels.tooltip_isColumnSortable
 			},
 			"isEditable": {
 				"defValue": false,
@@ -150,7 +153,8 @@ export let libs = {
 			"isWrapable": {
 				"defValue": false,
 				"type": "checkbox",
-				"label": _labels.lbl_isColumnWrapable
+				"label": _labels.lbl_isColumnWrapable,
+				"tooltip": _labels.tooltip_isColumnWrapable
 			},
 			/*'isEditableMethod': {
 				"defValue": false,

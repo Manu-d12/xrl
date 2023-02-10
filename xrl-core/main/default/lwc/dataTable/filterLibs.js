@@ -304,123 +304,123 @@ export let filterLibs = {
 
     */
 
-    numberFilterActions(key) {
+    numberFilterActions(labels,key) {
 		const actions = [
-			{ label: 'Contains', value: 'cn' },
-			{ label: 'Does not contain', value: 'ncn' },
-			{ label: 'Begins with', value: 'bn' },
-			{ label: 'Does not begins with', value: 'nbn' },
-			{ label: 'Ends with', value: 'ed' },
-			{ label: 'Does not ends with', value: 'ned' },
-			{ label: 'Is Equal', value: 'eq' },
-			{ label: 'Not Is Equal', value: 'neq' },
-			{ label: 'Is empty', value: 'em', isUnary : true},
-			{ label: 'Not Is empty', value: 'nem', isUnary : true},
-			{ label: 'Greater', value: 'gr' },
-			{ label: 'Greater or equal', value: 'gre' },
-			{ label: 'Less', value: 'ls' },
-			{ label: 'Less or equal', value: 'lse' },
-			{ label: 'Range', value: 'rg' }
+			{ label: labels.lbl_contains, value: 'cn' },
+			{ label: labels.lbl_doesNotContains, value: 'ncn' },
+			{ label: labels.lbl_beginsWith, value: 'bn' },
+			{ label: labels.lbl_doesNotBeginsWith, value: 'nbn' },
+			{ label: labels.lbl_endsWith, value: 'ed' },
+			{ label: labels.lbl_doesNotEndsWith, value: 'ned' },
+			{ label: labels.lbl_isEqual, value: 'eq' },
+			{ label: labels.lbl_isNotEqual, value: 'neq' },
+			{ label: labels.lbl_isEmpty, value: 'em', isUnary : true},
+			{ label: labels.lbl_isNotEmpty, value: 'nem', isUnary : true},
+			{ label: labels.lbl_greater, value: 'gr' },
+			{ label: labels.lbl_greaterOrEqual, value: 'gre' },
+			{ label: labels.lbl_less, value: 'ls' },
+			{ label: labels.lbl_lessOrEqual, value: 'lse' },
+			{ label: labels.lbl_range, value: 'rg' }
 		]
 		return (key) 
 			? actions.find( el => { return el.value === key})
 			: actions;
 	},
-	stringFilterActions(key) {
+	stringFilterActions(labels,key) {
 		const actions = [
-			{ label: 'Contains', value: 'cn' },
-			{ label: 'Does not contain', value: 'ncn' },
-			{ label: 'Begins with', value: 'bn' },
-			{ label: 'Does not begins with', value: 'nbn' },
-			{ label: 'Ends with', value: 'ed' },
-			{ label: 'Does not ends with', value: 'ned' },
-			{ label: 'Is Equal', value: 'eq' },
-			{ label: 'Not Is Equal', value: 'neq' },
-			{ label: 'Is empty', value: 'em', isUnary : true},
-			{ label: 'Not Is empty', value: 'nem', isUnary : true}
+			{ label: labels.lbl_contains, value: 'cn' },
+			{ label: labels.lbl_doesNotContains, value: 'ncn' },
+			{ label: labels.lbl_beginsWith, value: 'bn' },
+			{ label: labels.lbl_doesNotBeginsWith, value: 'nbn' },
+			{ label: labels.lbl_endsWith, value: 'ed' },
+			{ label: labels.lbl_doesNotEndsWith, value: 'ned' },
+			{ label: labels.lbl_isEqual, value: 'eq' },
+			{ label: labels.lbl_isNotEqual, value: 'neq' },
+			{ label: labels.lbl_isEmpty, value: 'em', isUnary : true},
+			{ label: labels.lbl_isNotEmpty, value: 'nem', isUnary : true}
 		]
         return (key) 
 			? actions.find( el => { return el.value === key})
 			: actions;
 	},
-	encryptedstringFilterActions(key) {
-        return filterLibs.stringFilterActions(key);
+	encryptedstringFilterActions(labels,key) {
+        return filterLibs.stringFilterActions(labels,key);
 	},
-	anyTypeFilterActions(key) {
-        return filterLibs.stringFilterActions(key);
+	anyTypeFilterActions(labels,key) {
+        return filterLibs.stringFilterActions(labels,key);
 	},
 
-	picklistFilterActions(key) {
+	picklistFilterActions(labels,key) {
 		const actions = [
-			{ label: 'Contains', value: 'cn' },
-			{ label: 'Does not contain', value: 'ncn' },
-			{ label: 'Is Equal', value: 'eq' },
-			{ label: 'Not Is Equal', value: 'neq' },
-			{ label: 'Is empty', value: 'em', isUnary : true},
-			{ label: 'Not Is empty', value: 'nem', isUnary : true}
+			{ label: labels.lbl_contains, value: 'cn' },
+			{ label: labels.lbl_doesNotContains, value: 'ncn' },
+			{ label: labels.lbl_isEqual, value: 'eq' },
+			{ label: labels.lbl_isNotEqual, value: 'neq' },
+			{ label: labels.lbl_isEmpty, value: 'em', isUnary : true},
+			{ label: labels.lbl_isNotEmpty, value: 'nem', isUnary : true}
 		]
         return (key) 
 			? actions.find( el => { return el.value === key})
 			: actions;
 	},
-	booleanFilterActions(key) {
+	booleanFilterActions(labels,key) {
 		const actions = [
-			{ label: 'Is Equal', value: 'eq' },
-			{ label: 'Not Is Equal', value: 'neq' },
-			{ label: 'Is empty', value: 'em', isUnary : true},
-			{ label: 'Not Is empty', value: 'nem', isUnary : true}
+			{ label: labels.lbl_isEqual, value: 'eq' },
+			{ label: labels.lbl_isNotEqual, value: 'neq' },
+			{ label: labels.lbl_isEmpty, value: 'em', isUnary : true},
+			{ label: labels.lbl_isNotEmpty, value: 'nem', isUnary : true}
 		];
 		return (key) 
 			? actions.find( el => { return el.value === key})
 			: actions;
 	},
-	dateFilterActions(key) {
+	dateFilterActions(labels,key) {
 		const actions = [
-			{ label: 'Is Equal', value: 'eq' },
-			{ label: 'Not Is Equal', value: 'neq' },
-			{ label: 'Is empty', value: 'em', isUnary : true},
-			{ label: 'Not Is empty', value: 'nem', isUnary : true},
-			{ label: 'Greater', value: 'gr' },
-			{ label: 'Greater or equal', value: 'gre' },
-			{ label: 'Less', value: 'ls' },
-			{ label: 'Less or equal', value: 'lse' },
-			{ label: 'Range', value: 'rg' }
+			{ label: labels.lbl_isEqual, value: 'eq' },
+			{ label: labels.lbl_isNotEqual, value: 'neq' },
+			{ label: labels.lbl_isEmpty, value: 'em', isUnary : true},
+			{ label: labels.lbl_isNotEmpty, value: 'nem', isUnary : true},
+			{ label: labels.lbl_greater, value: 'gr' },
+			{ label: labels.lbl_greaterOrEqual, value: 'gre' },
+			{ label: labels.lbl_less, value: 'ls' },
+			{ label: labels.lbl_lessOrEqual, value: 'lse' },
+			{ label: labels.lbl_range, value: 'rg' }
 		]
 		return (key) 
 			? actions.find( el => { return el.value === key})
 			: actions;
 	},
 
-	datetimeFilterActions(key) {
-        return filterLibs.dateFilterActions(key);
+	datetimeFilterActions(labels,key) {
+        return filterLibs.dateFilterActions(labels,key);
 	},
-	currencyFilterActions(key) {
-        return filterLibs.numberFilterActions(key);
+	currencyFilterActions(labels,key) {
+        return filterLibs.numberFilterActions(labels,key);
 	},
-	doubleFilterActions(key) {
-        return filterLibs.numberFilterActions(key);
+	doubleFilterActions(labels,key) {
+        return filterLibs.numberFilterActions(labels,key);
 	},
-	percentFilterActions(key) {
-        return filterLibs.numberFilterActions(key);
+	percentFilterActions(labels,key) {
+        return filterLibs.numberFilterActions(labels,key);
 	},
-	intFilterActions(key) {
-        return filterLibs.numberFilterActions(key);
+	intFilterActions(labels,key) {
+        return filterLibs.numberFilterActions(labels,key);
 	},
-	textareaFilterActions(key) {
-        return filterLibs.stringFilterActions(key);
+	textareaFilterActions(labels,key) {
+        return filterLibs.stringFilterActions(labels,key);
 	},
-	emailFilterActions(key) {
-        return filterLibs.stringFilterActions(key);
+	emailFilterActions(labels,key) {
+        return filterLibs.stringFilterActions(labels,key);
 	},
-	urlFilterActions(key) {
-        return filterLibs.stringFilterActions(key);
+	urlFilterActions(labels,key) {
+        return filterLibs.stringFilterActions(labels,key);
 	},
-	phoneFilterActions(key) {
-        return filterLibs.stringFilterActions(key);
+	phoneFilterActions(labels,key) {
+        return filterLibs.stringFilterActions(labels,key);
 	},
 
-	referenceFilterActions(key) {
-        return filterLibs.stringFilterActions(key);
+	referenceFilterActions(labels,key) {
+        return filterLibs.stringFilterActions(labels,key);
 	},
 
 	getValue(filter, record) {

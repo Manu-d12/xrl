@@ -638,6 +638,10 @@ global with sharing class infrastructure {
 			'tooltip_actionVisibleOnRecords'=>label.tooltip_actionVisibleOnRecords,
 			'tooltip_beforeSaveApexAction'=>label.tooltip_beforeSaveApexAction,
 			'tooltip_deleteCustomAction'=>label.tooltip_deleteCustomAction,
+			'tooltip_isColumnHidden'=>label.tooltip_isColumnHidden,
+			'tooltip_isColumnFilterable'=>label.tooltip_isColumnFilterable,
+			'tooltip_isColumnSortable'=>label.tooltip_isColumnSortable,
+			'tooltip_isColumnWrapable'=>label.tooltip_isColumnWrapable,
 			'srcLbl_available' => label.srcLbl_available,
 			'srcLbl_optional' => label.srcLbl_optional
 		};

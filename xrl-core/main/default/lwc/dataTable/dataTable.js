@@ -685,7 +685,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					isShowClearBtn: (cItem._filterStr && cItem._filterStr.length > 0),
 					//filterOption: cItem._filterOption ? cItem._filterOption : 'cn',
 					filterOptions: filterLibs[cItem.type + 'FilterActions'] 
-						? filterLibs[cItem.type + 'FilterActions']()
+						? filterLibs[cItem.type + 'FilterActions'](this.config._LABELS)
 						: [
 							{ label: 'Contains', value: 'cn' },
 							{ label: 'Is Equal', value: 'eq' },
@@ -769,7 +769,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				cItem._filterStrTo = this.config._isFilterOptions.filterStrTo;
 				cItem._filterOption = this.config._isFilterOptions.filterOption;
 				cItem._filterVariant = cItem._filterOption || cItem._filterStr && cItem._filterStr.length > 0 ? 'warning' : '';
-				cItem._filterCondition = (cItem._filterStr && cItem._filterStr.length > 0) ? (filterLibs[cItem.type + 'FilterActions'](cItem._filterOption).label + ' "' + cItem._filterStr) +'"': '';
+				cItem._filterCondition = (cItem._filterStr && cItem._filterStr.length > 0) ? (filterLibs[cItem.type + 'FilterActions'](this.config._LABELS,cItem._filterOption).label + ' "' + cItem._filterStr) +'"': '';
 				cItem._filterStrLastChangeDate = cItem._filterOption ? new Date().getTime() : undefined;				
 			}
 			this.config._isFilterOptions = undefined;

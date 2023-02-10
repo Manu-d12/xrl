@@ -645,7 +645,7 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>tooltip_fieldApiName</shortDescription>
-        <value>You can use different constructions like a &apos;Account.Name&apos; or &apos;(SELECT Id FROM Accounts WHERE CreatedDate=TODAY)&apos;</value>
+        <value>This shows API name of the field</value>
     </labels>
     <labels>
         <fullName>lbl_fieldLabel</fullName>
@@ -661,7 +661,7 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>tooltip_fieldLabel</shortDescription>
-        <value>If You want to use label from describe, please leave this field empty. In this case label will be displayed in user language</value>
+        <value>If you want to use default label, no change is needed here. In this case, label will be displayed in user language</value>
     </labels>
     <labels>
         <fullName>lbl_customFunctionForFormatting</fullName>
@@ -739,7 +739,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_isColumnWrapable</shortDescription>
-        <value>Wrap column content? By default column contents will be clipped.</value>
+        <value>Wrap column content?</value>
     </labels>
     <labels>
         <fullName>lbl_width</fullName>
@@ -1011,7 +1011,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_isEqual</shortDescription>
-        <value>Is Equal</value>
+        <value>Is equal</value>
     </labels>
     <labels>
         <fullName>lbl_isNotEqual</fullName>
@@ -1019,7 +1019,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_isNotEqual</shortDescription>
-        <value>Is Not Equal</value>
+        <value>Is not equal</value>
     </labels>
     <labels>
         <fullName>lbl_isEmpty</fullName>
@@ -1027,7 +1027,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_isEmpty</shortDescription>
-        <value>Is Empty</value>
+        <value>Is empty</value>
     </labels>
     <labels>
         <fullName>lbl_isNotEmpty</fullName>
@@ -1035,7 +1035,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_isNotEmpty</shortDescription>
-        <value>Is Not Empty</value>
+        <value>Is not empty</value>
     </labels>
     <labels>
         <fullName>lbl_greater</fullName>
@@ -1043,7 +1043,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_greater</shortDescription>
-        <value>Greater</value>
+        <value>Greater than</value>
     </labels>
     <labels>
         <fullName>lbl_greaterOrEqual</fullName>
@@ -1051,7 +1051,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_greaterOrEqual</shortDescription>
-        <value>Greater or Equal</value>
+        <value>Greater or equal</value>
     </labels>
     <labels>
         <fullName>lbl_less</fullName>
@@ -1059,7 +1059,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_less</shortDescription>
-        <value>Less</value>
+        <value>Less than</value>
     </labels>
     <labels>
         <fullName>lbl_lessOrEqual</fullName>
@@ -1067,7 +1067,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_lessOrEqual</shortDescription>
-        <value>Less or Equal</value>
+        <value>Less or equal</value>
     </labels>
     <labels>
         <fullName>lbl_range</fullName>
@@ -1107,7 +1107,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_doesNotBeginsWith</shortDescription>
-        <value>Does Not Begins With</value>
+        <value>Does not begin with</value>
     </labels>
     <labels>
         <fullName>lbl_endsWith</fullName>
@@ -1123,7 +1123,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_doesNotEndsWith</shortDescription>
-        <value>Does Not Ends With</value>
+        <value>Does not end with</value>
     </labels>
     <labels>
         <fullName>hlpTxt_selectFields</fullName>
@@ -1131,7 +1131,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>hlpTxt_selectFields</shortDescription>
-        <value>You can select fields from the below list which will appear on the grid. Fields with &apos;&gt;&apos; sign indicates a reference field. Clicking reference fields will open that object&apos;s field list.</value>
+        <value>You can select fields from the list below that will appear on the grid. Fields with &apos;&gt;&apos; sign indicate reference fields. Clicking reference fields will open that object&apos;s field list.</value>
     </labels>
     <labels>
         <fullName>hlpTxt_selectedFields</fullName>
@@ -1147,7 +1147,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>hlpTxt_applyCondition</shortDescription>
-        <value>You can select fields from the below list to apply condition. Fields with &apos;&gt;&apos; sign indicates a reference field. Clicking reference fields will open that object&apos;s field list.</value>
+        <value>You can select fields from the list below to apply condition to . Fields with &apos;&gt;&apos; sign indicate reference fields. Clicking reference fields will open that object&apos;s field list.</value>
     </labels>
     <labels>
         <fullName>hlpTxt_applyConditionGetStartedText</fullName>
@@ -1163,7 +1163,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>hlpTxt_availableOperationTooltip</shortDescription>
-        <value>You can select your preferred operation from the list of below available operations</value>
+        <value>You can select your preferred operation from the list of available operations as shown</value>
     </labels>
     <labels>
         <fullName>hlpTxt_applyConditionInput</fullName>
@@ -1179,7 +1179,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>title_addConditionBtn</shortDescription>
-        <value>These will add this condition to the condition list. You can view it in the below table</value>
+        <value>Clicking on the button will add this condition to the condition list. You can view it in the below table</value>
     </labels>
     <labels>
         <fullName>hlpTxt_appliedConditions</fullName>
@@ -1211,7 +1211,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>title_appliedConditionsActionDelete</shortDescription>
-        <value>You can Delete this condition</value>
+        <value>You can delete this condition</value>
     </labels>
     <labels>
         <fullName>hlpTxt_applyOrdering</fullName>
@@ -1227,7 +1227,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>title_addOrdering</shortDescription>
-        <value>The selected Ordering and Empty field choice will be added</value>
+        <value>The selected sort order and empty field choice will be added in the grid</value>
     </labels>
     <labels>
         <fullName>hlpTxt_appliedOrderings</fullName>
@@ -1486,7 +1486,7 @@ function(record){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>tooltip_configCancel</shortDescription>
-        <value>Cancel the changes made. No changes will be saved as well as applied</value>
+        <value>No changes will be applied to the configuration</value>
     </labels>
     <labels>
         <fullName>tooltip_configShare</fullName>
@@ -1510,7 +1510,7 @@ function(record){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>title_newRecord</shortDescription>
-        <value>Create New Record</value>
+        <value>New</value>
     </labels>
     <labels>
         <fullName>altTxt_new</fullName>
@@ -1621,7 +1621,7 @@ return &quot;background-color:#F5F5F5;&quot; //light grey
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>tooltip_conditionFilteringPattern</shortDescription>
-        <value>Construct different logical connections between conditions using parentheses and the words &apos;AND&apos; and &apos;OR&apos;.
+        <value>Construct different logical connections among conditions using parentheses and the words &apos;AND&apos; and &apos;OR&apos;.
 
 Example of Patterns
 
@@ -1814,5 +1814,37 @@ Once you are done editing the pattern, click outside the input box.</value>
         <protected>true</protected>
         <shortDescription>msg_cannotKeepThisBlank</shortDescription>
         <value>You can not keep this blank</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_isColumnHidden</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_isColumnHidden</shortDescription>
+        <value>This column will be hidden from the view, even if it is configured in field selection</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_isColumnFilterable</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_isColumnFilterable</shortDescription>
+        <value>Users can apply column filter on the fields by clicking on checkbox </value>
+    </labels>
+    <labels>
+        <fullName>tooltip_isColumnSortable</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_isColumnSortable</shortDescription>
+        <value>Users can apply sorting on the columns by clicking on checkbox </value>
+    </labels>
+    <labels>
+        <fullName>tooltip_isColumnWrapable</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_isColumnWrapable</shortDescription>
+        <value>By default column contents will be clipped.</value>
     </labels>
 </CustomLabels>
