@@ -216,16 +216,24 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		});
 		
 		this.config.isGlobalSearch=this.config.listViewConfig[0].isGlobalSearch;
+		let notAllowedActions = ['std:delete','std:new'];
 		if(!this.config.listViewConfig[0].actions){
 			this.config.listViewConfig[0].actions = libs.standardActions();
-			//disabling delete and new standard action incase of history grid
-			let notAllowedActions = ['std:delete','std:new'];
-			if(this.config.sObjApiName.toLowerCase().includes('history')){
+			//disabling delete and new standard action incase of history grid or non power user
+			if(this.config.sObjApiName.toLowerCase().includes('history') ||!this.config.userInfo.isAdminAccess){
 				this.config.listViewConfig[0].actions = this.config.listViewConfig[0].actions.filter( (el) =>{
 					if(notAllowedActions.includes(el.actionId)) return false;
-					else return true;
+					return true;
 				} );
 			}
+		}
+		//disabling delete and new standard action, checkboxes incase of user with only read access
+		if(!this.config.listView.hasEditAccess){
+			this.config.listViewConfig[0].actions = this.config.listViewConfig[0].actions.filter( (el) =>{
+				if(notAllowedActions.includes(el.actionId)) return false;
+				return true;
+			} );
+			this.config.listViewConfig[0].isShowCheckBoxes = false;
 		}
 		this.config.listViewConfig[0].rowChecked = false;
 		this.config.actionsBar = {
