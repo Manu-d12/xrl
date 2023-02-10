@@ -332,7 +332,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					return el.actionId == 'std:refresh';
 				});
 				this.loadCfg(false);
-				this.handleStandardCallback(action,'std:refresh');
+				this.handleStandardCallback('std:refresh');
 			}else{
 				const eventErr = new ShowToastEvent({
 					title: 'Error',
@@ -460,14 +460,14 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					})
 				});
 			}
-			this.handleStandardCallback(event,'std:request_open');
+			this.handleStandardCallback('std:request_open');
 		}
 		if (val.startsWith('delete:dialog')) {
 			if (event.detail.action === 'cancel') this.showDialog = false;
 			else {
 				event.target.setLoading(true);
 				this.prepareRecordsToDelete();
-				this.handleStandardCallback(event,'std:delete');
+				this.handleStandardCallback('std:delete');
 			}
 		}
 		//config delete
@@ -1001,7 +1001,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if (val.startsWith('std:export')) {
 			if(!this.isThereUnsavedRecords()){
 				this.handleEventExport(event);
-				this.handleStandardCallback(event,val);
+				this.handleStandardCallback(val);
 			}else{
 				const event = new ShowToastEvent({
 					title: 'Error',
@@ -1076,7 +1076,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 						defaultFieldValues: encodeDefaultFieldValues(defValue)
 					}
 				});
-				this.handleStandardCallback(event,val);
+				this.handleStandardCallback(val);
 			}else{
 				const event = new ShowToastEvent({
 					title: 'Error',
@@ -1104,7 +1104,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 						}
 					});
 				}
-				this.handleStandardCallback(event,val);
+				this.handleStandardCallback(val);
 			}else{
 				const event = new ShowToastEvent({
 					title: 'Error',
@@ -1278,11 +1278,12 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		this.template.querySelector('c-Data-Table').updateView();
 	}
 
-	handleStandardCallback(actionData,val){
-		let action = actionData ? actionData : this.config.listViewConfig[0].actions.find((el)=>{
+	handleStandardCallback(val){
+		let action = this.config.listViewConfig[0].actions.find((el)=>{
 			return el.actionId == val;
 		});
-		if(action.actionCallBack != ''){
+		if(action.actionCallBack != undefined && action.actionCallBack != ''){
+			console.log('Callback defined: ', action.actionCallBack);
 			eval('(' + action.actionCallBack + ')')(this.template.querySelector('c-Data-Table').getSelectedRecords());
 		}
 	}
