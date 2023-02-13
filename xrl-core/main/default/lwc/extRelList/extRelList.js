@@ -304,7 +304,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	get changedRecords() {
-		return 'Count of changed records ' + this.config.listViewConfig[0]._changedRecords.length;
+		return 'Count of changed records ' + this.config.listViewConfig[0]._changedRecords.size;
 	}
 
 	get hasDynamicActions() {
@@ -314,12 +314,12 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	resetChangedRecords() {
 		// this.config.resetIndex += 1;
 		if(this.template.querySelector('c-Data-Table')){
-			this.template.querySelector('c-Data-Table').setUpdateInfo('• ' + this.config.listViewConfig[0]._changedRecords.length + ' ' +this.config._LABELS.msg_itemsUpdated);
+			this.template.querySelector('c-Data-Table').setUpdateInfo('• ' + this.config.listViewConfig[0]._changedRecords.size + ' ' +this.config._LABELS.msg_itemsUpdated);
 		}
 		setTimeout((() => { this.template.querySelector('c-Data-Table').setUpdateInfo(''); }), 3000);
 		const toast = new ShowToastEvent({
 			title: 'Success',
-			message: this.config.listViewConfig[0]._changedRecords.length + ' ' +this.config._LABELS.msg_itemsUpdated,
+			message: this.config.listViewConfig[0]._changedRecords.size + ' ' +this.config._LABELS.msg_itemsUpdated,
 			variant: 'success'
 		});
 		this.dispatchEvent(toast);
@@ -594,7 +594,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 	async prepareRecordsForSave(){
 		let changedItems = this.template.querySelector('c-Data-Table').getRecords().filter(el => {
-			return this.config.listViewConfig[0]._changedRecords.indexOf(el.Id) > -1
+			return this.config.listViewConfig[0]._changedRecords.has(el.Id) > -1
 		});
 		
 		let validatedRecords = [];
