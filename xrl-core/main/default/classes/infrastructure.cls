@@ -277,6 +277,10 @@ global with sharing class infrastructure {
 			AND(SobjectType = 'extRelListConfig__c'
 				OR SobjectType = 'XRL__extRelListConfig__c') limit 1];
 
+		if(listViewName.equals('_admin') || listViewName.equals('_default')){
+			delete [select Id from extRelListConfig__c where listViewName__c = '_admin' OR listViewName__c = '_default'];
+		}
+
 		extRelListConfig__c listView = new extRelListConfig__c(
 			listViewName__c = listViewName,
 			listViewLabel__c = listViewLabel,
