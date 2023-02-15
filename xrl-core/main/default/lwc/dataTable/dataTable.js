@@ -368,8 +368,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 
 	changeRecord(id) {
-		if (!this.config._changedRecords) this.config._changedRecords = [];
-		if (this.config._changedRecords.indexOf(id) === -1) this.config._changedRecords.push(id);
+		if (!this.config._changedRecords) this.config._changedRecords = new Set();
+		this.config._changedRecords.add(id);
 	}
 
 	// get rowStyle() {
@@ -968,7 +968,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		function changeItem(that, item, fieldName, v, refNode, refNodeValue) {
 			
 			
-			let origItem = origRecords.find(elem => {return elem.Id === item.Id});
+			// let origItem = origRecords.find(elem => {return elem.Id === item.Id});
+			let origItem = that.origRecords.get(item.Id);
 			item[fieldName] = v;
 			origItem[fieldName] = v;
 			if (refNode !== undefined) {
@@ -986,7 +987,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		let describe = libs.getGlobalVar(this.cfg).describe[this.config._bulkEdit.cItem.fieldName];
 		let value = this.template.querySelector('[data-id="origValue"]');
 		let chBox = this.template.querySelector('[data-id="isAll"]');
-		let origRecords = libs.getGlobalVar(this.cfg).records;
+		// let origRecords = libs.getGlobalVar(this.cfg).records;
+		this.origRecords = new Map(libs.getGlobalVar(this.cfg).records.map(record => [record.Id, record]));
 		let refNode = describe.relationshipName;
 		let refNodeValue;
 
