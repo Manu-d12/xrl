@@ -340,7 +340,10 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					return el.actionId == 'std:refresh';
 				});
 				this.loadCfg(false);
-				this.handleStandardCallback('std:refresh');
+				const tempParam = {}; // parameter for the refresh action callback
+				tempParam.action = action;
+				tempParam.selectedRecords = this.template.querySelector('c-Data-Table').getSelectedRecords(); // getting the records here as the c/dataTable component is not yet loaded when called from the handler 
+				this.handleStandardCallback('std:refresh', tempParam);
 			}else{
 				const eventErr = new ShowToastEvent({
 					title: 'Error',
@@ -1286,13 +1289,23 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		this.template.querySelector('c-Data-Table').updateView();
 	}
 
-	handleStandardCallback(val){
-		let action = this.config.listViewConfig[0].actions.find((el)=>{
-			return el.actionId == val;
-		});
-		if(action.actionCallBack != undefined && action.actionCallBack != ''){
-			console.log('Callback defined: ', action.actionCallBack);
-			eval('(' + action.actionCallBack + ')')(this.template.querySelector('c-Data-Table').getSelectedRecords());
+
+
+	handleStandardCallback(val, listViewAction){
+		
+		if(val !== 'std:refresh'){
+			let action = this.config.listViewConfig[0].actions.find((el)=>{
+				return el.actionId == val;
+			});
+			if(action.actionCallBack != undefined && action.actionCallBack != ''){
+				console.log('Callback defined: ', action.actionCallBack);
+				eval('(' + action.actionCallBack + ')')(this.template.querySelector('c-Data-Table').getSelectedRecords());
+			}
+		}else{
+			console.log('Refresh action called, actionCallback: ', listViewAction?.actionCallBack);
+			eval('(' + listViewAction?.action?.actionCallBack + ')')(listViewAction?.selectedRecords); // the selected records are coming from the caller function
+			// The loadCfg method and the c/dataTable component are still not ready to be used
+			// at the time of this function call, so we have to handle the refresh action differently
 		}
 	}
 }
