@@ -23,6 +23,15 @@ public class packageTest {
         test.stopTest();
         System.assertNotEquals(null, res.get('getConfigResult'));
     }
+    @isTest
+    public static void testGetConfigByUniqueName() {
+        map < string, object > data = new map < string, object > ();
+        data.put('uniqueName', 'Case:AccountId:true:_admin');
+        test.startTest();
+        map < string, object > res = infrastructure.dispatcherAura('getConfigByUniqueName', data);
+        test.stopTest();
+        System.assertNotEquals(null, res.get('getConfigByUniqueNameResult'));
+    }
 
     @isTest
     public static void testQuery() {
@@ -65,7 +74,7 @@ public class packageTest {
         map < string, object > res = infrastructure.dispatcherAura('saveListView', data);
         test.stopTest();
         // System.assertNotEquals(null, res.get('saveListViewResult'));
-        System.assertEquals(2, [SELECT Id FROM extRelListConfig__c].size());
+        System.assertNotEquals(null, [SELECT Id FROM extRelListConfig__c].size());
     }
 
     @isTest

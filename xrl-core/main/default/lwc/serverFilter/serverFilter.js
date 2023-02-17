@@ -24,7 +24,7 @@ export default class ServerFilter extends LightningElement {
 				this.dataTableJson = el;
 			}
 		});
-        this.sFilterfields = this.filterJson.sFilterCols ? this.filterJson.sFilterCols : this.dataTableJson.colModel;
+        this.sFilterfields = this.filterJson.sFilterCols ? this.filterJson.sFilterCols : [];
         for (let key in this.config.describe) {
 			this.allFields.push({ label: this.config.describe[key].label, value: this.config.describe[key].name });
 		}

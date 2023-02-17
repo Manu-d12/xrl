@@ -1,13 +1,38 @@
 <template>
     <lightning-card class=" slds-card_boundary" style="padding:5px; display:block">
-        <template if:true={components} for:each={components} for:item="component">
-            <c-server-Filter if:true={component.isServerFilter} key={component.key} style="width:100%; height:inherit" 
-            cfg={name} record-id={recordId} onmessage={handleChildMessage}></c-server-Filter>
-            <c-Data-Table if:true={component.isDataTable} style="width:100%; height:inherit" key={component.key}
-            data-ind={config.sObjApiName} cfg={name}></c-Data-Table>
+        <template if:false={config.isTabular}>
+            <template if:true={components} for:each={components} for:item="component">
+                <c-server-Filter if:true={component.isServerFilter} key={component.key} style="width:100%; height:inherit" 
+                cfg={name} record-id={recordId} onmessage={handleChildMessage}></c-server-Filter>
+                <c-Data-Table if:true={component.isDataTable} style="width:100%; height:inherit" key={component.key}
+                data-ind={config.sObjApiName} cfg={name}></c-Data-Table>
+            </template>
+            <div if:true={config.isSpinner} class="spinner">
+                <lightning-spinner size="medium" variant="brand" alternative-text="Loading"></lightning-spinner>
+            </div>
         </template>
-        <div if:true={config.isSpinner} class="spinner">
-            <lightning-spinner size="medium" variant="brand" alternative-text="Loading"></lightning-spinner>
-        </div>
+        <!-- If the config Type is Tabular -->
+        <template if:true={config.isTabular}>
+            <div class="slds-grid slds-gutters slds-wrap" style="max-width:100%">
+                <template if:true={config.tabularConfig.dataModel} for:each={config.tabularConfig.dataModel} for:item="component">
+                    <div class={config.colClass} key={component}>
+                        <template if:true={component.isCmp}>
+                            <c-server-Filter if:true={component.isServerFilter} style="width:100%; height:inherit" 
+                            cfg={component.uniqueName} record-id={recordId} onmessage={handleChildMessage}></c-server-Filter>
+                            <c-Data-Table if:true={component.isDataTable} style="width:100%; height:inherit"
+                            data-ind="Case" cfg={component.uniqueName}></c-Data-Table>
+                        </template>
+                        <!-- if the config is text -->
+                        <template if:true={component.isText}>
+                            <lightning-formatted-rich-text value={component.label}></lightning-formatted-rich-text>
+                        </template>
+                        <!-- if the config is blank -->
+                        <template if:true={component.isBlank}>
+                            <p>&nbsp;</p>
+                        </template>
+                    </div>
+                </template>
+            </div>
+        </template>
     </lightning-card>
 </template>
