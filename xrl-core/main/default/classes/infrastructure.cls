@@ -24,6 +24,9 @@ global with sharing class infrastructure {
 				when 'getConfigById' {
 					resultMethod = getConfigById(data);
 				}
+				when 'getConfigByUniqueName'{
+					resultMethod = getConfigByUniqueName(data);
+				}
 				when 'query' {
 					resultMethod = getQuery(data);
 				}
@@ -209,9 +212,6 @@ global with sharing class infrastructure {
 		return result;
 	}
 	private static map < string, object > getConfigById(map < string, object > data) {
-		// string sObjApiName = (string) data.get('sObjApiName');
-		// string relField = (string) data.get('relField');
-		// string listViewName = (string) data.get('listViewName');
 		string configId = (string) data.get('configId');
 		boolean isNeedDescribe = true;
 
@@ -219,7 +219,7 @@ global with sharing class infrastructure {
 
 		list < map < string, object >> listViews = new list < map < string, object >> {};
 
-		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c, sObjApiName__c, relFieldApiName__c FROM extRelListConfig__c WHERE Id =: configId LIMIT 20];
+		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c, sObjApiName__c, relFieldApiName__c, configType__c FROM extRelListConfig__c WHERE Id =: configId LIMIT 20];
 		for (integer i = 0; i < lst.size(); i++) {
 			extRelListConfig__c item = lst[i];
 			map < string, object > view = new map < string, object > {
@@ -227,7 +227,41 @@ global with sharing class infrastructure {
 				'label' => item.listViewLabel__c,
 				'isAdminConfig' => item.isAdminConfig__c,
 				'sObjApiName' => item.sObjApiName__c,
-				'relFieldName' => item.relFieldApiName__c
+				'relField' => item.relFieldApiName__c,
+				'configType' => item.configType__c
+			};
+			view.put('isUserConfig', true);
+			result.put('userConfig', item.JSON__c);
+			if (item.isAdminConfig__c) result.put('baseConfig', item.JSON__c);
+			listViews.add(view);
+		}
+		result.put('listViews', listViews);
+
+		result.put('currency', new map < string, object > {
+			'orgCurrency' => UserInfo.getDefaultCurrency(),
+			'isMultyCurrencyOrg' => UserInfo.isMultiCurrencyOrganization()
+		});
+
+		return result;
+	}
+	private static map < string, object > getConfigByUniqueName(map < string, object > data) {
+		string uniqueName = (string) data.get('uniqueName');
+		boolean isNeedDescribe = true;
+
+		map < string, object > result = new map < string, object > {};
+
+		list < map < string, object >> listViews = new list < map < string, object >> {};
+
+		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c, sObjApiName__c, relFieldApiName__c, configType__c FROM extRelListConfig__c WHERE uniqKey__c =: uniqueName LIMIT 20];
+		for (integer i = 0; i < lst.size(); i++) {
+			extRelListConfig__c item = lst[i];
+			map < string, object > view = new map < string, object > {
+				'name' => item.listViewName__c,
+				'label' => item.listViewLabel__c,
+				'isAdminConfig' => item.isAdminConfig__c,
+				'sObjApiName' => item.sObjApiName__c,
+				'relField' => item.relFieldApiName__c,
+				'configType' => item.configType__c
 			};
 			view.put('isUserConfig', true);
 			result.put('userConfig', item.JSON__c);
