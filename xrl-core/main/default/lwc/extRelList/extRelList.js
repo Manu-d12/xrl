@@ -1292,20 +1292,27 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 
 	handleStandardCallback(val, listViewAction){
-		
+		let actionCallBack;
+		let selectedRecords;
 		if(val !== 'std:refresh'){
 			let action = this.config.listViewConfig[0].actions.find((el)=>{
 				return el.actionId == val;
 			});
-			if(action.actionCallBack != undefined && action.actionCallBack != ''){
-				console.log('Callback defined: ', action.actionCallBack);
-				eval('(' + action.actionCallBack + ')')(this.template.querySelector('c-Data-Table').getSelectedRecords());
-			}
+			actionCallBack = action.actionCallBack;
+			selectedRecords = this.template.querySelector('c-Data-Table').getSelectedRecords();
+			// if(action.actionCallBack != undefined && action.actionCallBack != ''){
+			// 	console.log('Callback defined: ', action.actionCallBack);
+			// 	eval('(' + action.actionCallBack + ')')(this.template.querySelector('c-Data-Table').getSelectedRecords());
+			// }
 		}else{
-			console.log('Refresh action called, actionCallback: ', listViewAction?.actionCallBack);
-			eval('(' + listViewAction?.action?.actionCallBack + ')')(listViewAction?.selectedRecords); // the selected records are coming from the caller function
+			actionCallBack = listViewAction?.action?.actionCallBack;
+			selectedRecords = listViewAction?.selectedRecords; // the selected records are coming from the caller function
 			// The loadCfg method and the c/dataTable component are still not ready to be used
 			// at the time of this function call, so we have to handle the refresh action differently
+		}
+		if(actionCallBack != undefined && actionCallBack != ''){
+			console.log('Callback defined: ', actionCallBack);
+			eval('(' + actionCallBack + ')')(selectedRecords?selectedRecords:[]);
 		}
 	}
 }
