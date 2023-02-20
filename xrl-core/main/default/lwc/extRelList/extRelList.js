@@ -311,15 +311,14 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		return this.config?.listViewConfig?.dynamicActions !== undefined;
 	}
 
-	resetChangedRecords() {
-		// this.config.resetIndex += 1;
+	resetChangedRecords(validatedRecordSize) {
 		if(this.template.querySelector('c-Data-Table')){
-			this.template.querySelector('c-Data-Table').setUpdateInfo('• ' + this.config.listViewConfig[0]._changedRecords.size + ' ' +this.config._LABELS.msg_itemsUpdated);
+			this.template.querySelector('c-Data-Table').setUpdateInfo('• ' + validatedRecordSize + ' ' +this.config._LABELS.msg_itemsUpdated);
 		}
 		setTimeout((() => { this.template.querySelector('c-Data-Table').setUpdateInfo(''); }), 3000);
 		const toast = new ShowToastEvent({
 			title: 'Success',
-			message: this.config.listViewConfig[0]._changedRecords.size + ' ' +this.config._LABELS.msg_itemsUpdated,
+			message: validatedRecordSize + ' ' +this.config._LABELS.msg_itemsUpdated,
 			variant: 'success'
 		});
 		this.dispatchEvent(toast);
@@ -597,7 +596,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 	async prepareRecordsForSave(){
 		let changedItems = this.template.querySelector('c-Data-Table').getRecords().filter(el => {
-			return this.config.listViewConfig[0]._changedRecords.has(el.Id) > -1
+			return this.config.listViewConfig[0]._changedRecords.has(el.Id)
 		});
 		
 		let validatedRecords = [];
@@ -624,7 +623,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			index += validatedRecords[(parseInt(index)+parseInt(saveChunk))] ? parseInt(saveChunk) : (validatedRecords.length);
 			await this.saveRecords(chunk);
 		}
-		this.resetChangedRecords();
+		this.resetChangedRecords(validatedRecords.length);
 	}
 	async saveRecords(chunk){
 		try{
