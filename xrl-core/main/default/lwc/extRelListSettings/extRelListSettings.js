@@ -89,10 +89,14 @@ export default class extRelListSettings extends LightningElement {
 		let tmp = libs.tableItem();
 
 		for (let item in tmp) {
-			let defValue = item in this.dataTable 
-				? this.dataTable[item]
-				: item in this.dataTable.pager ? this.dataTable.pager[item] 
-				: tmp[item].defValue;
+			let defValue = this.dataTable != undefined ? 
+                (item in this.dataTable ? 
+                    this.dataTable[item] :
+                    (this.dataTable.pager != undefined && item in this.dataTable.pager ?
+                        this.dataTable.pager[item] :
+                        (tmp[item] != undefined ? tmp[item].defValue : false))) :
+                false;
+
 			
 			let sFields = [{label:'No Grouping',value:''}];
 			sFields = sFields.concat(this.selectedFields);
