@@ -653,7 +653,6 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			for (let col of this.config.listViewConfig[0].colModel) {
 				lockedOptions.push({ label: col.label, value: col.fieldName });
 			}
-			//this.config.listViewConfig.isShowCheckBoxes = true;
 			this.config.dialog = {
 				"title": this.config.userInfo.isAdminAccess === true ? this.config._LABELS.title_listViewConfiguration + ' ' +  this.config?.listView?.name: this.config._LABELS.title_selectFieldToDisplay + ' ' +  this.config?.listView?.name,
 				"variant": variant,
