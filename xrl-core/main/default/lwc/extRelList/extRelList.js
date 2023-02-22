@@ -128,8 +128,35 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			this.config.dataTableConfig = {};
 			this.config.dataTableConfig.cmpName = 'dataTable';
 			this.config.dataTableConfig.colModel = [{
-				"fieldName" : "Id"
+				"fieldName" : "Id",
+				"updateable": false,
+				"isNameField": false,
+				"isEditable": false,
+				"isFilterable": true,
+				"isSortable": true
 			}];
+			if(this.config.sObjApiName.toLowerCase().includes('history')){
+				this.config.dataTableConfig.colModel = libs.historyGrid(this.apiName);
+				this.config.dataTableConfig.orderBy = " ORDER BY CreatedDate DESC NULLS FIRST";
+				this.config.dataTableConfig.orderMap=  [
+				  {
+					"field": {
+							"label": "Created Date",
+							"fieldName": "CreatedDate",
+							"css": "slds-item slds-theme_alt-inverse",
+							"type": "datetime",
+							"updateable": false,
+							"isNameField": false,
+							"isEditable": false,
+							"isFilterable": true,
+							"isSortable": true,
+							"index": 4
+					},
+					"emptyField": "NULLS FIRST",
+					"sortOrder": "DESC"
+				  }
+				];
+			}
 		} 
 		console.log('dataTable Config: ', this.config.dataTableConfig.colModel);
 
@@ -157,17 +184,24 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		console.log('mergedConfig', userConfig);
 
 		this.config.listViewConfig = userConfig;
-		this.config.listView = data[cmd].listViews.find(v => { return v.isUserConfig;});
+		this.config.listView = data[cmd].listViews.findLast(v => { return v.isUserConfig;});
 		console.log(JSON.stringify(this.config.listView));
 		this.config.currency =  data[cmd].currency;
 		//if (this.config.userInfo.isAdminAccess === true) delete this.localConfig.listViewName;
 		this.config.describe = data[cmd].describe ? JSON.parse(data[cmd].describe) : {};
-		if (this.config.userInfo.isAdminAccess) {
-			this.listViews = data[cmd].listViews.map(v => {return {label: v.label ? v.label : v.name, value: v.name};});
-		} else {
-			this.listViews = data[cmd].listViews.filter(v => { return !v.isAdminConfig;}).map(v => {return {label: v.label ? v.label : v.name, value: v.name};});
-		}		
-
+		// if (this.config.userInfo.isAdminAccess) {
+		// 	this.listViews = data[cmd].listViews.map(v => {return {label: v.label ? v.label + ' - ' + v.createdBy : v.name, value: v.name};});
+		// } else {
+		// 	this.listViews = data[cmd].listViews.filter(v => { return !v.isAdminConfig;}).map(v => {return {label: v.label ? v.label + ' - ' + v.createdBy : v.name, value: v.name};});
+		// }
+		console.log('ListViews ', data[cmd].listViews);
+		if(data[cmd].listViews.length !== 0){
+			this.listViews = data[cmd].listViews.map(v => {return {label: v.label ? v.label + ' - ' + v.createdBy : v.name, value: v.name};});		
+		}else{
+			this.config.listView = {
+				'hasEditAccess':true
+			}
+		}
 		this.config.fields = [];
 		this.config.lockedFields = [];
 		
@@ -182,69 +216,24 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		});
 		
 		this.config.isGlobalSearch=this.config.listViewConfig[0].isGlobalSearch;
+		let notAllowedActions = ['std:delete','std:new'];
 		if(!this.config.listViewConfig[0].actions){
-			this.config.listViewConfig[0].actions = [
-				{
-				  "actionId": "std:delete",
-				  "actionLabel": this.config._LABELS.altTxt_delete,
-				  "actionTip": this.config._LABELS.title_delete,
-				  "actionCallBack": this.config._LABELS.placeholder_actionCallback,
-				  "actionIsHidden": false,
-				  "actionIconName": "utility:delete",
-				  "isActionStandard":true,
-				  "actionOrder":10
-				},
-				{
-				  "actionId": "std:export",
-				  "actionLabel": this.config._LABELS.altTxt_export,
-				  "actionTip": this.config._LABELS.title_export,
-				  "actionCallBack": this.config._LABELS.placeholder_actionCallback,
-				  "actionIsHidden": false,
-				  "actionIconName": "utility:download",
-				  "isActionStandard":true,
-				  "actionOrder":20
-				},
-				{
-				  "actionId": "std:new",
-				  "actionLabel": this.config._LABELS.altTxt_new,
-				  "actionTip": this.config._LABELS.title_newRecord,
-				  "actionCallBack": this.config._LABELS.placeholder_actionCallback,
-				  "actionIsHidden": false,
-				  "actionIconName": "utility:new",
-				  "isActionStandard":true,
-				  "actionOrder":30
-				},
-				{
-				  "actionId": "std:refresh",
-				  "actionLabel": this.config._LABELS.title_refresh,
-				  "actionTip": this.config._LABELS.altTxt_refreshListView,
-				  "actionCallBack": this.config._LABELS.placeholder_actionCallback,
-				  "actionIsHidden": false,
-				  "actionIconName": "utility:refresh",
-				  "isActionStandard":true,
-				  "actionOrder":40
-				},
-				{
-				  "actionId": "std:request_open",
-				  "actionLabel": this.config._LABELS.altTxt_requestAFeature,
-				  "actionTip": this.config._LABELS.title_requestAFeature,
-				  "actionCallBack": this.config._LABELS.placeholder_actionCallback,
-				  "actionIsHidden": false,
-				  "actionIconName": "utility:email",
-				  "isActionStandard":true,
-				  "actionOrder":50
-				},
-				{
-				  "actionId": "std:expand_view",
-				  "actionLabel": this.config._LABELS.altTxt_expandView,
-				  "actionTip": this.config._LABELS.title_expandView,
-				  "actionCallBack": this.config._LABELS.placeholder_actionCallback,
-				  "actionIsHidden": false,
-				  "actionIconName": "utility:expand",
-				  "isActionStandard":true,
-				  "actionOrder":60
-				}
-			  ];
+			this.config.listViewConfig[0].actions = libs.standardActions();
+			//disabling delete and new standard action incase of history grid or non power user
+			if(this.config.sObjApiName.toLowerCase().includes('history') ||!this.config.userInfo.isAdminAccess){
+				this.config.listViewConfig[0].actions = this.config.listViewConfig[0].actions.filter( (el) =>{
+					if(notAllowedActions.includes(el.actionId)) return false;
+					return true;
+				} );
+			}
+		}
+		//disabling delete and new standard action, checkboxes incase of user with only read access
+		if(!this.config.listView.hasEditAccess){
+			this.config.listViewConfig[0].actions = this.config.listViewConfig[0].actions.filter( (el) =>{
+				if(notAllowedActions.includes(el.actionId)) return false;
+				return true;
+			} );
+			this.config.listViewConfig[0].isShowCheckBoxes = false;
 		}
 		this.config.listViewConfig[0].rowChecked = false;
 		this.config.actionsBar = {
@@ -314,23 +303,30 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				}
 			}
 		});
-		this.config.isServerFilter = true;
+		console.log('ColModel', JSON.parse(JSON.stringify(this.config.listViewConfig[0].colModel)));
 	}
 
 	get changedRecords() {
-		return 'Count of changed records ' + this.config.listViewConfig[0]._changedRecords.length;
+		return 'Count of changed records ' + this.config.listViewConfig[0]._changedRecords.size;
 	}
 
 	get hasDynamicActions() {
 		return this.config?.listViewConfig?.dynamicActions !== undefined;
 	}
 
-	resetChangedRecords() {
-		this.config.resetIndex += 1;
-		this.template.querySelector('c-Data-Table').setUpdateInfo('• ' + this.config.listViewConfig[0]._changedRecords.length + ' item(s) updated');
+	resetChangedRecords(validatedRecordSize) {
+		if(this.template.querySelector('c-Data-Table')){
+			this.template.querySelector('c-Data-Table').setUpdateInfo('• ' + validatedRecordSize + ' ' +this.config._LABELS.msg_itemsUpdated);
+		}
 		setTimeout((() => { this.template.querySelector('c-Data-Table').setUpdateInfo(''); }), 3000);
-		if(this.config.loopIndex === this.config.resetIndex)
-			this.config.listViewConfig[0]._changedRecords = undefined;
+		const toast = new ShowToastEvent({
+			title: 'Success',
+			message: validatedRecordSize + ' ' +this.config._LABELS.msg_itemsUpdated,
+			variant: 'success'
+		});
+		this.dispatchEvent(toast);
+		this.config.listViewConfig[0]._changedRecords = undefined;
+		this.template.querySelector('c-Data-Table').updateView();
 	}
 
 	handleEvent(event) {
@@ -347,82 +343,116 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if (val.startsWith('cfg:')) this.handleEventCfg(event);
 		if (val.startsWith('dialog:')) this.handleEventDialog(event);
 		if (val.startsWith('std:refresh')) {
-			//libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.localConfig.listViewName, callback: this.loadRecords });
-			libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.config?.listView?.name, callback: this.loadCfg });
+			if(!this.isThereUnsavedRecords()){
+				let action = this.config.listViewConfig[0].actions.find((el)=>{
+					return el.actionId == 'std:refresh';
+				});
+				this.loadCfg(false);
+				const tempParam = {}; // parameter for the refresh action callback
+				tempParam.action = action;
+				tempParam.selectedRecords = this.template.querySelector('c-Data-Table').getSelectedRecords(); // getting the records here as the c/dataTable component is not yet loaded when called from the handler 
+				this.handleStandardCallback('std:refresh', tempParam);
+			}else{
+				const eventErr = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.msg_unsaveRecordsCannotPerformOtherAction,
+					variant: 'error'
+				});
+				this.dispatchEvent(eventErr);
+			}
 		}
 
 		if (val.startsWith('std:')) this.handleEventActions(event, val);
 
 		if (val.startsWith(':save')) {
-
-
+			this.prepareRecordsForSave();
 			//libs.getGlobalVar(this.name).records = undefined;
 
-			let changedItems = this.template.querySelector('c-Data-Table').getRecords().filter(el => {
-				// In thiscase need merge to libs.getGlobalVar(this.name).records;
-				return this.config.listViewConfig[0]._changedRecords.indexOf(el.Id) > -1
-			})
+			// let changedItems = this.template.querySelector('c-Data-Table').getRecords().filter(el => {
+			// 	// In thiscase need merge to libs.getGlobalVar(this.name).records;
+			// 	return this.config.listViewConfig[0]._changedRecords.indexOf(el.Id) > -1
+			// })
 			
-			if(this.config.listViewConfig[0].beforeSaveValidation !== undefined && 
-				this.config.listViewConfig[0].beforeSaveValidation !== ""){
-				changedItems.forEach((el)=>{
-					let rec = eval('('+this.config.listViewConfig[0].beforeSaveValidation+')')(el);
-					if(rec){
-						el = rec;
-					}
-				});
-			}
+			// if(this.config.listViewConfig[0].beforeSaveValidation !== undefined && 
+			// 	this.config.listViewConfig[0].beforeSaveValidation !== ""){
+			// 	changedItems.forEach((el)=>{
+			// 		let rec = eval('('+this.config.listViewConfig[0].beforeSaveValidation+')')(el);
+			// 		if(rec){
+			// 			el = rec;
+			// 		}
+			// 	});
+			// }
 
-			this.config.loopIndex = 0;
-			this.config.resetIndex = 0;
-			let saveChunk = this.config.listViewConfig[0].saveChunk ? this.config.listViewConfig[0].saveChunk : 200; //200 is the default value for saveChunk
-			let index = 0;
-			// console.log('HERE>',JSON.parse(JSON.stringify(this.config.listViewConfig[0])));
-			// console.log("rollback",this.config.listViewConfig[0].rollBack);
-			while(index <= changedItems.length){
-				let chunk = changedItems.slice(index,changedItems[(index+saveChunk)] ? (index+saveChunk) : (changedItems.length));
-				index += changedItems[(index+saveChunk)] ? (saveChunk) : (changedItems.length);
-				this.config.loopIndex += 1;
-				libs.remoteAction(this, 'saveRecords', { records: chunk, 
-					sObjApiName: this.config.sObjApiName,
-					rollback:this.config.listViewConfig[0].rollBack ? this.config.listViewConfig[0].rollBack : true,
-					callback: this.resetChangedRecords });
-			}
+			// this.config.loopIndex = 0;
+			// this.config.resetIndex = 0;
+			// let saveChunk = this.config.listViewConfig[0].saveChunkSize ? this.config.listViewConfig[0].saveChunkSize : 200; //200 is the default value for saveChunk
+			// let index = 0;
+			// // console.log("rollback",this.config.listViewConfig[0].rollBack);
+			// while(index <= changedItems.length){
+			// 	let lIndex = changedItems[(parseInt(index)+parseInt(saveChunk))] ? (parseInt(index)+parseInt(saveChunk)) : (changedItems.length);
+			// 	let chunk = changedItems.slice(index,lIndex);
+			// 	index += changedItems[(parseInt(index)+parseInt(saveChunk))] ? parseInt(saveChunk) : (changedItems.length);
+			// 	// index += chunk.length;
+			// 	this.config.loopIndex += 1;
+			// 	libs.remoteAction(this, 'saveRecords', { records: chunk, 
+			// 		sObjApiName: this.config.sObjApiName,
+			// 		rollback:this.config.listViewConfig[0].rollBack ? this.config.listViewConfig[0].rollBack : true,
+			// 		callback: this.resetChangedRecords });
+			// }
 		}
 
 		if (val.startsWith(':change_view')) {
-			this.name = event.target.value;
-			this.loadCfg(false);
+			if(!this.isThereUnsavedRecords()){
+				this.name = event.target.value;
+				this.loadCfg(false);
+			}else{
+				event.target.value = this.config.listView.name;
+				const eventErr = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.msg_unsaveRecordsCannotPerformOtherAction,
+					variant: 'error'
+				});
+				this.dispatchEvent(eventErr);
+			}
 		}
 		if (val.startsWith('std:request_open')) {
-			this.dialogCfg = {
-				title: this.config._LABELS.title_reqAFeature,
-				contents: [
-					{
-						required: true,
-						isTextarea: true,
-						name: 'featureText',
-						variant: 'label-hidden',
-						placeholder: this.config._LABELS.lbl_pleaseDescribeFeature,
-						messageWhenValueMissing: this.config._LABELS.errMsg_anEmptyMsgCannotBeSent
-					}
-				],
-				buttons: [
-					{
-						name: 'cancel',
-						label: 'Cancel',
-						variant: 'neutral'
-					},
-					{
-						name: 'send',
-						label: 'Send',
-						variant: 'brand',
-						class: 'slds-m-left_x-small'
-					}
-				],
-				data_id: "reqFeature:dialog"
-			};
-			this.showDialog = true;
+			if(!this.isThereUnsavedRecords()){
+				this.dialogCfg = {
+					title: this.config._LABELS.title_reqAFeature,
+					contents: [
+						{
+							required: true,
+							isTextarea: true,
+							name: 'featureText',
+							variant: 'label-hidden',
+							placeholder: this.config._LABELS.lbl_pleaseDescribeFeature,
+							messageWhenValueMissing: this.config._LABELS.errMsg_anEmptyMsgCannotBeSent
+						}
+					],
+					buttons: [
+						{
+							name: 'cancel',
+							label: 'Cancel',
+							variant: 'neutral'
+						},
+						{
+							name: 'send',
+							label: 'Send',
+							variant: 'brand',
+							class: 'slds-m-left_x-small'
+						}
+					],
+					data_id: "reqFeature:dialog"
+				};
+				this.showDialog = true;
+			}else{
+				const eventErr = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.msg_unsaveRecordsCannotPerformOtherAction,
+					variant: 'error'
+				});
+				this.dispatchEvent(eventErr);
+			}
 		}
 		if (val.startsWith('reqFeature:dialog')) {
 			if (event.detail.action === 'cancel') this.showDialog = false;
@@ -449,96 +479,211 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					})
 				});
 			}
+			this.handleStandardCallback('std:request_open');
 		}
 		if (val.startsWith('delete:dialog')) {
 			if (event.detail.action === 'cancel') this.showDialog = false;
 			else {
 				event.target.setLoading(true);
-				let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
-				console.log(records);
-
-				//user validation callback
-				if(this.config.listViewConfig[0].beforeDeleteValidation !== undefined && 
-					this.config.listViewConfig[0].beforeDeleteValidation !== ""){
-					let copyRecords = records;
-					records = [];
-					copyRecords.forEach((el)=>{
-						let rec = eval('('+this.config.listViewConfig[0].beforeDeleteValidation+')')(el);
-						if(rec){
-							records.push(el);
+				this.prepareRecordsToDelete();
+				this.handleStandardCallback('std:delete');
+			}
+		}
+		//config delete
+		if (val.startsWith('deleteConfig:dialog')) {
+			if (event.detail.action === 'cancel') this.showDialog = false;
+			else{
+				console.log('Deleting Config ',this.config.listView.id + ' ' + this.config.listView.label);
+				libs.remoteAction(this, 'deleteConfig', { 
+					configId: this.config.listView.id,  
+					callback: function(cmd,data){
+						// console.log('Status: ',data[cmd].status);
+						if(data[cmd].status.includes('Success')){
+							const evnt = new ShowToastEvent({
+								title: 'Success',
+								message: this.config.listView.label + ' ' +this.config._LABELS.msg_successfullyDeleted,
+								variant: 'Success'
+							});
+							this.dispatchEvent(evnt);
+							this.loadCfg(true);
+						}else{
+							const evnt = new ShowToastEvent({
+								title: 'Error',
+								message: data[cmd].status,
+								variant: 'error'
+							});
+							this.dispatchEvent(evnt);
 						}
-					});
-				}
-
-				//chunking the data and sending it to apex
-				this.config.deleteIndex = 0;
-				this.config.recordsLen = records.length;
-				let deleteChunk = this.config.listViewConfig[0].deleteChunkSize ? this.config.listViewConfig[0].deleteChunkSize : 200; //200 is the default value for saveChunk
-				let index = 0;
-
-				while(index < records.length){
-					let chunk = records.slice(index,records[(index+deleteChunk)] ? (index+deleteChunk) : (records.length));
-					index += records[(index+deleteChunk)] ? (deleteChunk) : (records.length);
-					libs.remoteAction(this, 'delRecords', { records: chunk, 
-						sObjApiName: this.config.sObjApiName,
-						callback: function(cmd,result){
-							if(result.delRecordsResult.error.startsWith('Error')){
-								const toast = new ShowToastEvent({
-									title: 'Error',
-									message: result.delRecordsResult.error,
-									variant: 'error'
-								});
-								this.dispatchEvent(toast);
-							}else{
-								this.config.deleteIndex += result.delRecordsResult.length;
-							}
-							if(!result.delRecordsResult.error.startsWith('Error') && this.config.deleteIndex === (parseInt(this.config.recordsLen))){
-								const toast = new ShowToastEvent({
-									title: 'Success',
-									message: "Successfully deleted",
-									variant: 'success'
-								});
-								this.dispatchEvent(toast);
-								this.showDialog = false;
-								this.config.records = this.config.records.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
-								this.allRecords = this.config.records;
-								this.template.querySelector('c-Data-Table').updateView();
-								this.config.listViewConfig[0].rowChecked = false;
-							}
-				 		} 
-					});
-				}
+					} 
+				});
+				this.showDialog = false;
 			}
 		}
 	}
+	async prepareRecordsToDelete(){
+		let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
+		console.log(records);
+
+		//user validation callback
+		if(this.config.listViewConfig[0].beforeDeleteValidation !== undefined && 
+			this.config.listViewConfig[0].beforeDeleteValidation !== ""){
+			let copyRecords = records;
+			records = [];
+			copyRecords.forEach((el)=>{
+				let rec = eval('('+this.config.listViewConfig[0].beforeDeleteValidation+')')(el);
+				if(rec){
+					records.push(el);
+				}
+			});
+		}
+
+		//chunking the data and sending it to apex
+		this.config.deleteIndex = 0;
+		this.config.recordsLen = records.length;
+		let deleteChunk = this.config.listViewConfig[0].deleteChunkSize ? this.config.listViewConfig[0].deleteChunkSize : 200; //200 is the default value for saveChunk
+		let index = 0;
+
+		while(index < records.length){
+			let chunk = records.slice(index,records[(parseInt(index)+parseInt(deleteChunk))] ? (parseInt(index)+parseInt(deleteChunk)) : (records.length));
+			index += records[(parseInt(index)+parseInt(deleteChunk))] ? parseInt(deleteChunk) : (records.length);
+			await this.deleteRecords(chunk);
+			// libs.remoteAction(this, 'delRecords', { records: chunk, 
+			// 	sObjApiName: this.config.sObjApiName,
+			// 	callback: function(cmd,result){
+			// 		if(result.delRecordsResult.error.startsWith('Error')){
+			// 			const toast = new ShowToastEvent({
+			// 				title: 'Error',
+			// 				message: result.delRecordsResult.error,
+			// 				variant: 'error'
+			// 			});
+			// 			this.dispatchEvent(toast);
+			// 		}else{
+			// 			this.config.deleteIndex += result.delRecordsResult.length;
+			// 		}
+			// 		if(!result.delRecordsResult.error.startsWith('Error') && this.config.deleteIndex === (parseInt(this.config.recordsLen))){
+			// 			const toast = new ShowToastEvent({
+			// 				title: 'Success',
+			// 				message: "Successfully deleted",
+			// 				variant: 'success'
+			// 			});
+			// 			this.dispatchEvent(toast);
+			// 			this.showDialog = false;
+			// 			this.config.records = this.config.records.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
+			// 			//HYPER-243
+			// 			this.allRecords = this.allRecords.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
+			// 			this.template.querySelector('c-Data-Table').updateView();
+			// 			this.config.listViewConfig[0].rowChecked = false;
+			// 		}
+			// 	} 
+			// });
+		}
+		const toast = new ShowToastEvent({
+			title: 'Success',
+			message: this.config._LABELS.msg_successfullyDeleted,
+			variant: 'success'
+		});
+		this.dispatchEvent(toast);
+		this.showDialog = false;
+		if(records.length < 1000){
+			this.config.records = this.config.records.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
+			// //HYPER-243
+			this.allRecords = this.allRecords.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
+			this.template.querySelector('c-Data-Table').updateView();
+			this.config.listViewConfig[0].rowChecked = false;
+		}else{
+			this.loadCfg(false);
+		}
+	}
+	async deleteRecords(chunk){
+		try{
+			const a = await libs.remoteAction(this, 'delRecords', { records: chunk, 
+				sObjApiName: this.config.sObjApiName
+			});
+		} catch (error) {
+			console.log(error);
+		}
+	}
+	async prepareRecordsForSave(){
+		let changedItems = this.template.querySelector('c-Data-Table').getRecords().filter(el => {
+			return this.config.listViewConfig[0]._changedRecords.has(el.Id)
+		});
+		
+		let validatedRecords = [];
+
+		if(this.config.listViewConfig[0].beforeSaveValidation !== undefined && 
+			this.config.listViewConfig[0].beforeSaveValidation !== ""){
+			changedItems.forEach((el)=>{
+				let rec = eval('('+this.config.listViewConfig[0].beforeSaveValidation+')')(el);
+				if(rec){
+					validatedRecords.push(el);
+				}
+			});
+		}else{
+			validatedRecords = changedItems;
+		}
+
+		let saveChunk = this.config.listViewConfig[0].saveChunkSize ? this.config.listViewConfig[0].saveChunkSize : 200; //200 is the default value for saveChunk
+		let index = 0;
+
+
+		while(index <= validatedRecords.length){
+			let lIndex = validatedRecords[(parseInt(index)+parseInt(saveChunk))] ? (parseInt(index)+parseInt(saveChunk)) : (validatedRecords.length);
+			let chunk = validatedRecords.slice(index,lIndex);
+			index += validatedRecords[(parseInt(index)+parseInt(saveChunk))] ? parseInt(saveChunk) : (validatedRecords.length);
+			await this.saveRecords(chunk);
+		}
+		this.resetChangedRecords(validatedRecords.length);
+	}
+	async saveRecords(chunk){
+		try{
+			await libs.remoteAction(this, 'saveRecords', { records: chunk, 
+				sObjApiName: this.config.sObjApiName,
+				rollback:this.config.listViewConfig[0].rollBack ? this.config.listViewConfig[0].rollBack : true,
+				beforeSaveAction: this.config.listViewConfig[0].beforeSaveApexAction ? this.config.listViewConfig[0].beforeSaveApexAction : ''
+			});
+		} catch (error) {
+			console.log(error);
+		}
+	}
+	isThereUnsavedRecords(){
+		return this.config.listViewConfig[0]._changedRecords ? true : false;
+	}
 
 	handleEventCfg(event) {
-		this.config = libs.getGlobalVar(this.name);
-		let variant = this.config.userInfo.isAdminAccess === true ? 'error' : 'shade'; // shade, error, warning, info, confirm
-		let fields = [];
-		for (let key in this.config.describe) {
-			fields.push({ label: this.config.describe[key].label, value: this.config.describe[key].name });
+		if(!this.isThereUnsavedRecords()){
+			this.config = libs.getGlobalVar(this.name);
+			let variant = this.config.userInfo.isAdminAccess === true ? 'error' : 'shade'; // shade, error, warning, info, confirm
+			let fields = [];
+			for (let key in this.config.describe) {
+				fields.push({ label: this.config.describe[key].label, value: this.config.describe[key].name });
+			}
+			let lockedOptions = [];
+			for (let col of this.config.listViewConfig[0].colModel) {
+				lockedOptions.push({ label: col.label, value: col.fieldName });
+			}
+			this.config.dialog = {
+				"title": this.config.userInfo.isAdminAccess === true ? this.config._LABELS.title_listViewConfiguration + ' ' +  this.config?.listView?.name: this.config._LABELS.title_selectFieldToDisplay + ' ' +  this.config?.listView?.name,
+				"variant": variant,
+				"css": 'slds-modal__header slds-theme_{1} slds-theme_alert-texture'.replace('{1}', variant),
+				"options": libs.sortRecords(fields, 'label', true),
+				"selectedFields": this.config.fields,
+				"requiredOptions": this.config.lockedFields,
+				"lockedOptions": libs.sortRecords(lockedOptions, 'label', true),
+				"lockedFields": this.config.lockedFields,
+				"handleEvent": this.handleEventDialog.bind(this),
+				"listViewConfig": JSON.parse(JSON.stringify(this.config.listViewConfig[0])),
+				"listViewName": this.config?.listView?.name,
+				"listViewLabel": this.config?.listView?.label,
+				"listViewAdmin": this.config?.listView?.isAdminConfig ?? false
+			};
+		}else{
+			const eventErr = new ShowToastEvent({
+				title: 'Error',
+				message: this.config._LABELS.msg_unsaveRecordsCannotPerformOtherAction,
+				variant: 'error'
+			});
+			this.dispatchEvent(eventErr);
 		}
-		let lockedOptions = [];
-		for (let col of this.config.listViewConfig[0].colModel) {
-			lockedOptions.push({ label: col.label, value: col.fieldName });
-		}
-		//this.config.listViewConfig.isShowCheckBoxes = true;
-		this.config.dialog = {
-			"title": this.config.userInfo.isAdminAccess === true ? this.config._LABELS.title_listViewConfiguration + ' ' +  this.config?.listView?.name: this.config._LABELS.title_selectFieldToDisplay + ' ' +  this.config?.listView?.name,
-			"variant": variant,
-			"css": 'slds-modal__header slds-theme_{1} slds-theme_alert-texture'.replace('{1}', variant),
-			"options": libs.sortRecords(fields, 'label', true),
-			"selectedFields": this.config.fields,
-			"requiredOptions": this.config.lockedFields,
-			"lockedOptions": libs.sortRecords(lockedOptions, 'label', true),
-			"lockedFields": this.config.lockedFields,
-			"handleEvent": this.handleEventDialog.bind(this),
-			"listViewConfig": JSON.parse(JSON.stringify(this.config.listViewConfig[0])),
-			"listViewName": this.config?.listView?.name,
-			"listViewLabel": this.config?.listView?.label,
-			"listViewAdmin": this.config?.listView?.isAdminConfig ?? false
-		};
 	}
 
 	handleEventDialog(event) {
@@ -550,6 +695,42 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		// });
 		let val = event.target.getAttribute('data-id');
 		if (val === 'dialog:close') this.config.dialog = undefined;
+		if(val === 'dialog:config_delete'){
+			if(this.config.listView.id != undefined){
+				this.dialogCfg = {
+					title: this.config._LABELS.lbl_confirmDelete,
+					contents: [
+						{
+							isMessage: true,
+							name: 'deleteConfigConfirm',
+							text: this.config._LABELS.msg_confirmConfigDelete
+						}
+					],
+					buttons: [
+						{
+							name: 'cancel',
+							label: this.config._LABELS.lbl_cancel,
+							variant: 'neutral'
+						},
+						{
+							name: 'Delete',
+							label: this.config._LABELS.title_delete,
+							variant: 'brand',
+							class: 'slds-m-left_x-small'
+						}
+					],
+					data_id: "deleteConfig:dialog"
+				};
+				this.showDialog = true;
+			}else{
+				const evnt = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.msg_noListViewFound,
+					variant: 'error'
+				});
+				this.dispatchEvent(evnt);
+			}
+		}
 		if(val === 'dialog:config_share'){
 			console.log(this.config.listView.id);
 			this[NavigationMixin.Navigate]({
@@ -607,10 +788,45 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 			let field = this.config.dialog.listViewConfig.actions.find(e => {
 				return e.actionId === this.config.dialog.action;
-			})
+			});
+			//checking if other actions has same order
+			if(param === 'actionOrder'){
+				let isOtherActionExists = this.config.dialog.listViewConfig.actions.find(e => {
+					return e.actionOrder == value;
+				});
+				if(isOtherActionExists !== undefined){
+					const msgEvent = new ShowToastEvent({
+						title: 'Error',
+						message: this.config._LABELS.lbl_actionWithThisOrderAlreadyExists,
+						variant: 'error'
+					});
+					this.dispatchEvent(msgEvent);
+					event.target.value = field.actionOrder;
+					value = field.actionOrder;
+				}
+			}
 
-			if (field) {
-				field[param] = value;
+			if(param === 'actionVisibleOnRecordSelection' && value && field.actionIsHidden){
+				event.target.checked = false;
+				const msgEvent = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.msg_actionVisibleOnRecordSelectionError,
+					variant: 'error'
+				});
+				this.dispatchEvent(msgEvent);
+			}else if(param === 'actionIsHidden' && value && field.actionVisibleOnRecordSelection){
+				const msgEvent2 = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.msg_actionHideError,
+					variant: 'error'
+				});
+				this.dispatchEvent(msgEvent2);
+				event.target.checked = false;
+			}else{
+
+				if (field) {
+					field[param] = value;
+				}
 			}
 		}
 		if (val === 'dialog:setFieldParam') {
@@ -622,36 +838,13 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			let field = this.config.dialog.listViewConfig.colModel.find(e => {
 				return e.fieldName === this.config.dialog.field;
 			})
-
-			if(param === 'isClipable' && value && field['isWrapable']){
-				field[param] = false;
-				event.target.checked = false;
-				const evt = new ShowToastEvent({
-					title: 'Error',
-					message: this.config._LABELS.errMsg_wrapableAndClipableCanNotBeSelectedTogether,
-					variant: 'error',
-					mode: 'dismissable'
-				});
-				this.dispatchEvent(evt);
-			}else if(param === 'isWrapable' && value && field['isClipable']){
-				field[param] = false;
-				event.target.checked = false;
-				const evt = new ShowToastEvent({
-					title: 'Error',
-					message: this.config._LABELS.errMsg_wrapableAndClipableCanNotBeSelectedTogether,
-					variant: 'error',
-					mode: 'dismissable'
-				});
-				this.dispatchEvent(evt);
-			}else{
-				if (field) {
-					field[param] = value;
-				} /*else {
-					field = { 'fieldName': this.config.dialog.field };
-					field[param] = value;
-					this.config.dialog.listViewConfig.colModel.push(field);
-				}*/ //we will return this part in case that we will have a fieldPiecker component
-			}
+			if (field) {
+				field[param] = value;
+			} /*else {
+				field = { 'fieldName': this.config.dialog.field };
+				field[param] = value;
+				this.config.dialog.listViewConfig.colModel.push(field);
+			}*/ //we will return this part in case that we will have a fieldPiecker component
 		}
 		if (val === 'dialog:setTableParam') {
 			
@@ -753,12 +946,33 @@ export default class extRelList extends NavigationMixin(LightningElement) {
         }
 	}
 	searchOnObjectValues(obj,sTerm){
+		let dateFields = [];
+		dateFields = this.config.listViewConfig[0].colModel.filter((el)=> el.type === 'date' || el.type === 'datetime');
+		/* eslint-disable */
 		for(let key in obj){
 			if(obj[key] && typeof obj[key] === 'object'){
 				if(this.searchOnObjectValues(obj[key],sTerm)) return true;
 			}
 			else if(obj[key] && obj[key].toString().toLowerCase().indexOf(sTerm)!=-1) {
 				return true;
+			}
+			//to search on date fields with timezone adjusted
+			let field = {};
+			dateFields.forEach((el)=>{
+				if(el.fieldName === key){
+					field = el;
+				}
+			});
+			if(field.type === 'date'){
+				let val = new Date(obj[key]).toLocaleString(this.config.userInfo.locale,{
+					month : "2-digit",
+					day : "2-digit",
+					year: "numeric",
+					timeZone: this.config.userInfo.timezone
+				});
+				if(val.toString().toLowerCase().indexOf(sTerm)!=-1) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -797,44 +1011,66 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		libs.saveConfig(this.apiName, this.localConfig);
 		this.config.dialog = undefined;
 		this.config.records = undefined;
-		libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.config?.listView?.name, callback: this.setConfig });
+		this.loadCfg(false);
+		// libs.remoteAction(this, 'getConfig', { sObjApiName: this.config.sObjApiName, relField: this.config.relField, listViewName: this.config?.listView?.name, callback: this.setConfig });
 	}
 
 	handleEventActions(event, val) {
-		if (val.startsWith('std:export')) this.handleEventExport(event);
-		if (val.startsWith('std:delete')) {
-			let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
-
-			if(records.length > 0){
-				this.dialogCfg = {
-					title: this.config._LABELS.lbl_confirmDelete,
-					contents: [
-						{
-							isMessage: true,
-							name: 'deleteConfirm',
-							text: this.config._LABELS.msg_deleteConfirm1 + ' ' + records.length + ' ' + this.config._LABELS.msg_deleteConfirm2
-						}
-					],
-					buttons: [
-						{
-							name: 'cancel',
-							label: this.config._LABELS.lbl_cancel,
-							variant: 'neutral'
-						},
-						{
-							name: 'Delete',
-							label: this.config._LABELS.title_delete,
-							variant: 'brand',
-							class: 'slds-m-left_x-small'
-						}
-					],
-					data_id: "delete:dialog"
-				};
-				this.showDialog = true;
+		if (val.startsWith('std:export')) {
+			if(!this.isThereUnsavedRecords()){
+				this.handleEventExport(event);
+				this.handleStandardCallback(val);
 			}else{
 				const event = new ShowToastEvent({
 					title: 'Error',
-					message: this.config._LABELS.lbl_deleteNoRecordSelectedError,
+					message: this.config._LABELS.msg_unsaveRecordsCannotPerformOtherAction,
+					variant: 'error'
+				});
+				this.dispatchEvent(event);
+			}
+		}
+		if (val.startsWith('std:delete')) {
+			if(!this.isThereUnsavedRecords()){
+				let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
+
+				if(records.length > 0){
+					this.dialogCfg = {
+						title: this.config._LABELS.lbl_confirmDelete,
+						contents: [
+							{
+								isMessage: true,
+								name: 'deleteConfirm',
+								text: this.config._LABELS.msg_deleteConfirm1 + ' ' + records.length + ' ' + this.config._LABELS.msg_deleteConfirm2
+							}
+						],
+						buttons: [
+							{
+								name: 'cancel',
+								label: this.config._LABELS.lbl_cancel,
+								variant: 'neutral'
+							},
+							{
+								name: 'Delete',
+								label: this.config._LABELS.title_delete,
+								variant: 'brand',
+								class: 'slds-m-left_x-small'
+							}
+						],
+						data_id: "delete:dialog"
+					};
+					this.showDialog = true;
+				}else{
+					const event = new ShowToastEvent({
+						title: 'Error',
+						message: this.config._LABELS.lbl_deleteNoRecordSelectedError,
+						variant: 'error'
+					});
+					this.dispatchEvent(event);
+				}
+			}else{
+				const event = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.msg_unsaveRecordsCannotPerformOtherAction,
 					variant: 'error'
 				});
 				this.dispatchEvent(event);
@@ -842,38 +1078,83 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 
 		if (val.startsWith('std:new')) {
+			if(!this.isThereUnsavedRecords()){
 
-			let defValue = {};
-			defValue[this.config.relField] = this.recordId;
+				let defValue = {};
+				defValue[this.config.relField] = this.recordId;
 
-			this[NavigationMixin.Navigate]({
-				type: 'standard__objectPage',
-				attributes: {
-					/*recordId: this.recordId, // pass the record id here.*/
-					objectApiName: this.config.sObjApiName,
-					actionName: 'new',
-				},
-				state: {
-					defaultFieldValues: encodeDefaultFieldValues(defValue)
-				}
-			});
+				this[NavigationMixin.Navigate]({
+					type: 'standard__objectPage',
+					attributes: {
+						/*recordId: this.recordId, // pass the record id here.*/
+						objectApiName: this.config.sObjApiName,
+						actionName: 'new',
+					},
+					state: {
+						defaultFieldValues: encodeDefaultFieldValues(defValue)
+					}
+				});
+				this.handleStandardCallback(val);
+			}else{
+				const event = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.msg_unsaveRecordsCannotPerformOtherAction,
+					variant: 'error'
+				});
+				this.dispatchEvent(event);
+			}
 		}
 		if (val.startsWith('std:expand_view')) {
 
-			if(this.isFullscreen){
-				history.back();
+			if(!this.isThereUnsavedRecords()){
+				if(this.isFullscreen){
+					history.back();
+				}else{
+					this[NavigationMixin.Navigate]({
+						type: 'standard__navItemPage',
+						attributes: {
+							apiName: 'XRL__EXRL',
+						},
+						state: {
+							c__apiName: btoa(this.apiName),
+							c__name: btoa(this.name),
+							c__recordId: btoa(this.recordId)
+						}
+					});
+				}
+				this.handleStandardCallback(val);
 			}else{
-				this[NavigationMixin.Navigate]({
-					type: 'standard__navItemPage',
-					attributes: {
-						apiName: 'XRL__EXRL',
-					},
-					state: {
-						c__apiName: btoa(this.apiName),
-						c__name: btoa(this.name),
-						c__recordId: btoa(this.recordId)
+				const event = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.msg_unsaveRecordsCannotPerformOtherAction,
+					variant: 'error'
+				});
+				this.dispatchEvent(event);
+			}
+		}
+		if (val.startsWith('std:reset_filters')) {
+			if(!this.isThereUnsavedRecords()){
+				this.config.listViewConfig[0].colModel.forEach( e=>  {
+					if(e._filterStrLastChangeDate !== undefined){
+						e._isFilterOptions = undefined;
+						e._filterStrLastChangeDate = undefined;
+						e.filterStr = '';
+						e.filterStrTo = '';
+						e.isShowClearBtn = false;
+						e._filterCondition = '';
+						e._filterVariant = '';
+						e._filterStr = [];
+						e._filterOption = undefined;
 					}
 				});
+				this.template.querySelector('c-Data-Table').updateView();
+			}else{
+				const event = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.msg_unsaveRecordsCannotPerformOtherAction,
+					variant: 'error'
+				});
+				this.dispatchEvent(event);
 			}
 		}
 
@@ -896,6 +1177,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 						variant: 'success'
 					});
 					this.dispatchEvent(event);
+					this.loadCfg();
 				} else {
 					const event = new ShowToastEvent({
 						title: 'Error',
@@ -917,7 +1199,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 	handleEventExport(event) {
 
-		let records = this.template.querySelector('c-Data-Table').getRecords();
+		let records = this.template.querySelector('c-Data-Table').getSelectedRecords().length != 0 ?
+						this.template.querySelector('c-Data-Table').getSelectedRecords() :
+						this.template.querySelector('c-Data-Table').getRecords();
 		let locale = libs.getGlobalVar(this.name).userInfo.locale;
 
 		console.log(JSON.parse(JSON.stringify(this.config)));
@@ -926,7 +1210,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let wb = XLSX.utils.book_new();
 		wb.cellStyles = true;
 		wb.Props = {
-			Title: this.config.sObjLabel,
+			Title: this.config.sObjLabel + ' ' + this.config?.listView?.label,
 			Subject: this.config.sObjLabel + " Export",
 			Author: "Extended Related List",
 			CreatedDate: new Date(),
@@ -953,6 +1237,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				ws[cell_ref] = {
 					s: i % 2 ? evenStyle : oddStyle
 				};
+				console.log('HERE',rec[col.referenceTo] ? JSON.parse(JSON.stringify(rec[col.referenceTo]))[col.fieldName.split('.')[1]] : 'null');
 				switch (col.type) {
 					case 'reference':
 						let [r, v] = libs.getLookupRow(rec, col.fieldName);
@@ -962,21 +1247,40 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 						break;
 					case 'date':
 					case 'datetime':
-						ws[cell_ref].v = new Date(rec[col.fieldName]);
+						// ws[cell_ref].v = col.referenceTo ? new Date(rec[col.fieldName.split('.')[0]][col.fieldName.split('.')[1]]) : new Date(rec[col.fieldName]);
 						//.toLocaleString(locale);
+						if(rec[col.fieldName.split('.')[0]] && rec[col.fieldName.split('.')[0]][col.fieldName.split('.')[1]]){
+							ws[cell_ref].v = new Date(rec[col.fieldName.split('.')[0]][col.fieldName.split('.')[1]]);
+						}else{
+							ws[cell_ref].v = col.referenceTo != undefined ? rec[col.referenceTo][col.fieldName.split('.')[1]] ? new Date(rec[col.referenceTo][col.fieldName.split('.')[1]]) : '' : rec[col.fieldName] ? new Date(rec[col.fieldName]) : '';
+						}
 						ws[cell_ref].t = 'd';
 
 						break;
 					case 'number':
-						ws[cell_ref].v = rec[col.fieldName] ? Number(rec[col.fieldName]) : '';
+						// ws[cell_ref].v = rec[col.fieldName] ? Number(rec[col.fieldName]) : '';
+						if(rec[col.fieldName.split('.')[0]] && rec[col.fieldName.split('.')[0]][col.fieldName.split('.')[1]]){
+							ws[cell_ref].v = Number(rec[col.fieldName.split('.')[0]][col.fieldName.split('.')[1]]);
+						}else{
+							ws[cell_ref].v = col.referenceTo != undefined ? rec[col.referenceTo][col.fieldName.split('.')[1]] ? Number(rec[col.referenceTo][col.fieldName.split('.')[1]]) : '' : rec[col.fieldName] ? Number(rec[col.fieldName]) : '';
+						}
 						ws[cell_ref].t = 'n';
 						break;
 					case 'boolean':
-						ws[cell_ref].v = Boolean(rec[col.fieldName]);
+						// ws[cell_ref].v = Boolean(rec[col.fieldName]);
+						if(rec[col.fieldName.split('.')[0]] && rec[col.fieldName.split('.')[0]][col.fieldName.split('.')[1]]){
+							ws[cell_ref].v = Boolean(rec[col.fieldName.split('.')[0]][col.fieldName.split('.')[1]]);
+						}else{
+							ws[cell_ref].v = col.referenceTo != undefined ? rec[col.referenceTo][col.fieldName.split('.')[1]] ? Boolean(rec[col.referenceTo][col.fieldName.split('.')[1]]) : '' : rec[col.fieldName] ? Boolean(rec[col.fieldName]) : '';
+						}
 						ws[cell_ref].t = 'b';
 						break;
 					default:
-						ws[cell_ref].v = rec[col.fieldName] ? rec[col.fieldName] : '';
+						if(rec[col.fieldName.split('.')[0]] && rec[col.fieldName.split('.')[0]][col.fieldName.split('.')[1]]){
+							ws[cell_ref].v = rec[col.fieldName.split('.')[0]][col.fieldName.split('.')[1]];
+						}else{
+							ws[cell_ref].v = col.referenceTo != undefined ? rec[col.referenceTo][col.fieldName.split('.')[1]] ? rec[col.referenceTo][col.fieldName.split('.')[1]] : '' : rec[col.fieldName] ? rec[col.fieldName] : '';
+						}
 						ws[cell_ref].t = 's';
 				}
 			});
@@ -985,7 +1289,37 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		console.log(ws);
 		console.log(ws['!cols']);
 		console.log(ws['!ref']);
-		XLSX.utils.book_append_sheet(wb, ws, this.config.sObjLabel);
-		XLSX.writeFile(wb, this.config.sObjLabel + '.xlsx', { cellStyles: true, WTF: 1 });
+		XLSX.utils.book_append_sheet(wb, ws, (this.config.sObjLabel + ' '  + this.config?.listView?.label).length > 30 ? (this.config.sObjLabel + ' '  + this.config?.listView?.label).substring(0,30):(this.config.sObjLabel + ' '  + this.config?.listView?.label));
+		XLSX.writeFile(wb, this.config.sObjLabel + ' ' + this.config?.listView?.label + '.xlsx', { cellStyles: true, WTF: 1 });
+		
+		//deselecting the records if there is any
+		this.template.querySelector('c-Data-Table').updateView();
+	}
+
+
+
+	handleStandardCallback(val, listViewAction){
+		let actionCallBack;
+		let selectedRecords;
+		if(val !== 'std:refresh'){
+			let action = this.config.listViewConfig[0].actions.find((el)=>{
+				return el.actionId == val;
+			});
+			actionCallBack = action.actionCallBack;
+			selectedRecords = this.template.querySelector('c-Data-Table').getSelectedRecords();
+			// if(action.actionCallBack != undefined && action.actionCallBack != ''){
+			// 	console.log('Callback defined: ', action.actionCallBack);
+			// 	eval('(' + action.actionCallBack + ')')(this.template.querySelector('c-Data-Table').getSelectedRecords());
+			// }
+		}else{
+			actionCallBack = listViewAction?.action?.actionCallBack;
+			selectedRecords = listViewAction?.selectedRecords; // the selected records are coming from the caller function
+			// The loadCfg method and the c/dataTable component are still not ready to be used
+			// at the time of this function call, so we have to handle the refresh action differently
+		}
+		if(actionCallBack != undefined && actionCallBack != ''){
+			console.log('Callback defined: ', actionCallBack);
+			eval('(' + actionCallBack + ')')(selectedRecords?selectedRecords:[]);
+		}
 	}
 }

@@ -2,25 +2,37 @@
 	<span style={uStyle}>
 		<!--<span title={value} style={style}><span style="float:inherit">{value}</span></span>-->
 		<!---->
-		<div onkeyup={inlineEditFinish} if:true={iseditmode}>
-			<lightning-combobox if:true={col.isEditableAsPicklist} field-level-help={col.inlineHelpText} value={editValue} onchange={inlineEdit} data-id={col.fieldName} options={col.options} name={col.fieldName} variant="label-hidden" class=""></lightning-combobox>
-			<lightning-input if:true={col.isEditableRegular} type={col.type} field-level-help={col.inlineHelpText} value={editValue} onchange={inlineEdit} data-id={col.fieldName} tabindex="0"></lightning-input>
-
-			<span if:false={col.isEditable} title={value} style={uStyle}>
+		<div onkeyup={inlineEditFinish} if:true={showEdit} class="editDiv">
+			<!-- <lightning-combobox if:true={col.isEditableAsPicklist} field-level-help={col.inlineHelpText} value={editValue} onchange={inlineEdit} data-id={col.fieldName} options={col.options} name={col.fieldName} variant="label-hidden" class=""></lightning-combobox> -->
+			<template if:true={col.isEditableAsPicklist}>
+				<!-- For Multi Picklist type -->
+				<c-multiselect if:true={picklistType} multiselect=true listsize={config.dataTableCfg.displayOptionListSize} onselect={inlineEdit} 
+				options={col.options} selectedvalues={editValue} data-id={col.fieldName}></c-multiselect>
+				<!-- For SingleSelect/Picklist type -->
+				<c-multiselect if:false={picklistType} listsize={config.dataTableCfg.displayOptionListSize} onselect={inlineEdit} 
+				options={col.options} selectedvalue={editValue} data-id={col.fieldName}></c-multiselect>
+			</template>
+			<template if:false={col._isLookUpEdit}>
+				<lightning-input if:true={col.isEditableRegular} type={col.type} field-level-help={col.inlineHelpText} value={editValue} onchange={inlineEdit} data-id={col.fieldName} tabindex="0"></lightning-input>
+			</template>
+			<!-- <span if:false={col.isEditable} title={value} style={uStyle}>
 				<lightning-input type="checkbox" if:true={col.isEditableBool} checked={editValue} disabled="true"> </lightning-input>
-				<!--<lightning-input type="checkbox" if:true={isBool} checked={value} disabled="true"> </lightning-input>-->
 				<span style="float:inherit">
 					<lightning-formatted-rich-text if:false={isBool} value={value} class={style}></lightning-formatted-rich-text>
 				</span>
-			</span>
+			</span> -->
+			<template if:true={col._isLookUpEdit}>
+				<c-multiselect if:true={col._editOptions} listsize={config.dataTableCfg.displayOptionListSize} onselect={inlineEdit} 
+				options={col._editOptions} selectedvalue={sValue} data-id={col.fieldName}></c-multiselect>
+			</template>
 			<span if:true={col.isEditable} title={value}>
-				<lightning-input type="checkbox" if:true={col.isEditableBool} checked={editValue} onchange={inlineEdit}> </lightning-input>
+				<lightning-input type="checkbox" if:true={col.isEditableBool} checked={editValue} onchange={inlineEdit} data-id={col.fieldName}> </lightning-input>
 			</span>
 		</div>
-		<span if:false={iseditmode} title={value}>
-			<lightning-input type="checkbox" if:true={isBool} checked={value} disabled="true"> </lightning-input>
+		<span if:false={showEdit} title={value}>
+			<lightning-input type="checkbox" if:true={isBool} checked={value} disabled="true" data-id={col.fieldName}> </lightning-input>
 			<span if:false={isBool}>
-				<lightning-formatted-rich-text value={value} class={style} style={uStyle}></lightning-formatted-rich-text>
+				<lightning-formatted-rich-text value={value} class={style} data-id={col.fieldName} style={uStyle}></lightning-formatted-rich-text>
 			</span>
 		</span>
 	</span>

@@ -1,10 +1,12 @@
 import { LightningElement, api, track } from 'lwc';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { libs } from 'c/libs'
 
 export default class extRelListSettings extends LightningElement {
 	@api cfg;
 	@track config;
 	@track dataTable;
+	@track showDialog = false;
 
 	connectedCallback() {
 		console.log(this.cfg);
@@ -20,6 +22,10 @@ export default class extRelListSettings extends LightningElement {
 			}
 		});
 		this.config.enableActions = ['actionTip','actionIsHidden','actionIconName','actionOrder','actionVisibleOnRecordSelection'];
+	}
+
+	get dialogCss(){
+		return 'max-height:'+screen.availHeight+'px;';
 	}
 
 	get selectedFields() {
@@ -51,7 +57,7 @@ export default class extRelListSettings extends LightningElement {
 		let tmp = libs.colModelItem();
 
 		for (let item in tmp) {
-			if(!fieldParams.updateable && item === 'isEditable') continue;
+			if(!fieldParams.updateable && !fieldParams.isNameField && item === 'isEditable') continue;
 			let defValue = (item === 'fieldName') 
 				? this.config.dialog.field 
 				: fieldParams[item] === undefined
@@ -83,10 +89,19 @@ export default class extRelListSettings extends LightningElement {
 		let tmp = libs.tableItem();
 
 		for (let item in tmp) {
-			let defValue = item in this.dataTable 
-				? this.dataTable[item]
-				: item in this.dataTable.pager ? this.dataTable.pager[item] 
-				: tmp[item].defValue;
+			let defValue = this.dataTable != undefined ? 
+                (item in this.dataTable ? 
+                    this.dataTable[item] :
+                    (this.dataTable.pager != undefined && item in this.dataTable.pager ?
+                        this.dataTable.pager[item] :
+                        (tmp[item] != undefined ? tmp[item].defValue : false))) :
+                false;
+
+			
+			let sFields = [{label:'No Grouping',value:''}];
+			sFields = sFields.concat(this.selectedFields);
+			let options = (tmp[item].type === 'combobox') ?
+							(tmp[item].options) ? (tmp[item].options)  : sFields : '';
 			result.push({
 				"paramName" : item,
 				"type" : tmp[item].type,
@@ -96,6 +111,8 @@ export default class extRelListSettings extends LightningElement {
 				//"isDisabled" : (item === 'fieldName'),
 				"value" : defValue,
 				"isChecked" : (tmp[item].type === 'checkbox') ? defValue : undefined,
+				"isComboBox" : (tmp[item].type === 'combobox'),
+				"options": options,
 				"cmd": tmp[item].cmd,
 				"placeHolder" : tmp[item].placeHolder
 			})
@@ -119,7 +136,6 @@ export default class extRelListSettings extends LightningElement {
 
 		/* eslint-disable */
 		for (let item in tmp) {
-			if((tmp[item].type === 'function') && (fieldParams['isActionStandard'])) continue;
 			let defValue = (item === 'actionId') 
 			? this.config.dialog.action 
 			: fieldParams[item] === undefined
@@ -139,15 +155,80 @@ export default class extRelListSettings extends LightningElement {
 		}
 		return result;
 	}
-	handleNewAction(){
-		this.config.openNewAction = true;
+	get isActionStandard(){
+		if(this.config.dialog.action){
+			let fieldParams = this.config.dialog.listViewConfig.actions.find( e=>{
+				return e.actionId === this.config.dialog.action;
+			});
+			return fieldParams['isActionStandard'];
+		}else{
+			return false;
+		}
 	}
-	handleNewActionSave(event){
-		this.config.dialog.action = event.target.value;
-		this.config.dialog.listViewConfig.actions.push({actionId:event.target.value});
-		this.config.openNewAction = false;
+	handleNewAction(event){
+		let dataId = event.target.getAttribute('data-val')
+		if(dataId === 'openNewAction'){
+			this.config.openNewAction = true;
+		}
+		if(dataId === 'actionSave'){
+			let actionId = this.template.querySelector('.newActionId').value;
+			if(actionId != ''){
+				this.config.dialog.action = actionId;
+				this.config.dialog.listViewConfig.actions.push({actionId:actionId});
+				this.config.dialog.allActions.push({label:actionId,value:actionId});
+				this.config.openNewAction = false;
+			}else{
+				const eventErr = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.msg_enterUniqueActionId,
+					variant: 'error'
+				});
+				this.dispatchEvent(eventErr);
+			}
+		}
+		if(dataId === 'actionCancel'){
+			this.config.openNewAction = false;
+		}
+		if(dataId === 'actionDeleteOpenConfirmation'){
+			this.dialogCfg = {
+				title: this.config._LABELS.title_deleteCustomAction,
+				contents: [
+					{
+						isMessage: true,
+						name: 'deleteCustomActionConfirm',
+						text: this.config._LABELS.msg_deleteCustomActionConfirmation
+					}
+				],
+				buttons: [
+					{
+						name: 'cancel',
+						label: this.config._LABELS.lbl_cancel,
+						variant: 'neutral'
+					},
+					{
+						name: 'Delete',
+						label: this.config._LABELS.title_delete,
+						variant: 'brand',
+						class: 'slds-m-left_x-small'
+					}
+				],
+				data_id: "actionDelete"
+			};
+			this.showDialog = true;
+		}
+		if(dataId === 'actionDelete'){
+			if (event.detail.action === 'cancel') this.showDialog = false;
+			else{
+				this.config.dialog.listViewConfig.actions = this.config.dialog.listViewConfig.actions.filter(e => e.actionId != this.config.dialog.action);
+				this.config.dialog.allActions = this.config.dialog.allActions.filter(e => e.value != this.config.dialog.action);
+				this.config.dialog.action = false;
+				this.config.openNewAction = false;
+				this.showDialog = false;
+			}
+		}
 	}
+
 	addNewUseExampleParam(event){
-		this.config.dialog.useExampleParams[event.target.getAttribute('data-param')] = event.target.getAttribute('data-val').replaceAll("//","");
+		this.config.dialog.useExampleParams[event.target.getAttribute('data-param')] = event.target.getAttribute('data-val').substring(event.target.getAttribute('data-val').indexOf('function')).replaceAll("//","");
 	}
 }

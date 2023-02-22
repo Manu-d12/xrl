@@ -3,7 +3,7 @@ import { libs } from 'c/libs';
 
 export default class ExrlTab extends LightningElement {
     @track config = {};
-    @track extApiName = 'Account:Account:';
+    @track extApiName = 'Account::Account::';
     connectedCallback(){
         this.config.urlParameters = this.getQueryParameters();
         this.config.selectedApiName = this.config.urlParameters.c__apiName ? atob(this.config.urlParameters.c__apiName) : "";
@@ -25,7 +25,7 @@ export default class ExrlTab extends LightningElement {
     handleSelect(event) {
         let selectedObj = event.detail.payload.value;
         if(selectedObj !== null){
-            this.config.selectedApiName = selectedObj + ':' + selectedObj + ':';
+            this.config.selectedApiName = selectedObj + '::' + selectedObj + '::';
             this.handleOpenGrid();
         }
         

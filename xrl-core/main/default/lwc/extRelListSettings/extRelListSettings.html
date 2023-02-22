@@ -1,6 +1,6 @@
 <template>
 	<section if:true={config.dialog} role="alertdialog" tabindex="0" class="slds-modal slds-fade-in-open slds-modal_prompt slds-modal_small" aria-modal="true">
-		<div class="slds-modal__container slds-scrollable_y" style="max-height:47rem;">
+		<div class="slds-modal__container slds-scrollable_y" style={dialogCss}>
 			<header class={config.dialog.css}>
 				<button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title={config._LABELS.title_close} style="display:block" data-id="dialog:close" onclick={config.dialog.handleEvent}>
 					<svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
@@ -40,8 +40,14 @@
 					<!-- Table Settings Starts -->
 					<lightning-tab label={config._LABELS.lbl_tableSettings} title={config._LABELS.title_youCanDefineAllGeneralTableParameters}>
 						<template for:each={tableItem} for:item="param" for:index="index">
-							<lightning-input if:false={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} type={param.type} label={param.label} disabled={param.isDisabled} value={param.value} data-id={param.cmd} data-param={param.paramName} data-type={param.type} checked={param.isChecked} onchange={config.dialog.handleEvent}></lightning-input>
-							<lightning-textarea if:true={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} data-type={param.type} label={param.label} value={param.value} data-id={param.cmd} data-param={param.paramName} onchange={config.dialog.handleEvent} placeholder={param.placeHolder}></lightning-textarea>
+							<template if:false={param.isComboBox}>
+								<lightning-input if:false={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} type={param.type} label={param.label} disabled={param.isDisabled} value={param.value} data-id={param.cmd} data-param={param.paramName} data-type={param.type} checked={param.isChecked} onchange={config.dialog.handleEvent}></lightning-input>
+								<lightning-textarea if:true={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} data-type={param.type} label={param.label} value={param.value} data-id={param.cmd} data-param={param.paramName} onchange={config.dialog.handleEvent} placeholder={param.placeHolder}></lightning-textarea>
+							</template>
+							<template if:true={param.isComboBox}>
+								<lightning-combobox key={param.paramName} field-level-help={param.tooltip} label={param.label} placeholder={param.placeHolder} disabled={param.isDisabled} value={param.value} data-id={param.cmd} onchange={config.dialog.handleEvent} data-param={param.paramName} options={param.options}>
+								</lightning-combobox>
+							</template>
 						</template>
 					</lightning-tab>	
 					<!-- Table Settings Ends -->
@@ -53,24 +59,32 @@
 					<!-- Action Starts  -->
 					<lightning-tab label="Actions">
 						<template if:false={config.openNewAction}>
-							<lightning-button if:false={config.dialog.action} variant="brand" label="New Action" title="New Action" class="slds-m-right_x-small" onclick={handleNewAction}></lightning-button>
-							<lightning-combobox name="status" label="Select Action" placeholder="Choose Action" value={config.dialog.allActions} data-id="dialog:setAction" onchange={config.dialog.handleEvent} options={config.dialog.allActions}>
+							<lightning-button if:false={config.dialog.action} variant="brand" label="New Action" title="New Action" class="slds-m-right_x-small" data-val="openNewAction" onclick={handleNewAction}></lightning-button>
+							<lightning-combobox name="status" label="Select Action" placeholder="Choose Action" value={config.dialog.action} data-id="dialog:setAction" onchange={config.dialog.handleEvent} options={config.dialog.allActions}>
 							</lightning-combobox>
 						</template>
 						<template if:true={config.openNewAction}>
-							<lightning-input id="newActionId" type="text" label="Unique Action Id" onfocusout={handleNewActionSave}></lightning-input>
-							<lightning-button variant="brand" label="Save" title="Save" class="slds-m-right_x-small" onclick={handleNewActionSave}></lightning-button>
+							<lightning-input class="newActionId" id="newActionId" type="text" label="Unique Action Id"></lightning-input>
+							<br>
+							<lightning-button variant="brand" label="Save" title="Save" class="slds-m-right_x-small" data-val="actionSave" onclick={handleNewAction}></lightning-button>
+							<lightning-button variant="destructive" label="Cancel" title="Cancel" class="slds-m-right_x-small" data-val="actionCancel" onclick={handleNewAction}></lightning-button>
 						</template>
 						<template if:true={config.dialog.action} for:each={actionItem} for:item="param" for:index="index">
 							<lightning-input if:false={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} type={param.type} label={param.label} disabled={param.isDisabled} value={param.value} data-id="dialog:setActionParam" data-param={param.paramName} data-type={param.type} checked={param.isChecked} onchange={config.dialog.handleEvent}></lightning-input>
 							<lightning-textarea if:true={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} data-type={param.type} label={param.label} value={param.value} data-id="dialog:setActionParam" data-param={param.paramName} onchange={config.dialog.handleEvent} placeholder={param.placeHolder}></lightning-textarea>
+						</template>
+						<template if:true={config.dialog.action}>
+							<br>
+							<lightning-button if:false={isActionStandard} variant="destructive" label="Delete" title="Delete" icon-name="utility:delete" class="slds-m-left_x-small" data-val="actionDeleteOpenConfirmation" onclick={handleNewAction}></lightning-button>
+							<lightning-helptext if:false={isActionStandard} class="placeTop" content={config._LABELS.tooltip_deleteCustomAction}></lightning-helptext>
 						</template>
 					</lightning-tab>
 					<!-- Action Ends  -->
 				</lightning-tabset>
 				<!-- Admin Part Ends  -->
 				<!-- User Part  -->
-				<lightning-dual-listbox if:false={config.userInfo.isAdminAccess} data-id="dialog:setFields" label={config._LABELS.lbl_selectFields} source-label={config._LABELS.srcLbl_available} selected-label={config._LABELS.lbl_selected} field-level-help={config._LABELS.hlpTxt_selectYourPreferredFields} options={config.dialog.options} value={config.dialog.selectedFields} required-options={config.dialog.requiredOptions} onchange={config.dialog.handleEvent} size="12"></lightning-dual-listbox>
+				<c-sql-Builder if:false={config.userInfo.isAdminAccess} cfg={cfg}></c-sql-Builder>
+				<!-- <lightning-dual-listbox if:false={config.userInfo.isAdminAccess} data-id="dialog:setFields" label={config._LABELS.lbl_selectFields} source-label={config._LABELS.srcLbl_available} selected-label={config._LABELS.lbl_selected} field-level-help={config._LABELS.hlpTxt_selectYourPreferredFields} options={config.dialog.options} value={config.dialog.selectedFields} required-options={config.dialog.requiredOptions} onchange={config.dialog.handleEvent} size="12"></lightning-dual-listbox> -->
 			</div>
 			<footer class="slds-modal__footer modal-footer">
 				<!-- Save As dialog Starts -->
@@ -87,17 +101,20 @@
 
 				<!-- Save Button -->
 				<lightning-button if:false={config.dialog.saveAs} variant="neutral" label={config._LABELS.lbl_save} title={config._LABELS.title_saveSelectedFields} icon-name="utility:save" class="slds-m-left_x-small" data-id="dialog:save" onclick={config.dialog.handleEvent}></lightning-button>
-				<lightning-helptext if:false={config.dialog.saveAs} content={config._LABELS.tooltip_configSave}></lightning-helptext>
+				<lightning-helptext if:false={config.dialog.saveAs} class="placeTop" content={config._LABELS.tooltip_configSave}></lightning-helptext>
 				<!-- Save As Button -->
 				<lightning-button if:false={config.dialog.saveAs} variant="brand" label={config._LABELS.lbl_saveAs} title={config._LABELS.title_saveSelectedFields} icon-name="utility:save" class="slds-m-left_x-small" data-id="dialog:saveAs" onclick={config.dialog.handleEvent}></lightning-button>
-				<lightning-helptext if:false={config.dialog.saveAs} content={config._LABELS.tooltip_configSaveAs}></lightning-helptext>
+				<lightning-helptext if:false={config.dialog.saveAs} class="placeTop" content={config._LABELS.tooltip_configSaveAs}></lightning-helptext>
 				<!-- Cancel Button -->
 				<lightning-button if:false={config.dialog.saveAs} variant="base" label={config._LABELS.lbl_cancel} title={config._LABELS.lbl_cancel} icon-name="utility:error" class="slds-m-left_x-small" data-id="dialog:close" onclick={config.dialog.handleEvent}></lightning-button>
-				<lightning-helptext if:false={config.dialog.saveAs} content={config._LABELS.tooltip_configCancel}></lightning-helptext>
+				<lightning-helptext if:false={config.dialog.saveAs} class="placeTop" content={config._LABELS.tooltip_configCancel}></lightning-helptext>
 				<!-- Share Button -->
 				<lightning-button if:false={config.dialog.saveAs} variant="base" label="Share" title={config._LABELS.lbl_cancel} icon-name="utility:internal_share" class="slds-m-left_x-small" data-id="dialog:config_share" onclick={config.dialog.handleEvent}></lightning-button>
-				<lightning-helptext if:false={config.dialog.saveAs} content={config._LABELS.tooltip_configShare}></lightning-helptext>
-				
+				<lightning-helptext if:false={config.dialog.saveAs} class="placeTop" content={config._LABELS.tooltip_configShare}></lightning-helptext>				
+				<!-- Delete Config Button -->
+				<lightning-button if:false={config.dialog.saveAs} variant="destructive" label="Delete" title="Delete" icon-name="utility:delete" class="slds-m-left_x-small" data-id="dialog:config_delete" onclick={config.dialog.handleEvent}></lightning-button>
+				<lightning-helptext if:false={config.dialog.saveAs} class="placeTop" content={config._LABELS.tooltip_configShare}></lightning-helptext>
+
 				<template if:true={config.buttons} for:each={config.buttons} for:item="btn" for:index="index">
 					<lightning-button key={btn.label} variant={btn.variant} label={btn.label} data-id={btn.dataId} icon-name={btn.iconName} onclick={config.callback} class="slds-m-around_small"></lightning-button>
 				</template>
@@ -105,4 +122,5 @@
 		</div>
 	</section>
 	<div class="slds-backdrop slds-backdrop_open"></div>
+	<c-dialog if:true={showDialog} cfg={dialogCfg} data-val={dialogCfg.data_id} onaction={handleNewAction}></c-dialog>
 </template>

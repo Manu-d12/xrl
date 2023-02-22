@@ -130,17 +130,20 @@ export let libs = {
 			"isHidden": {
 				"defValue": false,
 				"type": "checkbox",
-				"label": _labels.lbl_isColumnHidden
+				"label": _labels.lbl_isColumnHidden,
+				"tooltip": _labels.tooltip_isColumnHidden
 			},
 			"isFilterable": {
 				"defValue": true,
 				"type": "checkbox",
-				"label": _labels.lbl_isColumnFilterable
+				"label": _labels.lbl_isColumnFilterable,
+				"tooltip": _labels.tooltip_isColumnFilterable
 			},
 			"isSortable": {
 				"defValue": true,
 				"type": "checkbox",
-				"label": _labels.lbl_isColumnSortable
+				"label": _labels.lbl_isColumnSortable,
+				"tooltip": _labels.tooltip_isColumnSortable
 			},
 			"isEditable": {
 				"defValue": false,
@@ -150,12 +153,8 @@ export let libs = {
 			"isWrapable": {
 				"defValue": false,
 				"type": "checkbox",
-				"label": _labels.lbl_isColumnWrapable
-			},
-			"isClipable": {
-				"defValue": true,
-				"type": "checkbox",
-				"label": _labels.lbl_isColumnClipable
+				"label": _labels.lbl_isColumnWrapable,
+				"tooltip": _labels.tooltip_isColumnWrapable
 			},
 			/*'isEditableMethod': {
 				"defValue": false,
@@ -211,7 +210,7 @@ export let libs = {
 				"cmd" : "dialog:setPagerParam"
 			},
 			"pagerBottom" : {
-				"defValue": false,
+				"defValue": true,
 				"type": "checkbox",
 				"label": _labels.lbl_enableBottomPagination,
 				"tooltip": _labels.tooltip_showBottomPagination,
@@ -231,6 +230,20 @@ export let libs = {
 				"tooltip": "In case of bulk edit if any exception occurs should the entire transaction rolled back?",
 				"cmd" : "dialog:setTableParam",
 			},
+			"groupFieldName" : {
+				"type": "combobox",
+				"label": "Field Name to group records",
+				"tooltip": "Enter the field name by which the records will be grouped",
+				"cmd" : "dialog:setTableParam",
+			},
+			"groupOrder" : {
+				"defValue": "ASC",
+				"type": "combobox",
+				"label": "Grouping Orders",
+				"tooltip": "ASC for Ascending and DESC for Descending",
+				"options": [{label:'ASC',value:'ASC'},{label:'DESC',value:'DESC'}],
+				"cmd" : "dialog:setTableParam",
+			},
 			"saveChunkSize" : {
 				"defValue": 200,
 				"type": "string",
@@ -243,6 +256,12 @@ export let libs = {
 				"label": _labels.lbl_beforeSaveValidation,
 				"tooltip": _labels.tooltip_beforeSaveValidation,
 				"placeHolder": _labels.placeHolder_beforeSaveValidation,
+				"cmd" : "dialog:setTableParam"
+			},
+			"beforeSaveApexAction": {
+				"type": "string",
+				"label": _labels.lbl_beforeSaveApexAction,
+				"tooltip": _labels.tooltip_beforeSaveApexAction,
 				"cmd" : "dialog:setTableParam"
 			},
 			"deleteChunkSize" : {
@@ -337,19 +356,29 @@ export let libs = {
 		}
 		return defParams;
 	},
-	remoteAction: function(scope, cmd, params) {
+	remoteAction: async function(scope, cmd, params) {
 		scope.config.isSpinner = true;
 		let outParams = {};
 		Object.assign(outParams, params, { recordId: scope.recordId });
 		delete outParams.callback;
-		apexInterface({ cmd: cmd, data: outParams }).then(result => {
+		await apexInterface({ cmd: cmd, data: outParams }).then(result => {
 			console.log(result);
 			scope.config.isSpinner = false;
 			if ('exception' in result) {
 				console.error(result.exception, result.log);
+				//HYPER-247
+				let formattedErrMsg = '';
+				if(result.exception.message.includes('Update failed') && result.exception.message.includes('max length')){
+					formattedErrMsg = (result.exception.message.substring(
+						result.exception.message.indexOf(";") + 1, 
+						result.exception.message.lastIndexOf("):")
+					) + ')').replaceAll('&quot;','"');
+				}else{
+					formattedErrMsg = result.exception.message;
+				}
 				const event = new ShowToastEvent({
 					title: result.exception.title,
-					message: result.exception.message,
+					message: formattedErrMsg,
 					variant: 'error'
 				});
 				scope.dispatchEvent(event);
@@ -363,6 +392,156 @@ export let libs = {
 	help : function(index, params) {
 		// Need to open a new tab and redirect user to specific article
 		return 'in test';
+	},
+	standardActions: function(){
+		let _labels = globalVars[Object.keys(globalVars)[0]]._LABELS;
+		let actions = [
+			{
+				"actionId": "std:reset_filters",
+				"actionLabel": _labels.altTxt_resetFilters,
+				"actionTip": _labels.title_resetFilters,
+				"actionCallBack": "",
+				"actionIsHidden": false,
+				"actionIconName": "utility:filterList",
+				"isActionStandard":true,
+				"actionOrder":5
+			  },
+			  {
+				"actionId": "std:delete",
+				"actionLabel": _labels.altTxt_delete,
+				"actionTip": _labels.title_delete,
+				"actionCallBack": "",
+				"actionIsHidden": false,
+				"actionIconName": "utility:delete",
+				"isActionStandard":true,
+				"actionOrder":10
+			},
+			{
+			  "actionId": "std:export",
+			  "actionLabel": _labels.altTxt_export,
+			  "actionTip": _labels.title_export,
+			  "actionCallBack": "",
+			  "actionIsHidden": false,
+			  "actionIconName": "utility:download",
+			  "isActionStandard":true,
+			  "actionOrder":20
+			},
+			{
+			  "actionId": "std:new",
+			  "actionLabel": _labels.altTxt_new,
+			  "actionTip": _labels.title_newRecord,
+			  "actionCallBack": "",
+			  "actionIsHidden": false,
+			  "actionIconName": "utility:new",
+			  "isActionStandard":true,
+			  "actionOrder":30
+			},
+			{
+			  "actionId": "std:refresh",
+			  "actionLabel": _labels.title_refresh,
+			  "actionTip": _labels.altTxt_refreshListView,
+			  "actionCallBack": "",
+			  "actionIsHidden": false,
+			  "actionIconName": "utility:refresh",
+			  "isActionStandard":true,
+			  "actionOrder":40
+			},
+			{
+			  "actionId": "std:request_open",
+			  "actionLabel": _labels.altTxt_requestAFeature,
+			  "actionTip": _labels.title_requestAFeature,
+			  "actionCallBack": "",
+			  "actionIsHidden": false,
+			  "actionIconName": "utility:email",
+			  "isActionStandard":true,
+			  "actionOrder":50
+			},
+			{
+			  "actionId": "std:expand_view",
+			  "actionLabel": _labels.altTxt_expandView,
+			  "actionTip": _labels.title_expandView,
+			  "actionCallBack": "",
+			  "actionIsHidden": false,
+			  "actionIconName": "utility:expand",
+			  "isActionStandard":true,
+			  "actionOrder":60
+			}
+		  ];
+		  return actions;
+	},
+	historyGrid: function(apiName){
+		let defFields = [
+			{
+				"fieldName" : "Id",
+				"type": "string",
+				"updateable": false,
+				"isFilterable": true,
+				"isSortable": true,
+				"isNameField": false,
+				"isEditable": false,
+			},
+			{
+				"label": "New Value",
+				"fieldName": "NewValue",
+				"type": "anyType",
+				"updateable": false,
+				"isFilterable": true,
+				"isSortable": true,
+				"isNameField": false,
+				"isEditable": false,
+			},
+			{
+				"label": "Old Value",
+				"fieldName": "OldValue",
+				"type": "anyType",
+				"updateable": false,
+				"isFilterable": true,
+				"isSortable": true,
+				"isNameField": false,
+				"isEditable": false,
+			},
+			{
+				"label": "Created Date",
+				"fieldName": "CreatedDate",
+				"type": "datetime",
+				"updateable": false,
+				"isFilterable": true,
+				"isSortable": true,
+				"isNameField": false,
+				"isEditable": false,
+			},
+			{
+				"label": "Changed Field",
+				"fieldName": "Field",
+				"type": "anyType",
+				"updateable": false,
+				"isFilterable": true,
+				"isSortable": true,
+				"isNameField": false,
+				"isEditable": false,
+			},
+			{
+				"label": apiName.split('::')[2].split('.')[0] +  " ID",
+				"fieldName": apiName.split('::')[2].split('.')[0] + ".Id",
+				"type": "string",
+				"referenceTo": apiName.split('::')[2].split('.')[0],
+				"isFilterable": true,
+				"isSortable": true,
+			},
+			{
+				"label": "Full Name",
+				"fieldName": "CreatedBy.Name",
+				"css": "slds-item",
+				"type": "string",
+				"updateable": false,
+				"isNameField": true,
+				"referenceTo": "User",
+				"isEditable": false,
+				"isFilterable": true,
+				"isSortable": true,
+			}
+		];
+		return defFields;
 	},
 	currencyMap: function(cur) {
 		let map = {

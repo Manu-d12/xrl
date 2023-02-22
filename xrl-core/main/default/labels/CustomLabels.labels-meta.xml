@@ -33,6 +33,14 @@
         <value>Delete</value>
     </labels>
     <labels>
+        <fullName>altTxt_locked</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>altTxt_locked</shortDescription>
+        <value>Locked</value>
+    </labels>
+    <labels>
         <fullName>altTxt_dynamic</fullName>
         <categories>XRL</categories>
         <language>en_US</language>
@@ -637,7 +645,7 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>tooltip_fieldApiName</shortDescription>
-        <value>You can use different constructions like a &apos;Account.Name&apos; or &apos;(SELECT Id FROM Accounts WHERE CreatedDate=TODAY)&apos;</value>
+        <value>This shows API name of the field</value>
     </labels>
     <labels>
         <fullName>lbl_fieldLabel</fullName>
@@ -653,7 +661,7 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>tooltip_fieldLabel</shortDescription>
-        <value>If You want to use label from describe, please leave this field empty. In this case label will be displayed in user language</value>
+        <value>If you want to use default label, no change is needed here. In this case, label will be displayed in user language</value>
     </labels>
     <labels>
         <fullName>lbl_customFunctionForFormatting</fullName>
@@ -669,7 +677,7 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>tooltip_customFunctionExample</shortDescription>
-        <value>//Example - To use this example please remove the slashes(//) from the beginning of the return statement
+        <value>//Example
 function(row, col, val) { 
 //return val;
 }</value>
@@ -688,7 +696,7 @@ function(row, col, val) {
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_customFunctionStyleExample</shortDescription>
-        <value>//Example - To use this example please remove the slashes(//) from the beginning of the return statement
+        <value>//Example
 function(row,col,val){
 //return &quot;color:#FF0000&quot;;
 }</value>
@@ -731,15 +739,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_isColumnWrapable</shortDescription>
-        <value>Is need wrap column?</value>
-    </labels>
-    <labels>
-        <fullName>lbl_isColumnClipable</fullName>
-        <categories>XRL</categories>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>lbl_isColumnClipable</shortDescription>
-        <value>Is need clip?</value>
+        <value>Wrap column content?</value>
     </labels>
     <labels>
         <fullName>lbl_width</fullName>
@@ -755,7 +755,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>tooltip_widthExample</shortDescription>
-        <value>You can user % or px for definition. Ex: 20px or 5%</value>
+        <value>You can use % or px for definition. Ex: 20px or 5%. Max width is set to 40% or 500px</value>
     </labels>
     <labels>
         <fullName>lbl_selectFieldsForServerFilter</fullName>
@@ -926,6 +926,14 @@ function(row,col,val){
         <value>Configure</value>
     </labels>
     <labels>
+        <fullName>lbl_actionWithThisOrderAlreadyExists</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_actionWithThisOrderAlreadyExists</shortDescription>
+        <value>Action with this order already exists</value>
+    </labels>
+    <labels>
         <fullName>lbl_selectSortOrder</fullName>
         <categories>XRL</categories>
         <language>en_US</language>
@@ -1003,7 +1011,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_isEqual</shortDescription>
-        <value>Is Equal</value>
+        <value>Is equal</value>
     </labels>
     <labels>
         <fullName>lbl_isNotEqual</fullName>
@@ -1011,7 +1019,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_isNotEqual</shortDescription>
-        <value>Is Not Equal</value>
+        <value>Is not equal</value>
     </labels>
     <labels>
         <fullName>lbl_isEmpty</fullName>
@@ -1019,7 +1027,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_isEmpty</shortDescription>
-        <value>Is Empty</value>
+        <value>Is empty</value>
     </labels>
     <labels>
         <fullName>lbl_isNotEmpty</fullName>
@@ -1027,7 +1035,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_isNotEmpty</shortDescription>
-        <value>Is Not Empty</value>
+        <value>Is not empty</value>
     </labels>
     <labels>
         <fullName>lbl_greater</fullName>
@@ -1035,7 +1043,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_greater</shortDescription>
-        <value>Greater</value>
+        <value>Greater than</value>
     </labels>
     <labels>
         <fullName>lbl_greaterOrEqual</fullName>
@@ -1043,7 +1051,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_greaterOrEqual</shortDescription>
-        <value>Greater or Equal</value>
+        <value>Greater or equal</value>
     </labels>
     <labels>
         <fullName>lbl_less</fullName>
@@ -1051,7 +1059,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_less</shortDescription>
-        <value>Less</value>
+        <value>Less than</value>
     </labels>
     <labels>
         <fullName>lbl_lessOrEqual</fullName>
@@ -1059,7 +1067,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_lessOrEqual</shortDescription>
-        <value>Less or Equal</value>
+        <value>Less or equal</value>
     </labels>
     <labels>
         <fullName>lbl_range</fullName>
@@ -1099,7 +1107,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_doesNotBeginsWith</shortDescription>
-        <value>Does Not Begins With</value>
+        <value>Does not begin with</value>
     </labels>
     <labels>
         <fullName>lbl_endsWith</fullName>
@@ -1115,7 +1123,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_doesNotEndsWith</shortDescription>
-        <value>Does Not Ends With</value>
+        <value>Does not end with</value>
     </labels>
     <labels>
         <fullName>hlpTxt_selectFields</fullName>
@@ -1123,7 +1131,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>hlpTxt_selectFields</shortDescription>
-        <value>You can select fields from the below list which will appear on the grid. Fields with &apos;&gt;&apos; sign indicates a reference field. Clicking reference fields will open that object&apos;s field list.</value>
+        <value>You can select fields from the list below that will appear on the grid. Fields with &apos;&gt;&apos; sign indicate reference fields. Clicking reference fields will open that object&apos;s field list.</value>
     </labels>
     <labels>
         <fullName>hlpTxt_selectedFields</fullName>
@@ -1139,7 +1147,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>hlpTxt_applyCondition</shortDescription>
-        <value>You can select fields from the below list to apply condition. Fields with &apos;&gt;&apos; sign indicates a reference field. Clicking reference fields will open that object&apos;s field list.</value>
+        <value>You can select fields from the list below to apply condition to . Fields with &apos;&gt;&apos; sign indicate reference fields. Clicking reference fields will open that object&apos;s field list.</value>
     </labels>
     <labels>
         <fullName>hlpTxt_applyConditionGetStartedText</fullName>
@@ -1155,7 +1163,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>hlpTxt_availableOperationTooltip</shortDescription>
-        <value>You can select your preferred operation from the list of below available operations</value>
+        <value>You can select your preferred operation from the list of available operations as shown</value>
     </labels>
     <labels>
         <fullName>hlpTxt_applyConditionInput</fullName>
@@ -1171,7 +1179,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>title_addConditionBtn</shortDescription>
-        <value>These will add this condition to the condition list. You can view it in the below table</value>
+        <value>Clicking on the button will add this condition to the condition list. You can view it in the below table</value>
     </labels>
     <labels>
         <fullName>hlpTxt_appliedConditions</fullName>
@@ -1203,7 +1211,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>title_appliedConditionsActionDelete</shortDescription>
-        <value>You can Delete this condition</value>
+        <value>You can delete this condition</value>
     </labels>
     <labels>
         <fullName>hlpTxt_applyOrdering</fullName>
@@ -1219,7 +1227,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>title_addOrdering</shortDescription>
-        <value>The selected Ordering and Empty field choice will be added</value>
+        <value>The selected sort order and empty field choice will be added in the grid</value>
     </labels>
     <labels>
         <fullName>hlpTxt_appliedOrderings</fullName>
@@ -1478,7 +1486,7 @@ function(record){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>tooltip_configCancel</shortDescription>
-        <value>Cancel the changes made. No changes will be saved as well as applied</value>
+        <value>No changes will be applied to the configuration</value>
     </labels>
     <labels>
         <fullName>tooltip_configShare</fullName>
@@ -1502,7 +1510,7 @@ function(record){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>title_newRecord</shortDescription>
-        <value>Create New Record</value>
+        <value>New</value>
     </labels>
     <labels>
         <fullName>altTxt_new</fullName>
@@ -1565,7 +1573,7 @@ return &quot;background-color:#F5F5F5;&quot; //light grey
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>lbl_deleteNoRecordSelectedError</shortDescription>
-        <value>Please Select at least 1 record. If checkbox is not enabled then follow Configure -> Table Settings -> Enable Checkboxes</value>
+        <value>Please Select at least 1 record. If checkbox is not enabled then follow Configure -&gt; Table Settings -&gt; Enable Checkboxes</value>
     </labels>
     <labels>
         <fullName>title_newListView</fullName>
@@ -1590,5 +1598,253 @@ return &quot;background-color:#F5F5F5;&quot; //light grey
         <protected>true</protected>
         <shortDescription>tooltip_actionVisibleOnRecords</shortDescription>
         <value>The action will be visible only after the record/records are selected from the grid</value>
+    </labels>
+    <labels>
+        <fullName>altTxt_expandView</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>altTxt_expandView</shortDescription>
+        <value>Expand View</value>
+    </labels>
+    <labels>
+        <fullName>title_expandView</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>title_expandView</shortDescription>
+        <value>Expand View</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_conditionFilteringPattern</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_conditionFilteringPattern</shortDescription>
+        <value>Construct different logical connections among conditions using parentheses and the words &apos;AND&apos; and &apos;OR&apos;.
+
+Example of Patterns
+
+1. (1 OR 2) AND 3 
+ 2. (1 OR 3) AND (2 OR 4)
+ 3. (2 OR 4) AND ((3 OR 6) AND (5 OR 1)) 
+
+Once you are done editing the pattern, click outside the input box.</value>
+    </labels>
+    <labels>
+        <fullName>msg_rowDblClickError</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_rowDblClickError</shortDescription>
+        <value>This column is not editable. If you want to edit please enable it from configuration</value>
+    </labels>
+    <labels>
+        <fullName>msg_itemsUpdated</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_itemsUpdated</shortDescription>
+        <value>item(s) updated</value>
+    </labels>
+    <labels>
+        <fullName>msg_enterUniqueActionId</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_enterUniqueActionId</shortDescription>
+        <value>Please enter a unique Action Id to save</value>
+    </labels>
+    <labels>
+        <fullName>msg_actionHideError</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_actionHideError</shortDescription>
+        <value>You can't select this option as you've already selected "Action visible only after record selection". Please deselect that to select this option</value>
+    </labels>
+    <labels>
+        <fullName>msg_actionVisibleOnRecordSelectionError</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_actionVisibleOnRecordSelectionError</shortDescription>
+        <value>You can't select this option as you've already selected "Hide this action". Please deselect that to select this option</value>
+    </labels>
+    <labels>
+        <fullName>msg_noListViewFound</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_noListViewFound</shortDescription>
+        <value>No ListView Found</value>
+    </labels>
+    <labels>
+        <fullName>msg_confirmConfigDelete</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_confirmConfigDelete</shortDescription>
+        <value>Are you sure you want to delete this config?</value>
+    </labels>
+    <labels>
+        <fullName>msg_successfullyDeleted</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_successfullyDeleted</shortDescription>
+        <value>Successfully Deleted</value>
+    </labels>
+    <labels>
+        <fullName>lbl_beforeSaveApexAction</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_beforeSaveApexAction</shortDescription>
+        <value>Class and Method name to be executed</value>
+    </labels>
+    <labels>
+        <fullName>altTxt_resetFilters</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>altTxt_resetFilters</shortDescription>
+        <value>Reset Filters</value>
+    </labels>
+    <labels>
+        <fullName>title_resetFilters</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>title_resetFilters</shortDescription>
+        <value>Reset Filters</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_beforeSaveApexAction</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_beforeSaveApexAction</shortDescription>
+        <value>This class method will be executed before the save action</value>
+    </labels>
+    <labels>
+        <fullName>msg_recordSelection</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_recordSelection</shortDescription>
+        <value>{0} item(s) selected of {1} item(s)</value>
+    </labels>
+    <labels>
+        <fullName>lbl_items</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_items</shortDescription>
+        <value> item(s)</value>
+    </labels>
+    <labels>
+        <fullName>msg_unsaveRecordsCannotPerformOtherAction</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_unsaveRecordsCannotPerformOtherAction</shortDescription>
+        <value>There is unsaved records. Please save those before performing next operation</value>
+    </labels>
+    <labels>
+        <fullName>msg_youCantaddMoreThan20Fields</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_youCantaddMoreThan20Fields</shortDescription>
+        <value>You can not add more than 20 columns</value>
+    </labels>
+    <labels>
+        <fullName>msg_noOperationAvailable</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_noOperationAvailable</shortDescription>
+        <value>No Operation Available</value>
+    </labels>
+    <labels>
+        <fullName>msg_invalidInputSqlBuilderConditionFormat</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_invalidInputSqlBuilderConditionFormat</shortDescription>
+        <value>Invalid Format</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_deleteCustomAction</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_deleteCustomAction</shortDescription>
+        <value>Delete this Custom Action</value>
+    </labels>
+    <labels>
+        <fullName>msg_deleteCustomActionConfirmation</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_deleteCustomActionConfirmation</shortDescription>
+        <value>Are you sure you want to delete this custom action? This action can not be undone.</value>
+    </labels>
+    <labels>
+        <fullName>title_deleteCustomAction</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>title_deleteCustomAction</shortDescription>
+        <value>Delete Custom Action</value>
+    </labels>
+    <labels>
+        <fullName>msg_noCustomActionConfigured</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_noCustomActionConfigured</shortDescription>
+        <value>No flow or callback (action) configured.</value>
+    </labels>
+    <labels>
+        <fullName>msg_cannotKeepThisBlank</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_cannotKeepThisBlank</shortDescription>
+        <value>You can not keep this blank</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_isColumnHidden</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_isColumnHidden</shortDescription>
+        <value>This column will be hidden from the view, even if it is configured in field selection</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_isColumnFilterable</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_isColumnFilterable</shortDescription>
+        <value>Users can apply column filter on the fields by clicking on checkbox </value>
+    </labels>
+    <labels>
+        <fullName>tooltip_isColumnSortable</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_isColumnSortable</shortDescription>
+        <value>Users can apply sorting on the columns by clicking on checkbox </value>
+    </labels>
+    <labels>
+        <fullName>tooltip_isColumnWrapable</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_isColumnWrapable</shortDescription>
+        <value>By default column contents will be clipped.</value>
     </labels>
 </CustomLabels>

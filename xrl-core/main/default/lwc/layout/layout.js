@@ -2,11 +2,10 @@ import { LightningElement, api, track } from 'lwc';
 import { libs } from 'c/libs';
 
 export default class Layout extends LightningElement {
-    @track apiName;
-	@track name;
 	@api recordId;
 	@api defaultListView;	
 	@api configuration;
+	@api configId;
 
 	@track config = {};
 	@track localConfig = {};
@@ -18,11 +17,14 @@ export default class Layout extends LightningElement {
 	@track dialogCfg;
 	@track dataTableConfig;
     @track components;
-	@track configId;
+	@track name;
+	@track tabConfigName;
 
     connectedCallback() {
 		console.log('RENDERED');
-		// this.loadCfg(true);
+		this.name = this.configId.split('::')[1];
+		this.configId = this.configId.split('::')[0];
+		this.loadCfg(true);
 	}
 
 	setCustomLabels(cmd, data) {
@@ -32,28 +34,14 @@ export default class Layout extends LightningElement {
 
 	loadCfg(isInit) {
 		libs.remoteAction(this, 'getCustomLabels', {callback: this.setCustomLabels.bind(this) });
-		let apiNames = this.apiName.split(':');
-		console.log(apiNames);
 		this.localConfig = {};
 
 		let cfg = libs.loadConfig(this.name);
 		if (cfg !== undefined) {
 			this.localConfig = cfg;
-			libs.setGlobalVar(this.name, {
-				"sObjLabel": apiNames[0],
-				"sObjApiName": apiNames[1],
-				"relField": apiNames[2],
-				//"fields": ['Id', 'LastModifiedDate'],
-				"iconName": "/img/icon/t4v35/standard/custom_120.png"
-			});
+			libs.setGlobalVar(this.name, {});
 		} else {
-			libs.setGlobalVar(this.name, {
-				"sObjLabel": apiNames[0],
-				"sObjApiName": apiNames[1],
-				"relField": apiNames[2],
-				"fields": ['Id', 'LastModifiedDate'],
-				"iconName": "/img/icon/t4v35/standard/custom_120.png"
-			});
+			libs.setGlobalVar(this.name, {});
 		}
 		this.config = libs.getGlobalVar(this.name);
 		
@@ -61,122 +49,86 @@ export default class Layout extends LightningElement {
 		if (this.configuration) {
 			this.setConfig('getConfigResult', this.configuration);
 		} else {
-			libs.remoteAction(this, 'getConfigById', { configId: this.apiName, callback: this.getWholeConfig.bind(this) });
+			libs.remoteAction(this, 'getConfigById', { configId: this.configId, callback: this.getWholeConfig.bind(this) });
 		}
 	}
-	getWholeConfig(cmd,data){
-		console.log('my',JSON.parse(JSON.stringify(data[cmd].listViews)));
+	async getWholeConfig(cmd,data){
 		let jsonDetails = JSON.parse(JSON.stringify(data[cmd].listViews));
-		this.config.listViewName = jsonDetails[0].name;
-		this.config.sObjApiName = jsonDetails[0].sObjApiName;
-		this.config.relField = jsonDetails[0].relFieldName;
-		libs.remoteAction(this, 'getConfig', { sObjApiName: jsonDetails[0].sObjApiName, relField: jsonDetails[0].relFieldName, listViewName: jsonDetails[0].name, callback: this.setConfig.bind(this) });
+		if(jsonDetails[0].configType === 'Tabular'){
+			console.log('In Tabular');
+			this.handleTabularFormat(data[cmd]);
+		}else{
+			await this.setConfig(cmd,data);
+			this.components = [];
+			this.config.listViewConfig.forEach((el,index)=>{
+				console.log('cmpName',el.cmpName);
+				if(el.cmpName === 'dataTable') this.components.push({isDataTable:true,key:'sFilter'+index});
+				if(el.cmpName === 'serversideFilter') this.components.push({isServerFilter:true,key:'dataTable'+index});
+			});
+			// this.config.listViewName = jsonDetails[0].name;
+			// this.config.sObjApiName = jsonDetails[0].sObjApiName;
+			// this.config.relField = jsonDetails[0].relFieldName;
+			// libs.remoteAction(this, 'getConfig', { sObjApiName: jsonDetails[0].sObjApiName, relField: jsonDetails[0].relFieldName, listViewName: jsonDetails[0].name, callback: this.setConfig.bind(this) });
+		}
 	}
 
-	setConfig(cmd, data) {
+	async setConfig(cmd, data) {
 		console.log(cmd, JSON.parse(JSON.stringify(data)), JSON.parse(JSON.stringify(data[cmd])));
 		libs.getGlobalVar(this.name).userInfo = data.userInfo;
-
-		let adminConfig = (data[cmd].baseConfig) ? JSON.parse(data[cmd].baseConfig) : {};
-		let userConfig = (data[cmd].userConfig) ? JSON.parse(JSON.stringify(data[cmd].userConfig)) : {};
-
-		console.log('adminConfig', adminConfig);
-		console.log('userConfig', JSON.parse(userConfig));
-
-		let dataTableConfig;
-		let adminDataTableConfig = adminConfig;
-		// adminConfig = JSON.parse(adminConfig);
-		// adminConfig.forEach((el)=>{
-		// 	if(el.cmpName === 'dataTable') {
-		// 		adminDataTableConfig = el;
-		// 	}
-		// });
-		userConfig = JSON.parse(userConfig);
-		userConfig.forEach((el)=>{
-			if(el.cmpName === 'dataTable') {
-				dataTableConfig = el;
-			}
-		});
-
-		if (dataTableConfig.colModel === undefined){
-			dataTableConfig.colModel = [{
-				"fieldName" : "Id"
-			}];
-		} 
-
-		let mergedConfig = {};
-		Object.assign(mergedConfig, dataTableConfig);
-		mergedConfig.colModel = [];
-
-		let baseColMap = new Map();
-		adminDataTableConfig?.colModel?.forEach(col => {
-			baseColMap.set(col.fieldName, col);
-		});
-		dataTableConfig?.colModel?.forEach(col => {
-			if (baseColMap.has(col.fieldName)) {
-				let mergedCol = Object.assign(baseColMap.get(col.fieldName), col);
-				mergedConfig.colModel.push(mergedCol);
-				baseColMap.delete(col.fieldName)
-			} else {
-				mergedConfig.colModel.push(col);
-			}
-		});
-		mergedConfig.colModel.push(...Array.from(baseColMap.values()));
-		dataTableConfig.colModel = mergedConfig.colModel;
-		// Object.assign(mergedConfig, userConfig);
-		userConfig.forEach((el)=>{
-			if(el.cmpName === 'dataTable') {
-				el = dataTableConfig;
-			}
-		});
-		console.log('mergedConfig', userConfig);
-
-		this.config.listViewConfig = userConfig;
-		this.config.listViewConfig.forEach((el)=>{
-			if(el.cmpName === 'dataTable') {
-				this.dataTableConfig =  el;
-			}
-		});
-		this.config.listView = data[cmd].listViews.find(v => { return v.isUserConfig;});
-		console.log(JSON.stringify(this.config.listView));
-		this.config.currency =  data[cmd].currency;
-		//if (this.config.userInfo.isAdminAccess === true) delete this.localConfig.listViewName;
+		
+		this.config.listViewConfig = data[cmd].userConfig ? JSON.parse(data[cmd].userConfig) : [];
+		this.config.currency = data[cmd].currency;
 		this.config.describe = data[cmd].describe ? JSON.parse(data[cmd].describe) : {};
-		if (this.config.userInfo.isAdminAccess) {
-			this.listViews = data[cmd].listViews.map(v => {return {label: v.label ? v.label : v.name, value: v.name};});
-		} else {
-			this.listViews = data[cmd].listViews.filter(v => { return !v.isAdminConfig;}).map(v => {return {label: v.label ? v.label : v.name, value: v.name};});
-		}		
-
 		this.config.fields = [];
 		this.config.lockedFields = [];
 		
-		this.dataTableConfig?.colModel?.forEach(e => {
-			let describe = this.config.describe[e.fieldName];
-			if (describe && describe.type === 'reference') {
-				this.config.fields.push(describe.relationshipName + '.Name');
-				if (e.locked) this.config.lockedFields.push(describe.relationshipName + '.Name');
-			}
-			this.config.fields.push(e.fieldName);
-			if (e.locked) this.config.lockedFields.push(e.fieldName);
-		});
+		const dataTableConfig = this.config.listViewConfig.find(config => config.cmpName === 'dataTable');
+		if (!dataTableConfig) {
+			this.config.listViewConfig.push({
+				cmpName: 'dataTable',
+				colModel: [{
+					fieldName: 'Id',
+					updateable: false,
+					isNameField: false,
+					isEditable: false,
+					isFilterable: true,
+					isSortable: true
+				}]
+			});
+		}
 		
-		// Temporary
-		this.config.isGlobalSearch=this.dataTableConfig.isGlobalSearch;
-
+		const mergedConfig = {
+			...dataTableConfig,
+			colModel: dataTableConfig.colModel.reduce((acc, col) => {
+				const existingCol = acc.find(c => c.fieldName === col.fieldName);
+				if (existingCol) {
+					acc[acc.indexOf(existingCol)] = {...existingCol, ...col};
+				} else {
+					acc.push(col);
+				}
+				return acc;
+			}, [])
+		};
+		
+		this.config.listViewConfig[this.config.listViewConfig.indexOf(dataTableConfig)] = mergedConfig;
+		console.log('mergedConfig', this.config.listViewConfig);
+		
+		dataTableConfig.colModel.forEach(col => {
+			this.config.fields.push(col.fieldName);
+		});
+		dataTableConfig.rowChecked = false;
+		
 		console.log('this.config', this.config);
-
-		this.loadRecords();		
-	}
-
-	loadRecords() {
-		libs.remoteAction(this, 'query', {
+		this.config.relField = data[cmd].listViews[0].relField;
+		this.config.sObjApiName = data[cmd].listViews[0].sObjApiName;
+		const records = await libs.remoteAction(this, 'query', {
 			isNeedDescribe: true,
 			sObjApiName: this.config.sObjApiName,
 			relField: this.config.relField,
-			addCondition: this.config.listViewConfig.addCondition,
+			addCondition: this.config.listViewConfig[0].addCondition,
+			orderBy: this.config.listViewConfig[0].orderBy,
 			fields: this.config.fields,
-			listViewName: this.config?.listViewName,
+			listViewName: this.config.listView?.name,
 			callback: ((nodeName, data) => {
 				console.log('length', data[nodeName].records);
 				
@@ -186,10 +138,13 @@ export default class Layout extends LightningElement {
 				this.allRecords = this.config.records;
 				
 				console.log('loadRecords', libs.getGlobalVar(this.name));
-				this.generateColModel();
+				return new Promise(resolve => {
+					resolve();
+				});
 			})
-		});
+		})
 	}
+	
 
 	generateColModel() {
 		this.dataTableConfig.colModel.forEach(e => {
@@ -224,11 +179,6 @@ export default class Layout extends LightningElement {
 				el=this.dataTableConfig;
 			}
 		});
-        this.components = [];
-        this.config.listViewConfig.forEach((el,index)=>{
-			if(el.cmpName === 'dataTable') this.components.push({isDataTable:true,key:'sFilter'+index});
-            if(el.cmpName === 'serversideFilter') this.components.push({isServerFilter:true,key:'dataTable'+index});
-		});
 	}
 	handleChildMessage(event){
 		if(event.detail.cmd.startsWith('dataTable:')) {
@@ -239,11 +189,60 @@ export default class Layout extends LightningElement {
 	handleGlobalMessage(event){
 
 	}
-	unsubscribeToMessageChannel() {
-        unsubscribe(this.subscription);
-        this.subscription = null;
-    }
-	disconnectedCallback() {
-        this.unsubscribeToMessageChannel();
-    }
+	async handleTabularFormat(configData) {
+		try {
+			// Set table configuration
+			this.tabConfigName = this.name;
+			this.config.tabularConfig = JSON.parse(configData.userConfig);
+			this.config.rows = this.config.tabularConfig.tableDefinition.rows;
+			this.config.cols = this.config.tabularConfig.tableDefinition.cols;
+			this.config.colClass = this.config.cols != 12 ? `slds-col slds-size_${12 / parseInt(this.config.cols)}-of-12` : 'slds-col slds-size_12-of-12';
+
+			// Loop through data model components
+			for (const cmp of this.config.tabularConfig.dataModel) {
+				// Check if component is blank or text
+				if (cmp.isBlank) {
+				console.log('This is Blank');
+				continue;
+				} else if (cmp.isText) {
+				console.log('This is text');
+				continue;
+				} else if (!cmp.isCmp) {
+				continue;
+				}
+		
+				// Check if component is DataTable or ServerSideFilter
+				cmp.isDataTable = cmp.cmpName === 'dataTable';
+				cmp.isServerFilter = cmp.cmpName === 'serversideFilter';
+		
+				// Set component configuration
+				this.name = cmp.uniqueName;
+				let configUniqueName = cmp.configUniqueName;
+				console.log('Name:', this.name);
+		
+				libs.setGlobalVar(this.name, {});
+				this.config = libs.getGlobalVar(this.name);
+				Object.assign(this.config, {
+				'_LABELS': libs.getGlobalVar(this.tabConfigName)._LABELS
+				});
+
+				// Call getConfigById for DataTable or ServerSideFilter
+				if (cmp.isDataTable) {
+					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: this.setConfig.bind(this) });
+					await new Promise(resolve => setTimeout(resolve, 3000)); //this needs to debug, should work without timeout
+				} else if (cmp.isServerFilter) {
+					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
+						this.config.listViewConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig) : [];
+					} });
+				}
+			}
+	
+			// Set global configuration
+			this.config = libs.getGlobalVar(this.tabConfigName);
+			this.config.isTabular = true;
+		} catch (error) {
+			console.error(error);
+		}
+	}
+ 
 }

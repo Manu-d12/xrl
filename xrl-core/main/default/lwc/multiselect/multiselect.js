@@ -3,7 +3,7 @@ import { LightningElement, track, api } from 'lwc';
 export default class Multiselect extends LightningElement {
     
     @api options;
-    @api selectedValue;
+    @api selectedvalue;
     @api selectedvalues = [];
     @api label;
     @api disabled = false;
@@ -17,7 +17,7 @@ export default class Multiselect extends LightningElement {
         this.mSelectConfig.showOptionCount = true;
         this.mSelectConfig.minChar = 2;
         var optionData = this.options ? (JSON.parse(JSON.stringify(this.options))) : null;
-        var value = this.selectedValue ? (JSON.parse(JSON.stringify(this.selectedValue))) : null;
+        var value = this.selectedvalue ? (JSON.parse(JSON.stringify(this.selectedvalue))) : null;
         var values = this.selectedvalues ? (JSON.parse(JSON.stringify(this.selectedvalues))) : null;
 		if(value || values) {
             var searchString;
@@ -102,9 +102,10 @@ export default class Multiselect extends LightningElement {
             this.mSelectConfig.optionData = options;
             if(this.multiselect)
                 this.mSelectConfig.searchString = count + ' Option(s) Selected';
-            if(this.multiselect)
+            if(this.multiselect){
                 event.preventDefault();
-            else
+                this.blurEvent('',true);
+            }else
                 this.mSelectConfig.showDropdown = false;
         }
     }
@@ -125,7 +126,7 @@ export default class Multiselect extends LightningElement {
         }
 	}
 
-    blurEvent() {
+    blurEvent(event,shouldDispatchEvent) {
         var previousLabel;
         var count = 0;
         for(var i = 0; i < this.mSelectConfig.optionData.length; i++) {
@@ -136,21 +137,34 @@ export default class Multiselect extends LightningElement {
                 count++;
             }
         }
-        if(this.multiselect)
+        if(this.multiselect){
             this.mSelectConfig.searchString = count + ' Option(s) Selected';
-        else
-            this.mSelectConfig.searchString = previousLabel;
-        
-            this.mSelectConfig.showDropdown = false;
-
-        this.dispatchEvent(new CustomEvent('select', {
-            detail: {
-                'payloadType' : 'multi-select',
-                'payload' : {
-                    'value' : this.mSelectConfig.value,
-                    'values' : this.mSelectConfig.values
-                }
+            if(shouldDispatchEvent !== undefined){
+                this.dispatchEvent(new CustomEvent('select', {
+                    detail: {
+                        'payloadType' : 'multi-select',
+                        'payload' : {
+                            'value' : this.mSelectConfig.value,
+                            'values' : this.mSelectConfig.values
+                        }
+                    }
+                }));
+            }else{
+                this.mSelectConfig.showDropdown = false;
             }
-        }));
+        }
+        else{
+            this.mSelectConfig.searchString = previousLabel;
+            this.dispatchEvent(new CustomEvent('select', {
+                detail: {
+                    'payloadType' : 'multi-select',
+                    'payload' : {
+                        'value' : this.mSelectConfig.value,
+                        'values' : this.mSelectConfig.values
+                    }
+                }
+            }));
+            this.mSelectConfig.showDropdown = false;
+        }
     }
 }

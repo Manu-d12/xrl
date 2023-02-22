@@ -24,6 +24,9 @@ global with sharing class infrastructure {
 				when 'getConfigById' {
 					resultMethod = getConfigById(data);
 				}
+				when 'getConfigByUniqueName'{
+					resultMethod = getConfigByUniqueName(data);
+				}
 				when 'query' {
 					resultMethod = getQuery(data);
 				}
@@ -47,8 +50,12 @@ global with sharing class infrastructure {
 				}
 				when 'objectList' {
 					resultMethod = objectList();
-				}when 'objectFieldList' {
+				}
+				when 'objectFieldList' {
 					resultMethod = objectFieldList(data);
+				}
+				when 'deleteConfig' {
+					resultMethod = deleteConfig(data);
 				}				
 				when
 				else {
@@ -70,6 +77,7 @@ global with sharing class infrastructure {
 		System.debug(publicGroups);
 
 		result.put('userInfo', new map < string, object > {
+			'timezone'=>UserInfo.getTimeZone().getID(),
 			'locale' => userInfo.getLocale().replaceAll('_', '-').replace('-EURO', ''),
 			'isAdminAccess' => isAdminAccess,
 			'profileName' => userDetails.Profile.Name,
@@ -109,8 +117,9 @@ global with sharing class infrastructure {
 			result.put('describe', JSON.serialize(describeResult));
 		}*/
 
-		if (UserInfo.isMultiCurrencyOrganization() == true) {
-			fields.add('CurrencyIsoCode');
+		if (UserInfo.isMultiCurrencyOrganization()) {
+			System.debug('Multi Currency');
+			soqlFields.add('CurrencyIsoCode');
 		}
 
 		string SOQL = (relField != '') ?
@@ -157,16 +166,19 @@ global with sharing class infrastructure {
 		map < string, object > result = new map < string, object > {};
 
 		list < map < string, object >> listViews = new list < map < string, object >> {};
+		List<String> extIds = new List<String>();
 
-		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c FROM extRelListConfig__c WHERE sObjApiName__c =: sObjApiName AND relFieldApiName__c =: relField AND(CreatedById =: userInfo.getUserID() OR isAdminConfig__c = TRUE) AND Is_Active__c = TRUE AND RecordType.Name = 'Config'
+		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c, CreatedBy.Name FROM extRelListConfig__c WHERE sObjApiName__c =: sObjApiName AND relFieldApiName__c =: relField AND Is_Active__c = TRUE AND RecordType.Name = 'Config'
 			ORDER BY isAdminConfig__c DESC, listViewName__c ASC LIMIT 20];
 		for (integer i = 0; i < lst.size(); i++) {
 			extRelListConfig__c item = lst[i];
+			extIds.add(item.Id);
 			map < string, object > view = new map < string, object > {
 				'id' => item.Id,
 				'name' => item.listViewName__c,
 				'label' => item.listViewLabel__c,
-				'isAdminConfig' => item.isAdminConfig__c
+				'isAdminConfig' => item.isAdminConfig__c,
+				'createdBy' => item.CreatedBy.Name
 			};
 			if (item.listViewName__c == listViewName || string.isEmpty(listViewName) || (i == lst.size() - 1 && result.get('userConfig') == null)) {
 				view.put('isUserConfig', true);
@@ -174,6 +186,10 @@ global with sharing class infrastructure {
 			}
 			if (item.isAdminConfig__c) result.put('baseConfig', item.JSON__c);
 			listViews.add(view);
+		}
+		Map<Id, UserRecordAccess> extRecordAccess = new Map<Id, UserRecordAccess>([SELECT RecordId, HasEditAccess FROM UserRecordAccess WHERE UserId = :UserInfo.getUserId() AND RecordId IN :extIds]);
+		for(map < string, object > singleView : listViews){
+			singleView.put('hasEditAccess', (extRecordAccess.get((string) singleView.get('id'))).get('HasEditAccess'));
 		}
 		result.put('listViews', listViews);
 
@@ -196,9 +212,6 @@ global with sharing class infrastructure {
 		return result;
 	}
 	private static map < string, object > getConfigById(map < string, object > data) {
-		// string sObjApiName = (string) data.get('sObjApiName');
-		// string relField = (string) data.get('relField');
-		// string listViewName = (string) data.get('listViewName');
 		string configId = (string) data.get('configId');
 		boolean isNeedDescribe = true;
 
@@ -206,7 +219,7 @@ global with sharing class infrastructure {
 
 		list < map < string, object >> listViews = new list < map < string, object >> {};
 
-		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c, sObjApiName__c, relFieldApiName__c FROM extRelListConfig__c WHERE Id =: configId LIMIT 20];
+		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c, sObjApiName__c, relFieldApiName__c, configType__c FROM extRelListConfig__c WHERE Id =: configId LIMIT 20];
 		for (integer i = 0; i < lst.size(); i++) {
 			extRelListConfig__c item = lst[i];
 			map < string, object > view = new map < string, object > {
@@ -214,7 +227,8 @@ global with sharing class infrastructure {
 				'label' => item.listViewLabel__c,
 				'isAdminConfig' => item.isAdminConfig__c,
 				'sObjApiName' => item.sObjApiName__c,
-				'relFieldName' => item.relFieldApiName__c
+				'relField' => item.relFieldApiName__c,
+				'configType' => item.configType__c
 			};
 			view.put('isUserConfig', true);
 			result.put('userConfig', item.JSON__c);
@@ -228,6 +242,52 @@ global with sharing class infrastructure {
 			'isMultyCurrencyOrg' => UserInfo.isMultiCurrencyOrganization()
 		});
 
+		return result;
+	}
+	private static map < string, object > getConfigByUniqueName(map < string, object > data) {
+		string uniqueName = (string) data.get('uniqueName');
+		boolean isNeedDescribe = true;
+
+		map < string, object > result = new map < string, object > {};
+
+		list < map < string, object >> listViews = new list < map < string, object >> {};
+
+		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c, sObjApiName__c, relFieldApiName__c, configType__c FROM extRelListConfig__c WHERE uniqKey__c =: uniqueName LIMIT 20];
+		for (integer i = 0; i < lst.size(); i++) {
+			extRelListConfig__c item = lst[i];
+			map < string, object > view = new map < string, object > {
+				'name' => item.listViewName__c,
+				'label' => item.listViewLabel__c,
+				'isAdminConfig' => item.isAdminConfig__c,
+				'sObjApiName' => item.sObjApiName__c,
+				'relField' => item.relFieldApiName__c,
+				'configType' => item.configType__c
+			};
+			view.put('isUserConfig', true);
+			result.put('userConfig', item.JSON__c);
+			if (item.isAdminConfig__c) result.put('baseConfig', item.JSON__c);
+			listViews.add(view);
+		}
+		result.put('listViews', listViews);
+
+		result.put('currency', new map < string, object > {
+			'orgCurrency' => UserInfo.getDefaultCurrency(),
+			'isMultyCurrencyOrg' => UserInfo.isMultiCurrencyOrganization()
+		});
+
+		return result;
+	}
+	private static object deleteConfig(map < string, object > data) {
+		string configId = (string) data.get('configId');
+
+		map < string, object > result = new map < string, object > ();
+
+		try{
+			delete [SELECT Id FROM extRelListConfig__c WHERE Id= :configId];
+			result.put('status','Success');
+		}catch(DmlException e){
+			result.put('status',e.getMessage());
+		}
 		return result;
 	}
 
@@ -251,6 +311,10 @@ global with sharing class infrastructure {
 			AND(SobjectType = 'extRelListConfig__c'
 				OR SobjectType = 'XRL__extRelListConfig__c') limit 1];
 
+		if(listViewName.equals('_admin') || listViewName.equals('_default')){
+			delete [select Id from extRelListConfig__c where listViewName__c = '_admin' OR listViewName__c = '_default'];
+		}
+
 		extRelListConfig__c listView = new extRelListConfig__c(
 			listViewName__c = listViewName,
 			listViewLabel__c = listViewLabel,
@@ -263,8 +327,31 @@ global with sharing class infrastructure {
 		);
 
 		upsert listView uniqKey__c;
+
+		//sharing _admin/_default record with all org users
+		if(listViewName.equals('_admin') || listViewName.equals('_default')){
+			shareRecord(listView.Id);
+		}
+
 		return data;
 	}
+	private static boolean shareRecord(Id recordId){
+		List<extRelListConfig__Share> shrObj = new List<extRelListConfig__Share>();
+
+		for(User u:  [SELECT Id,name,ProfileId,IsActive FROM User WHERE Profile.UserLicense.Name != null AND Id != :UserInfo.getUserId()] ){
+			extRelListConfig__Share jobShr  = new extRelListConfig__Share();
+
+			jobShr.ParentId = recordId;
+			jobShr.UserOrGroupId = u.Id;
+			jobShr.AccessLevel = 'Read';
+			jobShr.RowCause = Schema.extRelListConfig__Share.RowCause.Manual;
+			shrObj.add(jobShr);
+		}
+		  
+		insert shrObj;
+  
+		return true;
+	 }
 
 	private static object saveRecords(map < string, object > data) {
 		//https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_Security.htm#apex_System_Security_stripInaccessible
@@ -384,6 +471,9 @@ global with sharing class infrastructure {
 			'altTxt_save' => label.altTxt_save,
 			'altTxt_saveFilter' => label.altTxt_saveFilter,
 			'altTxt_new'=>label.altTxt_new,
+			'altTxt_expandView'=>label.altTxt_expandView,
+			'altTxt_locked'=>label.altTxt_locked,
+			'altTxt_resetFilters'=>label.altTxt_resetFilters,
 			'errMsg_recordsNotFound' => label.errMsg_recordsNotFound,
 			'errMsg_wrapableAndClipableCanNotBeSelectedTogether' => label.errMsg_wrapableAndClipableCanNotBeSelectedTogether,
 			'errMsg_anEmptyMsgCannotBeSent' => label.errMsg_anEmptyMsgCannotBeSent,
@@ -438,7 +528,6 @@ global with sharing class infrastructure {
 			'lbl_isColumnSortable' => label.lbl_isColumnSortable,
 			'lbl_isColumnEditable' => label.lbl_isColumnEditable,
 			'lbl_isColumnWrapable' => label.lbl_isColumnWrapable,
-			'lbl_isColumnClipable' => label.lbl_isColumnClipable,
 			'lbl_width' => label.lbl_width,
 			'lbl_selectFieldsForServerFilter' => label.lbl_selectFieldsForServerFilter,
 			'lbl_more' => label.lbl_more,
@@ -501,10 +590,29 @@ global with sharing class infrastructure {
 			'lbl_columnFilter'=>label.lbl_columnFilter,
 			'lbl_deleteNoRecordSelectedError'=>label.lbl_deleteNoRecordSelectedError,
 			'lbl_actionVisibleOnRecords'=>label.lbl_actionVisibleOnRecords,
+			'lbl_beforeSaveApexAction'=>label.lbl_beforeSaveApexAction,
+			'lbl_items'=>label.lbl_items,
+			'lbl_actionWithThisOrderAlreadyExists'=>label.lbl_actionWithThisOrderAlreadyExists,
+			'msg_enterUniqueActionId'=>label.msg_enterUniqueActionId,
 			'msg_lisViewWasUpdated' => label.msg_lisViewWasUpdated,
 			'msg_requestWasSent' => label.msg_requestWasSent,
 			'msg_deleteConfirm1'=>label.msg_deleteConfirm1,
 			'msg_deleteConfirm2'=>label.msg_deleteConfirm2,
+			'msg_rowDblClickError'=>label.msg_rowDblClickError,
+			'msg_itemsUpdated'=>label.msg_itemsUpdated,
+			'msg_actionHideError'=>label.msg_actionHideError,
+			'msg_actionVisibleOnRecordSelectionError'=>label.msg_actionVisibleOnRecordSelectionError,
+			'msg_noListViewFound'=>label.msg_noListViewFound,
+			'msg_confirmConfigDelete'=>label.msg_confirmConfigDelete,
+			'msg_successfullyDeleted'=>label.msg_successfullyDeleted,
+			'msg_recordSelection'=>label.msg_recordSelection,
+			'msg_invalidInputSqlBuilderConditionFormat'=>label.msg_invalidInputSqlBuilderConditionFormat,
+			'msg_unsaveRecordsCannotPerformOtherAction'=>label.msg_unsaveRecordsCannotPerformOtherAction,
+			'msg_youCantaddMoreThan20Fields'=>label.msg_youCantaddMoreThan20Fields,
+			'msg_noOperationAvailable'=>label.msg_noOperationAvailable,
+			'msg_deleteCustomActionConfirmation'=>label.msg_deleteCustomActionConfirmation,
+			'msg_noCustomActionConfigured'=>label.msg_noCustomActionConfigured,
+			'msg_cannotKeepThisBlank'=>label.msg_cannotKeepThisBlank,
 			'placeHolder_beforeSaveValidation'=>label.placeHolder_beforeSaveValidation,
 			'placeHolder_beforeDeleteValidation'=>label.placeHolder_beforeDeleteValidation,
 			'placeholder_actionCallback'=> label.placeholder_actionCallback,
@@ -534,6 +642,9 @@ global with sharing class infrastructure {
 			'title_selectListView'=>label.title_selectListView,
 			'title_newRecord'=>label.title_newRecord,
 			'title_newListView'=>label.title_newListView,
+			'title_expandView'=>label.title_expandView,
+			'title_resetFilters'=>label.title_resetFilters,
+			'title_deleteCustomAction'=>label.title_deleteCustomAction,
 			'tooltip_addNumerationColumnToTable' => label.tooltip_addNumerationColumnToTable,
 			'tooltip_addCheckBoxColumnToTable' => label.tooltip_addCheckBoxColumnToTable,
 			'tooltip_showGlobalTableSearch' => label.tooltip_showGlobalTableSearch,
@@ -563,6 +674,12 @@ global with sharing class infrastructure {
 			'tooltip_configSaveAsSave'=>label.tooltip_configSaveAsSave,
 			'tooltip_configSaveAsCancel'=>label.tooltip_configSaveAsCancel,
 			'tooltip_actionVisibleOnRecords'=>label.tooltip_actionVisibleOnRecords,
+			'tooltip_beforeSaveApexAction'=>label.tooltip_beforeSaveApexAction,
+			'tooltip_deleteCustomAction'=>label.tooltip_deleteCustomAction,
+			'tooltip_isColumnHidden'=>label.tooltip_isColumnHidden,
+			'tooltip_isColumnFilterable'=>label.tooltip_isColumnFilterable,
+			'tooltip_isColumnSortable'=>label.tooltip_isColumnSortable,
+			'tooltip_isColumnWrapable'=>label.tooltip_isColumnWrapable,
 			'srcLbl_available' => label.srcLbl_available,
 			'srcLbl_optional' => label.srcLbl_optional
 		};

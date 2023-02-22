@@ -3,7 +3,7 @@
     <brand>
         <headerColor>#0070D2</headerColor>
         <logo>xrllogo</logo>
-        <logoVersion>1</logoVersion>
+        <logoVersion>2</logoVersion>
         <shouldOverrideOrgTheme>true</shouldOverrideOrgTheme>
     </brand>
     <formFactors>Small</formFactors>

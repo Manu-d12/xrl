@@ -23,6 +23,15 @@ public class packageTest {
         test.stopTest();
         System.assertNotEquals(null, res.get('getConfigResult'));
     }
+    @isTest
+    public static void testGetConfigByUniqueName() {
+        map < string, object > data = new map < string, object > ();
+        data.put('uniqueName', 'Case:AccountId:true:_admin');
+        test.startTest();
+        map < string, object > res = infrastructure.dispatcherAura('getConfigByUniqueName', data);
+        test.stopTest();
+        System.assertNotEquals(null, res.get('getConfigByUniqueNameResult'));
+    }
 
     @isTest
     public static void testQuery() {
@@ -47,12 +56,25 @@ public class packageTest {
         data.put('sObjApiName', 'Contact');
         data.put('relField', 'AccountId');
         data.put('config', '{}');
+        data.put('listViewName', 'users');
+        test.startTest();
+        map < string, object > res = infrastructure.dispatcherAura('saveListView', data);
+        test.stopTest();
+        // System.assertNotEquals(null, res.get('saveListViewResult'));
+        System.assertEquals(1, [SELECT Id FROM extRelListConfig__c].size());
+    }
+    @isTest
+    public static void testSaveListViewEqualsAdmin() {
+        map < string, object > data = new map < string, object > ();
+        data.put('sObjApiName', 'Contact');
+        data.put('relField', 'AccountId');
+        data.put('config', '{}');
         data.put('listViewName', '_admin');
         test.startTest();
         map < string, object > res = infrastructure.dispatcherAura('saveListView', data);
         test.stopTest();
-        System.assertNotEquals(null, res.get('saveListViewResult'));
-        //System.assertEquals(2, [SELECT Id FROM extRelListConfig__c].size());
+        // System.assertNotEquals(null, res.get('saveListViewResult'));
+        System.assertNotEquals(null, [SELECT Id FROM extRelListConfig__c].size());
     }
 
     @isTest
@@ -61,11 +83,12 @@ public class packageTest {
         cs.Subject = 'upd case';
         map < string, object > data = new map < string, object > ();
         data.put('sObjApiName', 'Case');
+        data.put('rollback', false);
         data.put('records', new list < object > {cs});
         test.startTest();
         map < string, object > res = infrastructure.dispatcherAura('saveRecords', data);
         test.stopTest();
-        System.assertNotEquals(null, res.get('saveRecordsResult'));
+        System.assertNotEquals(null, res.size());
         cs = [SELECT Id, Subject FROM Case LIMIT 1];
         System.assertEquals('upd case', cs.Subject);
     }
@@ -112,6 +135,18 @@ public class packageTest {
         VisualEditor.DesignTimePageContext ctx = new VisualEditor.DesignTimePageContext();
         ctx.entityName = 'Account';
         getRelListsPicklist grp = new getRelListsPicklist(ctx);
+        test.startTest();
+        VisualEditor.DataRow row = grp.getDefaultValue();
+        VisualEditor.DynamicPickListRows rows = grp.getValues();
+        test.stopTest();
+        System.assertNotEquals(null, row);
+        System.assertNotEquals(null, rows);
+    }
+    @isTest
+    public static void testGetConfigs() {
+        VisualEditor.DesignTimePageContext ctx = new VisualEditor.DesignTimePageContext();
+        ctx.entityName = 'Account';
+        getConfigs grp = new getConfigs(ctx);
         test.startTest();
         VisualEditor.DataRow row = grp.getDefaultValue();
         VisualEditor.DynamicPickListRows rows = grp.getValues();

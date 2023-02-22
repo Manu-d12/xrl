@@ -1,4 +1,5 @@
 import { LightningElement,api,track } from 'lwc';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { libs } from 'c/libs';
 
 export default class ActionBar extends LightningElement {
@@ -25,10 +26,25 @@ export default class ActionBar extends LightningElement {
             }else if(actionDetails.isActionStandard){
                 console.log('Standard Event');
                 this.actionscfg._handleEvent(event);
+            }else if(actionDetails.actionCallBack != undefined){
+                //Callback execution
+                let fn = eval('(' + actionDetails.actionCallBack + ')')(this.config.dataTable._selectedRecords());
+                libs.getGlobalVar(this.actionscfg._cfgName).records = libs.getGlobalVar(this.actionscfg._cfgName).records.forEach((el)=>{
+                    let r = fn.find((e)=> { return e.Id === el.Id});
+                    if(r != undefined){
+                        el = r;
+                    }
+                });
+                this.config.dataTable._updateView();
+                // fn(event);
             }else{
-                console.log("Callback Execution");
-                let fn = eval('(' + actionDetails.callback + ')');
-                fn(event);
+                console.log('No Action Configured');
+                const eventErr = new ShowToastEvent({
+					title: 'Error',
+					message: libs.getGlobalVar(this.actionscfg._cfgName)._LABELS.msg_noCustomActionConfigured,
+					variant: 'error'
+				});
+				this.dispatchEvent(eventErr);
             }
         }else{
             console.log('Action Error');

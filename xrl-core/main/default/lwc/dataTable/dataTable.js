@@ -2,6 +2,7 @@ import { LightningElement, api, track } from 'lwc';
 import { libs } from 'c/libs';
 import { filterLibs } from './filterLibs';
 import { NavigationMixin } from "lightning/navigation";
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 const defClass = 'slds-grid slds-grid_align-spread';
 export default class dataTable extends NavigationMixin(LightningElement) {
@@ -31,14 +32,15 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			return el.Id === event.target.getAttribute('data-recordind')
 		});
 
-		if (this.objectApiName.endsWith('Id')) {
-			this.objectApiName = this.objectApiName.replace(/Id/, '');
-			this.recordId = record[this.objectApiName].Id;
-		}else{
-			this.recordId = record[this.objectApiName.replace(/__c/, '__r')].Id;
+		let col = this.config.colModel.find((el)=>{
+			return el.fieldName === this.objectApiName
+		});
+
+		if (col.referenceTo) {
+			this.objectApiName = col.referenceTo;
+			this.recordId = record[col.fieldName.split('.')[0]].Id;
 		}
 
-		console.log(this.objectApiName);
 	}
 	hidePop(event){
 		this.showPopOver=false;
@@ -74,7 +76,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			}
 		});
 
-		if (this.config.grouping && this.config.groupingParams?.field) {
+		if (this.hasGrouping) {
 
 			let isPager = this.config.pager;
 			if(!this.config.pager.pagerTop && !this.config.pager.pagerBottom){
@@ -89,25 +91,24 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				return result;
 			}
 			else if (isPager) {
-				let startIndex = (this.config.pager.curPage - 1) * this.config.pager.pageSize;
-				let endIndex = (startIndex + parseInt(this.config.pager.pageSize)) < this.records.length ? (startIndex + parseInt(this.config.pager.pageSize)) : this.records.length;
+				let startIndex = ((this.config.pager.curPage - 1) * this.config.pager.pageSize) + 1; 
+				let endIndex = ((startIndex + parseInt(this.config.pager.pageSize)) < this.records.length ? (startIndex + parseInt(this.config.pager.pageSize)) : this.records.length) + 1; 
 				let result = [];
-
 				for (let group of this.groupedRecords) {
-					if (startIndex > group.records[group.records.length - 1].index - 1) continue;
-					if (endIndex <= group.records[0].index - 1) break;
+					if (startIndex > group.records[group.records.length - 1].index) continue;
+					if (endIndex <= group.records[0].index - 1) break;   
 					let gr = Object.assign({}, group);
 					gr.records = group.records.map(r => r);
 					if (startIndex >= gr.records[0].index) {
-						gr.records.splice(0, startIndex - gr.records[0].index + 1);
+						gr.records.splice(0, startIndex - (gr.records[0].index));
 					}					
 					if (endIndex < gr.records[gr.records.length - 1].index) {
-						gr.records.splice(endIndex - gr.records[0].index + 1);
+						gr.records.splice(endIndex - (gr.records[0].index + 1));
 					}
+					console.log('gr ',gr.records.length);
 					result.push(gr);
 				}
-				console.log('result', JSON.parse(JSON.stringify(result)));
-
+				console.log('result size', JSON.parse(JSON.stringify(result)).length);
 				return result;
 			}
 			// Need for pagination;
@@ -145,18 +146,23 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			return el._isChecked === true;
 		});
 		if (selected.length !== 0) {
-			return selected.length + ' item(s) selected';
+			// return selected.length + ' item(s) selected of ' + this.records.length + ' item(s)';
+			return libs.formatStr(this.config._LABELS.msg_recordSelection,[selected.length,this.records.length]);
 		} else {
-			return this.records.length + ' item(s)';
+			return this.records.length + ' ' +this.config._LABELS.lbl_items;
 		}
 	}
 
 	get hasGrouping() {
-		return this.config.grouping === true;
+		// return this.config.grouping === true;
+		console.log('hasGrouping ',this.config.groupFieldName !== undefined && this.config.groupFieldName !== null && this.config.groupFieldName !== '');
+		return this.config.groupFieldName !== undefined && this.config.groupFieldName !== null && this.config.groupFieldName !== '';
 	}
 
 	get groupColspan() {
-		return this.config.colModel.filter(col => !col.isHidden).length;
+		let len = this.config.colModel.filter(col => !col.isHidden).length;
+		len += !this.config.isShowNumeration ? -1 : 0;
+		return len;
 	}
 
 	_sortSequence = [];
@@ -175,8 +181,18 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 	setGroupRecords() {
 		let result = new Map();
+		this.config.groupingParams = {
+			field: this.config.groupFieldName,
+			order: this.config.groupOrder ? this.config.groupOrder.toLowerCase() : 'ASC'
+		}
 		this.records.forEach(r => {
-			let groupName = r[this.config.groupingParams.field] || 'empty';
+		
+			let groupName;
+			if(this.config.groupingParams.field.split('.')[1]){
+				groupName = r[this.config.groupingParams.field.split('.')[0]][this.config.groupingParams.field.split('.')[1]] || 'empty';
+			}else{
+				groupName = r[this.config.groupingParams.field] || 'empty';
+			}
 			let group = result.has(groupName) ? result.get(groupName) : {
 				title: groupName,
 				isChecked: false,
@@ -233,6 +249,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		this.config._LABELS = libs.getGlobalVar(this.cfg)._LABELS;
 		
 		this.config._saveEdit = this.saveEditCallback.bind(this);
+		this.config._selectedRecords = this.getSelectedRecords.bind(this);
+		this.config._updateView = this.updateView.bind(this);
 		this.config._countFields = this.config.isShowCheckBoxes === true ? 1 : 0;
 		console.log(JSON.parse(JSON.stringify(this.config.colModel)));
 		this.config.colModel.forEach(item => {
@@ -251,13 +269,14 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				}
 			}
 			if (item.width !== undefined) {
-				item._style = 'width: ' + item.width;
+				let maxWidth = item.width.replace(';','').slice(-1) === '%' ? ';max-width: 40%;' : ';max-width: 500px;';
+				item._style = 'width: ' + item.width.replace(';','') + maxWidth;
 			}
 			if (item.isHidden!==true) this.config._countFields ++;
 			item.wrapClass = item.isWrapable
 								? 'slds-cell-wrap'
 								: 'slds-truncate';
-			item._isReference = (item.type === 'reference') ? true : false;
+			// item._isReference = (item.isNameField) ? true : false;
 			item._filterCondition = item._filterCondition ? item._filterCondition : this.config._LABELS.lbl_columnFilter;
 		});
 		//this.config.colModel = JSON.parse(JSON.stringify(this.config.colModel));
@@ -289,8 +308,26 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	saveEditCallback(isNeedSave, rowName, value) {
 		if (isNeedSave === true) {
 			if (rowName !== undefined) {
-				if (!this.config._inlineEditRow) this.config._inlineEditRow = JSON.parse(JSON.stringify(this.records[this.config._inlineEdit]));
-				this.config._inlineEditRow[rowName] = value;
+				this.config._inlineEditRow = JSON.parse(JSON.stringify(this.records[this.config._inlineEdit]));
+				let cItem = this.getColItem(rowName);
+				if(rowName.includes('.') && cItem._editOptions){
+					this.config._inlineEditRow[rowName.split('.')[0]+'Id'] = value;
+					let newVal = cItem._editOptions.find((el)=>{
+						return el.value === value;
+					});
+					if(this.config._inlineEditRow[rowName.split('.')[0]]){
+						this.config._inlineEditRow[rowName.split('.')[0]].Id = newVal.value;
+						this.config._inlineEditRow[rowName.split('.')[0]].Name = newVal.label;
+					}else{
+						this.config._inlineEditRow[rowName.split('.')[0]] ={
+							Id: newVal.value,
+							Name: newVal.label
+						};
+					}
+					
+				}else{
+					this.config._inlineEditRow[rowName] = value;
+				}
 			} else {
 				let isNeedSaveData = this.config._inlineEditRow !== undefined && JSON.stringify(this.records[this.config._inlineEdit]) !== JSON.stringify(this.config._inlineEditRow);
 
@@ -306,28 +343,33 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				//delete this.records[this.config._inlineEdit];
 				//delete this.config._inlineEdit;
 				
+				
+				if(this.config._inlineEdit != undefined){
+					this.records[this.config._inlineEdit]._isEditable = false;
+					if (this.hasGrouping) {
+						let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
+						this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
+					}
+					this.config._inlineEdit = undefined;
+					this.config._inlineEditRow = undefined;
+				}
+			}
+		} else {
+			if(this.config._inlineEdit != undefined){
 				this.records[this.config._inlineEdit]._isEditable = false;
 				if (this.hasGrouping) {
 					let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
 					this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
 				}
 				this.config._inlineEdit = undefined;
-				this.config._inlineEditRow = undefined;
 			}
-		} else {
-			this.records[this.config._inlineEdit]._isEditable = false;
-			if (this.hasGrouping) {
-				let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
-				this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
-			}
-			this.config._inlineEdit = undefined;
 		}
 		if (this.hasGrouping) this.setGroupRecords();
 	}
 
 	changeRecord(id) {
-		if (!this.config._changedRecords) this.config._changedRecords = [];
-		if (this.config._changedRecords.indexOf(id) === -1) this.config._changedRecords.push(id);
+		if (!this.config._changedRecords) this.config._changedRecords = new Set();
+		this.config._changedRecords.add(id);
 	}
 
 	// get rowStyle() {
@@ -433,25 +475,35 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		console.log('row click', event, colName, rowId);
 	}
 
-	rowDblCallback(event) {
-		if(this.config.showStandardEdit){
-			let val = event.target.getAttribute('data-recordind');
-			this.handleEventStandardEdit(val);
-		} else{
-			let colName = event.srcElement.getAttribute('data-colname') !== null ?
+	async rowDblCallback(event) {
+		let colName = event.srcElement.getAttribute('data-colname') !== null ?
 				event.srcElement.getAttribute('data-colname') :
 				event.srcElement.parentNode.getAttribute('data-colname');
 
-			let rowInd = event.srcElement.getAttribute('data-rowind') != null ?
-				event.srcElement.getAttribute('data-rowind') :
-				event.srcElement.parentNode.getAttribute('data-rowind');
+		let rowInd = event.srcElement.getAttribute('data-rowind') != null ?
+			event.srcElement.getAttribute('data-rowind') :
+			event.srcElement.parentNode.getAttribute('data-rowind');
 
-			let rowId = event.srcElement.getAttribute('data-rowid') != null ?
-				event.srcElement.getAttribute('data-rowid') :
-				event.srcElement.parentNode.getAttribute('data-rowid');
-			
-			console.log(rowInd + ' ' + rowId);
+		let rowId = event.srcElement.getAttribute('data-rowid') != null ?
+			event.srcElement.getAttribute('data-rowid') :
+			event.srcElement.parentNode.getAttribute('data-rowid');
+		
+		console.log(rowInd + ' ' + rowId);
 
+		let cItem = this.getColItem(colName);
+		if (!cItem || !cItem.isEditable) {
+			const toast = new ShowToastEvent({
+				title: 'Error',
+				message: this.config._LABELS.msg_rowDblClickError,
+				variant: 'error'
+			});
+			this.dispatchEvent(toast);
+			return;
+		}
+		if(this.config.showStandardEdit){
+			let calculatedInd = this.hasGrouping ? this.records.findIndex(rec => rowId === rec.Id) : this.calcRowIndex(rowInd);
+			this.handleEventStandardEdit(this.records[calculatedInd].Id);
+		} else{
 			let groupInd;
 			let groupRowInd;
 			if (this.hasGrouping) {
@@ -460,10 +512,6 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			}
 
 			let calculatedInd = this.hasGrouping ? this.records.findIndex(rec => rowId === rec.Id) : this.calcRowIndex(rowInd);
-
-			let cItem = this.getColItem(colName);
-			
-			if (!cItem || !cItem.isEditable) return;
 
 		if (this.config._inlineEdit !== undefined) {
 			this.records[this.config._inlineEdit]._isEditable = false;
@@ -509,57 +557,76 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				let record = this.records[calculatedInd];
 				record._isEditable = true;
 				record._focus = colName;
-				this.config._inlineEdit = calculatedInd;
-		if (this.config._inlineEdit !== undefined) {
-			this.records[this.config._inlineEdit]._isEditable = false;
-			if (this.hasGrouping) {
-				let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
-				this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
-			}
-		}
-		
-		if (this.getSelectedRecords().length > 1) {
-			let table = this.template.querySelector('.extRelListTable');
-			console.log('bulk', table.offsetHeight, event.y, table, event.srcElement.parentElement.parentElement.offsetTop, this.config);
-
-			if (cItem.type === 'reference' && cItem.options === undefined) {
-				let describe = libs.getGlobalVar(this.cfg).describe[cItem.fieldName];
-				libs.remoteAction(this, 'query', {
-					isNeedDescribe: false,
-					sObjApiName: describe.referenceTo[0],
-					fields: ['Id', 'Name'],
-					callback: ((nodeName, data) => {
-						console.log('length', data[nodeName].records);
-						cItem.options = [];
-						data[nodeName].records.forEach(e => {
-							cItem.options.push({label: e.Name, value: e.Id});
-						});
-						cItem.refNodeOptions = data[nodeName].records; 
-					})
-				});
-			}
-			this.config._bulkEdit = {
-				rowId : calculatedInd,
-				cItem : cItem,
-				type : cItem.type,
-				value : this.records[calculatedInd][cItem.fieldName],
-				chBoxLabel : libs.formatStr('Update {0} items', [this.getSelectedRecords().length]),
-				chBoxValue : false,
-				style: libs.formatStr("position:absolute;top:{0}px;left:{1}px", [(-table.offsetHeight + event.srcElement.parentElement.parentElement.offsetTop - (this.config.pager.pagerTop === true ? 110 : 40)), (event.x - 60)]),
-			}
-			//this.config._isBulkEdit = true;
-		} else {
-			// Need get all visible references fields and get data for thise fields
-			let record = this.records[calculatedInd];
-			record._isEditable = true;
-			record._focus = colName;
-			this.config._inlineEdit = calculatedInd;
-
-				if (this.hasGrouping) {
-					this.groupedRecords[groupInd].records[groupRowInd]._isEditable = true;
-					this.groupedRecords[groupInd].records[groupRowInd]._focus = colName;
+				if (this.config._inlineEdit !== undefined) {
+					this.records[this.config._inlineEdit]._isEditable = false;
+					if (this.hasGrouping) {
+						let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
+						this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
+					}
 				}
-			}
+				this.config._inlineEdit = calculatedInd;
+		
+				if (this.getSelectedRecords().length > 1) {
+					let table = this.template.querySelector('.extRelListTable');
+					console.log('bulk', table.offsetHeight, event.y, table, event.srcElement.parentElement.parentElement.offsetTop, this.config);
+
+					if (cItem.type === 'reference' && cItem.options === undefined) {
+						let describe = libs.getGlobalVar(this.cfg).describe[cItem.fieldName];
+						libs.remoteAction(this, 'query', {
+							isNeedDescribe: false,
+							sObjApiName: describe.referenceTo[0],
+							fields: ['Id', 'Name'],
+							callback: ((nodeName, data) => {
+								console.log('length', data[nodeName].records);
+								cItem.options = [];
+								data[nodeName].records.forEach(e => {
+									cItem.options.push({label: e.Name, value: e.Id});
+								});
+								cItem.refNodeOptions = data[nodeName].records; 
+							})
+						});
+					}
+					this.config._bulkEdit = {
+						rowId : calculatedInd,
+						cItem : cItem,
+						type : cItem.type,
+						value : this.records[calculatedInd][cItem.fieldName],
+						chBoxLabel : libs.formatStr('Update {0} items', [this.getSelectedRecords().length]),
+						chBoxValue : false,
+						style: libs.formatStr("position:absolute;top:{0}px;left:{1}px", [(-table.offsetHeight + event.srcElement.parentElement.parentElement.offsetTop - (this.config.pager.pagerTop === true ? 110 : 40)), (event.x - 60)]),
+					}
+					//this.config._isBulkEdit = true;
+				} else {
+					// Need get all visible references fields and get data for thise fields
+					// let record = this.records[calculatedInd];
+					// record._focus = colName;
+					cItem.wrapClass = cItem.type === 'picklist' || cItem.type === 'multipicklist' || (cItem.fieldName.split('.')[1] && cItem.isNameField) ? 'slds-cell-wrap' : cItem.wrapClass;
+
+					if(cItem.fieldName.split('.')[1] && cItem.isNameField && !cItem._editOptions){
+						cItem._editOptions = [];
+						await libs.remoteAction(this, 'query', {
+							fields: ['Id','Name'],
+							relField: '',
+							sObjApiName: cItem.fieldName.split('.')[0],
+							callback: ((nodeName, data) => {
+								console.log('accountRecords', data[nodeName].records.length);
+								data[nodeName].records.forEach((el)=>{
+									cItem._editOptions.push({"label":el.Name,"value":el.Id});
+								});
+							})
+						});
+						cItem._isLookUpEdit = true;
+					}
+					// record._isEditable = true;
+
+
+					// this.config._inlineEdit = calculatedInd;
+
+						if (this.hasGrouping) {
+							this.groupedRecords[groupInd].records[groupRowInd]._isEditable = true;
+							this.groupedRecords[groupInd].records[groupRowInd]._focus = colName;
+						}
+				}
 		}
 	}
 
@@ -618,7 +685,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					isShowClearBtn: (cItem._filterStr && cItem._filterStr.length > 0),
 					//filterOption: cItem._filterOption ? cItem._filterOption : 'cn',
 					filterOptions: filterLibs[cItem.type + 'FilterActions'] 
-						? filterLibs[cItem.type + 'FilterActions']()
+						? filterLibs[cItem.type + 'FilterActions'](this.config._LABELS)
 						: [
 							{ label: 'Contains', value: 'cn' },
 							{ label: 'Is Equal', value: 'eq' },
@@ -626,12 +693,17 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						]
 
 				};
-			this.config._isFilterOptions.filterOption = cItem._filterOption ? cItem._filterOption : 'cn';
-			this.config._isFilterOptions.filterStr = cItem._filterStr;
-			this.config._isFilterOptions.filterStrTo = cItem._filterStrTo;
-			this.config._isFilterOptions.isShowStr = cItem.options === undefined;
-			this.config._isFilterOptions.isShowToStr = this.config._isFilterOptions.filterOption === 'rg';
-			this.config._isFilterOptions.isShowClearBtn = (cItem._filterStr && cItem._filterStr.length > 0)
+				if(this.config._isFilterOptions != undefined){
+					this.config._isFilterOptions.filterOption = cItem._filterOption ? cItem._filterOption : 'eq';
+					this.config._isFilterOptions.isUnary = this.config._isFilterOptions.filterOptions.find(item => {return this.config._isFilterOptions.filterOption === item.value}).isUnary != undefined ?
+															this.config._isFilterOptions.filterOptions.find(item => {return this.config._isFilterOptions.filterOption === item.value}).isUnary :
+															false;
+					this.config._isFilterOptions.filterStr = cItem._filterStr;
+					this.config._isFilterOptions.filterStrTo = cItem._filterStrTo;
+					this.config._isFilterOptions.isShowStr = cItem.options === undefined;
+					this.config._isFilterOptions.isShowToStr = this.config._isFilterOptions.filterOption === 'rg';
+					this.config._isFilterOptions.isShowClearBtn = (cItem._filterStr && cItem._filterStr.length > 0);
+				}
 
 			setTimeout((() => { 
 				if (this.template.querySelector('[data-id="filterStr"]')) {
@@ -661,7 +733,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		console.log(event.detail.payload.values);
 		event.detail.value = event.detail.payload.values;
 		this.sValues = JSON.parse(JSON.stringify(event.detail.payload.values));
-		console.log('hii',JSON.parse(JSON.stringify(event.detail.payload.values)));
+		// console.log('hii',JSON.parse(JSON.stringify(event.detail.payload.values)));
 		this.searchOnChange(event);
 	}
 
@@ -697,7 +769,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				cItem._filterStrTo = this.config._isFilterOptions.filterStrTo;
 				cItem._filterOption = this.config._isFilterOptions.filterOption;
 				cItem._filterVariant = cItem._filterOption || cItem._filterStr && cItem._filterStr.length > 0 ? 'warning' : '';
-				cItem._filterCondition = (cItem._filterStr && cItem._filterStr.length > 0) ? (filterLibs[cItem.type + 'FilterActions'](cItem._filterOption).label + ' "' + cItem._filterStr) +'"': '';
+				cItem._filterCondition = (cItem._filterStr && cItem._filterStr.length > 0) ? (filterLibs[cItem.type + 'FilterActions'](this.config._LABELS,cItem._filterOption).label + ' "' + cItem._filterStr) +'"': '';
 				cItem._filterStrLastChangeDate = cItem._filterOption ? new Date().getTime() : undefined;				
 			}
 			this.config._isFilterOptions = undefined;
@@ -753,6 +825,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						if(filter.type === 'reference' && record[(filter.fieldName).slice(0,-2)]){
 							return filterLibs[filter.type + '__filter'](filter, record);
 						}else{
+							filter._locale = libs.getGlobalVar(this.cfg).userInfo.locale;
+							filter._timeZone = libs.getGlobalVar(this.cfg).userInfo.timeZone;
 							return filterLibs[filter.type + '__filter'](filter, record);
 						}
 					})
@@ -856,15 +930,15 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				this.config.pager.pageSize = value;
 				
 				this.setNumPages(value);
+				this.config.pager.pageSize = value;
 			}
 			if (fieldName === ':pagerCurPage') {
 				
 				this.config.pager.curPage = value;
-				if (value < 1) this.config.pager.curPage = 1;
+				if (value <= 1) this.config.pager.curPage = 1;
 				if (value > this.config.pager.numPages) this.config.pager.curPage = this.config.pager.numPages;
 			}
-			this.config.pager.pageSize = value;
-			console.log(value);
+			console.log('curPage ',this.config.pager.curPage);
 			return;
 		}
 		switch (fieldName) {
@@ -884,10 +958,18 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 
 	handleEventBulk() {
+		//HYPER-267
+		this.config.isSpinner = true;
+		setTimeout((() => { 
+			this.executeBulk();
+		}), 10);
+	}
+	executeBulk(){
 		function changeItem(that, item, fieldName, v, refNode, refNodeValue) {
 			
 			
-			let origItem = origRecords.find(elem => {return elem.Id === item.Id});
+			// let origItem = origRecords.find(elem => {return elem.Id === item.Id});
+			let origItem = that.origRecords.get(item.Id);
 			item[fieldName] = v;
 			origItem[fieldName] = v;
 			if (refNode !== undefined) {
@@ -905,7 +987,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		let describe = libs.getGlobalVar(this.cfg).describe[this.config._bulkEdit.cItem.fieldName];
 		let value = this.template.querySelector('[data-id="origValue"]');
 		let chBox = this.template.querySelector('[data-id="isAll"]');
-		let origRecords = libs.getGlobalVar(this.cfg).records;
+		// let origRecords = libs.getGlobalVar(this.cfg).records;
+		this.origRecords = new Map(libs.getGlobalVar(this.cfg).records.map(record => [record.Id, record]));
 		let refNode = describe.relationshipName;
 		let refNodeValue;
 
@@ -932,6 +1015,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		this.config._bulkEdit = undefined;
 
 		if (this.hasGrouping) this.setGroupRecords();
+		this.config.isSpinner = false;
 	}
 	@api
 	updateView(){

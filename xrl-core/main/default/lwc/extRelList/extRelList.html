@@ -8,12 +8,12 @@
 			<div class="slds-grid slds-grid_align-end slds-p-around_x-small">
 				<div class="slds-m-left_xx-small"  if:true={config.listViewConfig}>
 					<div onkeyup={handleEvent} if:true={config.isGlobalSearch}>
-						<lightning-input name="enter-search" variant="label-hidden" value={config.queryTerm} placeholder={config._LABELS.lbl_globalSearch} type="search" data-id="globalSearch" oncommit={handleGlobalSearchClear}></lightning-input>
+						<lightning-input name="enter-search" variant="label-hidden" value={config.queryTerm} placeholder={config._LABELS.lbl_globalSearch} type="search" data-id="globalSearch" oncommit={handleGlobalSearchClear} style="width:17rem;"></lightning-input>
 					</div>
 					
 				</div>
 				<div class="slds-m-left_xx-small" if:true={config.listView}>
-					<lightning-combobox value={config.listView.name} data-id=":change_view" onchange={handleEvent} options={listViews} class="slds-p-horizontal_xx-small" variant="label-hidden" title={config._LABELS.title_selectListView}></lightning-combobox>
+					<lightning-combobox if:true={config.listView.name} value={config.listView.name} data-id=":change_view" onchange={handleEvent} options={listViews} class="slds-p-horizontal_xx-small" variant="label-hidden" title={config._LABELS.title_selectListView}></lightning-combobox>
 				</div>
 				<div class="slds-m-left_xx-small forceListViewSettingsMenu">					
 					<span> <!-- Need provide configuration for all those standard buttons -->
@@ -36,7 +36,7 @@
 					</lightning-button-menu>
 
 					<lightning-button-menu alternative-text={config._LABELS.altTxt_settings} variant="border-filled" icon-name="utility:settings" class="slds-p-horizontal_xx-small" menu-alignment="right">
-						<lightning-menu-item data-id="cfg:setFields" label={config._LABELS.lbl_selectFields} prefix-icon-name="utility:multi_select_checkbox" onclick={handleEvent}></lightning-menu-item>
+						<span if:true={config.listView}><lightning-menu-item if:true={config.listView.hasEditAccess} data-id="cfg:setFields" label={config._LABELS.lbl_selectFields} prefix-icon-name="utility:multi_select_checkbox" onclick={handleEvent}></lightning-menu-item></span>
 						<lightning-menu-item data-id="help:extRelList" label={config._LABELS.lbl_help} prefix-icon-name="utility:help" onclick={handleEvent}></lightning-menu-item>
 						<lightning-menu-item data-id="CompInterface:Open" label="Comparison Interface" prefix-icon-name="utility:help" onclick={handleEvent}></lightning-menu-item>
 					</lightning-button-menu>
