@@ -97,7 +97,7 @@
 						</td>
 					</tr>
 					<template if:true={group.isOpened} for:each={group.records} for:item="dItem" for:index="index">			
-						<tr key={dItem.Id} class={dItem._rowCss} style={rowStyle} data-rowind={index}>
+						<tr key={dItem.Id} class={dItem._rowCss} style={rowStyle} data-rowind={index} data-groupind={group.title}>
 							<td scope="col" style="width: 2rem;" data-rowind={index} class="numeration">
 								&nbsp;
 							</td>
