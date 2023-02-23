@@ -18,7 +18,6 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	@api objectApiName;
 	sValues = [];
 	showPop(event){
-		this.showPopOver = true;
 		let hoverConstValues = {
 			5:810,
 			20:1250,
@@ -39,6 +38,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if (col.referenceTo) {
 			this.objectApiName = col.referenceTo;
 			this.recordId = record[col.fieldName.split('.')[0]].Id;
+			this.showPopOver = true;
 		}
 
 	}
