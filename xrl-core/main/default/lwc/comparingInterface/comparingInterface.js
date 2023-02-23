@@ -12,14 +12,38 @@ export default class ComparingInterface extends LightningElement {
         this.config.userSelections = {};
         this.config.objRecords = {};
         this.config.childRecordsResult = [];
-        libs.getGlobalVar(this.cfg).records = [{
-            CaseNumber:1234,
-            Id:'asder',
-            Origin:'Email',
-            CaseNumber2:12345,
-            Id2:'asderf',
-            Origin2:'Phone'
-        }];
+        libs.remoteAction(this, 'getCustomLabels', {callback: function(cmd,data){
+            console.log('CustomLabes are loaded', data[cmd]);
+            this.config._LABELS = data[cmd];
+        } });
+        libs.remoteAction(this, 'getConfigById', { configId: libs.getGlobalVar(this.name).configId, callback: this.setConfig.bind(this) });
+    }
+    setConfig(cmd,data){
+        console.log('Cn',JSON.parse(data[cmd].userConfig).dataTable1);
+        this.config.json = JSON.parse(data[cmd].userConfig);
+        libs.setGlobalVar(JSON.parse(data[cmd].userConfig).dataTable1.uniqueName,{
+            "listViewConfig":JSON.parse(data[cmd].userConfig).dataTable1.dtConfig,
+            "userInfo": data.userInfo,
+            "_LABELS": this.config._LABELS
+        });
+        libs.getGlobalVar(JSON.parse(data[cmd].userConfig).dataTable1.uniqueName).records = [
+            {"Id":"1234"}
+        ];
+        libs.setGlobalVar(JSON.parse(data[cmd].userConfig).dataTable2.uniqueName,{
+            "listViewConfig":JSON.parse(data[cmd].userConfig).dataTable2.dtConfig,
+            "userInfo": data.userInfo,
+            "_LABELS": this.config._LABELS
+        });
+        libs.getGlobalVar(JSON.parse(data[cmd].userConfig).dataTable2.uniqueName).records = [
+            {"Id":"1234"}
+        ];
+        this.config.obj1Fields = [];
+        this.config.obj2Fields = [];
+        this.config.json.parentFields.forEach((el)=>{
+            this.config.obj1Fields.push(el.obj1FieldName);
+            this.config.obj2Fields.push(el.obj2FieldName);
+        });
+        this.config.showComparisonTable = true;
         libs.remoteAction(this, 'objectList', {callback: this.getAllObjects.bind(this) });
     }
     getAllObjects(cmd,data){
@@ -54,6 +78,8 @@ export default class ComparingInterface extends LightningElement {
         let dataId = event.target.getAttribute('data-id');
         console.log('User Click: ', dataId);
         if(dataId === 'btn:compare'){
+            this.handleComparison();
+            return;
             //if the both objects are same
             if(this.config.userSelections.objOne === this.config.userSelections.objTwo){
                 this.config.showComparisonTable = true;
@@ -77,6 +103,34 @@ export default class ComparingInterface extends LightningElement {
                 });
             }
         }
+    }
+    async handleComparison(){
+        await libs.remoteAction(this, 'query', {
+            sObjApiName: this.config.json.obj1,
+            fields: this.config.obj1Fields,
+            relField: '',
+            addCondition:" WHERE Id='" + this.config.userSelections.recOne + "'",
+            callback: ((nodeName, data) => {
+                console.log('length', data[nodeName].records.length);
+                this.config.obj1Result = data[nodeName].records[0];
+                // this.config.compareResult = this.compareRecords(data[nodeName].records[0],data[nodeName].records[1]);
+                this.config.showComparisonTable = true;
+                // this.getChildRecords();
+            })
+        });
+        await libs.remoteAction(this, 'query', {
+            sObjApiName: this.config.json.obj2,
+            fields: this.config.obj2Fields,
+            relField: '',
+            addCondition:" WHERE Id='" + this.config.userSelections.recTwo + "'",
+            callback: ((nodeName, data) => {
+                console.log('length', data[nodeName].records.length);
+                this.config.obj2Result = data[nodeName].records[0];
+                this.config.showComparisonTable = true;
+            })
+        });
+        this.getChildRecords();
+        this.config.compareResult = this.compareRecords(this.config.obj1Result,this.config.obj2Result);
     }
     //This function compares 2 records
     //accepts 2 records map and returns a single map
@@ -102,9 +156,11 @@ export default class ComparingInterface extends LightningElement {
         }
         return result;
     }
-    getChildRecords(){
-        libs.remoteAction(this, 'query', {
-            sObjApiName: this.config.childSObjectApi,
+    async getChildRecords(){
+        this.config.parentChildRelField = 'OpportunityId';
+        this.config.childFieldsToCompare = ['Id','Name','Quantity','ListPrice','UnitPrice','ProductCode'];
+        await libs.remoteAction(this, 'query', {
+            sObjApiName: 'OpportunityLineItem',
             fields: this.config.childFieldsToCompare,
             relField: '',
             addCondition:" WHERE "+ this.config.parentChildRelField +"='" + this.config.userSelections.recOne + "'",
@@ -115,14 +171,14 @@ export default class ComparingInterface extends LightningElement {
                     acc[cur[uniqueKey]] = cur;
                     return acc;
                   }, {});
-                if(this.config.childRecords1 && this.config.childRecords2){
-                    console.log('Can be compared');
-                    this.compareChildRecords();
-                }
+                // if(this.config.childRecords1 && this.config.childRecords2){
+                //     console.log('Can be compared');
+                //     this.compareChildRecords();
+                // }
             })
         });
-        libs.remoteAction(this, 'query', {
-            sObjApiName: this.config.childSObjectApi,
+        await libs.remoteAction(this, 'query', {
+            sObjApiName: 'OpportunityLineItem',
             fields: this.config.childFieldsToCompare,
             relField: '',
             addCondition:" WHERE "+ this.config.parentChildRelField +"='" + this.config.userSelections.recTwo + "'",
@@ -133,12 +189,13 @@ export default class ComparingInterface extends LightningElement {
                     acc[cur[uniqueKey]] = cur;
                     return acc;
                 }, {});
-                if(this.config.childRecords1 && this.config.childRecords2){
-                    console.log('Can be compared');
-                    this.compareChildRecords();
-                }
+                // if(this.config.childRecords1 && this.config.childRecords2){
+                //     console.log('Can be compared');
+                //     this.compareChildRecords();
+                // }
             })
         });
+        this.compareChildRecords();
         // if(this.config.childRecords1 && this.config.childRecords2){
         //     console.log('Can be compared');
         // }
