@@ -21,6 +21,11 @@
                 <default>false</default>
                 <label>Tabular</label>
             </value>
+            <value>
+                <fullName>Layout</fullName>
+                <default>false</default>
+                <label>Layout</label>
+            </value>
         </valueSetDefinition>
     </valueSet>
 </CustomField>
