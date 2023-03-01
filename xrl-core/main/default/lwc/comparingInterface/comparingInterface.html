@@ -2,7 +2,7 @@
     <!-- Object Selection -->   
     <div class="slds-grid slds-gutters">
         <!-- For 1st object and record -->
-        <div class="slds-col slds-size_1-of-2" style="border:1px solid #b6b0b0;">
+        <div class="slds-col slds-size_1-of-2">
             <div class="slds-text-heading_small">First Object Selection</div>
             <!-- Object One -->
             <c-multiselect if:true={config.objList} data-id="objOne" listsize=20 onsearchclicked={handleOpenGrid} onselect={handleSelect} options={config.objList} selectedvalue="Account" label="Select an Object"></c-multiselect>
@@ -10,7 +10,7 @@
             <c-multiselect if:true={config.objRecords.objOne} data-id="recOne" listsize=20 onsearchclicked={handleOpenGrid} onselect={handleSelect} options={config.objRecords.objOne} selectedvalue="Account" label="Select a Record"></c-multiselect>
         </div>
         <!-- For 2nd object and record -->
-        <div class="slds-col slds-size_1-of-2" style="border:1px solid #b6b0b0;">
+        <div class="slds-col slds-size_1-of-2">
             <div class="slds-text-heading_small">Second Object Selection</div>
             <!-- Object Two -->
             <c-multiselect if:true={config.objList} data-id="objTwo" listsize=20 onsearchclicked={handleOpenGrid} onselect={handleSelect} options={config.objList} selectedvalue="Account" label="Select an Object"></c-multiselect>
@@ -77,7 +77,7 @@
                 </table>
             </div>
         </div>
-        <div class="slds-section slds-is-open">
+        <!-- <div class="slds-section slds-is-open">
             <h3 class="slds-section__title">
               <button aria-controls="expando-unique-id" aria-expanded="false" class="slds-button slds-section__title-action">
                 <svg class="slds-section__title-action-icon slds-button__icon slds-button__icon_left" aria-hidden="true">
@@ -130,14 +130,14 @@
                     </table>
                 </div>
             </div>
-        </div>
+        </div> -->
     </template>
     <div if:true={config.showComparisonTable} class="slds-grid slds-gutters">
-        <div class="slds-col slds-size_1-of-2">
+        <div class="slds-col slds-size_1-of-1">
             <c-Data-Table style="width:100%; height:inherit" data-ind="Case" cfg="dt1"></c-Data-Table>
         </div>
-        <div class="slds-col slds-size_1-of-2">
+        <!-- <div class="slds-col slds-size_1-of-2">
             <c-Data-Table style="width:100%; height:inherit" data-ind="Case" cfg="dt2"></c-Data-Table>
-        </div>
+        </div> -->
     </div>
 </template>

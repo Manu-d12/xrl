@@ -18,8 +18,8 @@ export default class ComparingInterface extends LightningElement {
         } });
         libs.remoteAction(this, 'getConfigById', { configId: libs.getGlobalVar(this.name).configId, callback: this.setConfig.bind(this) });
     }
-    setConfig(cmd,data){
-        console.log('Cn',JSON.parse(data[cmd].userConfig).dataTable1);
+    async setConfig(cmd,data){
+        console.log('Cn',JSON.parse(data[cmd].userConfig));
         this.config.json = JSON.parse(data[cmd].userConfig);
         libs.setGlobalVar(JSON.parse(data[cmd].userConfig).dataTable1.uniqueName,{
             "listViewConfig":JSON.parse(data[cmd].userConfig).dataTable1.dtConfig,
@@ -43,23 +43,15 @@ export default class ComparingInterface extends LightningElement {
             this.config.obj1Fields.push(el.obj1FieldName);
             this.config.obj2Fields.push(el.obj2FieldName);
         });
-        this.config.showComparisonTable = true;
-        libs.remoteAction(this, 'objectList', {callback: this.getAllObjects.bind(this) });
-    }
-    getAllObjects(cmd,data){
-        this.config.objList = [];
-        data[cmd].sort().forEach((el)=>{
-            this.config.objList.push({'label':el.toString(),'value':el.toString()});
-        });
-    }
-    handleSelect(event){
-        let selectedObj = event.detail.payload.value;
-        let selectedFor = event.target.getAttribute('data-id');
+        // this.config.showComparisonTable = true;
+        // libs.remoteAction(this, 'objectList', {callback: this.getAllObjects.bind(this) });
+        let selectedObj = 'TTNAMESPACE__BoM__c';
+        let selectedFor = 'objOne';
         this.config.userSelections[selectedFor] = selectedObj;
         console.log(this.config.userSelections[selectedFor]);
         if(selectedFor.startsWith('obj')){
             //Getting the records from depending on selected object
-            libs.remoteAction(this, 'query', {
+            await libs.remoteAction(this, 'query', {
                 sObjApiName: selectedObj,
                 fields: ['Id','Name'],
                 relField: '',
@@ -72,6 +64,37 @@ export default class ComparingInterface extends LightningElement {
                 })
             });
         }
+        selectedObj = 'TTNAMESPACE__Quote__c';
+        selectedFor = 'objTwo';
+        this.config.userSelections[selectedFor] = selectedObj;
+        console.log(this.config.userSelections[selectedFor]);
+        if(selectedFor.startsWith('obj')){
+            //Getting the records from depending on selected object
+            await libs.remoteAction(this, 'query', {
+                sObjApiName: selectedObj,
+                fields: ['Id','Name'],
+                relField: '',
+                callback: ((nodeName, data) => {
+                    console.log('length', data[nodeName].records.length);
+                    this.config.objRecords[selectedFor]= [];
+                    data[nodeName].records.forEach((el)=>{
+                        this.config.objRecords[selectedFor].push({'label':el.Name,'value':el.Id});
+                    })
+                })
+            });
+        }
+    }
+    getAllObjects(cmd,data){
+        this.config.objList = [];
+        data[cmd].sort().forEach((el)=>{
+            this.config.objList.push({'label':el.toString(),'value':el.toString()});
+        });
+        console.log('objList',JSON.parse(JSON.stringify(this.config.objList)));
+    }
+    handleSelect(event){
+        let selectedObj = event.detail.payload.value;
+        let selectedFor = event.target.getAttribute('data-id');
+        this.config.userSelections[selectedFor] = selectedObj;
     }
     //handling all the events here
     handleEvent(event){
@@ -114,7 +137,7 @@ export default class ComparingInterface extends LightningElement {
                 console.log('length', data[nodeName].records.length);
                 this.config.obj1Result = data[nodeName].records[0];
                 // this.config.compareResult = this.compareRecords(data[nodeName].records[0],data[nodeName].records[1]);
-                this.config.showComparisonTable = true;
+                // this.config.showComparisonTable = true;
                 // this.getChildRecords();
             })
         });
@@ -126,7 +149,6 @@ export default class ComparingInterface extends LightningElement {
             callback: ((nodeName, data) => {
                 console.log('length', data[nodeName].records.length);
                 this.config.obj2Result = data[nodeName].records[0];
-                this.config.showComparisonTable = true;
             })
         });
         this.getChildRecords();
@@ -136,127 +158,99 @@ export default class ComparingInterface extends LightningElement {
     //accepts 2 records map and returns a single map
     compareRecords(record1,record2){
         let result = [];
-        for(let key in record1){
-            if(key === 'Id') continue;
+        this.config.json.parentFields.forEach((el)=>{
             let r = {};
-            if(record2[key]){
-                if(record1[key] === record2[key]){
-                    console.log('SAME');
-                }else{
-                    r.css1 = 'background-color: #ff2f2f73;';
-                    r.css2 = 'background-color: #ff2f2f73;';
-                    console.log('NO');
-                }
-                r.fieldName1 = key;
-                r.value1 = record1[key];
-                r.fieldName2 = key;
-                r.value2 = record2[key];
-                result.push(r);
+            if(record1[el.obj1FieldName] !== record2[el.obj2FieldName]){
+                r.css1 = 'background-color: #ff2f2f73;';
+                r.css2 = 'background-color: #ff2f2f73;';
             }
-        }
+            r.fieldName1 = el.obj1FieldName;
+            r.value1 = record1[el.obj1FieldName];
+            r.fieldName2 = el.obj2FieldName;
+            r.value2 = record2[el.obj2FieldName];
+            result.push(r);
+        });
         return result;
     }
     async getChildRecords(){
-        this.config.parentChildRelField = 'OpportunityId';
-        this.config.childFieldsToCompare = ['Id','Name','Quantity','ListPrice','UnitPrice','ProductCode'];
+        // this.config.childFieldsToCompare = ;
         await libs.remoteAction(this, 'query', {
-            sObjApiName: 'OpportunityLineItem',
-            fields: this.config.childFieldsToCompare,
+            sObjApiName: this.config.json.childApiNames.obj1,
+            fields: ['Id','Name','TTNAMESPACE__Quantity__c','TTNAMESPACE__BItemPartNumber__c','TTNAMESPACE__ItemDiscount__c','TTNAMESPACE__BoMItemListPrice__c'],
             relField: '',
-            addCondition:" WHERE "+ this.config.parentChildRelField +"='" + this.config.userSelections.recOne + "'",
+            addCondition:" WHERE "+ this.config.json.parentChildRelFields.obj1 +"='" + this.config.userSelections.recOne + "'",
             callback: ((nodeName, data) => {
                 console.log('length 1', data[nodeName].records.length);
-                let uniqueKey = this.config.childUniqueKey;
+                let uniqueKey = this.config.json.uniqueKey[0];
                 this.config.childRecords1 = data[nodeName].records.reduce(function(acc, cur, i) {
                     acc[cur[uniqueKey]] = cur;
                     return acc;
-                  }, {});
-                // if(this.config.childRecords1 && this.config.childRecords2){
-                //     console.log('Can be compared');
-                //     this.compareChildRecords();
-                // }
+                }, {});
             })
         });
         await libs.remoteAction(this, 'query', {
-            sObjApiName: 'OpportunityLineItem',
-            fields: this.config.childFieldsToCompare,
+            sObjApiName: this.config.json.childApiNames.obj2,
+            fields: ['Id','Name','TTNAMESPACE__QuoteItemQuantity__c','TTNAMESPACE__QItemPartNumber__c','TTNAMESPACE__QuoteItemListPrice__c','TTNAMESPACE__QuoteitemDiscount__c'],
             relField: '',
-            addCondition:" WHERE "+ this.config.parentChildRelField +"='" + this.config.userSelections.recTwo + "'",
+            addCondition:" WHERE "+ this.config.json.parentChildRelFields.obj2 +"='" + this.config.userSelections.recTwo + "'",
             callback: ((nodeName, data) => {
                 console.log('length 2', data[nodeName].records.length);
-                let uniqueKey = this.config.childUniqueKey;
+                let uniqueKey = this.config.json.uniqueKey[1];
                 this.config.childRecords2 = data[nodeName].records.reduce(function(acc, cur, i) {
                     acc[cur[uniqueKey]] = cur;
                     return acc;
                 }, {});
-                // if(this.config.childRecords1 && this.config.childRecords2){
-                //     console.log('Can be compared');
-                //     this.compareChildRecords();
-                // }
             })
         });
         this.compareChildRecords();
-        // if(this.config.childRecords1 && this.config.childRecords2){
-        //     console.log('Can be compared');
-        // }
+        libs.getGlobalVar('dt1').records = this.config.childRecordsResult;
+        this.config.showComparisonTable = true;
     }
     compareChildRecords(){
-        let result = {
-            record1:[],
-            record2:[]
-        };
+        let result = {};
+        console.log('ck',this.config.childRecords1);
         Object.keys(this.config.childRecords1).forEach((el)=>{
-            result = {
-                record1:[],
-                record2:[]
-            };
+            result = {};
             if(this.config.childRecords2[el]){
                 // result.record1=this.config.childRecords1[el];
-                for(let key in this.config.childRecords1[el]){
-                    let colCss = this.config.compareFields.has(key) ?
-                    (this.config.childRecords1[el][key] !== this.config.childRecords2[el][key] ?
-                        'background-color:#ff6d6d78;' : '') : '';
-                    result.record1.push({key:key,value:this.config.childRecords1[el][key],css:colCss});
-                    result.record2.push({key:key,value:this.config.childRecords2[el][key],css:colCss});
+                for(let key in this.config.json.childComparisonMap){
+                    let colCss =
+                    (this.config.childRecords1[el][key] !== this.config.childRecords2[el][this.config.json.childComparisonMap[key]] ?
+                        'background-color:#ff6d6d78;' : '');
+                    result[key] = this.config.childRecords1[el][key];
+                    result[this.config.json.childComparisonMap[key]] = this.config.childRecords2[el][this.config.json.childComparisonMap[key]];
                 }
+                result[this.config.json.uniqueKey[0]] = el;
+                result[this.config.json.uniqueKey[1]] = el;
+                Object.assign(result,this.config.childRecords1[el]);
+                Object.assign(result,this.config.childRecords2[el]);
                 // result.record2=this.config.childRecords2[el];
                 // for(let key in this.config.childRecords2[el]){
                 //     result.record2.push({key:key,value:this.config.childRecords2[el][key]});
                 // }
                 delete this.config.childRecords2[el];
             }else{
+                Object.assign(result,this.config.childRecords1[el]);
                 // result.record1=this.config.childRecords1[el];
-                for(let key in this.config.childRecords1[el]){
-                    result.record1.push({key:key,value:this.config.childRecords1[el][key]});
-                    result.record2.push({key:'',value:''});
-                }
+                // for(let key in this.config.childRecords1[el]){
+                //     result.record1.push({key:key,value:this.config.childRecords1[el][key]});
+                //     result.record2.push({key:'',value:''});
+                // }
             }
             this.config.childRecordsResult.push(result);
         });
-        result = {
-            record1:[],
-            record2:[]
-        };
-        // Object.keys(this.config.childRecords2).forEach((el)=>{
-        //     result.record2=this.config.childRecords2[el];
-        // });
         Object.keys(this.config.childRecords2).forEach((el)=>{
-            for(let key in this.config.childRecords2[el]){
-                result.record1.push({key:'',value:''});
-                result.record2.push({key:key,value:this.config.childRecords2[el][key]});
-            }
+            result = {};
+            Object.assign(result,this.config.childRecords2[el]);
+            this.config.childRecordsResult.push(result);
         });
-        this.config.childRecordsResult.push(result);
+        // Object.keys(this.config.childRecords2).forEach((el)=>{
+        //     for(let key in this.config.childRecords2[el]){
+        //         result.record1.push({key:'',value:''});
+        //         result.record2.push({key:key,value:this.config.childRecords2[el][key]});
+        //     }
+        // });
+        // this.config.childRecordsResult.push(result);
+        console.log('ch',this.config.childRecordsResult);
     }
-    // compareChildRecord(record1,record2){
-    //     let result = {
-    //         record1:{},
-    //         record2:{}
-    //     };
-    //     Object.keys(record1).forEach((el)=>{
-    //         if(record2[el]){
-    //             if(record1[el] !== record2[el])
-    //         }
-    //     });
-    // }
 }
