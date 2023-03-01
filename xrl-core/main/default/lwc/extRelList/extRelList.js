@@ -765,7 +765,12 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 
 		if (val === 'dialog:setField') {
-			this.config.dialog.field = event.detail.value;
+			this.config.dialog.field = false;
+			//this is done to refresh the colModelItem. HYPER-355
+			let fn = (scope,e) => {
+				scope.config.dialog.field = e.detail.value;
+			};
+			fn(this,event);
 		}
 		if (val === 'dialog:setAction') {
 			console.log('called',JSON.parse(JSON.stringify(event.detail)));
