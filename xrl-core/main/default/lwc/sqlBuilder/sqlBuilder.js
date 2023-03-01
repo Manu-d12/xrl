@@ -101,6 +101,7 @@ export default class SqlBuilder extends LightningElement {
                 if(this.config.sqlBuilder.selectedFields.length < 20){
                     this.toggleArrayElement(this.config.sqlBuilder.selectedFields,event.target.getAttribute('data-val'));
                     event.target.classList.add('slds-theme_alt-inverse');
+                    this.ElementList.push(event.target.getAttribute('data-val'));
                     this.dialogValues();
                 }else{
                     const toast = new ShowToastEvent({
@@ -430,13 +431,11 @@ export default class SqlBuilder extends LightningElement {
         const Element = this.template.querySelectorAll('.Items')
         const DragValName = this.template.querySelector('.drag').getAttribute('data-val');
         const DropValName = event.target.getAttribute('data-val');
-        console.log(this.template.querySelector('.drag').getAttribute('data-val'));
 
         if(DragValName === DropValName){ return false }
         const index = this.config.sqlBuilder.selectedFields.findIndex((el)=> el.fieldName === DropValName);
         const dragIndex = this.config.sqlBuilder.selectedFields.findIndex((el)=> el.fieldName === DragValName);
         this.ElementList = this.ElementList.reduce((acc, curVal, CurIndex) => {
-        // this.config.sqlBuilder.selectedFields = this.config.sqlBuilder.selectedFields.reduce((acc, curVal, CurIndex) => {
             if(CurIndex === index){
                 if(dragIndex > index){
                     return [...acc, DragValName, curVal];
