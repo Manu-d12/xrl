@@ -263,6 +263,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				
 				this.config.records = libs.getGlobalVar(this.name).records;
 				this.allRecords = this.config.records;
+				this.config.listViewConfig[0]._loadCfg = this.loadCfg.bind(this);
 				
 				console.log('loadRecords', libs.getGlobalVar(this.name));
 				this.generateColModel();
