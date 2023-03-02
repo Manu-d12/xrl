@@ -303,6 +303,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		this.setNumPages(this.config.pager.pageSize);
 
 		if (this.hasGrouping) this.setGroupRecords();
+		this.config._originalURL = window.location.href;
 	}
 
 	saveEditCallback(isNeedSave, rowName, value) {
@@ -503,6 +504,14 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if(this.config.showStandardEdit){
 			let calculatedInd = this.hasGrouping ? this.records.findIndex(rec => rowId === rec.Id) : this.calcRowIndex(rowInd);
 			this.handleEventStandardEdit(this.records[calculatedInd].Id);
+			this.config._intervalId = setInterval(() => {
+				if(window.location.href === this.config._originalURL) {
+					this.hasChanged = false;
+					console.log('Refresh',this.config._loadCfg);
+					clearInterval(this.config._intervalId);
+					this.config._loadCfg();
+				}
+			}, 500);
 		} else{
 			let groupInd;
 			let groupRowInd;
