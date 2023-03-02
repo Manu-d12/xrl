@@ -172,7 +172,7 @@
 					<div class="slds-col slds-size_1-of-1"> 
 						<lightning-combobox if:true={config._bulkEdit.cItem.isEditableAsPicklist} placeholder={config._LABELS.lbl_chooseOperation} value={config._bulkEdit.value} data-id="origValue" options={config._bulkEdit.cItem.options} class="slds-p-horizontal_xx-small" style="width:100%"></lightning-combobox>
 						<lightning-input if:true={config._bulkEdit.cItem.isEditableRegular} type={config._bulkEdit.type} value={config._bulkEdit.value} tabindex="0" data-id="origValue" style="width:100%"></lightning-input>
-						<lightning-input type="checkbox" if:true={config._bulkEdit.cItem.isEditableBool} checked={config._bulkEdit.value} data-id="origValue"> </lightning-input>
+						<lightning-input type="checkbox" if:true={config._bulkEdit.cItem.isEditableBool} checked={config._bulkEdit.value} data-id="origValue" label={config._bulkEdit.cItem.label} style="left:4px;"> </lightning-input>
 					</div>
 					<div class="slds-col slds-size_1-of-1"> 
 						<lightning-input class="alignBulkEditCheckbox" type="checkbox" name="isAll" data-id="isAll" check={config._bulkEdit.chBoxValue} label={config._bulkEdit.chBoxLabel}></lightning-input>
