@@ -359,12 +359,22 @@ export default class SqlBuilder extends LightningElement {
     }
     generateFields(describe,objStr,sObjName){
         let fields = [];
+        let fieldMap = {}; // moving this outside the loop to avoid re-creation and ease changing the properties
         for (let key in describe) {
             if (describe[key].type === 'reference') {
-                fields.push({ label: describe[key].relationshipName + ' > ', fieldName: describe[key].relationshipName, refObj : describe[key].referenceTo[0], css: 'slds-item' });	
+                fieldMap = { 
+                    label: describe[key].relationshipName + ' > ', 
+                    fieldName: describe[key].relationshipName,
+                    refObj: describe[key].referenceTo[0], 
+                    css: 'slds-item', 
+                    type: describe[key].type,
+                };
+                fieldMap.helpText = describe[key].relationshipName + ' (' + describe[key].referenceTo?.join(', ') + ')';
+                // I noticed that in some reference fields, there are multiple objects in the referenceTo array, so I joined all of them to the helpText
+                fields.push(fieldMap);	
             }else{
                 let itemCss = this.config.sqlBuilder.selectedFields.find(el => el.fieldName === (objStr ? objStr + describe[key].name : describe[key].name)) ? 'slds-item slds-theme_alt-inverse' : 'slds-item';
-                let fieldMap = { 
+                 fieldMap = { 
                     label: describe[key].label, 
                     fieldName: objStr ? objStr + describe[key].name : describe[key].name, 
                     css: itemCss, 
@@ -373,6 +383,10 @@ export default class SqlBuilder extends LightningElement {
                     isNameField: describe[key] && describe[key].nameField === true,
                     referenceTo: sObjName
                 };
+                fieldMap.helpText = fieldMap.fieldName +  ' (' + describe[key].type + ')'; // assigning outside to get the fieldname to be populated first
+                // the fieldname was previously used as the helptext but 
+                // as we also want the field type to be displayed, I added it to the helptext
+                // changing the fieldname was not an option as it is used in the code for sql queries
                 if(describe[key].type === 'picklist' || describe[key].type === 'multipicklist'){
                     fieldMap.options = [];
                     describe[key].picklistValues.forEach(field => {
