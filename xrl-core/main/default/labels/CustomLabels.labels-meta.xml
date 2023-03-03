@@ -294,7 +294,7 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_typeHere</shortDescription>
-        <value>type here...</value>
+        <value>type here... (max 20 chars allowed. Extra chars will be trimmed from end)</value>
     </labels>
     <labels>
         <fullName>srcLbl_available</fullName>
