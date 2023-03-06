@@ -155,15 +155,17 @@ export default class Multiselect extends LightningElement {
         }
         else{
             this.mSelectConfig.searchString = previousLabel;
-            this.dispatchEvent(new CustomEvent('select', {
-                detail: {
-                    'payloadType' : 'multi-select',
-                    'payload' : {
-                        'value' : this.mSelectConfig.value,
-                        'values' : this.mSelectConfig.values
+            if(this.mSelectConfig.value || this.mSelectConfig.values.length != 0){
+                this.dispatchEvent(new CustomEvent('select', {
+                    detail: {
+                        'payloadType' : 'multi-select',
+                        'payload' : {
+                            'value' : this.mSelectConfig.value,
+                            'values' : this.mSelectConfig.values
+                        }
                     }
-                }
-            }));
+                }));
+            }
             this.mSelectConfig.showDropdown = false;
         }
     }
