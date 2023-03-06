@@ -501,7 +501,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			this.dispatchEvent(toast);
 			return;
 		}
-		if(this.config.showStandardEdit){
+		if(this.config.showStandardEdit && this.getSelectedRecords().length < 2){
 			let calculatedInd = this.hasGrouping ? this.records.findIndex(rec => rowId === rec.Id) : this.calcRowIndex(rowInd);
 			this.handleEventStandardEdit(this.records[calculatedInd].Id);
 			this.config._intervalId = setInterval(() => {
