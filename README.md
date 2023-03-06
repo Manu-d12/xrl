@@ -39,3 +39,13 @@ Also we need provide a flag --skipancestorcheck during creating a package
 
 
 Thos parameter in config we need to use for automatic link last version to current package creation "ancestorVersion": "HIGHEST"
+
+
+
+
+[Additional Info]
+Static Code Analisys
+https://developer.salesforce.com/blogs/2022/10/develop-even-more-secure-code-with-salesforce-code-analyzer
+
+Example of execution
+sfdx scanner:run:dfa --target "./**/*.cls" --projectdir "./" >SCA.log
