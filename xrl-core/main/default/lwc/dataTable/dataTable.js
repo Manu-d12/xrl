@@ -501,7 +501,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			this.dispatchEvent(toast);
 			return;
 		}
-		if(this.config.showStandardEdit){
+		if(this.config.showStandardEdit && this.getSelectedRecords().length < 2){
 			let calculatedInd = this.hasGrouping ? this.records.findIndex(rec => rowId === rec.Id) : this.calcRowIndex(rowInd);
 			this.handleEventStandardEdit(this.records[calculatedInd].Id);
 			this.config._intervalId = setInterval(() => {
@@ -685,7 +685,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				undefined :
 				{
 					fieldName: colName,
-					style: libs.formatStr("position:absolute;top:{0}px;left:{1}px", [(-table.offsetHeight + 20 - (this.config.pager.pagerTop === true ? 40 : 0)), (event.x - 52)]),
+					style: libs.formatStr("position:absolute;top:{0}px;left:{1}px;min-width:fit-content;", [(-table.offsetHeight + 20 - (this.config.pager.pagerTop === true ? 40 : 0)), (event.x - 52)]),
 					type: cItem.type,
 					cItem : cItem,
 					filterStrFocus: true,

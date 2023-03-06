@@ -881,10 +881,10 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			this.config.dialog.saveAs = false;
 		}
 		if (val === 'dialog:saveAsName') {
-			this.config.dialog.listViewName = event.target.value;
+			this.config.dialog.listViewName = event.target.value.substring(0,20);
 		}
 		if (val === 'dialog:saveAsLabel') {
-			this.config.dialog.listViewLabel = event.target.value;
+			this.config.dialog.listViewLabel = event.target.value.substring(0,20);
 		}
 		if (val === 'dialog:saveAsFinish') {
 			console.log('SaveAs Finish', this.config.dialog.listViewName);

@@ -142,7 +142,8 @@ export default class SqlBuilder extends LightningElement {
             this.config.sqlBuilder.fields = [];
             this.config.sqlBuilder.allFields.forEach((el)=>{
                 if((el.label != null && el.label.toString().toLowerCase().indexOf(this.config.sqlBuilder.searchTerm) != -1) 
-                ||(el.fieldName != null && el.fieldName.toString().toLowerCase().indexOf(this.config.sqlBuilder.searchTerm) != -1)){
+                ||(el.fieldName != null && el.fieldName.toString().toLowerCase().indexOf(this.config.sqlBuilder.searchTerm) != -1)
+                ||(el.type != null && el.type.toString().toLowerCase().indexOf(this.config.sqlBuilder.searchTerm) != -1)){
                     this.config.sqlBuilder.fields.push(el);
                 }
             });
