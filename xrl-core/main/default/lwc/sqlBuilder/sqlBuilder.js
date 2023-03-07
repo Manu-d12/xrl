@@ -212,10 +212,19 @@ export default class SqlBuilder extends LightningElement {
             this.config.sqlBuilder.conditionOperations = undefined;
             this.config.sqlBuilder.currentCondition.key = this.config.sqlBuilder.conditions.field + this.config.sqlBuilder.conditions.length;
             if(this.config.sqlBuilder.currentCondition.index === undefined){
-                this.config.sqlBuilder.currentCondition.index = '#' + (this.config.sqlBuilder.conditions.length + 1);
-                this.config.sqlBuilder.conditionOrdering += (this.config.sqlBuilder.conditions.length + 1) === 1 ?
-                '#' + (this.config.sqlBuilder.conditions.length + 1) : ' AND #' + (this.config.sqlBuilder.conditions.length + 1);
-                this.config.sqlBuilder.conditions.push(this.config.sqlBuilder.currentCondition);
+                if(!this.isConditionExists(this.config.sqlBuilder.currentCondition,this.config.sqlBuilder.conditions)){
+                    this.config.sqlBuilder.currentCondition.index = '#' + (this.config.sqlBuilder.conditions.length + 1);
+                    this.config.sqlBuilder.conditionOrdering += (this.config.sqlBuilder.conditions.length + 1) === 1 ?
+                    '#' + (this.config.sqlBuilder.conditions.length + 1) : ' AND #' + (this.config.sqlBuilder.conditions.length + 1);
+                    this.config.sqlBuilder.conditions.push(this.config.sqlBuilder.currentCondition);
+                }else{
+                    const toast = new ShowToastEvent({
+                        title: 'Error',
+                        message: this.config._LABELS.lbl_conditionAlreadyExists,
+                        variant: 'error'
+                    });
+                    this.dispatchEvent(toast);
+                }
             }else{
                 let fieldInd = this.config.sqlBuilder.conditions.findIndex((el)=> el.index.toString() === this.config.sqlBuilder.currentCondition.index);
                 this.config.sqlBuilder.conditions[fieldInd] = this.config.sqlBuilder.currentCondition;
@@ -323,6 +332,11 @@ export default class SqlBuilder extends LightningElement {
             this.config.dialog.listViewConfig.orderMap = this.config.sqlBuilder.orderings;
             this.dialogValues(true);
         }
+    }
+    isConditionExists(obj, arr) {
+        const copyArr = arr.map(item => ({...item})); // create a copy of the array
+        copyArr.forEach(item => delete item.index); // delete 'index' key from each item in the copy array
+        return copyArr.some(item => JSON.stringify(item) === JSON.stringify(obj)); // check if object exists in array
     }
     upsertArray(array, item) { 
         const i = array.findIndex(_item => _item.field.fieldName === item.field.fieldName);
