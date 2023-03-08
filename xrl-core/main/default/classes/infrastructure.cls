@@ -594,6 +594,9 @@ global with sharing class infrastructure {
 			'lbl_items'=>label.lbl_items,
 			'lbl_actionWithThisOrderAlreadyExists'=>label.lbl_actionWithThisOrderAlreadyExists,
 			'lbl_conditionAlreadyExists'=>label.lbl_conditionAlreadyExists,
+			'lbl_groupingFunction'=>label.lbl_groupingFunction,
+			'lbl_groupFieldName'=>label.lbl_groupFieldName,
+			'lbl_groupOrder'=>label.lbl_groupOrder,
 			'msg_enterUniqueActionId'=>label.msg_enterUniqueActionId,
 			'msg_lisViewWasUpdated' => label.msg_lisViewWasUpdated,
 			'msg_requestWasSent' => label.msg_requestWasSent,
@@ -681,6 +684,9 @@ global with sharing class infrastructure {
 			'tooltip_isColumnFilterable'=>label.tooltip_isColumnFilterable,
 			'tooltip_isColumnSortable'=>label.tooltip_isColumnSortable,
 			'tooltip_isColumnWrapable'=>label.tooltip_isColumnWrapable,
+			'tooltip_groupingFunction'=>label.tooltip_groupingFunction,
+			'tooltip_groupFieldName'=>label.tooltip_groupFieldName,
+			'tooltip_groupOrder'=>label.tooltip_groupOrder,
 			'srcLbl_available' => label.srcLbl_available,
 			'srcLbl_optional' => label.srcLbl_optional
 		};

@@ -1855,4 +1855,52 @@ Once you are done editing the pattern, click outside the input box.</value>
         <shortDescription>lbl_conditionAlreadyExists</shortDescription>
         <value>Condition Already Exists</value>
     </labels>
+    <labels>
+        <fullName>lbl_groupingFunction</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_groupingFunction</shortDescription>
+        <value>Custom Function for Grouping records</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_groupingFunction</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_groupingFunction</shortDescription>
+        <value>This function will be used for grouping values</value>
+    </labels>
+    <labels>
+        <fullName>lbl_groupFieldName</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_groupFieldName</shortDescription>
+        <value>Field Name to group records</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_groupFieldName</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_groupFieldName</shortDescription>
+        <value>Enter the field name by which the records will be grouped</value>
+    </labels>
+    <labels>
+        <fullName>lbl_groupOrder</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_groupOrder</shortDescription>
+        <value>Group Orders</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_groupOrder</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_groupOrder</shortDescription>
+        <value>ASC for Ascending and DESC for Descending</value>
+    </labels>
 </CustomLabels>

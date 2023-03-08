@@ -181,49 +181,54 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 	setGroupRecords() {
 		let result = new Map();
-		this.config.groupingParams = {
-			field: this.config.groupFieldName,
-			order: this.config.groupOrder ? this.config.groupOrder.toLowerCase() : 'ASC'
-		}
-		this.records.forEach(r => {
-		
-			let groupName;
-			if(this.config.groupingParams.field.split('.')[1]){
-				groupName = r[this.config.groupingParams.field.split('.')[0]][this.config.groupingParams.field.split('.')[1]] || 'empty';
-			}else{
-				groupName = r[this.config.groupingParams.field] || 'empty';
+		if(this.config.groupFieldName === 'groupingFunction' && this.config.groupingFunction != undefined){
+			console.log('Custom Function');
+			result = eval('(' + this.config.groupingFunction + ')')(this.records);
+		}else{
+			this.config.groupingParams = {
+				field: this.config.groupFieldName,
+				order: this.config.groupOrder ? this.config.groupOrder.toLowerCase() : 'ASC'
 			}
-			let group = result.has(groupName) ? result.get(groupName) : {
-				title: groupName,
-				isChecked: false,
-				isOpened: true,
-				records: []
-			};
-			group.records.push(r);
-			result.set(groupName, group);
-		});
-		result.forEach(group => {
-			let checked = true;
-			for (let rec of group.records) {
-				if (!rec._isChecked) {
-					checked = false;
-					break;
+			this.records.forEach(r => {
+			
+				let groupName;
+				if(this.config.groupingParams.field.split('.')[1]){
+					groupName = r[this.config.groupingParams.field.split('.')[0]][this.config.groupingParams.field.split('.')[1]] || 'empty';
+				}else{
+					groupName = r[this.config.groupingParams.field] || 'empty';
 				}
-			}
-			group.isChecked = checked;
-		});
-		result = this.config.groupingParams.order === undefined ? Array.from(result.values()) : Array.from(result.values()).sort((a, b) => {
-			if (a.title > b.title) {
-				return this.config.groupingParams.order === 'asc' ? 1 : -1;
-			} else if (a.title < b.title) {
-				return this.config.groupingParams.order === 'asc' ? -1 : 1;
-			}
-			return 0;
-		});
-		let ind = 1;
-		result.forEach(group => {
-			group.records.forEach(rec => {rec.index = ind++;})
-		});
+				let group = result.has(groupName) ? result.get(groupName) : {
+					title: groupName,
+					isChecked: false,
+					isOpened: true,
+					records: []
+				};
+				group.records.push(r);
+				result.set(groupName, group);
+			});
+			result.forEach(group => {
+				let checked = true;
+				for (let rec of group.records) {
+					if (!rec._isChecked) {
+						checked = false;
+						break;
+					}
+				}
+				group.isChecked = checked;
+			});
+			result = this.config.groupingParams.order === undefined ? Array.from(result.values()) : Array.from(result.values()).sort((a, b) => {
+				if (a.title > b.title) {
+					return this.config.groupingParams.order === 'asc' ? 1 : -1;
+				} else if (a.title < b.title) {
+					return this.config.groupingParams.order === 'asc' ? -1 : 1;
+				}
+				return 0;
+			});
+			let ind = 1;
+			result.forEach(group => {
+				group.records.forEach(rec => {rec.index = ind++;})
+			});
+		}
 		this.groupedRecords = result;
 		console.log('groupedRecords', JSON.parse(JSON.stringify(this.groupedRecords)));
 	}
