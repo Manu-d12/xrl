@@ -14,25 +14,32 @@ export default class ServerFilter extends LightningElement {
     @track dataTableJson;
     @track isModalOpen = false;
     @track sValues = [];
+    @track sValue;
     connectedCallback(){
-        this.config = libs.getGlobalVar(this.cfg);
+        this.config = libs.getGlobalVar(this.cfg);        
         this.config.listViewConfig.forEach((el)=>{
 			if(el.cmpName === 'serversideFilter') {
+                this.parseHandlers(el);
 				this.filterJson = el;
 			}
             if(el.cmpName === 'dataTable') {
 				this.dataTableJson = el;
 			}
 		});
+        libs.setGlobalVar(this.cfg, this.config);
         this.sFilterfields = this.filterJson.sFilterCols ? this.filterJson.sFilterCols : [];
         for (let key in this.config.describe) {
 			this.allFields.push({ label: this.config.describe[key].label, value: this.config.describe[key].name });
 		}
         for(let key in this.sFilterfields){
-            this.selectedFields.push(this.sFilterfields[key].fieldName);
+            if (!this.sFilterfields[key].virtual) this.selectedFields.push(this.sFilterfields[key].fieldName);
         }
         libs.sortRecords(this.allFields, 'label', true);
         this.setFieldTypes();
+        if (!this.config.fields) {            
+            this.config.fields = this.filterJson.additionalFields ? [...this.selectedFields, ...this.filterJson.additionalFields] : this.selectedFields;
+        }
+        if (this.filterJson.fetchOnInit) this.fetchRecords();
     }
     getColItem(colName) {
 		return this.sFilterfields.find(e => {
@@ -43,13 +50,13 @@ export default class ServerFilter extends LightningElement {
         this.sFilterfields.forEach(element => {
             if(element.type === 'picklist'){
                 element.inputTypeComboBox = true;
-                if(element.options[0].value !== 'All'){
+                if(element.options[0].value !== 'All' && element.hasAll){
                     element.options.splice(0,0,{label:"All",value:"All"});
                 }
             }else if(element.type === 'boolean'){
                 element.inputTypeComboBox = true;
                 element.options = [];
-                element.options.push({label:"All",value:"All"});
+                if (element.hasAll) element.options.push({label:"All",value:"All"});
                 element.options.push({label:"True",value:"true"});
                 element.options.push({label:"False",value:"false"});
             }else if(element.type === 'datetime' || element.type === 'date'){
@@ -83,7 +90,8 @@ export default class ServerFilter extends LightningElement {
 			callback: ((nodeName, data) => {  
 				libs.getGlobalVar(this.cfg).records = data[nodeName].records.length > 0 ? data[nodeName].records : undefined;
                 this.config.records = libs.getGlobalVar(this.cfg).records;
-                const selectedEvent = new CustomEvent('message', { detail: {cmd:'dataTable:refresh',value:'refresh'} });
+				libs.getGlobalVar(this.cfg).state = this.conditionMap;
+                const selectedEvent = new CustomEvent('message', { detail: {cmd:'dataTable:refresh',value:'refresh',source:this.cfg} });
                 this.dispatchEvent(selectedEvent);
 			})
 		});
@@ -92,8 +100,12 @@ export default class ServerFilter extends LightningElement {
         let condition = '';
         /*eslint-disable*/
         for(let key in this.conditionMap){
-            console.log(typeof this.conditionMap[key]);
             if(typeof this.conditionMap[key] === 'object' && JSON.parse(JSON.stringify(this.conditionMap[key])).length > 1){
+                let colItem = this.getColItem(key);
+                if (colItem.virtual) {
+                    if (colItem.searchCallback && typeof colItem.searchCallback === 'function') condition += colItem.searchCallback(this.conditionMap[key], this.conditionMap);
+                    continue;
+                }
                 JSON.parse(JSON.stringify(this.conditionMap[key])).forEach((el,index)=>{
                     if(index === 0){
                         if(this.getColItem(key).type === 'boolean'){
@@ -112,18 +124,21 @@ export default class ServerFilter extends LightningElement {
                 condition += ')';
             }else{
                 if(JSON.parse(JSON.stringify(this.conditionMap[key]))[0] !== undefined){
-                    if(this.getColItem(key).type === 'currency' || this.getColItem(key).type === 'boolean' || this.getColItem(key).type === 'double'){
+                    let colItem = this.getColItem(key);
+                    if (colItem.virtual) {
+                        if (colItem.searchCallback && typeof colItem.searchCallback === 'function') condition += colItem.searchCallback(this.conditionMap[key], this.conditionMap);
+                    } else if(this.getColItem(key).type === 'currency' || this.getColItem(key).type === 'boolean' || this.getColItem(key).type === 'double'){
                         condition += 'AND ' + key + "="+this.conditionMap[key]+" ";
                     }else if(this.getColItem(key).type === 'datetime'){
                         condition += 'AND ' + key + ">="+this.conditionMap[key]+"T00:01:01z AND "+ key + "<="+this.conditionMap[key]+"T23:59:59z ";
                     }else if(this.getColItem(key).type === 'reference'){
-                        condition += 'AND ' + this.config.describe[key].relationshipName + '.Name ' + " LIKE '"+this.conditionMap[key]+"' ";
+                        condition += 'AND ' + this.config.describe[key].relationshipName + '.Name ' + " LIKE '%"+this.conditionMap[key]+"%' ";
                     }
                     else if(this.getColItem(key).type === 'id'){
                         condition += 'AND ' + key + "='"+this.conditionMap[key]+"' ";
                     }
                     else{
-                        condition += 'AND ' + key + " LIKE '"+this.conditionMap[key]+"' ";
+                        condition += 'AND ' + key + " LIKE '%"+this.conditionMap[key]+"%' ";
                     }
                 }
             }
@@ -202,7 +217,30 @@ export default class ServerFilter extends LightningElement {
 	}
     handleSelect(event){
         // let apiName = (event.currentTarget.id).slice(0, -4);
-        event.target.value = event.detail.payload.values;
+        event.target.value = event.detail.payload.value || event.detail.payload.values;
         this.handleChange(event);
     }
+    resetFilters() {
+        this.conditionMap = {};
+        this.sValues = [];
+        this.sValue = null;
+        this.sFilterfields.forEach(f => {
+            let input = this.template.querySelector(`[data-id="${f.fieldName}"]`);
+            if (f.inputTypeComboBox) {
+                input.value = f.options.find(opt => opt.name === 'All') ? ['All'] : [];
+                input.setValue(input.value);
+            } else {
+                input.value = '';
+            }
+        });
+    }
+    parseHandlers(ob) {
+        for (let p in ob) {
+            if (typeof ob[p] === 'string' && ob[p].includes('function')) {
+                ob[p] = eval('(' + ob[p] + ')');
+            } else if (typeof ob[p] === 'object') {
+                this.parseHandlers(ob[p]);
+            }
+        }
+    };
 }

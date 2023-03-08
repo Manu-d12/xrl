@@ -30,6 +30,7 @@ export default class Layout extends LightningElement {
 	setCustomLabels(cmd, data) {
 		console.log('CustomLabes are loaded', data[cmd]);
 		this.config._LABELS = data[cmd];
+		this.LABELS = data[cmd];
 	}
 
 	loadCfg(isInit) {
@@ -64,6 +65,7 @@ export default class Layout extends LightningElement {
 				console.log('cmpName',el.cmpName);
 				if(el.cmpName === 'dataTable') this.components.push({isDataTable:true,key:'sFilter'+index});
 				if(el.cmpName === 'serversideFilter') this.components.push({isServerFilter:true,key:'dataTable'+index});
+				if(el.cmpName === 'chart') this.components.push({isChart:true,key:'chart'+index});
 			});
 			// this.config.listViewName = jsonDetails[0].name;
 			// this.config.sObjApiName = jsonDetails[0].sObjApiName;
@@ -118,7 +120,7 @@ export default class Layout extends LightningElement {
 		});
 		dataTableConfig.rowChecked = false;
 		
-		console.log('this.config', this.config);
+		console.log('this.config', this.config, JSON.parse(JSON.stringify(this.config)));
 		this.config.relField = data[cmd].listViews[0].relField;
 		this.config.sObjApiName = data[cmd].listViews[0].sObjApiName;
 		const records = await libs.remoteAction(this, 'query', {
@@ -182,7 +184,8 @@ export default class Layout extends LightningElement {
 	}
 	handleChildMessage(event){
 		if(event.detail.cmd.startsWith('dataTable:')) {
-			this.template.querySelector('c-Data-Table').handleEventMessage(event);
+			this.template.querySelector('c-Data-Table')?.handleEventMessage(event);
+			this.template.querySelectorAll('c-chartjs')?.forEach(ch => ch.handleEventMessage(event));
 		}
 		if(event.detail.cmd.startsWith('global:')) this.handleGlobalMessage(event);
 	}
@@ -196,24 +199,28 @@ export default class Layout extends LightningElement {
 			this.config.tabularConfig = JSON.parse(configData.userConfig);
 			this.config.rows = this.config.tabularConfig.tableDefinition.rows;
 			this.config.cols = this.config.tabularConfig.tableDefinition.cols;
-			this.config.colClass = this.config.cols != 12 ? `slds-col slds-size_${12 / parseInt(this.config.cols)}-of-12` : 'slds-col slds-size_12-of-12';
+			let colSize = 12 / parseInt(this.config.cols);
 
 			// Loop through data model components
 			for (const cmp of this.config.tabularConfig.dataModel) {
+				
+				cmp.class = this.config.cols != 12 ? `slds-col slds-size_${cmp.colSize || colSize}-of-12` : 'slds-col slds-size_12-of-12';
+
 				// Check if component is blank or text
 				if (cmp.isBlank) {
-				console.log('This is Blank');
-				continue;
+					console.log('This is Blank');
+					continue;
 				} else if (cmp.isText) {
-				console.log('This is text');
-				continue;
+					console.log('This is text');
+					continue;
 				} else if (!cmp.isCmp) {
-				continue;
+					continue;
 				}
 		
 				// Check if component is DataTable or ServerSideFilter
 				cmp.isDataTable = cmp.cmpName === 'dataTable';
 				cmp.isServerFilter = cmp.cmpName === 'serversideFilter';
+				cmp.isChart = cmp.cmpName === 'chart';
 		
 				// Set component configuration
 				this.name = cmp.uniqueName;
@@ -223,7 +230,7 @@ export default class Layout extends LightningElement {
 				libs.setGlobalVar(this.name, {});
 				this.config = libs.getGlobalVar(this.name);
 				Object.assign(this.config, {
-				'_LABELS': libs.getGlobalVar(this.tabConfigName)._LABELS
+				'_LABELS': this.LABELS
 				});
 
 				// Call getConfigById for DataTable or ServerSideFilter
@@ -233,6 +240,12 @@ export default class Layout extends LightningElement {
 				} else if (cmp.isServerFilter) {
 					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
 						this.config.listViewConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig) : [];
+						this.config.sObjApiName = this.config.sObjApiName || configUniqueName.split(':')[0];
+						this.config.relField = this.config.relField || configUniqueName.split(':')[1];
+					} });
+				} else if (cmp.isChart) {
+					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
+						this.config.chartConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig) : [];
 					} });
 				}
 			}
@@ -240,6 +253,7 @@ export default class Layout extends LightningElement {
 			// Set global configuration
 			this.config = libs.getGlobalVar(this.tabConfigName);
 			this.config.isTabular = true;
+			this.config.isLoaded = true;
 		} catch (error) {
 			console.error(error);
 		}

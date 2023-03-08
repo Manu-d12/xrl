@@ -594,6 +594,7 @@ global with sharing class infrastructure {
 			'lbl_items'=>label.lbl_items,
 			'lbl_actionWithThisOrderAlreadyExists'=>label.lbl_actionWithThisOrderAlreadyExists,
 			'lbl_conditionAlreadyExists'=>label.lbl_conditionAlreadyExists,
+			'lbl_resetFilters'=>label.lbl_resetFilters,
 			'msg_enterUniqueActionId'=>label.msg_enterUniqueActionId,
 			'msg_lisViewWasUpdated' => label.msg_lisViewWasUpdated,
 			'msg_requestWasSent' => label.msg_requestWasSent,

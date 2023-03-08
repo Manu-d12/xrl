@@ -12,7 +12,17 @@ export default class Multiselect extends LightningElement {
 
     @track mSelectConfig = {};
 
+    @api setValue(v) {
+        if (typeof v === 'object') this.selectedvalues = v;
+        else this.selectedvalue = v;
+        this.setSelect();
+    }
+
     connectedCallback() {
+        this.setSelect();
+    }
+
+    setSelect() {
         this.mSelectConfig.showDropdown = false;
         this.mSelectConfig.showOptionCount = true;
         this.mSelectConfig.minChar = 2;

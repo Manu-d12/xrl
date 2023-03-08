@@ -1855,4 +1855,12 @@ Once you are done editing the pattern, click outside the input box.</value>
         <shortDescription>lbl_conditionAlreadyExists</shortDescription>
         <value>Condition Already Exists</value>
     </labels>
+    <labels>
+        <fullName>lbl_resetFilters</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_resetFilters</shortDescription>
+        <value>Reset Filters</value>
+    </labels>
 </CustomLabels>
