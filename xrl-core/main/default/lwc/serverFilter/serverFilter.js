@@ -47,7 +47,7 @@ export default class ServerFilter extends LightningElement {
 		});
 	}
     setFieldTypes(){
-        this.sFilterfields.forEach(element => {
+        this.sFilterfields.forEach(async element => {
             if(element.type === 'picklist'){
                 element.inputTypeComboBox = true;
                 if(element.options[0].value !== 'All' && element.hasAll){
@@ -62,11 +62,37 @@ export default class ServerFilter extends LightningElement {
             }else if(element.type === 'datetime' || element.type === 'date'){
                 element.inputTypeDate= true;
             }
-            else{
+            else if(element.type === 'reference'){
+                element = await this.referenceOperations(element);
+            } else{
                 element.inputTypeStr = true;
-            } 
+            }
         });
     }
+    async referenceOperations(element) {
+        element.options = [];
+        const { sObject, referenceSoql, formatter } = element;
+      
+        const query = referenceSoql !== undefined
+          ? { isNeedDescribe: true, sObjApiName: sObject, SOQL: referenceSoql }
+          : { isNeedDescribe: true, sObjApiName: sObject, relField: '', fields: ['Id', 'Name'], addCondition: 'LIMIT 10000' };
+      
+        await libs.remoteAction(this, referenceSoql !== undefined ? 'customSoql' : 'query', {
+          ...query,
+          callback: (nodeName, responseData) => {
+            if (formatter !== undefined) {
+                element.options = eval(`(${formatter})`)(responseData[nodeName]);
+            } else {
+                const records = responseData[nodeName].records;
+                element.options = records.length > 0 ? records.map(e => ({ label: e.Name, value: e.Id })) : undefined;
+            }
+            element._actualType = responseData[nodeName].describe ? JSON.parse(responseData[nodeName].describe)[element.fieldName].type : undefined;
+          }
+        });
+        element.inputTypeComboBox = true;
+        return element;
+    }
+      
     handleChange(event){
         let apiName = (event.currentTarget.id).slice(0, -4);
         if(event.target.value === '' || event.target.value === "All" || event.target.value === null){
@@ -132,7 +158,7 @@ export default class ServerFilter extends LightningElement {
                     }else if(this.getColItem(key).type === 'datetime'){
                         condition += 'AND ' + key + ">="+this.conditionMap[key]+"T00:01:01z AND "+ key + "<="+this.conditionMap[key]+"T23:59:59z ";
                     }else if(this.getColItem(key).type === 'reference'){
-                        condition += 'AND ' + this.config.describe[key].relationshipName + '.Name ' + " LIKE '%"+this.conditionMap[key]+"%' ";
+                        condition += 'AND ' + colItem.sObject + '.' + colItem.fieldName + " = '"+this.conditionMap[key]+"' ";
                     }
                     else if(this.getColItem(key).type === 'id'){
                         condition += 'AND ' + key + "='"+this.conditionMap[key]+"' ";
@@ -143,7 +169,7 @@ export default class ServerFilter extends LightningElement {
                 }
             }
         }
-        console.log(condition);
+        console.log('condition',condition);
         return condition;
     }
     handleSelectFields(event) {
