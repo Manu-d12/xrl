@@ -1015,9 +1015,13 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 	handleEventActions(event, val) {
 		if (val.startsWith('std:export')) {
-			if(!this.isThereUnsavedRecords()){
-				this.handleEventExport(event);
-				this.handleStandardCallback(val);
+			if(!this.isThereUnsavedRecords()){				
+				// HYPER-381
+				this.config.isSpinner = true;
+				setTimeout((() => { 
+					this.handleEventExport(event);
+					this.handleStandardCallback(val);
+				}), 10);
 			}else{
 				const event = new ShowToastEvent({
 					title: 'Error',
@@ -1196,7 +1200,6 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	handleEventExport(event) {
-
 		let records = this.template.querySelector('c-Data-Table').getSelectedRecords().length != 0 ?
 						this.template.querySelector('c-Data-Table').getSelectedRecords() :
 						this.template.querySelector('c-Data-Table').getRecords();
@@ -1292,6 +1295,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		
 		//deselecting the records if there is any
 		this.template.querySelector('c-Data-Table').updateView();
+		this.config.isSpinner = false;
 	}
 
 
