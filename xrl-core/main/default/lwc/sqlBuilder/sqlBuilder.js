@@ -208,29 +208,38 @@ export default class SqlBuilder extends LightningElement {
             };
         }
         if(val === "sqlBuilder:conditions:addCondition"){
-            this.config.sqlBuilder.openConditionInput = false;
-            this.config.sqlBuilder.conditionOperations = undefined;
-            this.config.sqlBuilder.currentCondition.key = this.config.sqlBuilder.conditions.field + this.config.sqlBuilder.conditions.length;
-            if(this.config.sqlBuilder.currentCondition.index === undefined){
-                if(!this.isConditionExists(this.config.sqlBuilder.currentCondition,this.config.sqlBuilder.conditions)){
-                    this.config.sqlBuilder.currentCondition.index = '#' + (this.config.sqlBuilder.conditions.length + 1);
-                    this.config.sqlBuilder.conditionOrdering += (this.config.sqlBuilder.conditions.length + 1) === 1 ?
-                    '#' + (this.config.sqlBuilder.conditions.length + 1) : ' AND #' + (this.config.sqlBuilder.conditions.length + 1);
-                    this.config.sqlBuilder.conditions.push(this.config.sqlBuilder.currentCondition);
+            if((this.config.sqlBuilder.currentCondition.operator.isUnary != undefined && this.config.sqlBuilder.currentCondition.operator.isUnary === true) 
+            || this.config.sqlBuilder.currentCondition.value != undefined){
+                this.config.sqlBuilder.openConditionInput = false;
+                this.config.sqlBuilder.conditionOperations = undefined;
+                this.config.sqlBuilder.currentCondition.key = this.config.sqlBuilder.conditions.field + this.config.sqlBuilder.conditions.length;
+                if(this.config.sqlBuilder.currentCondition.index === undefined){
+                    if(!this.isConditionExists(this.config.sqlBuilder.currentCondition,this.config.sqlBuilder.conditions)){
+                        this.config.sqlBuilder.currentCondition.index = '#' + (this.config.sqlBuilder.conditions.length + 1);
+                        this.config.sqlBuilder.conditionOrdering += (this.config.sqlBuilder.conditions.length + 1) === 1 ?
+                        '#' + (this.config.sqlBuilder.conditions.length + 1) : ' AND #' + (this.config.sqlBuilder.conditions.length + 1);
+                        this.config.sqlBuilder.conditions.push(this.config.sqlBuilder.currentCondition);
+                    }else{
+                        const toast = new ShowToastEvent({
+                            title: 'Error',
+                            message: this.config._LABELS.lbl_conditionAlreadyExists,
+                            variant: 'error'
+                        });
+                        this.dispatchEvent(toast);
+                    }
                 }else{
-                    const toast = new ShowToastEvent({
-                        title: 'Error',
-                        message: this.config._LABELS.lbl_conditionAlreadyExists,
-                        variant: 'error'
-                    });
-                    this.dispatchEvent(toast);
+                    let fieldInd = this.config.sqlBuilder.conditions.findIndex((el)=> el.index.toString() === this.config.sqlBuilder.currentCondition.index);
+                    this.config.sqlBuilder.conditions[fieldInd] = this.config.sqlBuilder.currentCondition;
                 }
+                this.dialogValues(true);
             }else{
-                let fieldInd = this.config.sqlBuilder.conditions.findIndex((el)=> el.index.toString() === this.config.sqlBuilder.currentCondition.index);
-                this.config.sqlBuilder.conditions[fieldInd] = this.config.sqlBuilder.currentCondition;
+                const toast = new ShowToastEvent({
+                    title: 'Error',
+                    message: this.config._LABELS.lbl_blankValuesNotAllowed,
+                    variant: 'error'
+                });
+                this.dispatchEvent(toast);
             }
-            this.dialogValues(true);
-            // this.config.sqlBuilder.conditionOperations = false;
         }
         if(val === "sqlBuilder:conditions:conditionText"){
             this.config.sqlBuilder.currentCondition.value = event.target.value;

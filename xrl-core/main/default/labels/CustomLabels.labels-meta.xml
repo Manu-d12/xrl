@@ -1863,4 +1863,12 @@ Once you are done editing the pattern, click outside the input box.</value>
         <shortDescription>lbl_resetFilters</shortDescription>
         <value>Reset Filters</value>
     </labels>
+    <labels>
+        <fullName>lbl_blankValuesNotAllowed</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_blankValuesNotAllowed</shortDescription>
+        <value>You cannot keep the input blank</value>
+    </labels>
 </CustomLabels>
