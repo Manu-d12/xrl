@@ -30,6 +30,9 @@ global with sharing class infrastructure {
 				when 'query' {
 					resultMethod = getQuery(data);
 				}
+				when 'customSoql' {
+					resultMethod = customSoql(data);
+				}
 				when 'saveListView' {
 					resultMethod = saveListView(data);
 				}
@@ -107,7 +110,7 @@ global with sharing class infrastructure {
 
 		if (string.isBlank(addCondition)) addCondition = '';
 
-		/*if (isNeedDescribe == true) {
+		if (isNeedDescribe == true) {
 			map < string, Schema.DescribeFieldResult > describeResult = new map < string, Schema.DescribeFieldResult > ();
 			map < String, Schema.SObjectField > fieldsMap = Schema.getGlobalDescribe().get(sObjApiName).getDescribe().fields.getMap();
 			for (string fItem: fieldsMap.keySet()) {
@@ -115,7 +118,7 @@ global with sharing class infrastructure {
 				describeResult.put(tmp.getName(), tmp);
 			}
 			result.put('describe', JSON.serialize(describeResult));
-		}*/
+		}
 
 		if (UserInfo.isMultiCurrencyOrganization()) {
 			System.debug('Multi Currency');
@@ -155,6 +158,33 @@ global with sharing class infrastructure {
 		//result.put('config', getConfig(sObjApiName, relField, listViewName));
 		return result;
 		//https://salesforce.stackexchange.com/questions/116688/lightning-get-sobject-tab-icon
+	}
+	private static object customSoql(map < string, object > data) {
+		string SOQL = (string) data.get('SOQL');
+		string sObjApiName = (string) data.get('sObjApiName');
+		boolean isNeedDescribe = true;
+		map < string, object > result = new map < string, object > ();
+		result.put('SOQL', SOQL);
+
+		if (isNeedDescribe == true) {
+			map < string, Schema.DescribeFieldResult > describeResult = new map < string, Schema.DescribeFieldResult > ();
+			map < String, Schema.SObjectField > fieldsMap = Schema.getGlobalDescribe().get(sObjApiName).getDescribe().fields.getMap();
+			for (string fItem: fieldsMap.keySet()) {
+				Schema.DescribeFieldResult tmp = fieldsMap.get(fItem).getDescribe();
+				describeResult.put(tmp.getName(), tmp);
+			}
+			result.put('describe', JSON.serialize(describeResult));
+		}
+
+		sObject[] records = database.query(SOQL);
+		SObjectAccessDecision decision = Security.stripInaccessible(AccessType.READABLE, records);
+
+		// Throw an exception if any data was stripped
+		if (!decision.getModifiedIndexes().isEmpty()) {
+			throw new InfrastructureException(null,'Data was stripped', Infrastructure.exceptionType.GENERAL);
+		}
+		result.put('records', records);
+		return result;
 	}
 
 	private static map < string, object > getConfig(map < string, object > data) {
