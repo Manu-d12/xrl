@@ -164,4 +164,13 @@ public class packageTest {
         test.stopTest();
         System.assertEquals(true, res.size()>0);
     }
+    static testMethod void testPostInstall() {
+        Test.startTest();
+        postInstallClass postinstall = new postInstallClass();
+        Test.testInstall(postinstall, null);
+        // Test.testInstall(postinstall, new Version(1,0), true);   
+        List<extRelListConfig__c> a = [SELECT Id FROM extRelListConfig__c];
+        System.assertEquals(a.size(), 2, 'Msg');            
+        Test.stopTest();
+    }
 }
