@@ -202,6 +202,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				'hasEditAccess':true
 			}
 		}
+		this.config.listView.title = this.config.listView.label + ' - ' + this.config.listView.createdBy;
 		this.config.fields = [];
 		this.config.lockedFields = [];
 		
