@@ -388,7 +388,7 @@ export default class SqlBuilder extends LightningElement {
         for (let key in describe) {
             if (describe[key].type === 'reference') {
                 fieldMap = { 
-                    label: describe[key].relationshipName + ' > ', 
+                    label: describe[key].label + ' > ', 
                     fieldName: describe[key].relationshipName,
                     refObj: describe[key].referenceTo[0], 
                     css: 'slds-item', 
