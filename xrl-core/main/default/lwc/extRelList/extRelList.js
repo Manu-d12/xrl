@@ -237,6 +237,12 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			this.config.listViewConfig[0].isShowCheckBoxes = false;
 		}
 		this.config.listViewConfig[0].rowChecked = false;
+		//HYPER-382
+		if(this.isFullscreen){
+			const expandAction = this.config.listViewConfig[0].actions.find((el) => el.actionId === 'std:expand_view');
+			this.config._expandTip = expandAction.actionTip;
+			expandAction.actionTip = this.config._LABELS.lbl_collapseView;
+		}
 		this.config.actionsBar = {
 			'actions':this.config.listViewConfig[0].actions,
 			'_handleEvent':this.handleEvent.bind(this),
@@ -985,6 +991,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	prepareConfigForSave() {
+		//HYPER-382
+		if(this.isFullscreen){
+			const expandAction = this.config.dialog.listViewConfig.actions.find((el) => el.actionId === 'std:expand_view');
+			expandAction.actionTip = this.config._expandTip;
+		}
 		let tmp = JSON.parse(JSON.stringify(this.config.dialog.listViewConfig));
 		for (let key in tmp) {
 			if (key.startsWith('_')) delete tmp[key];
