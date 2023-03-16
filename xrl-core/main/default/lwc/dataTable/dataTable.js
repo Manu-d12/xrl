@@ -1044,7 +1044,10 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 	@api
 	handleEventMessage(event){
-		if(event.detail.cmd.split(':')[1] === 'refresh') this.connectedCallback();
+		if(event.detail.cmd.split(':')[1] === 'refresh') {
+			libs.getGlobalVar(this.cfg).records = libs.getGlobalVar(event.detail.source).records || [];
+			this.connectedCallback();
+		}
 	}
 
 }

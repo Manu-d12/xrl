@@ -98,6 +98,7 @@ global with sharing class infrastructure {
 		string relField = (string) data.get('relField');
 		string addCondition = (string) data.get('addCondition');
 		string orderBy = (string) data.get('orderBy');
+		string limitCondition = (string) data.get('limit');
 		string listViewName = (string) data.get('listViewName');
 		string SQL = (string) data.get('SQL');
 
@@ -125,19 +126,18 @@ global with sharing class infrastructure {
 			soqlFields.add('CurrencyIsoCode');
 		}
 
-		string SOQL = (relField != '') ?
-			'SELECT {fields} FROM {sObjApiName} WHERE {relField}=\'{recordId}\' {addCondition}'.replaceAll('\\{relField\\}', relField != null ? relField : '').replaceAll('\\{recordId\\}', recordId) :
-			'SELECT {fields} FROM {sObjApiName} {addCondition}';
-		
-		if(orderBy != null){
-			SOQL += orderBy;
-		}
-
-		system.debug(LoggingLevel.Error, SOQL);
-
-		SOQL = SOQL.replaceAll('\\{sObjApiName\\}', sObjApiName != null ? sObjApiName : '');
-		SOQL = SOQL.replaceAll('\\{addCondition\\}', addCondition != null ? addCondition : '');
+		// SELECT {fields} FROM {sObjApiName} WHERE {relField}=\'{recordId}\' {addCondition}
+		string SOQL = 'SELECT {fields} FROM {sObjApiName}';
 		SOQL = SOQL.replaceAll('\\{fields\\}', soqlFields != null ? string.join(new list < string > (soqlFields), ',') : '');
+		SOQL = SOQL.replaceAll('\\{sObjApiName\\}', sObjApiName != null ? sObjApiName : '');
+		if (String.isNotBlank(relField) && String.isNotBlank(recordId)) {
+			SOQL += ' WHERE {relField}=\'{recordId}\' '.replaceAll('\\{relField\\}', relField).replaceAll('\\{recordId\\}', recordId) ;
+		}
+		if (String.isNotBlank(addCondition)) {
+			SOQL += String.isNotBlank(relField) && String.isNotBlank(recordId) ? addCondition : ' WHERE ' + addCondition.trim().removeStart('AND');
+		}
+		SOQL += String.isNotBlank(orderBy) ? ' ' + orderBy : '';
+		SOQL += String.isNotBlank(limitCondition) ? ' ' + limitCondition : '';
 
 		//if (string.isBlank(SOQL)) throw new core.appException(null, string.format(core.appLabels.get('errCmdParams'), new string[]{'executeAnon','apexCode'}), core.ExceptionType.API);
 		system.debug(LoggingLevel.Error, 'SOQL ' + SOQL);

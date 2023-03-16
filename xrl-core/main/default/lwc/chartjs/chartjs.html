@@ -1,5 +1,8 @@
 <template>
-    <div class="chart-container">
-        <canvas class="chart"></canvas>
+    <div class="chart-container" style="height: 100%;">
+        <canvas class="chart" style="height: 100%;"></canvas>
+        <div if:true={count} style={_config.countStyle}>
+            {count} item(s)
+        </div>
     </div>
 </template>
