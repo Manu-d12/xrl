@@ -403,8 +403,8 @@ global with sharing class infrastructure {
         if (data.get('beforeSaveAction') != null) {
             invokeApex((string) data.get('beforeSaveAction'), records);
         }
-		Savepoint sp = Database.setSavepoint();
-		system.debug(isRollback);
+		// Savepoint sp = Database.setSavepoint();
+		system.debug('RollBack ' + isRollback);
  
 		List<Database.SaveResult> srs = Database.update(records, isRollback); 
 		for (Database.SaveResult sr : srs) {

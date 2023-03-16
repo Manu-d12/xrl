@@ -631,7 +631,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		try{
 			await libs.remoteAction(this, 'saveRecords', { records: chunk, 
 				sObjApiName: this.config.sObjApiName,
-				rollback:this.config.listViewConfig[0].rollBack ? this.config.listViewConfig[0].rollBack : true,
+				rollback:this.config.listViewConfig[0].rollBack ? this.config.listViewConfig[0].rollBack : false,
 				beforeSaveAction: this.config.listViewConfig[0].beforeSaveApexAction ? this.config.listViewConfig[0].beforeSaveApexAction : ''
 			});
 		} catch (error) {
