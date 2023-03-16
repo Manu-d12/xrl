@@ -331,6 +331,7 @@ export default class SqlBuilder extends LightningElement {
             this.config.sqlBuilder.currentOrder.emptyField = emptyField;
         }
         if(val === "sqlBuilder:ordering:addOrdering"){
+            this.config.sqlBuilder.currentOrder.sortOrder = this.config.sqlBuilder.currentOrder.sortOrder === undefined ? 'ASC' : this.config.sqlBuilder.currentOrder.sortOrder;
             this.upsertArray(this.config.sqlBuilder.orderings,this.config.sqlBuilder.currentOrder);
             this.config.sqlBuilder.currentOrder = false;
             this.dialogValues(true);
