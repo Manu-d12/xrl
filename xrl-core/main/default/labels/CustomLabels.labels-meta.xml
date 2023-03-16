@@ -1871,4 +1871,12 @@ Once you are done editing the pattern, click outside the input box.</value>
         <shortDescription>lbl_blankValuesNotAllowed</shortDescription>
         <value>You cannot keep the input blank</value>
     </labels>
+    <labels>
+        <fullName>lbl_collapseView</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_collapseView</shortDescription>
+        <value>Collapse View</value>
+    </labels>
 </CustomLabels>

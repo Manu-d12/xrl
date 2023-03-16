@@ -626,6 +626,7 @@ global with sharing class infrastructure {
 			'lbl_conditionAlreadyExists'=>label.lbl_conditionAlreadyExists,
 			'lbl_resetFilters'=>label.lbl_resetFilters,
 			'lbl_blankValuesNotAllowed'=>label.lbl_blankValuesNotAllowed,
+			'lbl_collapseView'=>label.lbl_collapseView,
 			'msg_enterUniqueActionId'=>label.msg_enterUniqueActionId,
 			'msg_lisViewWasUpdated' => label.msg_lisViewWasUpdated,
 			'msg_requestWasSent' => label.msg_requestWasSent,
