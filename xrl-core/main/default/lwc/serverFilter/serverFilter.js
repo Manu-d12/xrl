@@ -103,7 +103,7 @@ export default class ServerFilter extends LightningElement {
     }
       
     handleChange(event){
-        let apiName = (event.currentTarget.id).slice(0, -4);
+        let apiName = event.target.dataset.id;
         if(event.target.value === '' || event.target.value === "All" || event.target.value === null){
             delete this.conditionMap[apiName];
         }else{
