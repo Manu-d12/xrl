@@ -25,6 +25,25 @@
                             data-ind="Case" cfg={component.uniqueName}></c-Data-Table>
                             <c-chartjs if:true={component.isChart} style={component.cmpStyle} name={component.uniqueName}></c-chartjs>
                         </template>
+                        <template if:true={component.isCollapsible}>
+                            <div class="slds-section" data-id={component.uniqueName}>
+                                <h3 class="slds-section__title">
+                                    <button type="button" aria-controls={component.uniqueName} class="slds-button slds-section__title-action" data-id={component.uniqueName}
+                                        onclick={toggleSection}>
+                                        <lightning-icon icon-name="utility:switch" alternative-text="button icon" size="x-small"
+                                            class="slds-section__title-action-icon slds-button__icon_left"></lightning-icon>
+                                        <span class="slds-truncate" title={component.sectionTitle}>{component.sectionTitle}</span>
+                                    </button>
+                                </h3>
+                                <div class="slds-section__content">
+                                    <c-server-Filter if:true={component.isServerFilter} style={component.cmpStyle} cfg={component.uniqueName}
+                                        record-id={recordId} onmessage={handleChildMessage}></c-server-Filter>
+                                    <c-Data-Table if:true={component.isDataTable} style={component.cmpStyle} data-ind="Case"
+                                        cfg={component.uniqueName}></c-Data-Table>
+                                    <c-chartjs if:true={component.isChart} style={component.cmpStyle} name={component.uniqueName}></c-chartjs>
+                                </div>
+                            </div>
+                        </template>
                         <!-- if the config is text -->
                         <template if:true={component.isText}>
                             <lightning-formatted-rich-text value={component.label}></lightning-formatted-rich-text>

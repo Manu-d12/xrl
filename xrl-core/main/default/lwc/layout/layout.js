@@ -184,7 +184,7 @@ export default class Layout extends LightningElement {
 	}
 	handleChildMessage(event){
 		if(event.detail.cmd.startsWith('dataTable:')) {
-			this.template.querySelector('c-Data-Table')?.handleEventMessage(event);
+			this.template.querySelectorAll('c-Data-Table')?.forEach(ch => ch.handleEventMessage(event));
 			this.template.querySelectorAll('c-chartjs')?.forEach(ch => ch.handleEventMessage(event));
 		}
 		if(event.detail.cmd.startsWith('global:')) this.handleGlobalMessage(event);
@@ -213,7 +213,7 @@ export default class Layout extends LightningElement {
 				} else if (cmp.isText) {
 					console.log('This is text');
 					continue;
-				} else if (!cmp.isCmp) {
+				} else if (!cmp.isCmp && !cmp.isCollapsible) {
 					continue;
 				}
 		
@@ -235,8 +235,8 @@ export default class Layout extends LightningElement {
 
 				// Call getConfigById for DataTable or ServerSideFilter
 				if (cmp.isDataTable) {
-					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: this.setConfig.bind(this) });
-					await new Promise(resolve => setTimeout(resolve, 3000)); //this needs to debug, should work without timeout
+					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: this.setConfigTabular.bind(this) });
+					//await new Promise(resolve => setTimeout(resolve, 3000)); //this needs to debug, should work without timeout
 				} else if (cmp.isServerFilter) {
 					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
 						this.config.listViewConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig) : [];
@@ -258,5 +258,61 @@ export default class Layout extends LightningElement {
 			console.error(error);
 		}
 	}
- 
+
+	async setConfigTabular(cmd, data) {
+		console.log(cmd, JSON.parse(JSON.stringify(data)), JSON.parse(JSON.stringify(data[cmd])));
+		libs.getGlobalVar(this.name).userInfo = data.userInfo;
+		
+		this.config.listViewConfig = data[cmd].userConfig ? JSON.parse(data[cmd].userConfig) : [];
+		this.config.currency = data[cmd].currency;
+		this.config.describe = data[cmd].describe ? JSON.parse(data[cmd].describe) : {};
+		this.config.fields = [];
+		this.config.lockedFields = [];
+
+		const dataTableConfig = this.config.listViewConfig.find(config => config.cmpName === 'dataTable');
+		if (!dataTableConfig) {
+			this.config.listViewConfig.push({
+				cmpName: 'dataTable',
+				colModel: [{
+					fieldName: 'Id',
+					updateable: false,
+					isNameField: false,
+					isEditable: false,
+					isFilterable: true,
+					isSortable: true
+				}]
+			});
+		}
+		
+		const mergedConfig = {
+			...dataTableConfig,
+			colModel: dataTableConfig.colModel.reduce((acc, col) => {
+				const existingCol = acc.find(c => c.fieldName === col.fieldName);
+				if (existingCol) {
+					acc[acc.indexOf(existingCol)] = {...existingCol, ...col};
+				} else {
+					acc.push(col);
+				}
+				return acc;
+			}, [])
+		};
+		
+		this.config.listViewConfig[this.config.listViewConfig.indexOf(dataTableConfig)] = mergedConfig;
+		console.log('mergedConfig', this.config.listViewConfig);
+		
+		dataTableConfig.colModel.forEach(col => {
+			this.config.fields.push(col.fieldName);
+		});
+		dataTableConfig.rowChecked = false;
+		this.config.relField = data[cmd].listViews[0].relField;
+		this.config.sObjApiName = data[cmd].listViews[0].sObjApiName;
+		this.config.records = [];
+		
+		console.log('this.config', JSON.parse(JSON.stringify(this.config)));
+	}
+
+	toggleSection(event) {
+        let section = this.template.querySelector('[data-id="' + event.currentTarget.dataset.id + '"]');
+		section.classList.toggle('slds-is-open');
+    } 
 }

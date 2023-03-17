@@ -1,4 +1,4 @@
-import { LightningElement, api } from 'lwc';
+import { LightningElement, api, track } from 'lwc';
 import { loadScript, loadStyle } from 'lightning/platformResourceLoader';
 import { libs } from 'c/libs';
 import chartjs from '@salesforce/resourceUrl/chart_js';
@@ -46,6 +46,7 @@ export default class ChartJS extends LightningElement {
         return parsed;
     }
 
+    @track count;
     _chart;
     _config;
     _isRendered;
@@ -80,6 +81,7 @@ export default class ChartJS extends LightningElement {
         }
         let state = libs.getGlobalVar(event.detail.source).state;
         utils.state[event.detail.source] = state;
+        this.count = this._config.count;
     }
     
     @api updateChart() {
@@ -104,5 +106,6 @@ export default class ChartJS extends LightningElement {
 
     @api clearChart() {
         this._chart.clear();
-    }    
+    }
+    
 }

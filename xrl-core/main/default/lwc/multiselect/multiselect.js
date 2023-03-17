@@ -18,6 +18,11 @@ export default class Multiselect extends LightningElement {
         this.setSelect();
     }
 
+    @api setOptions(v) {
+        this.options = v;
+        this.setSelect();
+    }
+
     connectedCallback() {
         this.setSelect();
     }
@@ -26,9 +31,9 @@ export default class Multiselect extends LightningElement {
         this.mSelectConfig.showDropdown = false;
         this.mSelectConfig.showOptionCount = true;
         this.mSelectConfig.minChar = 2;
-        var optionData = this.options ? (JSON.parse(JSON.stringify(this.options))) : null;
-        var value = this.selectedvalue ? (JSON.parse(JSON.stringify(this.selectedvalue))) : null;
-        var values = this.selectedvalues ? (JSON.parse(JSON.stringify(this.selectedvalues))) : null;
+        var optionData = this.options ? (JSON.parse(JSON.stringify(this.options))) : [];
+        var value = this.selectedvalue && !this.multiselect ? (JSON.parse(JSON.stringify(this.selectedvalue))) : '';
+        var values = this.selectedvalues && this.multiselect ? (JSON.parse(JSON.stringify(this.selectedvalues))) : [];
 		if(value || values) {
             var searchString;
         	var count = 0;
@@ -165,17 +170,15 @@ export default class Multiselect extends LightningElement {
         }
         else{
             this.mSelectConfig.searchString = previousLabel;
-            if(this.mSelectConfig.value || this.mSelectConfig.values.length != 0){
-                this.dispatchEvent(new CustomEvent('select', {
-                    detail: {
-                        'payloadType' : 'multi-select',
-                        'payload' : {
-                            'value' : this.mSelectConfig.value,
-                            'values' : this.mSelectConfig.values
-                        }
+            this.dispatchEvent(new CustomEvent('select', {
+                detail: {
+                    'payloadType' : 'multi-select',
+                    'payload' : {
+                        'value' : this.mSelectConfig.value,
+                        'values' : this.mSelectConfig.values
                     }
-                }));
-            }
+                }
+            }));
             this.mSelectConfig.showDropdown = false;
         }
     }
