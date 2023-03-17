@@ -373,23 +373,35 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		this.config._changedRecords.add(id);
 	}
 
-	// get rowStyle() {
-	// 	return this.config.rowCallback ? 'cursor : pointer' : '';
-	// }
-
 	selectAll(event) {
+		this.config._eventChecked = event.target.checked;
+
+		//Here first we are updating the records which are visible on the screen and later updating other records asynchronously
+		// to ensure minimal response time is maintained
+		let startIndex = (this.config.pager.curPage - 1) * this.config.pager.pageSize;
+		let endIndex = (startIndex + parseInt(this.config.pager.pageSize)) < this.records.length ? (startIndex + parseInt(this.config.pager.pageSize)) : this.records.length;
+		for (let i = startIndex; i < endIndex; i++) {
+			this.records[i]._isChecked = this.config._eventChecked;
+		}
+		
+		setTimeout(()=> {
+			this.checkAll();
+		}, 0);
+		this.rowCheckStatus();	
+	}
+	checkAll(){
 		this.records.forEach(e => {
-			e._isChecked = event.target.checked
+			e._isChecked = this.config._eventChecked
 		});
+		
 		if (this.hasGrouping) {
 			this.groupedRecords.forEach(group => {
-				group.isChecked = event.target.checked;
-				group.records.forEach(rec => {
-					rec._isChecked = event.target.checked;
-				});
+			group.isChecked = this.config._eventChecked;
+			group.records.forEach(rec => {
+				rec._isChecked = this.config._eventChecked;
 			});
-		}	
-		this.rowCheckStatus();	
+			});
+		}
 	}
 
 	toggleGroup(event) {
@@ -429,7 +441,19 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		this.rowCheckStatus();
 	}
 
-	rowCheckStatus(){
+	async rowCheckStatus(){
+		// this.records.forEach(e => {
+		// 	e._isChecked = event.target.checked
+		// });
+		// console.log('SElecting all 2');
+		// if (this.hasGrouping) {
+		// 	this.groupedRecords.forEach(group => {
+		// 		group.isChecked = event.target.checked;
+		// 		group.records.forEach(rec => {
+		// 			rec._isChecked = event.target.checked;
+		// 		});
+		// 	});
+		// }	
 		if(this.getSelectedRecords().length>0){
 			this.config.rowChecked = true;
 		}else{
@@ -667,9 +691,10 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}*/
 
 	setFilter(event) {
-		let colName = event.srcElement.getAttribute('data-id') !== null ?
-			event.srcElement.getAttribute('data-id') :
-			event.srcElement.parentNode.getAttribute('data-id');
+		// let colName = event.srcElement.getAttribute('data-id') !== null ?
+		// 	event.srcElement.getAttribute('data-id') :
+		// 	event.srcElement.parentNode.getAttribute('data-id');
+		const colName = event.srcElement.getAttribute('data-id') ?? event.srcElement.parentNode.getAttribute('data-id');
 		let cItem = this.getColItem(colName);
 		let table = this.template.querySelector('.extRelListTable');
 
@@ -702,16 +727,32 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						]
 
 				};
-				if(this.config._isFilterOptions != undefined){
-					this.config._isFilterOptions.filterOption = cItem._filterOption ? cItem._filterOption : 'eq';
-					this.config._isFilterOptions.isUnary = this.config._isFilterOptions.filterOptions.find(item => {return this.config._isFilterOptions.filterOption === item.value}).isUnary != undefined ?
-															this.config._isFilterOptions.filterOptions.find(item => {return this.config._isFilterOptions.filterOption === item.value}).isUnary :
-															false;
-					this.config._isFilterOptions.filterStr = cItem._filterStr;
-					this.config._isFilterOptions.filterStrTo = cItem._filterStrTo;
-					this.config._isFilterOptions.isShowStr = cItem.options === undefined;
-					this.config._isFilterOptions.isShowToStr = this.config._isFilterOptions.filterOption === 'rg';
-					this.config._isFilterOptions.isShowClearBtn = (cItem._filterStr && cItem._filterStr.length > 0);
+				// if(this.config._isFilterOptions != undefined){
+				// 	this.config._isFilterOptions.filterOption = cItem._filterOption ? cItem._filterOption : 'eq';
+				// 	this.config._isFilterOptions.isUnary = this.config._isFilterOptions.filterOptions.find(item => {return this.config._isFilterOptions.filterOption === item.value}).isUnary != undefined ?
+				// 											this.config._isFilterOptions.filterOptions.find(item => {return this.config._isFilterOptions.filterOption === item.value}).isUnary :
+				// 											false;
+				// 	this.config._isFilterOptions.filterStr = cItem._filterStr;
+				// 	this.config._isFilterOptions.filterStrTo = cItem._filterStrTo;
+				// 	this.config._isFilterOptions.isShowStr = cItem.options === undefined;
+				// 	this.config._isFilterOptions.isShowToStr = this.config._isFilterOptions.filterOption === 'rg';
+				// 	this.config._isFilterOptions.isShowClearBtn = (cItem._filterStr && cItem._filterStr.length > 0);
+				// }
+				const { _isFilterOptions } = this.config;
+				const { _filterOption, _filterStr, _filterStrTo } = cItem;
+				if (_isFilterOptions) {
+					const filterOptionObj = _isFilterOptions.filterOptions.find(item => item.value === _filterOption) || {};
+					const isUnary = filterOptionObj.isUnary ?? false;
+					
+					Object.assign(this.config._isFilterOptions, {
+						filterOption: _filterOption || 'eq',
+						isUnary,
+						filterStr: _filterStr,
+						filterStrTo: _filterStrTo,
+						isShowStr: cItem.options === undefined,
+						isShowToStr: _isFilterOptions.filterOption === 'rg',
+						isShowClearBtn: (_filterStr && _filterStr.length > 0)
+					});
 				}
 
 			setTimeout((() => { 
