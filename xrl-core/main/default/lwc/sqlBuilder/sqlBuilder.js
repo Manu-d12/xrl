@@ -387,18 +387,7 @@ export default class SqlBuilder extends LightningElement {
         let fields = [];
         let fieldMap = {}; // moving this outside the loop to avoid re-creation and ease changing the properties
         for (let key in describe) {
-            if (describe[key].type === 'reference') {
-                fieldMap = { 
-                    label: describe[key].label + ' > ', 
-                    fieldName: describe[key].relationshipName,
-                    refObj: describe[key].referenceTo[0], 
-                    css: 'slds-item', 
-                    type: describe[key].type,
-                };
-                fieldMap.helpText = describe[key].relationshipName + ' (' + describe[key].referenceTo?.join(', ') + ')';
-                // I noticed that in some reference fields, there are multiple objects in the referenceTo array, so I joined all of them to the helpText
-                fields.push(fieldMap);	
-            }else{
+
                 let itemCss = this.config.sqlBuilder.selectedFields.find(el => el.fieldName === (objStr ? objStr + describe[key].name : describe[key].name)) ? 'slds-item slds-theme_alt-inverse' : 'slds-item';
                  fieldMap = { 
                     label: describe[key].label, 
@@ -421,7 +410,19 @@ export default class SqlBuilder extends LightningElement {
                         )
                     });
                 }
-                if (describe[key].updateable || describe[key].nameField) {
+                if (describe[key].type === 'reference') {
+                fieldMap = { 
+                    label: describe[key].label + ' > ', 
+                    fieldName: describe[key].relationshipName,
+                    refObj: describe[key].referenceTo[0], 
+                    css: 'slds-item', 
+                    type: describe[key].type,
+                };
+                fieldMap.helpText = describe[key].relationshipName + ' (' + describe[key].referenceTo?.join(', ') + ')';
+                // I noticed that in some reference fields, there are multiple objects in the referenceTo array, so I joined all of them to the helpText
+                fields.push(fieldMap);	
+            	}
+				if (describe[key].updateable || describe[key].nameField) {
                     if (fieldMap.type === 'picklist' || fieldMap.type === 'reference' || fieldMap.type === 'multipicklist') {
                         fieldMap.isEditableAsPicklist = true;
                         console.log('picklist', fieldMap);
@@ -436,7 +437,6 @@ export default class SqlBuilder extends LightningElement {
                 fieldMap.isFilterable = true;
                 fieldMap.isSortable = true;
                 fields.push(fieldMap);
-            }
         }
         return fields;
     }

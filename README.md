@@ -49,3 +49,7 @@ https://developer.salesforce.com/blogs/2022/10/develop-even-more-secure-code-wit
 
 Example of execution
 sfdx scanner:run:dfa --target "./**/*.cls" --projectdir "./" >SCA.log
+
+
+
+https://login.salesforce.com/packaging/installPackage.apexp?p0=04t8d000000ld6oAAA
