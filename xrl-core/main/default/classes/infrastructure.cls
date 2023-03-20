@@ -243,6 +243,7 @@ global with sharing class infrastructure {
 	}
 	private static map < string, object > getConfigById(map < string, object > data) {
 		string configId = (string) data.get('configId');
+		string sObjApiName = (string) data.get('sObjApiName');
 		boolean isNeedDescribe = true;
 
 		map < string, object > result = new map < string, object > {};
@@ -267,6 +268,16 @@ global with sharing class infrastructure {
 		}
 		result.put('listViews', listViews);
 
+		if (isNeedDescribe == true && sObjApiName != null) {
+			map < string, Schema.DescribeFieldResult > describeResult = new map < string, Schema.DescribeFieldResult > ();
+			map < String, Schema.SObjectField > fieldsMap = Schema.getGlobalDescribe().get(sObjApiName).getDescribe().fields.getMap();
+			for (string fItem: fieldsMap.keySet()) {
+				Schema.DescribeFieldResult tmp = fieldsMap.get(fItem).getDescribe();
+				describeResult.put(tmp.getName(), tmp);
+			}
+			result.put('describe', JSON.serialize(describeResult));
+		}
+
 		result.put('currency', new map < string, object > {
 			'orgCurrency' => UserInfo.getDefaultCurrency(),
 			'isMultyCurrencyOrg' => UserInfo.isMultiCurrencyOrganization()
@@ -276,6 +287,7 @@ global with sharing class infrastructure {
 	}
 	private static map < string, object > getConfigByUniqueName(map < string, object > data) {
 		string uniqueName = (string) data.get('uniqueName');
+		string sObjApiName = (string) data.get('sObjApiName');
 		boolean isNeedDescribe = true;
 
 		map < string, object > result = new map < string, object > {};
@@ -299,6 +311,15 @@ global with sharing class infrastructure {
 			listViews.add(view);
 		}
 		result.put('listViews', listViews);
+		if (isNeedDescribe == true && sObjApiName != null) {
+			map < string, Schema.DescribeFieldResult > describeResult = new map < string, Schema.DescribeFieldResult > ();
+			map < String, Schema.SObjectField > fieldsMap = Schema.getGlobalDescribe().get(sObjApiName).getDescribe().fields.getMap();
+			for (string fItem: fieldsMap.keySet()) {
+				Schema.DescribeFieldResult tmp = fieldsMap.get(fItem).getDescribe();
+				describeResult.put(tmp.getName(), tmp);
+			}
+			result.put('describe', JSON.serialize(describeResult));
+		}
 
 		result.put('currency', new map < string, object > {
 			'orgCurrency' => UserInfo.getDefaultCurrency(),

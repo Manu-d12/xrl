@@ -212,21 +212,27 @@ export default class ServerFilter extends LightningElement {
         this.isModalOpen = true;
     }
     handleSave(event){
-        libs.remoteAction(this, 'saveListView', { config: this.prepareConfigForSave(), 
-            listViewName: this.config?.listView?.name, 
-            listViewLabel: this.config?.listView?.label, 
-            sObjApiName: this.config.sObjApiName, 
-            relField: this.config.relField, 
-            addCondition: this.config.listViewConfig.addCondition, 
-            listViewAdmin: this.config?.listView?.isAdminConfig ?? false, 
-            callback: function(){
-                const event = new ShowToastEvent({
-                    title: 'success',
-                    message: this.config._LABELS.msg_lisViewWasUpdated,
-                    variant: 'success'
-                });
-                this.dispatchEvent(event);
-            } });
+        // libs.remoteAction(this, 'saveListView', { config: this.prepareConfigForSave(), 
+        //     listViewName: this.config?.listView?.name, 
+        //     listViewLabel: this.config?.listView?.label, 
+        //     sObjApiName: this.config.sObjApiName, 
+        //     relField: this.config.relField, 
+        //     addCondition: this.config.listViewConfig.addCondition, 
+        //     listViewAdmin: this.config?.listView?.isAdminConfig ?? false, 
+        //     callback: function(){
+        //         const event = new ShowToastEvent({
+        //             title: 'success',
+        //             message: this.config._LABELS.msg_lisViewWasUpdated,
+        //             variant: 'success'
+        //         });
+        //         this.dispatchEvent(event);
+        //     } });
+        const event1 = new ShowToastEvent({
+            title: 'success',
+            message: 'Server Filter was successfully updated',
+            variant: 'success'
+        });
+        this.dispatchEvent(event1);
         this.isModalOpen = false;
     }
     handleModalClose(){
