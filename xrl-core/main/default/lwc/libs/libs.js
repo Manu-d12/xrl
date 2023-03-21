@@ -244,11 +244,19 @@ export let libs = {
 				"options": [{label:'ASC',value:'ASC'},{label:'DESC',value:'DESC'}],
 				"cmd" : "dialog:setTableParam",
 			},
+			
 			"saveChunkSize" : {
 				"defValue": 200,
 				"type": "string",
 				"label": _labels.lbl_chunkSizeForSave,
 				"tooltip": _labels.tooltip_numbersOfRecordInChunk,
+				"cmd" : "dialog:setTableParam",
+			},
+			"deleteChunkSize" : {
+				"defValue": 200,
+				"type": "string",
+				"label": _labels.lbl_deleteChunkSize,
+				"tooltip": _labels.tooltip_deleteChunkSize,
 				"cmd" : "dialog:setTableParam",
 			},
 			"beforeSaveValidation": {
@@ -263,13 +271,6 @@ export let libs = {
 				"label": _labels.lbl_beforeSaveApexAction,
 				"tooltip": _labels.tooltip_beforeSaveApexAction,
 				"cmd" : "dialog:setTableParam"
-			},
-			"deleteChunkSize" : {
-				"defValue": 200,
-				"type": "string",
-				"label": _labels.lbl_deleteChunkSize,
-				"tooltip": _labels.tooltip_deleteChunkSize,
-				"cmd" : "dialog:setTableParam",
 			},
 			"beforeDeleteValidation": {
 				"type": "function",
