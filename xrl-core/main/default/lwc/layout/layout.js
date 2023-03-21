@@ -239,11 +239,12 @@ export default class Layout extends LightningElement {
 					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: this.setConfigTabular.bind(this) });
 					//await new Promise(resolve => setTimeout(resolve, 3000)); //this needs to debug, should work without timeout
 				} else if (cmp.isServerFilter) {
-					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
+					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, sObjApiName:this.config.sObjApiName || configUniqueName.split(':')[0] , callback: function(cmd, data) {
 						this.config.listViewConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig) : [];
 						this.config.sObjApiName = this.config.sObjApiName || configUniqueName.split(':')[0];
 						this.config.relField = this.config.relField || configUniqueName.split(':')[1];
 						this.config.financial = (data[cmd].Financial) ? data[cmd].Financial : {};
+						this.config.describe = (data[cmd].describe) ? JSON.parse(data[cmd].describe) : {};
 					} });
 				} else if (cmp.isChart) {
 					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {

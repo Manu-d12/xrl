@@ -179,26 +179,26 @@ export default class ServerFilter extends LightningElement {
     }
     handleSelectFields(event) {
         const selectedOptionsList = event.detail.value;
-        this.sFilterfields = [];
-        this.selectedFields = [];
         selectedOptionsList.forEach(e => {
-            this.selectedFields.push(e);
-            let col = {'fieldName':e};
-			let describe = this.config.describe[e];
-            console.log(describe);
-			if (col.label === undefined) col.label = describe.label;
-			if (col.type === undefined) col.type = describe.type;
-			col.updateable = describe.updateable;
-			col.isNameField = describe && describe.nameField === true;
-			if (col.type === 'picklist') {
-				col.options = [];
-				describe.picklistValues.forEach(field => {
-					col.options.push(
-						{ label: field.label, value: field.value }
-					)
-				});
-			}
-            this.sFilterfields.push(col);
+            if(this.sFilterfields.find(el => el.fieldName === e) === undefined) {
+                this.selectedFields.push(e);
+                let col = {'fieldName':e};
+                let describe = this.config.describe[e];
+                console.log(describe);
+                if (col.label === undefined) col.label = describe.label;
+                if (col.type === undefined) col.type = describe.type;
+                col.updateable = describe.updateable;
+                col.isNameField = describe && describe.nameField === true;
+                if (col.type === 'picklist') {
+                    col.options = [];
+                    describe.picklistValues.forEach(field => {
+                        col.options.push(
+                            { label: field.label, value: field.value }
+                        )
+                    });
+                }
+                this.sFilterfields.push(col);
+            }
 		});
         this.filterJson.sFilterCols = this.sFilterfields;
         this.config.listViewConfig.forEach((el)=>{
@@ -211,41 +211,9 @@ export default class ServerFilter extends LightningElement {
     handleClick(event){
         this.isModalOpen = true;
     }
-    handleSave(event){
-        libs.remoteAction(this, 'saveListView', { config: this.prepareConfigForSave(), 
-            listViewName: this.config?.listView?.name, 
-            listViewLabel: this.config?.listView?.label, 
-            sObjApiName: this.config.sObjApiName, 
-            relField: this.config.relField, 
-            addCondition: this.config.listViewConfig.addCondition, 
-            listViewAdmin: this.config?.listView?.isAdminConfig ?? false, 
-            callback: function(){
-                const event = new ShowToastEvent({
-                    title: 'success',
-                    message: this.config._LABELS.msg_lisViewWasUpdated,
-                    variant: 'success'
-                });
-                this.dispatchEvent(event);
-            } });
-        this.isModalOpen = false;
-    }
     handleModalClose(){
         this.isModalOpen = false;
     }
-    prepareConfigForSave() {
-		let tmp = JSON.parse(JSON.stringify(this.config.listViewConfig));
-        console.log(tmp);
-        tmp.forEach((el)=>{
-            for (let key in el) {
-                if (key.startsWith('_')) delete el[key];
-            }
-        });
-        console.log(tmp);
-		// for (let key in tmp) {
-		// 	if (key.startsWith('_')) delete tmp[key];
-		// }
-		return JSON.stringify(tmp, null, '\t')
-	}
     handleSelect(event){
         // let apiName = (event.currentTarget.id).slice(0, -4);
         event.target.value = event.detail.payload.value || event.detail.payload.values;

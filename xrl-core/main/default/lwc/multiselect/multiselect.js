@@ -69,7 +69,7 @@ export default class Multiselect extends LightningElement {
             if(this.mSelectConfig.searchString.length >= this.mSelectConfig.minChar) {
                 var flag = true;
                 for(var i = 0; i < this.mSelectConfig.allOptions.length; i++) {
-                    if(this.mSelectConfig.allOptions[i].label.toLowerCase().trim().startsWith(this.mSelectConfig.searchString.toLowerCase().trim())) {
+					if(this.mSelectConfig.allOptions[i].label.toLowerCase().trim().includes(this.mSelectConfig.searchString.toLowerCase().trim())) {
                         this.mSelectConfig.allOptions[i].isVisible = true;
                         flag = false;
                         results.push(this.mSelectConfig.allOptions[i]);
