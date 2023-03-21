@@ -238,6 +238,7 @@ global with sharing class infrastructure {
 		});
 
 		result.put('iconMap', retrieveIconForObject(sObjApiName));
+		result.put('Financial', getFiscalData());
 
 		return result;
 	}
@@ -271,6 +272,7 @@ global with sharing class infrastructure {
 			'orgCurrency' => UserInfo.getDefaultCurrency(),
 			'isMultyCurrencyOrg' => UserInfo.isMultiCurrencyOrganization()
 		});
+		result.put('Financial', getFiscalData());
 
 		return result;
 	}
@@ -304,6 +306,7 @@ global with sharing class infrastructure {
 			'orgCurrency' => UserInfo.getDefaultCurrency(),
 			'isMultyCurrencyOrg' => UserInfo.isMultiCurrencyOrganization()
 		});
+		result.put('Financial', getFiscalData());
 
 		return result;
 	}
@@ -849,6 +852,44 @@ global with sharing class infrastructure {
 		}
 		result.put('describe', JSON.serialize(describeResult));
 		return result;
+	}
+	private static Map<String, Map<String, Object>> getFiscalData(){
+		Map<String, Object> result = new Map<String, Object>();
+
+		Date dat = System.today();
+		Integer yr = dat.year();
+
+		List<Id> fiscalYearList = new List<Id>(new Map<Id, FiscalYearSettings>([
+			SELECT Id FROM FiscalYearSettings 
+			WHERE CALENDAR_YEAR(StartDate) IN (:(yr-1),:yr,:(yr+1))
+			ORDER BY StartDate ASC
+		]).keySet());
+
+		List<Period> periods = [
+			SELECT Id, StartDate, EndDate, FullyQualifiedLabel, Number, FiscalYearSettingsId 
+			FROM Period 
+			WHERE Type = 'Quarter' AND FiscalYearSettingsId IN :fiscalYearList 
+			ORDER BY StartDate ASC
+		];
+		Map<String, Map<String, Object>> years = new Map<String, Map<String, Object>>{
+			'prevYear' => new Map<String, Object>(),
+			'currentYear' => new Map<String, Object>(),
+			'nextYear' => new Map<String, Object>()
+		};
+
+		for (Integer i = 0; i < periods.size(); i++) {
+			Period quarter = periods[i];
+			Integer quarterNum = math.mod(i,4) + 1;
+
+			if (fiscalYearList[0] == quarter.FiscalYearSettingsId) {
+				years.get('prevYear').put('FQ' + quarter.Number, quarter);
+			} else if (fiscalYearList[1] == quarter.FiscalYearSettingsId) {
+				years.get('currentYear').put('FQ' + quarter.Number, quarter);
+			} else {
+				years.get('nextYear').put('FQ' + quarter.Number, quarter);
+			}
+		}
+		return years;
 	}
     
     private static void invokeApex(string helperType, sObject[] records) {

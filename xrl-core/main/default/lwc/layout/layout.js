@@ -77,6 +77,7 @@ export default class Layout extends LightningElement {
 	async setConfig(cmd, data) {
 		console.log(cmd, JSON.parse(JSON.stringify(data)), JSON.parse(JSON.stringify(data[cmd])));
 		libs.getGlobalVar(this.name).userInfo = data.userInfo;
+		libs.getGlobalVar(this.name).Financial = data.Financial;
 		
 		this.config.listViewConfig = data[cmd].userConfig ? JSON.parse(data[cmd].userConfig) : [];
 		this.config.currency = data[cmd].currency;
@@ -242,6 +243,7 @@ export default class Layout extends LightningElement {
 						this.config.listViewConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig) : [];
 						this.config.sObjApiName = this.config.sObjApiName || configUniqueName.split(':')[0];
 						this.config.relField = this.config.relField || configUniqueName.split(':')[1];
+						this.config.financial = (data[cmd].Financial) ? data[cmd].Financial : {};
 					} });
 				} else if (cmp.isChart) {
 					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
@@ -262,6 +264,7 @@ export default class Layout extends LightningElement {
 	async setConfigTabular(cmd, data) {
 		console.log(cmd, JSON.parse(JSON.stringify(data)), JSON.parse(JSON.stringify(data[cmd])));
 		libs.getGlobalVar(this.name).userInfo = data.userInfo;
+		libs.getGlobalVar(this.name).financial = data[cmd].Financial;
 		
 		this.config.listViewConfig = data[cmd].userConfig ? JSON.parse(data[cmd].userConfig) : [];
 		this.config.currency = data[cmd].currency;
