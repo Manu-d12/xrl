@@ -58,8 +58,7 @@ export default class Layout extends LightningElement {
 		if(jsonDetails[0].configType === 'Tabular'){
 			console.log('In Tabular');
 			this.handleTabularFormat(data[cmd]);
-		}
-		else{
+		}else{
 			await this.setConfig(cmd,data);
 			this.components = [];
 			this.config.listViewConfig.forEach((el,index)=>{
