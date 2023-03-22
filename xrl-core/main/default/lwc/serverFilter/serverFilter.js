@@ -202,7 +202,7 @@ export default class ServerFilter extends LightningElement {
     }
     handleSelectFields(event) {
         const selectedOptionsList = event.detail.value;
-        if (selectedOptionsList.filter(f => !this.defaultFields.includes(f)).length === 0) {
+        if (selectedOptionsList.filter(f => !this.defaultFields.includes(f)).length === 0 || JSON.stringify(this.config.prevFields) === JSON.stringify(selectedOptionsList)) {
             return;
         }
         this.config.prevFields = this.config.prevFields || [];
