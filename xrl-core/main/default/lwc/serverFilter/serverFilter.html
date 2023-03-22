@@ -2,19 +2,21 @@
     <div class="slds-grid slds-wrap" style="padding: 5px;">
         <template if:true={sFilterfields} for:each={sFilterfields} for:item="field" for:index="index">
             <div class="slds-col slds-size_2-of-12" key={field.fieldName} style="padding: 2px;">
-                <lightning-input if:true={field.inputTypeStr} type="text" label={field.label} id={field.fieldName} onfocusout={handleChange}></lightning-input>
-                <c-multiselect if:true={field.inputTypeComboBox} multiselect=true listsize=20 onselect={handleSelect} 
-                id={field.fieldName} options={field.options} selectedvalues={sValues} label={field.label}></c-multiselect>
-                <lightning-input if:true={field.inputTypeDate} type="date" label={field.label} id={field.fieldName} onfocusout={handleChange}></lightning-input>
+                <lightning-input if:true={field.inputTypeStr} type="text" label={field.label} id={field.fieldName}
+                data-id={field.fieldName} onfocusout={handleChange}></lightning-input>
+                <c-multiselect if:true={field.inputTypeComboBox} multiselect={field.multiselect} listsize=20 onselect={handleSelect} id={field.fieldName} 
+                data-id={field.fieldName} options={field.options} selectedvalues={field.value} selectedvalue={field.value} label={field.label}></c-multiselect>
+                <lightning-input if:true={field.inputTypeDate} type="date" label={field.label} id={field.fieldName}
+                data-id={field.fieldName} onfocusout={handleChange}></lightning-input>
             </div>
         </template>
-        <div class="slds-col slds-size_1-of-12" style="padding-top:3px;">
-            <p>&nbsp;</p>
-            <lightning-button variant="brand" label={config._LABELS.lbl_more} title={config._LABELS.lbl_more} class="slds-m-left_x-small" onclick={handleClick}></lightning-button>
-        </div>
-        <div class="slds-col slds-size_1-of-12" style="padding-top:3px;">
-            <p>&nbsp;</p>
+        <div class="slds-col slds-size_2-of-12 slds-col_bump-left" style="height: 60px; display: flex; padding: 2px; align-items: end; justify-content: end;">
+            <lightning-button if:false={filterJson.hideMore} variant="brand" label={config._LABELS.lbl_more} title={config._LABELS.lbl_more} class="slds-m-left_x-small" onclick={handleClick}></lightning-button>
             <lightning-button variant="brand" label={config._LABELS.lbl_apply} title={config._LABELS.lbl_apply} class="slds-m-left_x-small" onclick={fetchRecords}></lightning-button>
+            <lightning-button if:false={filterJson.hideReset} variant="brand" label={config._LABELS.lbl_resetFilters} title={config._LABELS.lbl_resetFilters} class="slds-m-left_x-small" onclick={resetFilters}></lightning-button>
+        </div>        
+        <div if:true={count} class="slds-size_12-of-12" style={countStyle}>
+            {count} item(s)
         </div>
         <template if:true={isModalOpen}>
             <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
@@ -38,7 +40,7 @@
                             onchange={handleSelectFields}></lightning-dual-listbox>
                 </div>
                 <div class="slds-modal__footer">
-                <button class="slds-button slds-button_brand" onclick={handleSave}>{config._LABELS.lbl_save}</button>
+                <!-- <button class="slds-button slds-button_brand" onclick={handleSave}>{config._LABELS.lbl_save}</button> -->
                 </div>
                 </div>
             </section>

@@ -202,6 +202,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				'hasEditAccess':true
 			}
 		}
+		this.config.listView.title = this.config.listView.label + ' - ' + this.config.listView.createdBy;
 		this.config.fields = [];
 		this.config.lockedFields = [];
 		
@@ -236,6 +237,12 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			this.config.listViewConfig[0].isShowCheckBoxes = false;
 		}
 		this.config.listViewConfig[0].rowChecked = false;
+		//HYPER-382
+		if(this.isFullscreen){
+			const expandAction = this.config.listViewConfig[0].actions.find((el) => el.actionId === 'std:expand_view');
+			this.config._expandTip = expandAction.actionTip;
+			expandAction.actionTip = this.config._LABELS.lbl_collapseView;
+		}
 		this.config.actionsBar = {
 			'actions':this.config.listViewConfig[0].actions,
 			'_handleEvent':this.handleEvent.bind(this),
@@ -248,29 +255,27 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	loadRecords() {
-		if(this.config?.listView?.name === 'cmpView') this.generateColModel();
-		else{
-			libs.remoteAction(this, 'query', {
-				isNeedDescribe: true,
-				sObjApiName: this.config.sObjApiName,
-				relField: this.config.relField,
-				addCondition: this.config.listViewConfig[0].addCondition,
-				orderBy: this.config.listViewConfig[0].orderBy,
-				fields: this.config.fields,
-				listViewName: this.config?.listView?.name,
-				callback: ((nodeName, data) => {
-					console.log('length', data[nodeName].records);
-					
-					libs.getGlobalVar(this.name).records = data[nodeName].records.length > 0 ? data[nodeName].records : undefined;
-					
-					this.config.records = libs.getGlobalVar(this.name).records;
-					this.allRecords = this.config.records;
-					
-					console.log('loadRecords', libs.getGlobalVar(this.name));
-					this.generateColModel();
-				})
-			});
-		}
+		libs.remoteAction(this, 'query', {
+			isNeedDescribe: true,
+			sObjApiName: this.config.sObjApiName,
+			relField: this.config.relField,
+			addCondition: this.config.listViewConfig[0].addCondition,
+			orderBy: this.config.listViewConfig[0].orderBy,
+			fields: this.config.fields,
+			listViewName: this.config?.listView?.name,
+			callback: ((nodeName, data) => {
+				console.log('length', data[nodeName].records);
+				
+				libs.getGlobalVar(this.name).records = data[nodeName].records.length > 0 ? data[nodeName].records : undefined;
+				
+				this.config.records = libs.getGlobalVar(this.name).records;
+				this.allRecords = this.config.records;
+				this.config.listViewConfig[0]._loadCfg = this.loadCfg.bind(this);
+				
+				console.log('loadRecords', libs.getGlobalVar(this.name));
+				this.generateColModel();
+			})
+		});
 	}
 
 	generateColModel() {
@@ -638,7 +643,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		try{
 			await libs.remoteAction(this, 'saveRecords', { records: chunk, 
 				sObjApiName: this.config.sObjApiName,
-				rollback:this.config.listViewConfig[0].rollBack ? this.config.listViewConfig[0].rollBack : true,
+				rollback:this.config.listViewConfig[0].rollBack ? this.config.listViewConfig[0].rollBack : false,
 				beforeSaveAction: this.config.listViewConfig[0].beforeSaveApexAction ? this.config.listViewConfig[0].beforeSaveApexAction : ''
 			});
 		} catch (error) {
@@ -774,7 +779,12 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 
 		if (val === 'dialog:setField') {
-			this.config.dialog.field = event.detail.value;
+			this.config.dialog.field = false;
+			//this is done to refresh the colModelItem. HYPER-355
+			let fn = (scope,e) => {
+				scope.config.dialog.field = e.detail.value;
+			};
+			fn(this,event);
 		}
 		if (val === 'dialog:setAction') {
 			console.log('called',JSON.parse(JSON.stringify(event.detail)));
@@ -884,10 +894,10 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			this.config.dialog.saveAs = false;
 		}
 		if (val === 'dialog:saveAsName') {
-			this.config.dialog.listViewName = event.target.value;
+			this.config.dialog.listViewName = event.target.value.substring(0,20);
 		}
 		if (val === 'dialog:saveAsLabel') {
-			this.config.dialog.listViewLabel = event.target.value;
+			this.config.dialog.listViewLabel = event.target.value.substring(0,20);
 		}
 		if (val === 'dialog:saveAsFinish') {
 			console.log('SaveAs Finish', this.config.dialog.listViewName);
@@ -987,6 +997,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	prepareConfigForSave() {
+		//HYPER-382
+		if(this.isFullscreen){
+			const expandAction = this.config.dialog.listViewConfig.actions.find((el) => el.actionId === 'std:expand_view');
+			expandAction.actionTip = this.config._expandTip;
+		}
 		let tmp = JSON.parse(JSON.stringify(this.config.dialog.listViewConfig));
 		for (let key in tmp) {
 			if (key.startsWith('_')) delete tmp[key];
@@ -1017,9 +1032,13 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 	handleEventActions(event, val) {
 		if (val.startsWith('std:export')) {
-			if(!this.isThereUnsavedRecords()){
-				this.handleEventExport(event);
-				this.handleStandardCallback(val);
+			if(!this.isThereUnsavedRecords()){				
+				// HYPER-381
+				this.config.isSpinner = true;
+				setTimeout((() => { 
+					this.handleEventExport(event);
+					this.handleStandardCallback(val);
+				}), 10);
 			}else{
 				const event = new ShowToastEvent({
 					title: 'Error',
@@ -1198,10 +1217,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	handleEventExport(event) {
-
-		let records = this.template.querySelector('c-Data-Table').getSelectedRecords().length != 0 ?
-						this.template.querySelector('c-Data-Table').getSelectedRecords() :
-						this.template.querySelector('c-Data-Table').getRecords();
+		let dataTable = this.template.querySelector('c-Data-Table');
+		let records = dataTable.getSelectedRecords().length ? dataTable.getSelectedRecords() : dataTable.getRecords();
 		let locale = libs.getGlobalVar(this.name).userInfo.locale;
 
 		console.log(JSON.parse(JSON.stringify(this.config)));
@@ -1237,63 +1254,61 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				ws[cell_ref] = {
 					s: i % 2 ? evenStyle : oddStyle
 				};
-				console.log('HERE',rec[col.referenceTo] ? JSON.parse(JSON.stringify(rec[col.referenceTo]))[col.fieldName.split('.')[1]] : 'null');
-				switch (col.type) {
-					case 'reference':
-						let [r, v] = libs.getLookupRow(rec, col.fieldName);
-						ws[cell_ref].v = r.Name;
-						ws[cell_ref].l = { Target: window.location.origin + '/' + v, Tooltip: window.location.origin + '/' + v };
-
-						break;
-					case 'date':
-					case 'datetime':
-						// ws[cell_ref].v = col.referenceTo ? new Date(rec[col.fieldName.split('.')[0]][col.fieldName.split('.')[1]]) : new Date(rec[col.fieldName]);
-						//.toLocaleString(locale);
-						if(rec[col.fieldName.split('.')[0]] && rec[col.fieldName.split('.')[0]][col.fieldName.split('.')[1]]){
-							ws[cell_ref].v = new Date(rec[col.fieldName.split('.')[0]][col.fieldName.split('.')[1]]);
-						}else{
-							ws[cell_ref].v = col.referenceTo != undefined ? rec[col.referenceTo][col.fieldName.split('.')[1]] ? new Date(rec[col.referenceTo][col.fieldName.split('.')[1]]) : '' : rec[col.fieldName] ? new Date(rec[col.fieldName]) : '';
-						}
-						ws[cell_ref].t = 'd';
-
-						break;
-					case 'number':
-						// ws[cell_ref].v = rec[col.fieldName] ? Number(rec[col.fieldName]) : '';
-						if(rec[col.fieldName.split('.')[0]] && rec[col.fieldName.split('.')[0]][col.fieldName.split('.')[1]]){
-							ws[cell_ref].v = Number(rec[col.fieldName.split('.')[0]][col.fieldName.split('.')[1]]);
-						}else{
-							ws[cell_ref].v = col.referenceTo != undefined ? rec[col.referenceTo][col.fieldName.split('.')[1]] ? Number(rec[col.referenceTo][col.fieldName.split('.')[1]]) : '' : rec[col.fieldName] ? Number(rec[col.fieldName]) : '';
-						}
-						ws[cell_ref].t = 'n';
-						break;
-					case 'boolean':
-						// ws[cell_ref].v = Boolean(rec[col.fieldName]);
-						if(rec[col.fieldName.split('.')[0]] && rec[col.fieldName.split('.')[0]][col.fieldName.split('.')[1]]){
-							ws[cell_ref].v = Boolean(rec[col.fieldName.split('.')[0]][col.fieldName.split('.')[1]]);
-						}else{
-							ws[cell_ref].v = col.referenceTo != undefined ? rec[col.referenceTo][col.fieldName.split('.')[1]] ? Boolean(rec[col.referenceTo][col.fieldName.split('.')[1]]) : '' : rec[col.fieldName] ? Boolean(rec[col.fieldName]) : '';
-						}
-						ws[cell_ref].t = 'b';
-						break;
-					default:
-						if(rec[col.fieldName.split('.')[0]] && rec[col.fieldName.split('.')[0]][col.fieldName.split('.')[1]]){
-							ws[cell_ref].v = rec[col.fieldName.split('.')[0]][col.fieldName.split('.')[1]];
-						}else{
-							ws[cell_ref].v = col.referenceTo != undefined ? rec[col.referenceTo][col.fieldName.split('.')[1]] ? rec[col.referenceTo][col.fieldName.split('.')[1]] : '' : rec[col.fieldName] ? rec[col.fieldName] : '';
-						}
-						ws[cell_ref].t = 's';
+				let fieldValue;
+				if (col.fieldName.includes('.')) {
+				const [refFieldName, refChildFieldName] = col.fieldName.split('.');
+				if (rec[refFieldName] && rec[refFieldName][refChildFieldName]) {
+					fieldValue = rec[refFieldName][refChildFieldName];
+				} else if (col.referenceTo !== undefined && rec[col.referenceTo] && rec[col.referenceTo][refChildFieldName]) {
+					fieldValue = rec[col.referenceTo][refChildFieldName];
+				} else {
+					fieldValue = '';
 				}
+				} else {
+				fieldValue = rec[col.fieldName] || '';
+				}
+
+				switch (col.type) {
+				case 'reference':
+					const [lookupRow, lookupId] = libs.getLookupRow(rec, col.fieldName);
+					ws[cell_ref].v = lookupRow.Name;
+					ws[cell_ref].l = {
+					Target: window.location.origin + '/' + lookupId,
+					Tooltip: window.location.origin + '/' + lookupId
+					};
+					ws[cell_ref].t = 's';
+					break;
+				case 'date':
+					ws[cell_ref].v = fieldValue ? new Date(fieldValue) : '';
+					ws[cell_ref].t = 'd';
+					break;
+				case 'datetime':
+					ws[cell_ref].v = fieldValue ? new Date(fieldValue) : '';
+					ws[cell_ref].t = 'dt';
+					break;
+				case 'number':
+					ws[cell_ref].v = fieldValue ? Number(fieldValue) : '';
+					ws[cell_ref].t = 'n';
+					break;
+				case 'boolean':
+					ws[cell_ref].v = Boolean(fieldValue);
+					ws[cell_ref].t = 'b';
+					break;
+				default:
+					ws[cell_ref].v = fieldValue;
+					ws[cell_ref].t = 's';
+					break;
+				}
+
 			});
 		});
 		ws['!ref'] = XLSX.utils.encode_range({ s: { c: 0, r: 0 }, e: { c: columns.length, r: records.length } });
-		console.log(ws);
-		console.log(ws['!cols']);
-		console.log(ws['!ref']);
 		XLSX.utils.book_append_sheet(wb, ws, (this.config.sObjLabel + ' '  + this.config?.listView?.label).length > 30 ? (this.config.sObjLabel + ' '  + this.config?.listView?.label).substring(0,30):(this.config.sObjLabel + ' '  + this.config?.listView?.label));
 		XLSX.writeFile(wb, this.config.sObjLabel + ' ' + this.config?.listView?.label + '.xlsx', { cellStyles: true, WTF: 1 });
 		
 		//deselecting the records if there is any
 		this.template.querySelector('c-Data-Table').updateView();
+		this.config.isSpinner = false;
 	}
 
 

@@ -1,5 +1,5 @@
 <template>
-    <lightning-card class=" slds-card_boundary" style="padding:5px; display:block">
+    <div class="slds-card slds-card_boundary" style="padding:5px; display:block">
         <template if:false={config.isTabular}>
             <c-comparing-interface if:true={config.isComparisonInterface} cfg={name}></c-comparing-interface>
             <template if:true={components} for:each={components} for:item="component">
@@ -7,21 +7,43 @@
                 cfg={name} record-id={recordId} onmessage={handleChildMessage}></c-server-Filter>
                 <c-Data-Table if:true={component.isDataTable} style="width:100%; height:inherit" key={component.key}
                 data-ind={config.sObjApiName} cfg={name}></c-Data-Table>
+                <c-chartjs if:true={component.isChart} style="width:100%; height:inherit" key={component.key} 
+                name={name}></c-chartjs>
             </template>
-            <div if:true={config.isSpinner} class="spinner">
+            <div if:true={config.isSpinner} class="spinnerDiv">
                 <lightning-spinner size="medium" variant="brand" alternative-text="Loading"></lightning-spinner>
             </div>
         </template>
         <!-- If the config Type is Tabular -->
         <template if:true={config.isTabular}>
-            <div class="slds-grid slds-gutters slds-wrap" style="max-width:100%">
-                <template if:true={config.tabularConfig.dataModel} for:each={config.tabularConfig.dataModel} for:item="component">
-                    <div class={config.colClass} key={component}>
+            <div class="slds-grid slds-gutters slds-wrap" style={config.tabularConfig.tableDefinition.style}>
+                <template if:true={config.isLoaded} for:each={config.tabularConfig.dataModel} for:item="component">
+                    <div class={component.class} key={component} style={component.colStyle}>
                         <template if:true={component.isCmp}>
-                            <c-server-Filter if:true={component.isServerFilter} style="width:100%; height:inherit" 
+                            <c-server-Filter if:true={component.isServerFilter} style={component.cmpStyle}
                             cfg={component.uniqueName} record-id={recordId} onmessage={handleChildMessage}></c-server-Filter>
-                            <c-Data-Table if:true={component.isDataTable} style="width:100%; height:inherit"
+                            <c-Data-Table if:true={component.isDataTable} style={component.cmpStyle}
                             data-ind="Case" cfg={component.uniqueName}></c-Data-Table>
+                            <c-chartjs if:true={component.isChart} style={component.cmpStyle} name={component.uniqueName}></c-chartjs>
+                        </template>
+                        <template if:true={component.isCollapsible}>
+                            <div class="slds-section" data-id={component.uniqueName}>
+                                <h3 class="slds-section__title">
+                                    <button type="button" aria-controls={component.uniqueName} class="slds-button slds-section__title-action" data-id={component.uniqueName}
+                                        onclick={toggleSection}>
+                                        <lightning-icon icon-name="utility:switch" alternative-text="button icon" size="x-small"
+                                            class="slds-section__title-action-icon slds-button__icon_left"></lightning-icon>
+                                        <span class="slds-truncate" title={component.sectionTitle}>{component.sectionTitle}</span>
+                                    </button>
+                                </h3>
+                                <div class="slds-section__content">
+                                    <c-server-Filter if:true={component.isServerFilter} style={component.cmpStyle} cfg={component.uniqueName}
+                                        record-id={recordId} onmessage={handleChildMessage}></c-server-Filter>
+                                    <c-Data-Table if:true={component.isDataTable} style={component.cmpStyle} data-ind="Case"
+                                        cfg={component.uniqueName}></c-Data-Table>
+                                    <c-chartjs if:true={component.isChart} style={component.cmpStyle} name={component.uniqueName}></c-chartjs>
+                                </div>
+                            </div>
                         </template>
                         <!-- if the config is text -->
                         <template if:true={component.isText}>
@@ -33,7 +55,10 @@
                         </template>
                     </div>
                 </template>
+                <div if:false={config.isLoaded} class="spinnerDiv">
+                    <lightning-spinner size="medium" variant="brand" alternative-text="Loading"></lightning-spinner>
+                </div>
             </div>
         </template>
-    </lightning-card>
+    </div>
 </template>

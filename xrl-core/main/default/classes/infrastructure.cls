@@ -30,6 +30,9 @@ global with sharing class infrastructure {
 				when 'query' {
 					resultMethod = getQuery(data);
 				}
+				when 'customSoql' {
+					resultMethod = customSoql(data);
+				}
 				when 'saveListView' {
 					resultMethod = saveListView(data);
 				}
@@ -95,6 +98,7 @@ global with sharing class infrastructure {
 		string relField = (string) data.get('relField');
 		string addCondition = (string) data.get('addCondition');
 		string orderBy = (string) data.get('orderBy');
+		string limitCondition = (string) data.get('limit');
 		string listViewName = (string) data.get('listViewName');
 		string SQL = (string) data.get('SQL');
 
@@ -107,7 +111,7 @@ global with sharing class infrastructure {
 
 		if (string.isBlank(addCondition)) addCondition = '';
 
-		/*if (isNeedDescribe == true) {
+		if (isNeedDescribe == true) {
 			map < string, Schema.DescribeFieldResult > describeResult = new map < string, Schema.DescribeFieldResult > ();
 			map < String, Schema.SObjectField > fieldsMap = Schema.getGlobalDescribe().get(sObjApiName).getDescribe().fields.getMap();
 			for (string fItem: fieldsMap.keySet()) {
@@ -115,26 +119,25 @@ global with sharing class infrastructure {
 				describeResult.put(tmp.getName(), tmp);
 			}
 			result.put('describe', JSON.serialize(describeResult));
-		}*/
+		}
 
 		if (UserInfo.isMultiCurrencyOrganization()) {
 			System.debug('Multi Currency');
 			soqlFields.add('CurrencyIsoCode');
 		}
 
-		string SOQL = (relField != '') ?
-			'SELECT {fields} FROM {sObjApiName} WHERE {relField}=\'{recordId}\' {addCondition}'.replaceAll('\\{relField\\}', relField != null ? relField : '').replaceAll('\\{recordId\\}', recordId) :
-			'SELECT {fields} FROM {sObjApiName} {addCondition}';
-		
-		if(orderBy != null){
-			SOQL += orderBy;
-		}
-
-		system.debug(LoggingLevel.Error, SOQL);
-
-		SOQL = SOQL.replaceAll('\\{sObjApiName\\}', sObjApiName != null ? sObjApiName : '');
-		SOQL = SOQL.replaceAll('\\{addCondition\\}', addCondition != null ? addCondition : '');
+		// SELECT {fields} FROM {sObjApiName} WHERE {relField}=\'{recordId}\' {addCondition}
+		string SOQL = 'SELECT {fields} FROM {sObjApiName}';
 		SOQL = SOQL.replaceAll('\\{fields\\}', soqlFields != null ? string.join(new list < string > (soqlFields), ',') : '');
+		SOQL = SOQL.replaceAll('\\{sObjApiName\\}', sObjApiName != null ? sObjApiName : '');
+		if (String.isNotBlank(relField) && String.isNotBlank(recordId)) {
+			SOQL += ' WHERE {relField}=\'{recordId}\' '.replaceAll('\\{relField\\}', relField).replaceAll('\\{recordId\\}', recordId) ;
+		}
+		if (String.isNotBlank(addCondition)) {
+			SOQL += String.isNotBlank(relField) && String.isNotBlank(recordId) ? addCondition : ' WHERE ' + addCondition.trim().removeStart('AND');
+		}
+		SOQL += String.isNotBlank(orderBy) ? ' ' + orderBy : '';
+		SOQL += String.isNotBlank(limitCondition) ? ' ' + limitCondition : '';
 
 		//if (string.isBlank(SOQL)) throw new core.appException(null, string.format(core.appLabels.get('errCmdParams'), new string[]{'executeAnon','apexCode'}), core.ExceptionType.API);
 		system.debug(LoggingLevel.Error, 'SOQL ' + SOQL);
@@ -155,6 +158,33 @@ global with sharing class infrastructure {
 		//result.put('config', getConfig(sObjApiName, relField, listViewName));
 		return result;
 		//https://salesforce.stackexchange.com/questions/116688/lightning-get-sobject-tab-icon
+	}
+	private static object customSoql(map < string, object > data) {
+		string SOQL = (string) data.get('SOQL');
+		string sObjApiName = (string) data.get('sObjApiName');
+		boolean isNeedDescribe = true;
+		map < string, object > result = new map < string, object > ();
+		result.put('SOQL', SOQL);
+
+		if (isNeedDescribe == true) {
+			map < string, Schema.DescribeFieldResult > describeResult = new map < string, Schema.DescribeFieldResult > ();
+			map < String, Schema.SObjectField > fieldsMap = Schema.getGlobalDescribe().get(sObjApiName).getDescribe().fields.getMap();
+			for (string fItem: fieldsMap.keySet()) {
+				Schema.DescribeFieldResult tmp = fieldsMap.get(fItem).getDescribe();
+				describeResult.put(tmp.getName(), tmp);
+			}
+			result.put('describe', JSON.serialize(describeResult));
+		}
+
+		sObject[] records = database.query(SOQL);
+		SObjectAccessDecision decision = Security.stripInaccessible(AccessType.READABLE, records);
+
+		// Throw an exception if any data was stripped
+		if (!decision.getModifiedIndexes().isEmpty()) {
+			throw new InfrastructureException(null,'Data was stripped', Infrastructure.exceptionType.GENERAL);
+		}
+		result.put('records', records);
+		return result;
 	}
 
 	private static map < string, object > getConfig(map < string, object > data) {
@@ -213,6 +243,7 @@ global with sharing class infrastructure {
 	}
 	private static map < string, object > getConfigById(map < string, object > data) {
 		string configId = (string) data.get('configId');
+		string sObjApiName = (string) data.get('sObjApiName');
 		boolean isNeedDescribe = true;
 
 		map < string, object > result = new map < string, object > {};
@@ -237,6 +268,16 @@ global with sharing class infrastructure {
 		}
 		result.put('listViews', listViews);
 
+		if (isNeedDescribe == true && sObjApiName != null) {
+			map < string, Schema.DescribeFieldResult > describeResult = new map < string, Schema.DescribeFieldResult > ();
+			map < String, Schema.SObjectField > fieldsMap = Schema.getGlobalDescribe().get(sObjApiName).getDescribe().fields.getMap();
+			for (string fItem: fieldsMap.keySet()) {
+				Schema.DescribeFieldResult tmp = fieldsMap.get(fItem).getDescribe();
+				describeResult.put(tmp.getName(), tmp);
+			}
+			result.put('describe', JSON.serialize(describeResult));
+		}
+
 		result.put('currency', new map < string, object > {
 			'orgCurrency' => UserInfo.getDefaultCurrency(),
 			'isMultyCurrencyOrg' => UserInfo.isMultiCurrencyOrganization()
@@ -246,6 +287,7 @@ global with sharing class infrastructure {
 	}
 	private static map < string, object > getConfigByUniqueName(map < string, object > data) {
 		string uniqueName = (string) data.get('uniqueName');
+		string sObjApiName = (string) data.get('sObjApiName');
 		boolean isNeedDescribe = true;
 
 		map < string, object > result = new map < string, object > {};
@@ -269,6 +311,15 @@ global with sharing class infrastructure {
 			listViews.add(view);
 		}
 		result.put('listViews', listViews);
+		if (isNeedDescribe == true && sObjApiName != null) {
+			map < string, Schema.DescribeFieldResult > describeResult = new map < string, Schema.DescribeFieldResult > ();
+			map < String, Schema.SObjectField > fieldsMap = Schema.getGlobalDescribe().get(sObjApiName).getDescribe().fields.getMap();
+			for (string fItem: fieldsMap.keySet()) {
+				Schema.DescribeFieldResult tmp = fieldsMap.get(fItem).getDescribe();
+				describeResult.put(tmp.getName(), tmp);
+			}
+			result.put('describe', JSON.serialize(describeResult));
+		}
 
 		result.put('currency', new map < string, object > {
 			'orgCurrency' => UserInfo.getDefaultCurrency(),
@@ -373,8 +424,8 @@ global with sharing class infrastructure {
         if (data.get('beforeSaveAction') != null) {
             invokeApex((string) data.get('beforeSaveAction'), records);
         }
-		Savepoint sp = Database.setSavepoint();
-		system.debug(isRollback);
+		// Savepoint sp = Database.setSavepoint();
+		system.debug('RollBack ' + isRollback);
  
 		List<Database.SaveResult> srs = Database.update(records, isRollback); 
 		for (Database.SaveResult sr : srs) {
@@ -593,6 +644,10 @@ global with sharing class infrastructure {
 			'lbl_beforeSaveApexAction'=>label.lbl_beforeSaveApexAction,
 			'lbl_items'=>label.lbl_items,
 			'lbl_actionWithThisOrderAlreadyExists'=>label.lbl_actionWithThisOrderAlreadyExists,
+			'lbl_conditionAlreadyExists'=>label.lbl_conditionAlreadyExists,
+			'lbl_resetFilters'=>label.lbl_resetFilters,
+			'lbl_blankValuesNotAllowed'=>label.lbl_blankValuesNotAllowed,
+			'lbl_collapseView'=>label.lbl_collapseView,
 			'msg_enterUniqueActionId'=>label.msg_enterUniqueActionId,
 			'msg_lisViewWasUpdated' => label.msg_lisViewWasUpdated,
 			'msg_requestWasSent' => label.msg_requestWasSent,

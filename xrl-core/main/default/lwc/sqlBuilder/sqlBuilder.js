@@ -101,6 +101,7 @@ export default class SqlBuilder extends LightningElement {
                 if(this.config.sqlBuilder.selectedFields.length < 20){
                     this.toggleArrayElement(this.config.sqlBuilder.selectedFields,event.target.getAttribute('data-val'));
                     event.target.classList.add('slds-theme_alt-inverse');
+                    this.ElementList.push(event.target.getAttribute('data-val'));
                     this.dialogValues();
                 }else{
                     const toast = new ShowToastEvent({
@@ -141,7 +142,8 @@ export default class SqlBuilder extends LightningElement {
             this.config.sqlBuilder.fields = [];
             this.config.sqlBuilder.allFields.forEach((el)=>{
                 if((el.label != null && el.label.toString().toLowerCase().indexOf(this.config.sqlBuilder.searchTerm) != -1) 
-                ||(el.fieldName != null && el.fieldName.toString().toLowerCase().indexOf(this.config.sqlBuilder.searchTerm) != -1)){
+                ||(el.fieldName != null && el.fieldName.toString().toLowerCase().indexOf(this.config.sqlBuilder.searchTerm) != -1)
+                ||(el.type != null && el.type.toString().toLowerCase().indexOf(this.config.sqlBuilder.searchTerm) != -1)){
                     this.config.sqlBuilder.fields.push(el);
                 }
             });
@@ -206,20 +208,38 @@ export default class SqlBuilder extends LightningElement {
             };
         }
         if(val === "sqlBuilder:conditions:addCondition"){
-            this.config.sqlBuilder.openConditionInput = false;
-            this.config.sqlBuilder.conditionOperations = undefined;
-            this.config.sqlBuilder.currentCondition.key = this.config.sqlBuilder.conditions.field + this.config.sqlBuilder.conditions.length;
-            if(this.config.sqlBuilder.currentCondition.index === undefined){
-                this.config.sqlBuilder.currentCondition.index = '#' + (this.config.sqlBuilder.conditions.length + 1);
-                this.config.sqlBuilder.conditionOrdering += (this.config.sqlBuilder.conditions.length + 1) === 1 ?
-                '#' + (this.config.sqlBuilder.conditions.length + 1) : ' AND #' + (this.config.sqlBuilder.conditions.length + 1);
-                this.config.sqlBuilder.conditions.push(this.config.sqlBuilder.currentCondition);
+            if((this.config.sqlBuilder.currentCondition.operator.isUnary != undefined && this.config.sqlBuilder.currentCondition.operator.isUnary === true) 
+            || this.config.sqlBuilder.currentCondition.value != undefined){
+                this.config.sqlBuilder.openConditionInput = false;
+                this.config.sqlBuilder.conditionOperations = undefined;
+                this.config.sqlBuilder.currentCondition.key = this.config.sqlBuilder.conditions.field + this.config.sqlBuilder.conditions.length;
+                if(this.config.sqlBuilder.currentCondition.index === undefined){
+                    if(!this.isConditionExists(this.config.sqlBuilder.currentCondition,this.config.sqlBuilder.conditions)){
+                        this.config.sqlBuilder.currentCondition.index = '#' + (this.config.sqlBuilder.conditions.length + 1);
+                        this.config.sqlBuilder.conditionOrdering += (this.config.sqlBuilder.conditions.length + 1) === 1 ?
+                        '#' + (this.config.sqlBuilder.conditions.length + 1) : ' AND #' + (this.config.sqlBuilder.conditions.length + 1);
+                        this.config.sqlBuilder.conditions.push(this.config.sqlBuilder.currentCondition);
+                    }else{
+                        const toast = new ShowToastEvent({
+                            title: 'Error',
+                            message: this.config._LABELS.lbl_conditionAlreadyExists,
+                            variant: 'error'
+                        });
+                        this.dispatchEvent(toast);
+                    }
+                }else{
+                    let fieldInd = this.config.sqlBuilder.conditions.findIndex((el)=> el.index.toString() === this.config.sqlBuilder.currentCondition.index);
+                    this.config.sqlBuilder.conditions[fieldInd] = this.config.sqlBuilder.currentCondition;
+                }
+                this.dialogValues(true);
             }else{
-                let fieldInd = this.config.sqlBuilder.conditions.findIndex((el)=> el.index.toString() === this.config.sqlBuilder.currentCondition.index);
-                this.config.sqlBuilder.conditions[fieldInd] = this.config.sqlBuilder.currentCondition;
+                const toast = new ShowToastEvent({
+                    title: 'Error',
+                    message: this.config._LABELS.lbl_blankValuesNotAllowed,
+                    variant: 'error'
+                });
+                this.dispatchEvent(toast);
             }
-            this.dialogValues(true);
-            // this.config.sqlBuilder.conditionOperations = false;
         }
         if(val === "sqlBuilder:conditions:conditionText"){
             this.config.sqlBuilder.currentCondition.value = event.target.value;
@@ -311,6 +331,7 @@ export default class SqlBuilder extends LightningElement {
             this.config.sqlBuilder.currentOrder.emptyField = emptyField;
         }
         if(val === "sqlBuilder:ordering:addOrdering"){
+            this.config.sqlBuilder.currentOrder.sortOrder = this.config.sqlBuilder.currentOrder.sortOrder === undefined ? 'ASC' : this.config.sqlBuilder.currentOrder.sortOrder;
             this.upsertArray(this.config.sqlBuilder.orderings,this.config.sqlBuilder.currentOrder);
             this.config.sqlBuilder.currentOrder = false;
             this.dialogValues(true);
@@ -321,6 +342,11 @@ export default class SqlBuilder extends LightningElement {
             this.config.dialog.listViewConfig.orderMap = this.config.sqlBuilder.orderings;
             this.dialogValues(true);
         }
+    }
+    isConditionExists(obj, arr) {
+        const copyArr = arr.map(item => ({...item})); // create a copy of the array
+        copyArr.forEach(item => delete item.index); // delete 'index' key from each item in the copy array
+        return copyArr.some(item => JSON.stringify(item) === JSON.stringify(obj)); // check if object exists in array
     }
     upsertArray(array, item) { 
         const i = array.findIndex(_item => _item.field.fieldName === item.field.fieldName);
@@ -359,12 +385,11 @@ export default class SqlBuilder extends LightningElement {
     }
     generateFields(describe,objStr,sObjName){
         let fields = [];
+        let fieldMap = {}; // moving this outside the loop to avoid re-creation and ease changing the properties
         for (let key in describe) {
-            if (describe[key].type === 'reference') {
-                fields.push({ label: describe[key].relationshipName + ' > ', fieldName: describe[key].relationshipName, refObj : describe[key].referenceTo[0], css: 'slds-item' });	
-            }else{
+
                 let itemCss = this.config.sqlBuilder.selectedFields.find(el => el.fieldName === (objStr ? objStr + describe[key].name : describe[key].name)) ? 'slds-item slds-theme_alt-inverse' : 'slds-item';
-                let fieldMap = { 
+                 fieldMap = { 
                     label: describe[key].label, 
                     fieldName: objStr ? objStr + describe[key].name : describe[key].name, 
                     css: itemCss, 
@@ -373,6 +398,10 @@ export default class SqlBuilder extends LightningElement {
                     isNameField: describe[key] && describe[key].nameField === true,
                     referenceTo: sObjName
                 };
+                fieldMap.helpText = fieldMap.fieldName +  ' (' + describe[key].type + ')'; // assigning outside to get the fieldname to be populated first
+                // the fieldname was previously used as the helptext but 
+                // as we also want the field type to be displayed, I added it to the helptext
+                // changing the fieldname was not an option as it is used in the code for sql queries
                 if(describe[key].type === 'picklist' || describe[key].type === 'multipicklist'){
                     fieldMap.options = [];
                     describe[key].picklistValues.forEach(field => {
@@ -381,7 +410,19 @@ export default class SqlBuilder extends LightningElement {
                         )
                     });
                 }
-                if (describe[key].updateable || describe[key].nameField) {
+                if (describe[key].type === 'reference') {
+                fieldMap = { 
+                    label: describe[key].label + ' > ', 
+                    fieldName: describe[key].relationshipName,
+                    refObj: describe[key].referenceTo[0], 
+                    css: 'slds-item', 
+                    type: describe[key].type,
+                };
+                fieldMap.helpText = describe[key].relationshipName + ' (' + describe[key].referenceTo?.join(', ') + ')';
+                // I noticed that in some reference fields, there are multiple objects in the referenceTo array, so I joined all of them to the helpText
+                fields.push(fieldMap);	
+            	}
+				if (describe[key].updateable || describe[key].nameField) {
                     if (fieldMap.type === 'picklist' || fieldMap.type === 'reference' || fieldMap.type === 'multipicklist') {
                         fieldMap.isEditableAsPicklist = true;
                         console.log('picklist', fieldMap);
@@ -396,7 +437,6 @@ export default class SqlBuilder extends LightningElement {
                 fieldMap.isFilterable = true;
                 fieldMap.isSortable = true;
                 fields.push(fieldMap);
-            }
         }
         return fields;
     }
@@ -430,13 +470,11 @@ export default class SqlBuilder extends LightningElement {
         const Element = this.template.querySelectorAll('.Items')
         const DragValName = this.template.querySelector('.drag').getAttribute('data-val');
         const DropValName = event.target.getAttribute('data-val');
-        console.log(this.template.querySelector('.drag').getAttribute('data-val'));
 
         if(DragValName === DropValName){ return false }
         const index = this.config.sqlBuilder.selectedFields.findIndex((el)=> el.fieldName === DropValName);
         const dragIndex = this.config.sqlBuilder.selectedFields.findIndex((el)=> el.fieldName === DragValName);
         this.ElementList = this.ElementList.reduce((acc, curVal, CurIndex) => {
-        // this.config.sqlBuilder.selectedFields = this.config.sqlBuilder.selectedFields.reduce((acc, curVal, CurIndex) => {
             if(CurIndex === index){
                 if(dragIndex > index){
                     return [...acc, DragValName, curVal];

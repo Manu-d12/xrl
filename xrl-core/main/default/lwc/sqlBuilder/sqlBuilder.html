@@ -18,7 +18,7 @@
                             <ul class="slds-has-dividers_around-space">
                                 <template if:true={config.sqlBuilder.fields} for:each={config.sqlBuilder.fields} for:item="field" for:index="index">
                                     <li data-id="sqlBuilder:selectItem" onclick={handleBuilderEvent} class={field.css} style="cursor: pointer;margin-top: 0px;padding:5px;" data-ref={field.refObj} data-val={field.fieldName} key={field.fieldName}>
-                                        <lightning-helptext class="placeTopItem" content={field.fieldName}></lightning-helptext>
+                                        <lightning-helptext class="placeTopItem" content={field.helpText}></lightning-helptext>
                                         &nbsp;{field.label} 
                                     </li>
                                 </template>
@@ -35,7 +35,7 @@
                             <template if:true={config.sqlBuilder.selectedFields} for:each={config.sqlBuilder.selectedFields} for:item="field" for:index="index">
                                 <li class="slds-item Items" data-val={field.fieldName} key={field.fieldName} style="cursor: pointer;margin-top: 0px;padding:5px;" draggable="true" onchange={Change} ondrop={Drop} ondragstart={DragStart} ondragover={DragOver}>
                                     <lightning-icon size="small" data-val={field.fieldName} icon-name="utility:rows" alternative-text="Rows" title="Rows"></lightning-icon>
-                                    &nbsp;<lightning-helptext class="placeTopItem" content={field.fieldName}></lightning-helptext>
+                                    &nbsp;<lightning-helptext class="placeTopItem" content={field.helpText}></lightning-helptext>
                                     &nbsp;{field.label}
                                     <lightning-icon if:false={field.locked} size="small" data-id="sqlBuilder:deleteSelectedField" data-val={field.fieldName} onclick={handleBuilderEvent} style="float: right;" icon-name="utility:delete" alternative-text={config._LABELS.altTxt_delete} title={config._LABELS.altTxt_delete}></lightning-icon>
                                     <lightning-icon if:true={field.locked} size="small" data-val={field.fieldName} onclick={handleBuilderEvent} style="float: right;" icon-name="utility:lock" alternative-text={config._LABELS.altTxt_locked} title={config._LABELS.altTxt_locked}></lightning-icon>
@@ -66,7 +66,7 @@
                             <ul class="slds-has-dividers_around-space">
                                 <template if:true={config.sqlBuilder.fields} for:each={config.sqlBuilder.fields} for:item="field" for:index="index">
                                     <li data-id="sqlBuilder:conditions:selectItem" onclick={handleBuilderEvent} style="cursor: pointer;margin-top: 0px;padding:5px;" class={field.css} data-ref={field.refObj} data-val={field.fieldName} key={field.fieldName}>
-                                        <lightning-helptext class="placeTopItem" content={field.fieldName}></lightning-helptext>
+                                        <lightning-helptext class="placeTopItem" content={field.helpText}></lightning-helptext>
                                         &nbsp;{field.label}                            
                                     </li>
                                 </template>
@@ -217,7 +217,7 @@
                             <ul class="slds-has-dividers_around-space">
                                 <template if:true={config.sqlBuilder.fields} for:each={config.sqlBuilder.fields} for:item="field" for:index="index">
                                     <li data-id="sqlBuilder:ordering:selectItem" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class={field.css} data-ref={field.refObj} data-val={field.fieldName} key={field.fieldName}>
-                                        <lightning-helptext class="placeTop" content={field.fieldName}></lightning-helptext>
+                                        <lightning-helptext class="placeTop" content={field.helpText}></lightning-helptext>
                                         &nbsp;{field.label} 
                                     </li>
                                 </template>

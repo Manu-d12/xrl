@@ -1,7 +1,8 @@
-import { LightningElement, api } from 'lwc';
+import { LightningElement, api, track } from 'lwc';
 import { loadScript, loadStyle } from 'lightning/platformResourceLoader';
+import { libs } from 'c/libs';
 import chartjs from '@salesforce/resourceUrl/chart_js';
-import { utils } from './utils'
+import { utils } from './utils';
 
 export default class ChartJS extends LightningElement {
 
@@ -11,6 +12,19 @@ export default class ChartJS extends LightningElement {
     set cfg(v) {
         try {
             this._config = this.parseConfig(v);
+            if (this._isRendered) this.drawChart();
+        } catch (e) {
+            console.log('Failed to parse config', e);
+        }
+    }    
+
+    @api get name() {
+        return this.name;
+    }
+    set name(v) {
+        try {
+            let conf = libs.getGlobalVar(v);
+            this._config = this.parseConfig(conf.chartConfig);
             if (this._isRendered) this.drawChart();
         } catch (e) {
             console.log('Failed to parse config', e);
@@ -27,14 +41,16 @@ export default class ChartJS extends LightningElement {
                 }
             }
         };
-        let parsed = JSON.parse(v);
+        let parsed = typeof v === 'object' ? v : JSON.parse(v);
         parseHandlers(parsed);
         return parsed;
     }
 
+    @track count;
     _chart;
     _config;
     _isRendered;
+    _state;
 
     renderedCallback() {
         Promise.all([
@@ -55,6 +71,17 @@ export default class ChartJS extends LightningElement {
             let ctx = this.template.querySelector('canvas.chart').getContext('2d');
             this._chart = new window.Chart(ctx, this._config.chart);
         }
+    }
+
+    @api handleEventMessage(event) {
+        let data = libs.getGlobalVar(event.detail.source).records || [];
+        if (this._config.onDataLoad && typeof this._config.onDataLoad === 'function') {
+            this._config.onDataLoad(this._config, data);
+            this.updateChart();
+        }
+        let state = libs.getGlobalVar(event.detail.source).state;
+        utils.state[event.detail.source] = state;
+        this.count = this._config.count;
     }
     
     @api updateChart() {

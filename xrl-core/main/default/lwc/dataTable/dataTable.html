@@ -97,7 +97,7 @@
 						</td>
 					</tr>
 					<template if:true={group.isOpened} for:each={group.records} for:item="dItem" for:index="index">			
-						<tr key={dItem.Id} class={dItem._rowCss} style={rowStyle} data-rowind={index}>
+						<tr key={dItem.Id} class={dItem._rowCss} style={rowStyle} data-rowind={index} data-groupind={group.title}>
 							<td scope="col" style="width: 2rem;" data-rowind={index} class="numeration">
 								&nbsp;
 							</td>
@@ -142,7 +142,7 @@
 			<lightning-button-icon icon-name="utility:close" variant="border-filled" class="slds-m-left_xx-small slds-button slds-button_icon slds-modal__close" data-id="dialog:close" data-depend="_isFilterOptions" onclick={popupClose}></lightning-button-icon>
 
 			<div class="slds-popover__body slds-grid" onkeyup={searchFinish}>
-				<lightning-combobox placeholder={config._LABELS.lbl_chooseOperation} value={config._isFilterOptions.filterOption} data-id="filterOperation" onchange={searchOperationChange} options={config._isFilterOptions.filterOptions} class="slds-p-horizontal_xx-small" style="width:100%"></lightning-combobox>
+				<lightning-combobox placeholder={config._LABELS.lbl_chooseOperation} value={config._isFilterOptions.filterOption} data-id="filterOperation" onchange={searchOperationChange} options={config._isFilterOptions.filterOptions} class="slds-p-horizontal_xx-small" style="width:fit-content;min-width: fit-content;"></lightning-combobox>
 				<template if:false={config._isFilterOptions.isUnary}>
 				<lightning-input if:true={config._isFilterOptions.isShowStr} type={config._isFilterOptions.type} onchange={searchOnChange} value={config._isFilterOptions.filterStr} tabindex="0" data-id="filterStr" class="slds-p-horizontal_xx-small"></lightning-input>
 					<!--lightning-combobox if:false={config._isFilterOptions.isShowStr} placeholder="Choose operation" onchange={searchOnChange} 
@@ -172,7 +172,7 @@
 					<div class="slds-col slds-size_1-of-1"> 
 						<lightning-combobox if:true={config._bulkEdit.cItem.isEditableAsPicklist} placeholder={config._LABELS.lbl_chooseOperation} value={config._bulkEdit.value} data-id="origValue" options={config._bulkEdit.cItem.options} class="slds-p-horizontal_xx-small" style="width:100%"></lightning-combobox>
 						<lightning-input if:true={config._bulkEdit.cItem.isEditableRegular} type={config._bulkEdit.type} value={config._bulkEdit.value} tabindex="0" data-id="origValue" style="width:100%"></lightning-input>
-						<lightning-input type="checkbox" if:true={config._bulkEdit.cItem.isEditableBool} checked={config._bulkEdit.value} data-id="origValue"> </lightning-input>
+						<lightning-input type="checkbox" if:true={config._bulkEdit.cItem.isEditableBool} checked={config._bulkEdit.value} data-id="origValue" label={config._bulkEdit.cItem.label} style="left:4px;"> </lightning-input>
 					</div>
 					<div class="slds-col slds-size_1-of-1"> 
 						<lightning-input class="alignBulkEditCheckbox" type="checkbox" name="isAll" data-id="isAll" check={config._bulkEdit.chBoxValue} label={config._bulkEdit.chBoxLabel}></lightning-input>

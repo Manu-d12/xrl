@@ -25,7 +25,7 @@ export default class extRelListSettings extends LightningElement {
 	}
 
 	get dialogCss(){
-		return 'max-height:'+screen.availHeight+'px;';
+		return 'max-height:'+screen.availHeight+'px;min-width:fit-content;max-width:80%';
 	}
 
 	get selectedFields() {
@@ -48,7 +48,7 @@ export default class extRelListSettings extends LightningElement {
 		// 		this.dataTable = el;
 		// 	}
 		// });
-		let fieldParams = this.dataTable.colModel.find( e=>{
+		let fieldParams = this.config.dialog.listViewConfig.colModel.find( e=>{
 			return e.fieldName === this.config.dialog.field;
 		});
 

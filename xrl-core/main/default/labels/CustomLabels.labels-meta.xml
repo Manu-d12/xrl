@@ -294,7 +294,7 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_typeHere</shortDescription>
-        <value>type here...</value>
+        <value>type here... (max 20 chars allowed. Extra chars will be trimmed from end)</value>
     </labels>
     <labels>
         <fullName>srcLbl_available</fullName>
@@ -1846,5 +1846,37 @@ Once you are done editing the pattern, click outside the input box.</value>
         <protected>true</protected>
         <shortDescription>tooltip_isColumnWrapable</shortDescription>
         <value>By default column contents will be clipped.</value>
+    </labels>
+    <labels>
+        <fullName>lbl_conditionAlreadyExists</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_conditionAlreadyExists</shortDescription>
+        <value>Condition Already Exists</value>
+    </labels>
+    <labels>
+        <fullName>lbl_resetFilters</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_resetFilters</shortDescription>
+        <value>Reset Filters</value>
+    </labels>
+    <labels>
+        <fullName>lbl_blankValuesNotAllowed</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_blankValuesNotAllowed</shortDescription>
+        <value>You cannot keep the input blank</value>
+    </labels>
+    <labels>
+        <fullName>lbl_collapseView</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_collapseView</shortDescription>
+        <value>Collapse View</value>
     </labels>
 </CustomLabels>

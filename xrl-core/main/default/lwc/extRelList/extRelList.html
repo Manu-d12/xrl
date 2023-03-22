@@ -12,8 +12,8 @@
 					</div>
 					
 				</div>
-				<div class="slds-m-left_xx-small" if:true={config.listView}>
-					<lightning-combobox if:true={config.listView.name} value={config.listView.name} data-id=":change_view" onchange={handleEvent} options={listViews} class="slds-p-horizontal_xx-small" variant="label-hidden" title={config._LABELS.title_selectListView}></lightning-combobox>
+				<div class="slds-m-left_xx-small" if:true={config.listView} style="max-width:230px;">
+					<lightning-combobox if:true={config.listView.name} value={config.listView.name} data-id=":change_view" onchange={handleEvent} options={listViews} class="slds-p-horizontal_xx-small" variant="label-hidden" title={config.listView.title}></lightning-combobox>
 				</div>
 				<div class="slds-m-left_xx-small forceListViewSettingsMenu">					
 					<span> <!-- Need provide configuration for all those standard buttons -->
