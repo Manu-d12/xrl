@@ -14,9 +14,12 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 	@track showPopOver = false;
 	@track popStyle;
+	@track title = '';
 	@api recordId;
 	@api objectApiName;
 	sValues = [];
+	defaultFields = [];
+	additionalFields = [];
 	showPop(event){
 		let hoverConstValues = {
 			5:810,
@@ -252,7 +255,12 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		this.config._selectedRecords = this.getSelectedRecords.bind(this);
 		this.config._updateView = this.updateView.bind(this);
 		this.config._countFields = this.config.isShowCheckBoxes === true ? 1 : 0;
-		console.log(JSON.parse(JSON.stringify(this.config.colModel)));
+		this.defaultFields = this.defaultFields.length === 0 ? this.config.colModel.map(f => f.fieldName) : this.defaultFields;
+		this.config.colModel = this.config.colModel.filter(f => this.defaultFields.includes(f.fieldName));
+		this.additionalFields.forEach(add => {
+			if (this.config.colModel.find(f => f.fieldName === add.fieldName)) return;
+			this.config.colModel.push(add);
+		});
 		this.config.colModel.forEach(item => {
 			if (item.formatter !== undefined) {
 				try {
@@ -1087,6 +1095,23 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	handleEventMessage(event){
 		if(event.detail.cmd.split(':')[1] === 'refresh') {
 			libs.getGlobalVar(this.cfg).records = libs.getGlobalVar(event.detail.source).records || [];
+			this.title = event.detail.title ? event.detail.title + ' - ' : '';
+			this.connectedCallback();
+		} else if(event.detail.cmd.split(':')[1] === 'updateFields') {
+			this.additionalFields = [];
+			event.detail.fields.forEach(f => {
+				let field = {					
+					"css": "slds-item",
+					"type": "string",
+					"isEditable": false,
+					"isFilterable": true,
+					"isSortable": true,
+					"wrapClass": "slds-truncate",
+					"_filterCondition": "Column Filters"
+				};
+				Object.assign(field, f);
+				this.additionalFields.push(field);
+			});
 			this.connectedCallback();
 		}
 	}
