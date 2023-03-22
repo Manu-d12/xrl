@@ -29,7 +29,9 @@ export default class ServerFilter extends LightningElement {
         libs.setGlobalVar(this.cfg, this.config);
         this.sFilterfields = this.filterJson.sFilterCols ? this.filterJson.sFilterCols : [];
         for (let key in this.config.describe) {
-			this.allFields.push({ label: this.config.describe[key].label, value: this.config.describe[key].name });
+            if(this.config.describe[key].type !== 'textarea'){
+			    this.allFields.push({ label: this.config.describe[key].label, value: this.config.describe[key].name });
+            }
 		}
         for(let key in this.sFilterfields){
             if (!this.sFilterfields[key].virtual) this.selectedFields.push(this.sFilterfields[key].fieldName);
@@ -162,7 +164,14 @@ export default class ServerFilter extends LightningElement {
                         condition += 'AND ' + key + "=" + this.conditionMap[key] + " ";
                     } else if (colItem.type === 'datetime') {
                         condition += 'AND ' + key + ">=" + this.conditionMap[key] + "T00:01:01z AND " + key + "<=" + this.conditionMap[key] + "T23:59:59z ";
-                    } else if (colItem.type === 'reference') {
+                    } 
+                    else if (colItem.type === 'date') {
+                        condition += 'AND ' + key + "=" + this.conditionMap[key] + " ";
+                    }
+                    else if (colItem.type === 'percent') {
+                        condition += 'AND ' + key + "=" + this.conditionMap[key] + " ";
+                    }
+                    else if (colItem.type === 'reference') {
                         condition += 'AND ' + colItem.fieldName + " = '" + this.conditionMap[key] + "' ";
                     }
                     else if (colItem.type === 'id') {
@@ -179,6 +188,11 @@ export default class ServerFilter extends LightningElement {
     }
     handleSelectFields(event) {
         const selectedOptionsList = event.detail.value;
+        this.config.prevFields = this.config.prevFields || [];
+        let fieldsNeedToRemove = this.config.prevFields.filter(field => !event.detail.value.includes(field));
+        this.sFilterfields = this.sFilterfields.filter(field => !fieldsNeedToRemove.includes(field.fieldName));
+        this.selectedFields = this.selectedFields.filter(field => !fieldsNeedToRemove.includes(field));
+        this.config.prevFields = selectedOptionsList;
         selectedOptionsList.forEach(e => {
             if(this.sFilterfields.find(el => el.fieldName === e) === undefined) {
                 this.selectedFields.push(e);
@@ -196,6 +210,11 @@ export default class ServerFilter extends LightningElement {
                             { label: field.label, value: field.value }
                         )
                     });
+                }
+                if(col.type === 'reference') {
+                    col.sObject = describe.referenceTo[0];
+                    col.multiselect = true;
+                    col.inputTypeComboBox = true;
                 }
                 this.sFilterfields.push(col);
             }
