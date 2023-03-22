@@ -1,7 +1,6 @@
 <template>
     <div class="slds-card slds-card_boundary" style="padding:5px; display:block">
         <template if:false={config.isTabular}>
-            <c-comparing-interface if:true={config.isComparisonInterface} cfg={name}></c-comparing-interface>
             <template if:true={components} for:each={components} for:item="component">
                 <c-server-Filter if:true={component.isServerFilter} key={component.key} style="width:100%; height:inherit" 
                 cfg={name} record-id={recordId} onmessage={handleChildMessage}></c-server-Filter>

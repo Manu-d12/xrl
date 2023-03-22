@@ -2,21 +2,21 @@
     <!-- Object Selection -->   
     <div class="slds-grid slds-gutters">
         <div class="slds-col slds-size_1-of-1">
-            <c-multiselect if:true={config.show} data-id="configId" listsize=20 onsearchclicked={handleEvent} onselect={handleEvent} options={config.extConfigs} selectedvalue="" label="Select a Config"></c-multiselect>
+            <c-multiselect if:true={config.showConfigSelection} data-id="configId" listsize=20 onselect={handleEvent} options={config.extConfigs} selectedvalue="" label="Select a Config"></c-multiselect>
         </div>
     </div>
     <div class="slds-grid slds-gutters">
         <!-- For 1st object and record -->
-        <div class="slds-col slds-size_1-of-2">
+        <div class="slds-col slds-size_1-of-2" if:true={config.objRecords.objOne}>
             <div class="slds-text-heading_small">First Record Selection</div>          
             <!-- Record One -->
-            <c-multiselect if:true={config.objRecords.objOne} data-id="recOne" listsize=20 onsearchclicked={handleOpenGrid} onselect={handleSelect} options={config.objRecords.objOne} selectedvalue="Account" label="Select a Record"></c-multiselect>
+            <c-multiselect data-id="recOne" listsize=20 onselect={handleSelect} options={config.objRecords.objOne} selectedvalue="Account" label="Select a Record"></c-multiselect>
         </div>
         <!-- For 2nd object and record -->
-        <div class="slds-col slds-size_1-of-2">
+        <div class="slds-col slds-size_1-of-2" if:true={config.objRecords.objTwo}>
             <div class="slds-text-heading_small">Second Record Selection</div>
             <!-- Record Two -->
-            <c-multiselect if:true={config.objRecords.objTwo} data-id="recTwo" listsize=20 onsearchclicked={handleOpenGrid} onselect={handleSelect} options={config.objRecords.objTwo} selectedvalue="Account" label="Select a Record"></c-multiselect>
+            <c-multiselect data-id="recTwo" listsize=20 onselect={handleSelect} options={config.objRecords.objTwo} selectedvalue="Account" label="Select a Record"></c-multiselect>
             <br/>
             <button data-id="btn:compare" if:true={config.objRecords.objTwo} class="slds-button slds-button_brand" onclick={handleEvent} style="float:right;">Compare</button>
         </div>
@@ -78,64 +78,10 @@
                 </table>
             </div>
         </div>
-        <!-- <div class="slds-section slds-is-open">
-            <h3 class="slds-section__title">
-              <button aria-controls="expando-unique-id" aria-expanded="false" class="slds-button slds-section__title-action">
-                <svg class="slds-section__title-action-icon slds-button__icon slds-button__icon_left" aria-hidden="true">
-                  <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#switch"></use>
-                </svg>
-                <span class="slds-truncate" title="Section Title">Child Records Comparison</span>
-              </button>
-            </h3>
-            <div aria-hidden="true"  class="slds-section__content" id="expando-unique-id2">
-                <div class="slds-scrollable_x" style="width:100%;">
-                    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered" aria-label="Example default base table of Opportunities">
-                        <thead>
-                            <tr class="slds-line-height_reset">
-                                <th class="" scope="col" colspan="6">
-                                    <div class="slds-truncate">Record 1</div>
-                                </th>
-                                <th class="" scope="col" colspan="6">
-                                    <div class="slds-truncate">Record 2</div>
-                                </th>
-                            </tr>
-                            <tr class="slds-line-height_reset">
-                                <template for:each={config.childFieldsToCompare} for:item="col">
-                                    <th class="" scope="col" key={config.childFieldsToCompare}>
-                                        <div class="slds-truncate">{col}</div>
-                                    </th>
-                                </template>
-                                <template for:each={config.childFieldsToCompare} for:item="col">
-                                    <th class="" scope="col" key={config.childFieldsToCompare}>
-                                        <div class="slds-truncate">{col}</div>
-                                    </th>
-                                </template>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <template if:true={config.childRecordsResult} for:each={config.childRecordsResult} for:item="item" for:index="index">
-                                <tr class="slds-hint-parent" key={item}>
-                                    <template for:each={item.record1} for:item="record">
-                                        <td key={record.key} style={record.css}>
-                                            <div class="slds-truncate">{record.value}</div>
-                                        </td>
-                                    </template>
-                                    <template for:each={item.record2} for:item="record2">
-                                        <td key={record2.key} style={record2.css}>
-                                            <div class="slds-truncate">{record2.value}</div>
-                                        </td>
-                                    </template>
-                                </tr>
-                            </template>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div> -->
     </template>
     <div if:true={config.showComparisonTable} class="slds-grid slds-gutters">
         <div class="slds-col slds-size_1-of-1">
-            <c-Data-Table style="width:100%; height:inherit" data-ind="Case" cfg="dt1"></c-Data-Table>
+            <c-Data-Table style="width:100%; height:inherit" cfg={config.json.dataTable.uniqueName}></c-Data-Table>
         </div>
     </div>
 </template>

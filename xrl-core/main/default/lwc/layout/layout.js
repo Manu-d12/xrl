@@ -58,9 +58,6 @@ export default class Layout extends LightningElement {
 		if(jsonDetails[0].configType === 'Tabular'){
 			console.log('In Tabular');
 			this.handleTabularFormat(data[cmd]);
-		}else if(jsonDetails[0].configType === 'Comparison'){
-			libs.getGlobalVar(this.name).configId = this.configId;
-			this.config.isComparisonInterface = true;
 		}
 		else{
 			await this.setConfig(cmd,data);

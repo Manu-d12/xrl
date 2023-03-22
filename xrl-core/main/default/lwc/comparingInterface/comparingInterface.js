@@ -3,19 +3,17 @@ import { libs } from 'c/libs';
 
 export default class ComparingInterface extends LightningElement {
     @track config = {};
-    @api cfg;
     @api apiName;
     @track name;
     connectedCallback(){
-        this.cfg = 'cmp';
-        libs.setGlobalVar(this.cfg,{});
-        this.config = libs.getGlobalVar(this.cfg);
-        this.name = this.cfg;
+        this.name = 'cmp' + Math.floor(Math.random() * 10);
+        libs.setGlobalVar(this.name,{});
+        this.config = libs.getGlobalVar(this.name);
         this.config.userSelections = {};
         this.config.objRecords = {};
         this.config.childRecordsResult = [];
         libs.remoteAction(this, 'getCustomLabels', {callback: function(cmd,data){
-            console.log('CustomLabes are loaded', data[cmd]);
+            console.log('CustomLabels are loaded', data[cmd]);
             this.config._LABELS = data[cmd];
         } });
         this.getExtRelListConfigs();
@@ -26,17 +24,18 @@ export default class ComparingInterface extends LightningElement {
             sObjApiName: 'extRelListConfig__c',
             fields: ['Id','Name','JSON__c'],
             relField: '',
-            addCondition: "WHERE configType__c = 'Comparison'",
+            addCondition: " configType__c = 'Comparison'",
             callback: ((nodeName, data) => {
                 console.log('length', data[nodeName].records.length);
                 data[nodeName].records.forEach((record) => {
-                    this.config.extConfigs.push({'label':record.Name, 'value':record.Id});
+                    this.config.extConfigs.push({'label':record.Name + ' Object1: ' +JSON.parse(record.XRL__JSON__c).obj1 + ' Object2: ' +JSON.parse(record.XRL__JSON__c).obj2, 'value':record.Id});
                 });
-                this.config.show = true;
+                this.config.showConfigSelection = true;
             })
         });
     }
     async setConfig(cmd,data){
+        if(JSON.parse(data[cmd].userConfig) === undefined) return;
         console.log('Cn',JSON.parse(data[cmd].userConfig));
         this.config.json = JSON.parse(data[cmd].userConfig);
         libs.setGlobalVar(JSON.parse(data[cmd].userConfig).dataTable.uniqueName,{
@@ -110,7 +109,7 @@ export default class ComparingInterface extends LightningElement {
         }
         if(dataId === 'btn:compare'){
             this.config.showComparisonTable = false;
-            libs.getGlobalVar('dt1').records = undefined;
+            libs.getGlobalVar(this.config.json.dataTable.uniqueName).records = [];
             this.handleComparison();
         }
     }
@@ -119,7 +118,7 @@ export default class ComparingInterface extends LightningElement {
             sObjApiName: this.config.json.obj1,
             fields: this.config.obj1Fields,
             relField: '',
-            addCondition:" WHERE Id='" + this.config.userSelections.recOne + "'",
+            addCondition:" Id='" + this.config.userSelections.recOne + "'",
             callback: ((nodeName, data) => {
                 console.log('length', data[nodeName].records.length);
                 this.config.obj1Result = data[nodeName].records[0];
@@ -129,7 +128,7 @@ export default class ComparingInterface extends LightningElement {
             sObjApiName: this.config.json.obj2,
             fields: this.config.obj2Fields,
             relField: '',
-            addCondition:" WHERE Id='" + this.config.userSelections.recTwo + "'",
+            addCondition:" Id='" + this.config.userSelections.recTwo + "'",
             callback: ((nodeName, data) => {
                 console.log('length', data[nodeName].records.length);
                 this.config.obj2Result = data[nodeName].records[0];
@@ -165,7 +164,7 @@ export default class ComparingInterface extends LightningElement {
             sObjApiName: this.config.json.childApiNames.obj1,
             fields: this.config.json.fields.obj1,
             relField: '',
-            addCondition:" WHERE "+ this.config.json.parentChildRelFields.obj1 +"='" + this.config.userSelections.recOne + "'",
+            addCondition:" "+ this.config.json.parentChildRelFields.obj1 +"='" + this.config.userSelections.recOne + "'",
             callback: ((nodeName, data) => {
                 console.log('length 1', data[nodeName].records.length);
                 this.config.cr1 = data[nodeName].records;
@@ -180,7 +179,7 @@ export default class ComparingInterface extends LightningElement {
             sObjApiName: this.config.json.childApiNames.obj2,
             fields: this.config.json.fields.obj2,
             relField: '',
-            addCondition:" WHERE "+ this.config.json.parentChildRelFields.obj2 +"='" + this.config.userSelections.recTwo + "'",
+            addCondition:" "+ this.config.json.parentChildRelFields.obj2 +"='" + this.config.userSelections.recTwo + "'",
             callback: ((nodeName, data) => {
                 console.log('length 2', data[nodeName].records.length);
                 this.config.cr2 = data[nodeName].records;
@@ -196,7 +195,7 @@ export default class ComparingInterface extends LightningElement {
         }else{
             this.compareChildRecords();
         }   
-        libs.getGlobalVar('dt1').records = this.config.childRecordsResult;
+        libs.getGlobalVar(this.config.json.dataTable.uniqueName).records = this.config.childRecordsResult;
         this.config.showComparisonTable = true;
     }
     compareChildRecords(){
