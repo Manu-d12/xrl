@@ -19,11 +19,12 @@
                 <template if:true={config.isLoaded} for:each={config.tabularConfig.dataModel} for:item="component">
                     <div class={component.class} key={component} style={component.colStyle}>
                         <template if:true={component.isCmp}>
-                            <c-server-Filter if:true={component.isServerFilter} style={component.cmpStyle}
-                            cfg={component.uniqueName} record-id={recordId} onmessage={handleChildMessage}></c-server-Filter>
-                            <c-Data-Table if:true={component.isDataTable} style={component.cmpStyle}
-                            data-ind="Case" cfg={component.uniqueName}></c-Data-Table>
-                            <c-chartjs if:true={component.isChart} style={component.cmpStyle} name={component.uniqueName}></c-chartjs>
+                            <c-server-Filter if:true={component.isServerFilter} style={component.cmpStyle} cfg={component.uniqueName}
+                                record-id={recordId} onmessage={handleChildMessage}></c-server-Filter>
+                            <c-Data-Table if:true={component.isDataTable} style={component.cmpStyle} data-ind="Case"
+                                cfg={component.uniqueName}></c-Data-Table>
+                            <c-chartjs if:true={component.isChart} style={component.cmpStyle} name={component.uniqueName}
+                                onmessage={handleChildMessage}></c-chartjs>
                         </template>
                         <template if:true={component.isCollapsible}>
                             <div class="slds-section" data-id={component.uniqueName}>
@@ -40,7 +41,8 @@
                                         record-id={recordId} onmessage={handleChildMessage}></c-server-Filter>
                                     <c-Data-Table if:true={component.isDataTable} style={component.cmpStyle} data-ind="Case"
                                         cfg={component.uniqueName}></c-Data-Table>
-                                    <c-chartjs if:true={component.isChart} style={component.cmpStyle} name={component.uniqueName}></c-chartjs>
+                                    <c-chartjs if:true={component.isChart} style={component.cmpStyle} name={component.uniqueName}
+                                        onmessage={handleChildMessage}></c-chartjs>
                                 </div>
                             </div>
                         </template>

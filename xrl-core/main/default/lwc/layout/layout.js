@@ -184,9 +184,15 @@ export default class Layout extends LightningElement {
 		});
 	}
 	handleChildMessage(event){
-		if(event.detail.cmd.startsWith('dataTable:')) {
+		if(event.detail.cmd.startsWith('filter:')) {
 			this.template.querySelectorAll('c-Data-Table')?.forEach(ch => ch.handleEventMessage(event));
-			this.template.querySelectorAll('c-chartjs')?.forEach(ch => ch.handleEventMessage(event));
+			if (event.detail.cmd.split(':')[1] === 'refresh') this.template.querySelectorAll('c-chartjs')?.forEach(ch => ch.handleEventMessage(event));
+		} else if(event.detail.cmd.startsWith('chart:')) {
+			this.template.querySelectorAll('c-Data-Table')?.forEach(ch => {
+				ch.handleEventMessage(event);
+				ch.parentElement.parentElement.classList.add('slds-is-open');
+				ch.parentElement.parentElement.scrollIntoView(true, {behavior: 'smooth'});
+			});
 		}
 		if(event.detail.cmd.startsWith('global:')) this.handleGlobalMessage(event);
 	}

@@ -19,10 +19,11 @@ export default class ChartJS extends LightningElement {
     }    
 
     @api get name() {
-        return this.name;
+        return this._name;
     }
     set name(v) {
         try {
+            this._name = v;
             let conf = libs.getGlobalVar(v);
             this._config = this.parseConfig(conf.chartConfig);
             if (this._isRendered) this.drawChart();
@@ -47,6 +48,7 @@ export default class ChartJS extends LightningElement {
     }
 
     @track count;
+    _name;
     _chart;
     _config;
     _isRendered;
@@ -76,7 +78,10 @@ export default class ChartJS extends LightningElement {
     @api handleEventMessage(event) {
         let data = libs.getGlobalVar(event.detail.source).records || [];
         if (this._config.onDataLoad && typeof this._config.onDataLoad === 'function') {
-            this._config.onDataLoad(this._config, data);
+            let records = this._config.onDataLoad(this._config, data) || [];
+            if (this._name) {
+                libs.getGlobalVar(this._name).records = records;
+            }
             this.updateChart();
         }
         let state = libs.getGlobalVar(event.detail.source).state;
@@ -106,6 +111,12 @@ export default class ChartJS extends LightningElement {
 
     @api clearChart() {
         this._chart.clear();
+    }
+
+    viewData() {
+        this.dispatchEvent(new CustomEvent('message', {
+            detail: { cmd: 'chart:refresh', value: 'refresh', source: this._name, title: this._config.dataTitle }
+        }));
     }
     
 }

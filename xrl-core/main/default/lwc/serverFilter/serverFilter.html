@@ -3,11 +3,15 @@
         <template if:true={sFilterfields} for:each={sFilterfields} for:item="field" for:index="index">
             <div class="slds-col slds-size_2-of-12" key={field.fieldName} style="padding: 2px;">
                 <lightning-input if:true={field.inputTypeStr} type="text" label={field.label} id={field.fieldName}
-                data-id={field.fieldName} onfocusout={handleChange}></lightning-input>
+                    data-id={field.fieldName} onfocusout={handleChange}></lightning-input>
                 <c-multiselect if:true={field.inputTypeComboBox} multiselect={field.multiselect} listsize=20 onselect={handleSelect} id={field.fieldName} 
-                data-id={field.fieldName} options={field.options} selectedvalues={field.value} selectedvalue={field.value} label={field.label}></c-multiselect>
+                    data-id={field.fieldName} options={field.options} selectedvalues={field.value} selectedvalue={field.value} label={field.label}></c-multiselect>
                 <lightning-input if:true={field.inputTypeDate} type="date" label={field.label} id={field.fieldName}
-                data-id={field.fieldName} onfocusout={handleChange}></lightning-input>
+                    data-id={field.fieldName} onfocusout={handleChange}></lightning-input>
+                <div if:true={field.inputTypeDateRange} style="display: flex; justify-content: space-between;">
+                    <lightning-input type="date" label={field.labelFrom} data-id={field.fieldName} onfocusout={handleChange} value={field.valueFrom} style="width: 49%;"></lightning-input>
+                    <lightning-input type="date" label={field.labelTo} data-id={field.fieldName} onfocusout={handleChange} value={field.valueTo} style="width: 49%;"></lightning-input>
+                </div>                
             </div>
         </template>
         <div class="slds-col slds-size_2-of-12 slds-col_bump-left" style="height: 60px; display: flex; padding: 2px; align-items: end; justify-content: end;">
@@ -37,6 +41,7 @@
                             selected-label={config._LABELS.lbl_selected}
                             options={allFields}
                             value={selectedFields}
+                            required-options={defaultFields}
                             onchange={handleSelectFields}></lightning-dual-listbox>
                 </div>
                 <div class="slds-modal__footer">

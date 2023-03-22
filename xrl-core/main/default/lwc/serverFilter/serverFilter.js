@@ -10,6 +10,7 @@ export default class ServerFilter extends LightningElement {
     @track conditionMap={};
     @track allFields = [];
     @track selectedFields = [];
+    @track defaultFields = [];
     @track filterJson;
     @track dataTableJson;
     @track isModalOpen = false;
@@ -36,6 +37,7 @@ export default class ServerFilter extends LightningElement {
         for(let key in this.sFilterfields){
             if (!this.sFilterfields[key].virtual) this.selectedFields.push(this.sFilterfields[key].fieldName);
         }
+        this.defaultFields = this.defaultFields.length === 0 ? this.sFilterfields.map(f => f.fieldName) : this.defaultFields;
         libs.sortRecords(this.allFields, 'label', true);
         this.setFieldTypes();
         if (!this.config.fields) {            
@@ -63,6 +65,8 @@ export default class ServerFilter extends LightningElement {
                 element.options.push({ label: "False", value: "false" });
             } else if (element.type === 'datetime' || element.type === 'date') {
                 element.inputTypeDate = true;
+            } else if (element.type === 'daterange') {
+                element.inputTypeDateRange = true;
             }
             else if (element.type === 'reference') {
                 element = await this.referenceOperations(element);
@@ -104,15 +108,21 @@ export default class ServerFilter extends LightningElement {
         return element;
     }
       
-    handleChange(event){
+    handleChange(event) {
         let apiName = event.target.dataset.id;
-        if(event.target.value === '' || event.target.value === "All" || event.target.value === null){
+        if (this.sFilterfields.find(f => f.fieldName === apiName).inputTypeDateRange) {
+            let values = [];
+            this.template.querySelectorAll(`[data-id="${apiName}"]`)?.forEach(f => values.push(f.value));
+            if (values[0] === '' && values[1] === ''){
+                delete this.conditionMap[apiName];
+            } else {
+                this.conditionMap[apiName] = values;
+            }
+        }    
+        else if (event.target.value === '' || event.target.value === "All" || event.target.value === null) {
             delete this.conditionMap[apiName];
-        }else{
+        } else {
             this.conditionMap[apiName] = event.target.value;
-        }
-        if(JSON.parse(JSON.stringify(event.target.value)).includes('All')){
-            delete this.conditionMap[apiName];
         }
     }
     fetchRecords(){
@@ -128,7 +138,7 @@ export default class ServerFilter extends LightningElement {
 				libs.getGlobalVar(this.cfg).records = data[nodeName].records.length > 0 ? data[nodeName].records : undefined;
                 this.config.records = libs.getGlobalVar(this.cfg).records;
 				libs.getGlobalVar(this.cfg).state = this.conditionMap;
-                const selectedEvent = new CustomEvent('message', { detail: {cmd:'dataTable:refresh',value:'refresh',source:this.cfg} });
+                const selectedEvent = new CustomEvent('message', { detail: {cmd:'filter:refresh',value:'refresh',source:this.cfg} });
                 this.dispatchEvent(selectedEvent);
                 if (this.filterJson.showCount) {
                     this.count = this.config.records?.length;
@@ -146,7 +156,7 @@ export default class ServerFilter extends LightningElement {
                 if (colItem.searchCallback && typeof colItem.searchCallback === 'function') condition += colItem.searchCallback(this.conditionMap[key], this.conditionMap);
                 continue;
             }
-            if (typeof this.conditionMap[key] === 'object' && JSON.parse(JSON.stringify(this.conditionMap[key])).length > 1) {
+            if (typeof this.conditionMap[key] === 'object' && JSON.parse(JSON.stringify(this.conditionMap[key])).length > 1 && colItem.type !== 'daterange') {
                 JSON.parse(JSON.stringify(this.conditionMap[key])).forEach((el, index) => {                    
                     condition += index === 0 ? ' AND (' : ' OR ';
                     if (colItem.type === 'boolean') {
@@ -168,6 +178,10 @@ export default class ServerFilter extends LightningElement {
                     else if (colItem.type === 'date') {
                         condition += 'AND ' + key + "=" + this.conditionMap[key] + " ";
                     }
+                    else if (colItem.type === 'daterange') {
+                        condition += (this.conditionMap[key][0] ? 'AND ' + key + " >= " + this.conditionMap[key][0] + " " : '') 
+                            + (this.conditionMap[key][1] ? 'AND ' + key + " <= " + this.conditionMap[key][1] + " " : '');
+                    }
                     else if (colItem.type === 'percent') {
                         condition += 'AND ' + key + "=" + this.conditionMap[key] + " ";
                     }
@@ -188,6 +202,9 @@ export default class ServerFilter extends LightningElement {
     }
     handleSelectFields(event) {
         const selectedOptionsList = event.detail.value;
+        if (selectedOptionsList.filter(f => !this.defaultFields.includes(f)).length === 0) {
+            return;
+        }
         this.config.prevFields = this.config.prevFields || [];
         let fieldsNeedToRemove = this.config.prevFields.filter(field => !event.detail.value.includes(field));
         this.sFilterfields = this.sFilterfields.filter(field => !fieldsNeedToRemove.includes(field.fieldName));
@@ -226,6 +243,12 @@ export default class ServerFilter extends LightningElement {
 			}
 		});
         this.setFieldTypes();
+
+        this.config.fields = this.filterJson.additionalFields ? [...this.selectedFields, ...this.filterJson.additionalFields] : this.selectedFields;
+        this.config.fields = Array.from(new Set(this.config.fields));
+
+        let additionalFields = this.sFilterfields.filter(f => !this.defaultFields.includes(f.fieldName));
+        this.dispatchEvent(new CustomEvent('message', { detail: { cmd: 'filter:updateFields', source: this.cfg, fields: additionalFields } }));
     }
     handleClick(event){
         this.isModalOpen = true;
@@ -248,9 +271,10 @@ export default class ServerFilter extends LightningElement {
             } 
             else f.value = f.multiselect ? (f.options.find(opt => opt.name === 'All') ? ['All'] : []) : '';
 
-            let input = this.template.querySelector(`[data-id="${f.fieldName}"]`);
-            input.value = f.value;
-            if (f.inputTypeComboBox) input.setValue(f.value);
+            this.template.querySelectorAll(`[data-id="${f.fieldName}"]`).forEach(input => {
+                input.value = f.value;
+                if (f.inputTypeComboBox) input.setValue(f.value);
+            });            
         });
     }
     parseHandlers(ob) {
