@@ -1,19 +1,20 @@
 <template>
     <!-- Object Selection -->   
     <div class="slds-grid slds-gutters">
+        <div class="slds-col slds-size_1-of-1">
+            <c-multiselect if:true={config.show} data-id="configId" listsize=20 onsearchclicked={handleEvent} onselect={handleEvent} options={config.extConfigs} selectedvalue="" label="Select a Config"></c-multiselect>
+        </div>
+    </div>
+    <div class="slds-grid slds-gutters">
         <!-- For 1st object and record -->
         <div class="slds-col slds-size_1-of-2">
-            <div class="slds-text-heading_small">First Object Selection</div>
-            <!-- Object One -->
-            <c-multiselect if:true={config.objList} data-id="objOne" listsize=20 onsearchclicked={handleOpenGrid} onselect={handleSelect} options={config.objList} selectedvalue="Account" label="Select an Object"></c-multiselect>
+            <div class="slds-text-heading_small">First Record Selection</div>          
             <!-- Record One -->
             <c-multiselect if:true={config.objRecords.objOne} data-id="recOne" listsize=20 onsearchclicked={handleOpenGrid} onselect={handleSelect} options={config.objRecords.objOne} selectedvalue="Account" label="Select a Record"></c-multiselect>
         </div>
         <!-- For 2nd object and record -->
         <div class="slds-col slds-size_1-of-2">
-            <div class="slds-text-heading_small">Second Object Selection</div>
-            <!-- Object Two -->
-            <c-multiselect if:true={config.objList} data-id="objTwo" listsize=20 onsearchclicked={handleOpenGrid} onselect={handleSelect} options={config.objList} selectedvalue="Account" label="Select an Object"></c-multiselect>
+            <div class="slds-text-heading_small">Second Record Selection</div>
             <!-- Record Two -->
             <c-multiselect if:true={config.objRecords.objTwo} data-id="recTwo" listsize=20 onsearchclicked={handleOpenGrid} onselect={handleSelect} options={config.objRecords.objTwo} selectedvalue="Account" label="Select a Record"></c-multiselect>
             <br/>
@@ -136,8 +137,5 @@
         <div class="slds-col slds-size_1-of-1">
             <c-Data-Table style="width:100%; height:inherit" data-ind="Case" cfg="dt1"></c-Data-Table>
         </div>
-        <!-- <div class="slds-col slds-size_1-of-2">
-            <c-Data-Table style="width:100%; height:inherit" data-ind="Case" cfg="dt2"></c-Data-Table>
-        </div> -->
     </div>
 </template>

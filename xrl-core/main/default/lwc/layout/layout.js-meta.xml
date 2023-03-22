@@ -9,7 +9,7 @@
         <target>lightning__HomePage</target>
     </targets>
     <targetConfigs>
-        <targetConfig targets="lightning__RecordPage">
+        <targetConfig targets="lightning__RecordPage,lightning__HomePage">
             <property required="true" default="" name="configId" type="String" label="Select Config" description="Please select the Config name" datasource="apex://getConfigs"/>
         </targetConfig>
     </targetConfigs>
