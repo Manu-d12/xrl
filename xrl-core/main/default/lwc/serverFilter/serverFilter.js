@@ -29,7 +29,7 @@ export default class ServerFilter extends LightningElement {
         libs.setGlobalVar(this.cfg, this.config);
         this.sFilterfields = this.filterJson.sFilterCols ? this.filterJson.sFilterCols : [];
         for (let key in this.config.describe) {
-            if(this.config.describe[key].type !== 'textarea'){
+            if(this.config.describe[key].type !== 'textarea' && !this.config.describe[key].label.includes('Deprecated')){
 			    this.allFields.push({ label: this.config.describe[key].label, value: this.config.describe[key].name });
             }
 		}
