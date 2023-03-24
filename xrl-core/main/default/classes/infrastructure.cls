@@ -121,7 +121,7 @@ global with sharing class infrastructure {
 			result.put('describe', JSON.serialize(describeResult));
 		}
 
-		if (UserInfo.isMultiCurrencyOrganization()) {
+		if (UserInfo.isMultiCurrencyOrganization() && !sObjApiName.contains('History')) {
 			System.debug('Multi Currency');
 			soqlFields.add('CurrencyIsoCode');
 		}
