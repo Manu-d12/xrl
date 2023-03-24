@@ -435,7 +435,8 @@ export let filterLibs = {
 		}
 		let formatter = filter.formatter ? eval('(' + filter.formatter + ')') : null;
 		let value = filter.type !== "reference"
-			? record[filter.fieldName]
+			? filter.fieldName.split('.')[1] != undefined ? record[filter.fieldName.split('.')[0]][filter.fieldName.split('.')[1]]
+			:record[filter.fieldName]
 			: getRefField(filter.fieldName);
 		// console.log(value);
 		return formatter && typeof formatter === 'function' ? formatter(record, filter, record[filter.fieldName]) : value ;
