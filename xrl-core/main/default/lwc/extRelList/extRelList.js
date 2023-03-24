@@ -103,6 +103,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		console.log(cmd, JSON.parse(JSON.stringify(data)), JSON.parse(JSON.stringify(data[cmd])));
 		libs.getGlobalVar(this.name).userInfo = data.userInfo;
 		libs.getGlobalVar(this.name).financial = data[cmd].Financial;
+		this.config.describe = data[cmd].describe ? JSON.parse(data[cmd].describe) : {};
 		libs.getGlobalVar(this.name).iconName = data[cmd].iconMap.iconURL;
 		libs.getGlobalVar(this.name).iconStyle = data[cmd].iconMap.iconURL.includes('img/icon') ? 'width:32px;height:32px;background-color: #d8c760;margin: 10px;'
 		 : 'width:32px;height:32px;margin: 10px;';
@@ -138,6 +139,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			}];
 			if(this.config.sObjApiName.toLowerCase().includes('history')){
 				this.config.dataTableConfig.colModel = libs.historyGrid(this.apiName);
+				let changedField = this.config.dataTableConfig.colModel.find(field => field.fieldName === 'Field');
+				changedField.options = [];
+				this.config.describe[changedField.fieldName].picklistValues.forEach((e)=>{
+					changedField.options.push({label: e.label, value: e.value});
+				});
 				this.config.dataTableConfig.orderBy = " ORDER BY CreatedDate DESC NULLS FIRST";
 				this.config.dataTableConfig.orderMap=  [
 				  {
@@ -189,7 +195,6 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		console.log(JSON.stringify(this.config.listView));
 		this.config.currency =  data[cmd].currency;
 		//if (this.config.userInfo.isAdminAccess === true) delete this.localConfig.listViewName;
-		this.config.describe = data[cmd].describe ? JSON.parse(data[cmd].describe) : {};
 		// if (this.config.userInfo.isAdminAccess) {
 		// 	this.listViews = data[cmd].listViews.map(v => {return {label: v.label ? v.label + ' - ' + v.createdBy : v.name, value: v.name};});
 		// } else {
