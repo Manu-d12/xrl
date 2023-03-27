@@ -46,7 +46,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			//popup will show after 1.5 seconds of hovering
 			this.config.timeoutId = setTimeout(() => {
 				this.showPopOver = true;
-				}, 500);
+				}, 2000);
 		}
 		  
 
