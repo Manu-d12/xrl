@@ -87,8 +87,10 @@ export default class extRelListSettings extends LightningElement {
 		let result = [];
 
 		let tmp = libs.tableItem();
+		let excludedSettingsFromHistoryGrid = libs.excludedSettingsFromHistoryGrid();
 
 		for (let item in tmp) {
+			if(this.config.sObjApiName.includes('History') && excludedSettingsFromHistoryGrid.has(item)) continue
 			let defValue = this.dataTable != undefined ? 
                 (item in this.dataTable ? 
                     this.dataTable[item] :

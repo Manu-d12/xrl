@@ -544,6 +544,18 @@ export let libs = {
 		];
 		return defFields;
 	},
+	excludedSettingsFromHistoryGrid: function (){
+		let settings = new Set([
+			'showStandardEdit',
+			'rollBack',
+			'saveChunkSize',
+			'beforeDeleteValidation',
+			'beforeSaveApexAction',
+			'beforeSaveValidation',
+			'deleteChunkSize'
+		]);
+		return settings;
+	},
 	currencyMap: function(cur) {
 		let map = {
 			AED: 'د.إ',
