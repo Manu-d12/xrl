@@ -903,7 +903,10 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		this.config.colModel.forEach((e, index) => { // unsorted -> asc -> desc
 			if (e.isSortable === true && e.isASCSort !== undefined) {
 				e._sortIcon = e.isASCSort === true ? 'utility:arrowdown' : 'utility:arrowup';
-				this.records = libs.sortRecords(this.records, e.type === 'reference' ? e.fieldName + '.Name' : e.fieldName, e.isASCSort);
+				let fieldName = e.fieldName.split('.')[1] != undefined ?
+				e.fieldName.split('.')[1]
+				:e.type === 'reference' ? e.fieldName + '.Name' : e.fieldName;
+				this.records = libs.sortRecords(this.records, fieldName, e.isASCSort,e.fieldName.split('.')[1] != undefined ? e.fieldName.split('.')[0] : undefined);
 			} else {
 				e._sortIcon = undefined;
 				e.isASCSort = undefined;
@@ -939,7 +942,11 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					e._sortIcon = e.isASCSort ? 'utility:arrowdown' : 'utility:arrowup';
 					if (this.hasGrouping && fieldName === this.config.groupingParams.field) this.config.groupingParams.order = e.isASCSort ? 'asc' : 'desc';
 					else {
-						this.records = libs.sortRecords(this.records, e.type === 'reference' ? 'Name' : e.fieldName, e.isASCSort, e.type === 'reference' ? e.fieldName.slice(0,-2) : '');
+						let fieldName = e.fieldName.split('.')[1] != undefined ?
+						e.fieldName.split('.')[1]
+						:e.type === 'reference' ? e.fieldName + '.Name' : e.fieldName;
+						this.records = libs.sortRecords(this.records, fieldName, e.isASCSort,e.fieldName.split('.')[1] != undefined ? e.fieldName.split('.')[0] : undefined);
+						// this.records = libs.sortRecords(this.records, e.type === 'reference' ? 'Name' : e.fieldName, e.isASCSort, e.type === 'reference' ? e.fieldName.slice(0,-2) : '');
 					}
 				} else {
 					e._sortIcon = undefined;
@@ -971,7 +978,11 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		}
 		for (let i = this._sortSequence.length - 1; i >= 0; i--) {
 			let col = this.config.colModel.find(e => {return e.fieldName === this._sortSequence[i];});
-			this.records = libs.sortRecords(this.records, col.type === 'reference' ? col.fieldName + '.Name' : col.fieldName, col.isASCSort);
+			let fieldName = col.fieldName.split('.')[1] != undefined ?
+				col.fieldName.split('.')[1]
+				:col.type === 'reference' ? col.fieldName + '.Name' : col.fieldName;
+			this.records = libs.sortRecords(this.records, fieldName, col.isASCSort,col.fieldName.split('.')[1] != undefined ? col.fieldName.split('.')[0] : undefined);
+			// this.records = libs.sortRecords(this.records, col.type === 'reference' ? col.fieldName + '.Name' : col.fieldName, col.isASCSort);
 		}
 	}
 	setNumPages(value) {
