@@ -88,10 +88,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		this.config = libs.getGlobalVar(this.name);
 		console.log(this.name);
 		console.log(JSON.parse(JSON.stringify(this.config)));
-		
-		let listViewName = isInit && this.defaultListView !== undefined ? this.defaultListView : (!isInit && this.name !== undefined ? this.name : undefined);
+
+		// let listViewName = isInit && this.defaultListView !== undefined ? this.defaultListView : (!isInit && this.name !== undefined ? this.name : undefined);
+		let listViewName = libs.loadUserPreferredView(this.name) != undefined ? libs.loadUserPreferredView(this.name) : '';
 		console.log(this.defaultListView);
-		console.log(listViewName);
+		console.log('listViewName ',listViewName);
 		if (this.configuration) {
 			this.setConfig('getConfigResult', this.configuration);
 		} else {
@@ -185,7 +186,13 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		console.log('mergedConfig', userConfig);
 
 		this.config.listViewConfig = userConfig;
-		this.config.listView = data[cmd].listViews.findLast(v => { return v.isUserConfig;});
+		let listViewName = libs.loadUserPreferredView(this.name) != undefined ? libs.loadUserPreferredView(this.name) : '';
+		if(listViewName !== ''){
+			this.config.listView = data[cmd].listViews.find(v => { return v.name === listViewName;});
+		}
+		if(listViewName === '' || this.config.listView === undefined){
+			this.config.listView = data[cmd].listViews.findLast(v => { return v.isUserConfig;});
+		}
 		console.log(JSON.stringify(this.config.listView));
 		this.config.currency =  data[cmd].currency;
 		//if (this.config.userInfo.isAdminAccess === true) delete this.localConfig.listViewName;
@@ -403,7 +410,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 		if (val.startsWith(':change_view')) {
 			if(!this.isThereUnsavedRecords()){
-				this.name = event.target.value;
+				libs.userListViewPreference(this.name,event.target.value);
+				// this.name = event.target.value;
 				this.loadCfg(false);
 			}else{
 				event.target.value = this.config.listView.name;
@@ -1259,14 +1267,14 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				} else {
 					fieldValue = '';
 				}
-				} else {
+				}else {
 				fieldValue = rec[col.fieldName] || '';
 				}
 
 				switch (col.type) {
 				case 'reference':
 					const [lookupRow, lookupId] = libs.getLookupRow(rec, col.fieldName);
-					ws[cell_ref].v = lookupRow.Name;
+					ws[cell_ref].v = lookupRow.Name || '';
 					ws[cell_ref].l = {
 					Target: window.location.origin + '/' + lookupId,
 					Tooltip: window.location.origin + '/' + lookupId
