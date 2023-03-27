@@ -514,7 +514,7 @@ export let libs = {
 			{
 				"label": "Changed Field",
 				"fieldName": "Field",
-				"type": "anyType",
+				"type": "picklist",
 				"updateable": false,
 				"isFilterable": true,
 				"isSortable": true,
