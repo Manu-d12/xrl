@@ -116,6 +116,10 @@ export let libs = {
 					match;
 			}).replace(/{\d+}/g, '');
 	},
+	/* 
+	isReadOnly (Boolean) - This flag is used for the History grid view. 
+							Items with value 'True' will be hidden from the grid field settings
+	*/
 	colModelItem: function(colModelItem) {
 		let _labels = globalVars[Object.keys(globalVars)[0]]._LABELS;
 		let defParams = {
@@ -164,7 +168,8 @@ export let libs = {
 			"isEditable": {
 				"defValue": false,
 				"type": "checkbox",
-				"label": _labels.lbl_isColumnEditable
+				"label": _labels.lbl_isColumnEditable,
+				"isReadOnly": true,
 			},
 			"isWrapable": {
 				"defValue": false,
@@ -194,6 +199,10 @@ export let libs = {
 			return result;
 		} else return defParams;
 	},
+	/* 
+	isReadOnly (Boolean) - This flag is used for the History grid view. 
+							Items with value 'True' will be hidden from the grid table settings
+	*/
 	tableItem: function() {
 		let _labels = globalVars[Object.keys(globalVars)[0]]._LABELS;
 		let defParams = {
@@ -237,6 +246,7 @@ export let libs = {
 				"type": "checkbox",
 				"label": _labels.lbl_showStandardEdit,
 				"tooltip": _labels.tooltip_replaceInlineEditWithStandardEdit,
+				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
 			},
 			"rollBack" : {
@@ -244,6 +254,7 @@ export let libs = {
 				"type": "checkbox",
 				"label": "Rollback?",
 				"tooltip": "In case of bulk edit if any exception occurs should the entire transaction rolled back?",
+				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
 			},
 			"groupFieldName" : {
@@ -266,6 +277,7 @@ export let libs = {
 				"type": "string",
 				"label": _labels.lbl_chunkSizeForSave,
 				"tooltip": _labels.tooltip_numbersOfRecordInChunk,
+				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
 			},
 			"deleteChunkSize" : {
@@ -273,6 +285,7 @@ export let libs = {
 				"type": "string",
 				"label": _labels.lbl_deleteChunkSize,
 				"tooltip": _labels.tooltip_deleteChunkSize,
+				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
 			},
 			"beforeSaveValidation": {
@@ -280,12 +293,14 @@ export let libs = {
 				"label": _labels.lbl_beforeSaveValidation,
 				"tooltip": _labels.tooltip_beforeSaveValidation,
 				"placeHolder": _labels.placeHolder_beforeSaveValidation,
+				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam"
 			},
 			"beforeSaveApexAction": {
 				"type": "string",
 				"label": _labels.lbl_beforeSaveApexAction,
 				"tooltip": _labels.tooltip_beforeSaveApexAction,
+				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam"
 			},
 			"beforeDeleteValidation": {
@@ -293,6 +308,7 @@ export let libs = {
 				"label": _labels.lbl_beforeDeleteValidation,
 				"tooltip": _labels.tooltip_beforeDeleteValidation,
 				"placeHolder": _labels.placeHolder_beforeDeleteValidation,
+				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam"
 			},
 			"displayOptionListSize" : {
@@ -559,18 +575,6 @@ export let libs = {
 			}
 		];
 		return defFields;
-	},
-	excludedSettingsFromHistoryGrid: function (){
-		let settings = new Set([
-			'showStandardEdit',
-			'rollBack',
-			'saveChunkSize',
-			'beforeDeleteValidation',
-			'beforeSaveApexAction',
-			'beforeSaveValidation',
-			'deleteChunkSize'
-		]);
-		return settings;
 	},
 	currencyMap: function(cur) {
 		let map = {
