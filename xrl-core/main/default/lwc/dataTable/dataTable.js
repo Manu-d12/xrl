@@ -21,6 +21,11 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	defaultFields = [];
 	additionalFields = [];
 	showPop(event){
+		console.log('Hovered ' + event.pageY + ' ' + event.clientX);
+		this.objectApiName = event.target.getAttribute('data-colname');
+		let col = this.config.colModel.find((el)=>{
+			return el.fieldName === this.objectApiName
+		});
 		let hoverConstValues = {
 			5:810,
 			20:1250,
@@ -29,24 +34,33 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			200:6360
 		};
 		this.popStyle = libs.formatStr("position:absolute;top:{0}px;left:{1}px", [((event.pageY - document.body.scrollTop) - hoverConstValues[this.config.pager.pageSize]), (event.clientX - 52)]);
-		this.objectApiName = event.target.getAttribute('data-colname');
 		let record = this.records.find((el) =>{
 			return el.Id === event.target.getAttribute('data-recordind')
 		});
+		this.config.pageY = event.pageY;
+		this.config.pageX = event.clientX;
 
-		let col = this.config.colModel.find((el)=>{
-			return el.fieldName === this.objectApiName
-		});
-
-		if (col.referenceTo) {
+		if (col.referenceTo ){
 			this.objectApiName = col.referenceTo;
 			this.recordId = record[col.fieldName.split('.')[0]].Id;
-			this.showPopOver = true;
+			//popup will show after 1.5 seconds of hovering
+			this.config.timeoutId = setTimeout(() => {
+				this.showPopOver = true;
+				}, 2000);
 		}
+		  
 
 	}
 	hidePop(event){
-		this.showPopOver=false;
+		console.log('Mouse Out');
+		if((event.pageY >= this.config.pageY - 5 && event.pageY <= this.config.pageY + 5) &&
+		(event.clientX >= this.config.pageX - 5 && event.clientX <= this.config.pageX + 5)){
+			console.log('In range: ' + event.pageY + ' ' + event.clientX);
+		}else{
+			console.log('Not In range: ' + event.pageY + ' ' + event.clientX);
+			clearTimeout(this.config.timeoutId);
+			this.showPopOver=false;
+		}
 	}
 
 	@api
