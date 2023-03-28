@@ -21,6 +21,22 @@ export let libs = {
 		if (typeof(value) !== 'string') value = JSON.stringify(value);
 		localStorage.setItem(uniqKey, value);
 	},
+	loadUserPreferredView: function(uniqKey) {
+		let localViewName = localStorage.getItem(uniqKey);
+		if (localViewName != null && typeof(localViewName) !== 'undefined') {
+			try {
+				let cfg = localViewName;
+				return cfg;
+			} catch (e) {
+				console.log('Saved View Name is broken');
+			}
+		}
+		return undefined;
+	},
+	userListViewPreference: function(uniqKey, value) {
+		if (typeof(value) !== 'string') value = JSON.stringify(value);
+		localStorage.setItem(uniqKey, value);
+	},
 	sortRecords: function(records, fieldName, isASCSort, referenceField) {
 		let keyValue;
 		if(referenceField){
@@ -514,7 +530,7 @@ export let libs = {
 			{
 				"label": "Changed Field",
 				"fieldName": "Field",
-				"type": "anyType",
+				"type": "picklist",
 				"updateable": false,
 				"isFilterable": true,
 				"isSortable": true,
