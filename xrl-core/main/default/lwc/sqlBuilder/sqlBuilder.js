@@ -151,6 +151,7 @@ export default class SqlBuilder extends LightningElement {
         if(val === "sqlBuilder:deleteSelectedField"){
             let field = event.target.getAttribute('data-val');                
             this.config.sqlBuilder.selectedFields = this.config.sqlBuilder.selectedFields.filter(function(e) { return e.fieldName !== field });
+            this.ElementList = this.ElementList.filter(function(e) { return e !== field; });
             this.dialogValues();
         }
 

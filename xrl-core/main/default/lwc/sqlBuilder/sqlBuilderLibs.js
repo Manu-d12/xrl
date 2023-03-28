@@ -63,6 +63,19 @@ export let sqlBuilderLibs = {
 		const actions = [
 			{ label: labels.lbl_isEqual, value: 'eq' },
 			{ label: labels.lbl_isNotEqual, value: 'neq' },
+			{ label: labels.lbl_isEmpty, value: 'em', isUnary : true},
+			{ label: labels.lbl_isNotEmpty, value: 'nem', isUnary : true},
+		]
+        return (key) 
+			? actions.find( el => { return el.value === key})
+			: actions;
+	},
+	referenceFilterActions(labels,key) {
+		const actions = [
+			{ label: labels.lbl_isEqual, value: 'eq' },
+			{ label: labels.lbl_isNotEqual, value: 'neq' },
+			{ label: labels.lbl_isEmpty, value: 'em', isUnary : true},
+			{ label: labels.lbl_isNotEmpty, value: 'nem', isUnary : true},
 		]
         return (key) 
 			? actions.find( el => { return el.value === key})
@@ -169,6 +182,23 @@ export let sqlBuilderLibs = {
 				return filter.field + " ='" +  filter.value + "'";
 			case 'neq':
 				return filter.field + " !='" +  filter.value + "'";
+			case 'em': 
+				return filter.field + " = NULL";
+			case 'nem': 
+				return filter.field + " != NULL";
+        }
+    },
+	reference__condition(filter) {
+        /* eslint-disable */
+        switch (filter.operator.value) {
+			case 'eq':
+				return filter.field + " ='" +  filter.value + "'";
+			case 'neq':
+				return filter.field + " !='" +  filter.value + "'";
+			case 'em': 
+				return filter.field + " = NULL";
+			case 'nem': 
+				return filter.field + " != NULL";
         }
     },
     boolean__condition(filter) {
