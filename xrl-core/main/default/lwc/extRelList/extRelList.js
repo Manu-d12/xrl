@@ -112,6 +112,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 		let adminConfig = (data[cmd].baseConfig) ? JSON.parse(data[cmd].baseConfig) : [];
 		let userConfig = (data[cmd].userConfig) ? JSON.parse(JSON.stringify(data[cmd].userConfig)) : [];
+		this.isHistoryGrid();
 
 		console.log('adminConfig', adminConfig);
 		// console.log('userConfig', userConfig);
@@ -322,6 +323,14 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			}
 		});
 		console.log('ColModel', JSON.parse(JSON.stringify(this.config.listViewConfig[0].colModel)));
+	}
+
+	isHistoryGrid(){
+		if(this.config.sObjApiName.toLowerCase().includes('history')){
+			this.config.isHistoryGrid = true;
+		}else{
+			this.config.isHistoryGrid = false;
+		}
 	}
 
 	get changedRecords() {

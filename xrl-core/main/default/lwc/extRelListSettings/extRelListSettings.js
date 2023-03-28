@@ -57,6 +57,7 @@ export default class extRelListSettings extends LightningElement {
 		let tmp = libs.colModelItem();
 
 		for (let item in tmp) {
+			if(this.config.isHistoryGrid && tmp[item].isReadOnly) continue;
 			if(!fieldParams.updateable && !fieldParams.isNameField && item === 'isEditable') continue;
 			let defValue = (item === 'fieldName') 
 				? this.config.dialog.field 
@@ -89,6 +90,7 @@ export default class extRelListSettings extends LightningElement {
 		let tmp = libs.tableItem();
 
 		for (let item in tmp) {
+			if(this.config.isHistoryGrid && tmp[item].isReadOnly) continue;
 			let defValue = this.dataTable != undefined ? 
                 (item in this.dataTable ? 
                     this.dataTable[item] :
