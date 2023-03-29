@@ -365,8 +365,11 @@ global with sharing class infrastructure {
 			AND(SobjectType = 'extRelListConfig__c'
 				OR SobjectType = 'XRL__extRelListConfig__c') limit 1];
 
-		if(listViewName.equals('_admin') || listViewName.equals('_default')){
-			delete [select Id from extRelListConfig__c where listViewName__c = '_admin' OR listViewName__c = '_default'];
+		if(listViewName.equals('_admin')){
+			delete [select Id from extRelListConfig__c where listViewName__c = '_admin'];
+		}
+		if(listViewName.equals('_default')){
+			delete [select Id from extRelListConfig__c where listViewName__c = '_default'];
 		}
 
 		extRelListConfig__c listView = new extRelListConfig__c(
@@ -392,12 +395,12 @@ global with sharing class infrastructure {
 	private static boolean shareRecord(Id recordId){
 		List<extRelListConfig__Share> shrObj = new List<extRelListConfig__Share>();
 
-		for(User u:  [SELECT Id,name,ProfileId,IsActive FROM User WHERE Profile.UserLicense.Name != null AND Id != :UserInfo.getUserId()] ){
+		for(User u:  [SELECT Id,name,ProfileId,IsActive,UserType FROM User WHERE Profile.UserLicense.Name != null AND Id != :UserInfo.getUserId() AND UserType NOT IN ('Guest','CsnOnly','AutomatedProcess')] ){
 			extRelListConfig__Share jobShr  = new extRelListConfig__Share();
 
 			jobShr.ParentId = recordId;
 			jobShr.UserOrGroupId = u.Id;
-			jobShr.AccessLevel = 'Read';
+			jobShr.AccessLevel = 'edit';
 			jobShr.RowCause = Schema.extRelListConfig__Share.RowCause.Manual;
 			shrObj.add(jobShr);
 		}
