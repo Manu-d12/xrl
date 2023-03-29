@@ -352,6 +352,7 @@ global with sharing class infrastructure {
 		string sObjApiName = (string) data.get('sObjApiName');
 		string relField = (string) data.get('relField');
 		string config = (string) data.get('config');
+		string configType = (string) data.get('configType');
 
 		listViewName = string.isBlank(listViewName) ?
 			(isAdminAccess ? '_admin' : null) :
@@ -376,6 +377,7 @@ global with sharing class infrastructure {
 			relFieldApiName__c = relField,
 			isAdminConfig__c = isAdminConf,
 			JSON__c = config,
+			ConfigType__c = String.isNotBlank(configType) ? configType : 'XRL',
 			uniqKey__c = sObjApiName + ':' + relField + ':' + isAdminConf + ':' + (string.isBlank(listViewName) ? '' : listViewName),
 			RecordTypeId = rt.Id
 		);
