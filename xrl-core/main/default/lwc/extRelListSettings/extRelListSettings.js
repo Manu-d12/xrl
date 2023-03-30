@@ -25,7 +25,7 @@ export default class extRelListSettings extends LightningElement {
 	}
 
 	get dialogCss(){
-		return 'max-height:'+screen.availHeight+'px;min-width:fit-content;max-width:80%';
+		return 'max-height:'+screen.availHeight+'px;max-width:80%';
 	}
 
 	get selectedFields() {
