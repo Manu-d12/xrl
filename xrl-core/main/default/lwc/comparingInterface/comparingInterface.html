@@ -32,7 +32,8 @@
               </button>
             </h3>
             <div aria-hidden="true" class="slds-section__content" id="expando-unique-id">
-                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered" aria-label="Example default base table of Opportunities">
+                <c-action-Bar if:true={config.actionsBar} actionscfg={config.actionsBar}></c-action-Bar><br>
+                <table if:true={config.compareResult} class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered" aria-label="Example default base table of Opportunities">
                     <thead>
                         <tr class="slds-line-height_reset">
                             <th class="" scope="col" colspan="2">
@@ -58,7 +59,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <template if:true={config.compareResult} for:each={config.compareResult} for:item="item" for:index="index">
+                        <template for:each={config.compareResult} for:item="item" for:index="index">
                             <tr class="slds-hint-parent" key={item}>
                                 <td>
                                     <div class="slds-truncate">{item.fieldName1}</div>
