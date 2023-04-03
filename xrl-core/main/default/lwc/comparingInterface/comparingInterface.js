@@ -4,6 +4,9 @@ import { libs } from 'c/libs';
 export default class ComparingInterface extends LightningElement {
     @track config = {};
     @api apiName;
+    @api leftRecord;
+    @api rightRecord;
+    @api recordId;
     @track name;
     connectedCallback(){
         this.name = 'cmp' + Math.floor(Math.random() * 10);
@@ -16,7 +19,12 @@ export default class ComparingInterface extends LightningElement {
             console.log('CustomLabels are loaded', data[cmd]);
             this.config._LABELS = data[cmd];
         } });
-        this.getExtRelListConfigs();
+        console.log('apiName: ' + this.apiName);
+        if(!this.apiName){
+            this.getExtRelListConfigs();
+        }else{
+            libs.remoteAction(this, 'getConfigById', { configId: this.apiName.split('::')[0], callback: this.setConfig.bind(this) });
+        }
     }
     async getExtRelListConfigs(){
         this.config.extConfigs = [];
@@ -28,7 +36,7 @@ export default class ComparingInterface extends LightningElement {
             callback: ((nodeName, data) => {
                 console.log('length', data[nodeName].records.length);
                 data[nodeName].records.forEach((record) => {
-                    this.config.extConfigs.push({'label':record.Name + ' Object1: ' +JSON.parse(record.XRL__JSON__c).obj1 + ' Object2: ' +JSON.parse(record.XRL__JSON__c).obj2, 'value':record.Id});
+                    this.config.extConfigs.push({'label':record.Name + ' Object1: ' +JSON.parse(record.TTNAMESPACE__JSON__c).obj1 + ' Object2: ' +JSON.parse(record.TTNAMESPACE__JSON__c).obj2, 'value':record.Id});
                 });
                 this.config.showConfigSelection = true;
             })
@@ -61,7 +69,7 @@ export default class ComparingInterface extends LightningElement {
         let selectedFor = 'objOne';
         this.config.userSelections[selectedFor] = selectedObj;
         console.log(this.config.userSelections[selectedFor]);
-        if(selectedFor.startsWith('obj')){
+        if(selectedFor.startsWith('obj') && this.leftRecord === undefined){
             //Getting the records from depending on selected object
             await libs.remoteAction(this, 'query', {
                 sObjApiName: selectedObj,
@@ -75,12 +83,15 @@ export default class ComparingInterface extends LightningElement {
                     })
                 })
             });
+        }else{
+            console.log('recordId',this.recordId);
+            this.config.userSelections.recOne = this.recordId;
         }
         selectedObj = this.config.json.obj2;
         selectedFor = 'objTwo';
         this.config.userSelections[selectedFor] = selectedObj;
         console.log(this.config.userSelections[selectedFor]);
-        if(selectedFor.startsWith('obj')){
+        if(selectedFor.startsWith('obj') && this.rightRecord === undefined){
             //Getting the records from depending on selected object
             await libs.remoteAction(this, 'query', {
                 sObjApiName: selectedObj,
@@ -94,6 +105,9 @@ export default class ComparingInterface extends LightningElement {
                     })
                 })
             });
+        }else{
+            console.log('recordId',this.recordId);
+            this.config.userSelections.recTwo = this.recordId;
         }
     }
     getAllObjects(cmd,data){

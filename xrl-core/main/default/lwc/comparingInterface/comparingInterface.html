@@ -18,8 +18,8 @@
             <!-- Record Two -->
             <c-multiselect data-id="recTwo" listsize=20 onselect={handleSelect} options={config.objRecords.objTwo} selectedvalue="Account" label="Select a Record"></c-multiselect>
             <br/>
-            <button data-id="btn:compare" if:true={config.objRecords.objTwo} class="slds-button slds-button_brand" onclick={handleEvent} style="float:right;">Compare</button>
         </div>
+        <button data-id="btn:compare" class="slds-button slds-button_brand" onclick={handleEvent} style="float:right;">Compare</button>
     </div>
     <template if:true={config.showComparisonTable}>
         <div class="slds-section slds-is-open">

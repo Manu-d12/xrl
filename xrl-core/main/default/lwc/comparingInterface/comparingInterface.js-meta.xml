@@ -10,7 +10,9 @@
     </targets>
     <targetConfigs>
         <targetConfig targets="lightning__RecordPage,lightning__HomePage">
-            <property required="true" name="apiName" type="String" label="Related List" description="Choose Needed RelatedList." datasource="apex://getRelListsPicklist"/>
+            <property name="apiName" type="String" label="Select a Config" description="Select a Config" datasource="apex://getConfigs"/>
+            <property name="leftRecord" type="String" label="Select Record for Left" description="Select Record for Left"/>
+            <property name="rightRecord" type="String" label="Select Record for Right" description="Select Record for Right"/>
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>
