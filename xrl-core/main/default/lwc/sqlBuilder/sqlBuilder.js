@@ -511,67 +511,50 @@ export default class SqlBuilder extends LightningElement {
         this.config.sqlBuilder._objectStack = [{relationShip:this.config.sObjApiName,referredObj:this.config.sObjApiName}];
         this.config.sqlBuilder.searchTerm = '';
     }
-    //need to improve this function
-    isStrAllowed(val){
-        if(this.areBracketsBalanced(val)){
-            let status = true;
-            for(let i = 0; i < val.length; i++){
-                let char = val[i];
-                if(char == ')' || char == '(' || char == ' ' || char == '#') continue;
-                else if(/^\d+$/.test(char)){
-                    //checking if it is number
-                }
-                else if((char == 'A' || char == 'a') && val[i+2] != undefined && (val[i+2] == 'D' || val[i+2] == 'd')){
-                    i =i+2;
-                }
-                else if((char == 'O' || char == 'o') && val[i+1] != undefined && (val[i+1] == 'R' || val[i+1] == 'r')){
-                    i = i +1;
-                }else{
-                    console.log('NOt Valid', char);
-                    status = false;
-                    const toast = new ShowToastEvent({
-                        title: 'Error',
-                        message: this.config._LABELS.msg_invalidInputSqlBuilderConditionFormat,
-                        variant: 'error'
-                    });
-                    this.dispatchEvent(toast);
-                    break;
-                }
-            }
-            return status;
-        }else{
-            console.log('Brackets mismatched');
-            const toast = new ShowToastEvent({
-                title: 'Error',
-                message: this.config._LABELS.msg_invalidInputSqlBuilderConditionFormat,
-                variant: 'error'
-            });
-            this.dispatchEvent(toast);
-            return false;
-        }
-    }
-    areBracketsBalanced(expr){
-        let stack = [];
-        for(let i = 0; i < expr.length; i++){
-            let x = expr[i];
-            if (x == '('){ 
-                stack.push(x);
-                continue;
-            }
-
-            if (x == ')' && stack.length == 0)
-                return false;
-                
-            let check;
-            switch (x){
-            case ')':
-                check = stack.pop();
-                if (check == '{' || check == '[')
+    isStrAllowed(expression) {
+        const validChars = [' ', 'AND', 'OR', '(', ')', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '#'];
+        const stack = [];
+        let i = 0;
+    
+        while (i < expression.length) {
+            const char = expression[i];
+    
+            if (char === '(') {
+                stack.push(char);
+            } else if (char === ')') {
+                if (stack.length === 0) {
+                    console.log('Invalid expression: Mismatched parentheses');
                     return false;
-                break;
+                }
+                stack.pop();
+            } else if (!validChars.includes(char)) {
+                let j = i;
+                while (j < expression.length && expression[j] !== ' ') {
+                    j++;
+                }
+                const word = expression.substring(i, j);
+                if (!validChars.includes(word)) {
+                    console.log(`Invalid character: "${word}"`);
+                    return false;
+                }
+                i = j - 1;
+            } else if (char === '#') {
+                if (i === expression.length - 1 || !(/[0-9]/.test(expression[i+1]))) {
+                    console.log('Invalid expression: "#" must be followed by a number');
+                    return false;
+                }
             }
+    
+            i++;
         }
     
-        return (stack.length == 0);
-    }
+        if (stack.length !== 0) {
+            console.log('Invalid expression: Mismatched parentheses');
+            return false;
+        }
+    
+        console.log('Valid expression');
+        return true;
+    }      
+    
 }
