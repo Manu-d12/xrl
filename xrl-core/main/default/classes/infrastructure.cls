@@ -397,7 +397,7 @@ global with sharing class infrastructure {
 	private static boolean shareRecord(Id recordId){
 		List<extRelListConfig__Share> shrObj = new List<extRelListConfig__Share>();
 
-		for(User u:  [SELECT Id,name,ProfileId,IsActive,UserType FROM User WHERE Profile.UserLicense.Name != null AND Id != :UserInfo.getUserId() AND UserType NOT IN ('Guest','CsnOnly','AutomatedProcess')] ){
+		for(User u:  [SELECT Id,name,ProfileId,IsActive,UserType FROM User WHERE Profile.UserLicense.Name != null AND Id != :UserInfo.getUserId() AND UserType NOT IN ('Guest','CsnOnly','AutomatedProcess','CspLitePortal','CloudIntegrationUser')] ){
 			extRelListConfig__Share jobShr  = new extRelListConfig__Share();
 
 			jobShr.ParentId = recordId;
