@@ -166,7 +166,7 @@ global with sharing class infrastructure {
 		map < string, object > result = new map < string, object > ();
 		result.put('SOQL', SOQL);
 
-		if (isNeedDescribe == true) {
+		if (isNeedDescribe == true && sObjApiName != null) {
 			map < string, Schema.DescribeFieldResult > describeResult = new map < string, Schema.DescribeFieldResult > ();
 			map < String, Schema.SObjectField > fieldsMap = Schema.getGlobalDescribe().get(sObjApiName).getDescribe().fields.getMap();
 			for (string fItem: fieldsMap.keySet()) {

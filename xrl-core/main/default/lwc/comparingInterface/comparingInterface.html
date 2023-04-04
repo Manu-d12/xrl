@@ -1,4 +1,5 @@
 <template>
+    <lightning-card class=" slds-card_boundary" style="padding:5px; display:block">
     <!-- Object Selection -->   
     <div class="slds-grid slds-gutters">
         <div class="slds-col slds-size_1-of-1">
@@ -7,30 +8,24 @@
     </div>
     <div class="slds-grid slds-gutters">
         <!-- For 1st object and record -->
-        <div class="slds-col slds-size_1-of-2" if:true={config.objRecords.objOne}>
-            <div class="slds-text-heading_small">First Record Selection</div>          
+        <div class="slds-col slds-size_5-of-12" if:true={config.objRecords.objOne}>
+            <div class="slds-text-heading_small">{config.json.obj1} Record(s) Selection</div>          
             <!-- Record One -->
-            <c-multiselect data-id="recOne" listsize=20 onselect={handleSelect} options={config.objRecords.objOne} selectedvalue="Account" label="Select a Record"></c-multiselect>
+            <c-multiselect multiselect=true data-id="recOne" listsize=20 onselect={handleSelect} options={config.objRecords.objOne} selectedvalue="Account" label="Select a Record"></c-multiselect>
         </div>
         <!-- For 2nd object and record -->
-        <div class="slds-col slds-size_1-of-2" if:true={config.objRecords.objTwo}>
-            <div class="slds-text-heading_small">Second Record Selection</div>
+        <div class="slds-col slds-size_5-of-12" if:true={config.objRecords.objTwo}>
+            <div class="slds-text-heading_small">{config.json.obj2} Record(s) Selection</div>
             <!-- Record Two -->
-            <c-multiselect data-id="recTwo" listsize=20 onselect={handleSelect} options={config.objRecords.objTwo} selectedvalue="Account" label="Select a Record"></c-multiselect>
-            <br/>
+            <c-multiselect multiselect=true data-id="recTwo" listsize=20 onselect={handleSelect} options={config.objRecords.objTwo} selectedvalue="Account" label="Select a Record"></c-multiselect>
         </div>
-        <button data-id="btn:compare" class="slds-button slds-button_brand" onclick={handleEvent} style="float:right;">Compare</button>
+        <div class="slds-col slds-size_2-of-12" if:true={config.showCompareButton}>
+            <br/><br/>
+            <button data-id="btn:compare" class="slds-button slds-button_brand" onclick={handleEvent} style="float:right;">Compare</button>
+        </div>
     </div>
     <template if:true={config.showComparisonTable}>
         <div class="slds-section slds-is-open">
-            <h3 class="slds-section__title">
-              <button aria-controls="expando-unique-id" aria-expanded="false" class="slds-button slds-section__title-action">
-                <svg class="slds-section__title-action-icon slds-button__icon slds-button__icon_left" aria-hidden="true">
-                  <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#switch"></use>
-                </svg>
-                <span class="slds-truncate" title="Section Title">Record to Record Comparison</span>
-              </button>
-            </h3>
             <div aria-hidden="true" class="slds-section__content" id="expando-unique-id">
                 <c-action-Bar if:true={config.actionsBar} actionscfg={config.actionsBar}></c-action-Bar><br>
                 <table if:true={config.compareResult} class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered" aria-label="Example default base table of Opportunities">
@@ -85,4 +80,5 @@
             <c-Data-Table style="width:100%; height:inherit" cfg={config.json.dataTable.uniqueName}></c-Data-Table>
         </div>
     </div>
+</lightning-card>
 </template>
