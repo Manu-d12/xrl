@@ -1,6 +1,6 @@
 export let utils = {
 
-    state: {},
+    source: '',
 
     randomColors(length, opacity) {
         return [...new Array(length || 0)].map(() => {
