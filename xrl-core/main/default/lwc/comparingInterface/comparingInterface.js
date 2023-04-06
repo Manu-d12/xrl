@@ -4,6 +4,9 @@ import { libs } from 'c/libs';
 export default class ComparingInterface extends LightningElement {
     @track config = {};
     @api apiName;
+    @api leftRecord;
+    @api rightRecord;
+    @api recordId;
     @track name;
     connectedCallback(){
         this.name = 'cmp' + Math.floor(Math.random() * 10);
@@ -16,7 +19,12 @@ export default class ComparingInterface extends LightningElement {
             console.log('CustomLabels are loaded', data[cmd]);
             this.config._LABELS = data[cmd];
         } });
-        this.getExtRelListConfigs();
+        console.log('apiName: ' + this.apiName);
+        if(this.apiName === undefined){
+            this.getExtRelListConfigs();
+        }else{
+            libs.remoteAction(this, 'getConfigById', { configId: this.apiName.split('::')[0], callback: this.setConfig.bind(this) });
+        }
     }
     async getExtRelListConfigs(){
         this.config.extConfigs = [];
@@ -61,7 +69,7 @@ export default class ComparingInterface extends LightningElement {
         let selectedFor = 'objOne';
         this.config.userSelections[selectedFor] = selectedObj;
         console.log(this.config.userSelections[selectedFor]);
-        if(selectedFor.startsWith('obj')){
+        if(selectedFor.startsWith('obj') && this.leftRecord === undefined){
             //Getting the records from depending on selected object
             await libs.remoteAction(this, 'query', {
                 sObjApiName: selectedObj,
@@ -75,36 +83,54 @@ export default class ComparingInterface extends LightningElement {
                     })
                 })
             });
+        }else if(this.leftRecord === 'QueryFromConfig'){
+            await libs.remoteAction(this, 'customSoql', {
+                SOQL: this.config.json.QueryFromConfig.obj1,
+                callback: ((nodeName, data1) => {
+                    console.log('data Id', data1[nodeName].records.map(val =>  val.Id ));
+                    this.config.userSelections.recOne = data1[nodeName].records.map(val =>  val.Id );
+                })
+            });
+        }else{
+            console.log('recordId',this.recordId);
+            this.config.userSelections.recOne = [this.recordId];
         }
         selectedObj = this.config.json.obj2;
         selectedFor = 'objTwo';
         this.config.userSelections[selectedFor] = selectedObj;
         console.log(this.config.userSelections[selectedFor]);
-        if(selectedFor.startsWith('obj')){
+        if(selectedFor.startsWith('obj') && this.rightRecord === undefined){
             //Getting the records from depending on selected object
             await libs.remoteAction(this, 'query', {
                 sObjApiName: selectedObj,
                 fields: ['Id','Name'],
                 relField: '',
                 callback: ((nodeName, data) => {
-                    console.log('length', data[nodeName].records.length);
                     this.config.objRecords[selectedFor]= [];
                     data[nodeName].records.forEach((el)=>{
                         this.config.objRecords[selectedFor].push({'label':el.Name,'value':el.Id});
                     })
                 })
             });
+        }else if(this.rightRecord === 'QueryFromConfig'){
+            await libs.remoteAction(this, 'customSoql', {
+                SOQL: this.config.json.QueryFromConfig.obj2,
+                callback: ((nodeName, data1) => {
+                    console.log('length', data1[nodeName].records.length);
+                    this.config.userSelections.recTwo = data1[nodeName].records.map(val =>  val.Id );
+                })
+            });
+        }else{
+            this.config.userSelections.recTwo = [this.recordId];
+        }
+        this.config.showCompareButton = true;
+        if(this.config.userSelections.recOne && this.config.userSelections.recTwo) {
+            this.config.showCompareButton = false;
+            this.handleComparison();
         }
     }
-    getAllObjects(cmd,data){
-        this.config.objList = [];
-        data[cmd].sort().forEach((el)=>{
-            this.config.objList.push({'label':el.toString(),'value':el.toString()});
-        });
-        console.log('objList',JSON.parse(JSON.stringify(this.config.objList)));
-    }
     handleSelect(event){
-        let selectedObj = event.detail.payload.value;
+        let selectedObj = event.detail.payload.values;
         let selectedFor = event.target.getAttribute('data-id');
         this.config.userSelections[selectedFor] = selectedObj;
     }
@@ -118,6 +144,7 @@ export default class ComparingInterface extends LightningElement {
         if(dataId === 'btn:compare'){
             this.config.showComparisonTable = false;
             libs.getGlobalVar(this.config.json.dataTable.uniqueName).records = [];
+            this.config.childRecordsResult = [];
             this.handleComparison();
         }
     }
@@ -170,11 +197,12 @@ export default class ComparingInterface extends LightningElement {
         return result;
     }
     async getChildRecords(){
+
         await libs.remoteAction(this, 'query', {
             sObjApiName: this.config.json.childApiNames.obj1,
             fields: this.config.json.fields.obj1,
             relField: '',
-            addCondition:" "+ this.config.json.parentChildRelFields.obj1 +"='" + this.config.userSelections.recOne + "'",
+            addCondition:" "+ this.config.json.parentChildRelFields.obj1 +" IN (" + this.config.userSelections.recOne.map(val => "'" + val + "'").join(",") + ")",
             callback: ((nodeName, data) => {
                 console.log('length 1', data[nodeName].records.length);
                 this.config.cr1 = data[nodeName].records;
@@ -189,7 +217,7 @@ export default class ComparingInterface extends LightningElement {
             sObjApiName: this.config.json.childApiNames.obj2,
             fields: this.config.json.fields.obj2,
             relField: '',
-            addCondition:" "+ this.config.json.parentChildRelFields.obj2 +"='" + this.config.userSelections.recTwo + "'",
+            addCondition:" "+ this.config.json.parentChildRelFields.obj2 +" IN (" + this.config.userSelections.recTwo.map(val => "'" + val + "'").join(",") + ")",
             callback: ((nodeName, data) => {
                 console.log('length 2', data[nodeName].records.length);
                 this.config.cr2 = data[nodeName].records;
@@ -212,6 +240,8 @@ export default class ComparingInterface extends LightningElement {
         let result = {};
         Object.keys(this.config.childRecords1).forEach((el)=>{
             result = {};
+            result[this.config.json.obj1] = {};
+            result[this.config.json.obj2] = {};
             if(this.config.childRecords2[el]){
                 for(let key in this.config.json.childComparisonMap){
                     let colCss =
@@ -220,19 +250,21 @@ export default class ComparingInterface extends LightningElement {
                     result[key] = this.config.childRecords1[el][key];
                     result[this.config.json.childComparisonMap[key]] = this.config.childRecords2[el][this.config.json.childComparisonMap[key]];
                 }
-                result[this.config.json.uniqueKey.obj1] = el;
-                result[this.config.json.uniqueKey.obj2] = el;
-                Object.assign(result,this.config.childRecords1[el]);
-                Object.assign(result,this.config.childRecords2[el]);
+                result[this.config.json.obj1][this.config.json.uniqueKey.obj1] = el;
+                result[this.config.json.obj2][this.config.json.uniqueKey.obj2] = el;
+                Object.assign(result[this.config.json.obj1],this.config.childRecords1[el]);
+                Object.assign(result[this.config.json.obj2],this.config.childRecords2[el]);
                 delete this.config.childRecords2[el];
             }else{
-                Object.assign(result,this.config.childRecords1[el]);
+                Object.assign(result[this.config.json.obj1],this.config.childRecords1[el]);
             }
             this.config.childRecordsResult.push(result);
         });
         Object.keys(this.config.childRecords2).forEach((el)=>{
             result = {};
-            Object.assign(result,this.config.childRecords2[el]);
+            result[this.config.json.obj1] = {};
+            result[this.config.json.obj2] = {};
+            Object.assign(result[this.config.json.obj2],this.config.childRecords2[el]);
             this.config.childRecordsResult.push(result);
         });
         console.log('ch',this.config.childRecordsResult);
