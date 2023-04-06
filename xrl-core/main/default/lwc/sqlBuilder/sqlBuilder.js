@@ -41,29 +41,22 @@ export default class SqlBuilder extends LightningElement {
         });
         return breadCrumbStr;
     }
-    get livequery(){
-        if(this.config.sqlBuilder.selectedFields.length > 0){
-            let query = 'SELECT ';
-            this.config.sqlBuilder.selectedFields.forEach((el)=>{
-                query += el.fieldName + ', ';
-            });
-            query = query.slice(0, -2);
-            query += ' FROM ' + this.config.sObjApiName;
-            if(this.config.sqlBuilder.conditions.length > 0){
-                query += ' WHERE ';
-                query += this.generateCondition();
-            }
-            if(this.config.sqlBuilder.orderings.length > 0){
-                let str = ' ORDER BY ';
-                this.config.sqlBuilder.orderings.forEach((el)=>{
-                    str += el.field.fieldName + ' ' + el.sortOrder + ' ' +el.emptyField + ', ';
-                });
-                str = str.slice(0, -2);
-                query += str;
-            }
-            return query;
+    get livequery() {
+        const { sqlBuilder, sObjApiName } = this.config;
+      
+        if (sqlBuilder.selectedFields.length === 0) {
+          return null;
         }
-    }
+      
+        const selectedFields = sqlBuilder.selectedFields.map(({ fieldName }) => fieldName).join(", ");
+        const whereClause = sqlBuilder.conditions.length > 0 ? ` WHERE ${this.generateCondition()}` : "";
+        const orderByClause = sqlBuilder.orderings.length > 0
+          ? ` ORDER BY ${sqlBuilder.orderings.map(({ field: { fieldName }, sortOrder, emptyField }) => `${fieldName} ${sortOrder} ${emptyField}`).join(", ")}`
+          : "";
+      
+        return `SELECT ${selectedFields} FROM ${sObjApiName}${whereClause}${orderByClause}`;
+      }
+      
     dialogValues(val){
         this.config.dialog.listViewConfig.colModel = this.config.sqlBuilder.selectedFields;
         let conStr = this.generateCondition();
