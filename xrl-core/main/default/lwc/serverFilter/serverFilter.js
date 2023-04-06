@@ -16,6 +16,7 @@ export default class ServerFilter extends LightningElement {
     @track isModalOpen = false;
     @track count;
     @track countStyle;
+    _libs = libs;
     connectedCallback(){
         this.config = libs.getGlobalVar(this.cfg);        
         this.config.listViewConfig.forEach((el)=>{
@@ -43,7 +44,7 @@ export default class ServerFilter extends LightningElement {
         if (!this.config.fields) {            
             this.config.fields = this.filterJson.additionalFields ? [...this.selectedFields, ...this.filterJson.additionalFields] : this.selectedFields;
         }
-        if (this.filterJson.fetchOnInit) this.fetchRecords();
+        if (this.filterJson.applyOnInit) setTimeout(() => { this.applyFilter() }, 100);
     }
     getColItem(colName) {
 		return this.sFilterfields.find(e => {
@@ -81,7 +82,7 @@ export default class ServerFilter extends LightningElement {
                 this.conditionMap[element.fieldName] = val;
                 element.value = val;
             }
-            else element.value = element.multiselect ? (element.options.find(opt => opt.name === 'All') ? ['All'] : []) : '';
+            else element.value = element.multiselect ? (element.options?.find(opt => opt.name === 'All') ? ['All'] : []) : '';
         });
     }
     async referenceOperations(element) {
@@ -125,27 +126,12 @@ export default class ServerFilter extends LightningElement {
             this.conditionMap[apiName] = event.target.value;
         }
     }
-    fetchRecords(){
-        this.config.records = undefined;
-        libs.remoteAction(this, 'query', {
-			isNeedDescribe: true,
-			sObjApiName: this.config.sObjApiName,
-			relField: this.config.relField === 'Id' ? '' : this.config.relField,
-			addCondition: this.generateCondition(),
-			fields: this.config.fields,
-			listViewName: this.config?.listView?.name,
-			callback: ((nodeName, data) => {  
-				libs.getGlobalVar(this.cfg).records = data[nodeName].records.length > 0 ? data[nodeName].records : undefined;
-                this.config.records = libs.getGlobalVar(this.cfg).records;
-				libs.getGlobalVar(this.cfg).state = this.conditionMap;
-                const selectedEvent = new CustomEvent('message', { detail: {cmd:'filter:refresh',value:'refresh',source:this.cfg} });
-                this.dispatchEvent(selectedEvent);
-                if (this.filterJson.showCount) {
-                    this.count = this.config.records?.length;
-                    this.countStyle = this.filterJson.countStyle;
-                }
-			})
-		});
+    applyFilter() {
+        this.config.condition = this.generateCondition();
+        this.config.state = this.conditionMap;
+        this.dispatchEvent(new CustomEvent('message', {
+            detail: { cmd: 'filter:refresh', source: this.cfg }
+        }));
     }
     generateCondition(){
         let condition = '';
@@ -153,7 +139,7 @@ export default class ServerFilter extends LightningElement {
         for (let key in this.conditionMap) {
             let colItem = this.getColItem(key);
             if (colItem.virtual) {
-                if (colItem.searchCallback && typeof colItem.searchCallback === 'function') condition += colItem.searchCallback(this.conditionMap[key], this.conditionMap);
+                if (colItem.searchCallback && typeof colItem.searchCallback === 'function') condition += colItem.searchCallback(this, this.conditionMap[key], this.conditionMap);
                 continue;
             }
             if (typeof this.conditionMap[key] === 'object' && JSON.parse(JSON.stringify(this.conditionMap[key])).length > 1 && colItem.type !== 'daterange') {

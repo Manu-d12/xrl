@@ -143,13 +143,17 @@ global with sharing class infrastructure {
 		system.debug(LoggingLevel.Error, 'SOQL ' + SOQL);
 
 		result.put('SOQL', SOQL);
-
+		system.debug('Heap size is ' + limits.getHeapSize() + ' enforced is ' + limits.getLimitHeapSize());
 		sObject[] records = database.query(SOQL);
-
+		system.debug('Heap size is ' + limits.getHeapSize() + ' enforced is ' + limits.getLimitHeapSize());
+		/*
 		SObjectAccessDecision decision = Security.stripInaccessible(AccessType.READABLE, records);
-
 		// Throw an exception if any data was stripped
 		if (!decision.getModifiedIndexes().isEmpty()) {
+			throw new InfrastructureException(null,'Data was stripped', Infrastructure.exceptionType.GENERAL);
+		}
+		*/
+		if (!Security.stripInaccessible(AccessType.READABLE, records).getModifiedIndexes().isEmpty()) {
 			throw new InfrastructureException(null,'Data was stripped', Infrastructure.exceptionType.GENERAL);
 		}
 

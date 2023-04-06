@@ -7,12 +7,12 @@ import { utils } from './utils';
 export default class ChartJS extends LightningElement {
 
     @api get cfg() {
-        return JSON.stringify(this._config);
+        return JSON.stringify(this.config);
     }
     set cfg(v) {
         try {
-            this._config = this.parseConfig(v);
-            if (this._isRendered) this.drawChart();
+            this.config = this.parseConfig(v);
+            if (this.isRendered) this.drawChart();
         } catch (e) {
             console.log('Failed to parse config', e);
         }
@@ -25,8 +25,8 @@ export default class ChartJS extends LightningElement {
         try {
             this._name = v;
             let conf = libs.getGlobalVar(v);
-            this._config = this.parseConfig(conf.chartConfig);
-            if (this._isRendered) this.drawChart();
+            this.config = this.parseConfig(conf.chartConfig);
+            if (this.isRendered) this.drawChart();
         } catch (e) {
             console.log('Failed to parse config', e);
         }
@@ -48,49 +48,64 @@ export default class ChartJS extends LightningElement {
     }
 
     @track count;
+    config;
     _name;
     _chart;
-    _config;
-    _isRendered;
-    _state;
+    isRendered;
 
-    renderedCallback() {
+    connectedCallback() {
         Promise.all([
             loadScript(this, chartjs + '/chart.js'),
             loadStyle(this, chartjs + '/chart.css')
         ]).then(() => {
-            console.log('script loaded');
-            if (this._config) this.drawChart();
+            if (this.config && this.config.drawOnInit && this.isRendered) this.drawChart();
         });
-        this._isRendered = true;
+        window.libs = libs;
         window.utils = utils;
+    }
+
+    renderedCallback() {       
+        this.isRendered = true;
     }
 
     drawChart() {
         if (this._chart) {
-            this._chart.update(this._config.chart);
+            this._chart.update(this.config.chart);
         } else {
             let ctx = this.template.querySelector('canvas.chart').getContext('2d');
-            this._chart = new window.Chart(ctx, this._config.chart);
+            this._chart = new window.Chart(ctx, this.config.chart);
         }
     }
 
     @api handleEventMessage(event) {
-        let data = libs.getGlobalVar(event.detail.source).records || [];
-        if (this._config.onDataLoad && typeof this._config.onDataLoad === 'function') {
-            let records = this._config.onDataLoad(this._config, data) || [];
-            if (this._name) {
-                libs.getGlobalVar(this._name).records = records;
-            }
-            this.updateChart();
-        }
-        let state = libs.getGlobalVar(event.detail.source).state;
-        utils.state[event.detail.source] = state;
-        this.count = this._config.count;
+
+        let sourceConf = libs.getGlobalVar(event.detail.source);
+        let sourceCause = sourceConf.condition;
+        let chartCause = this.config.whereCause ? (typeof this.config.whereCause === 'function' ? this.config.whereCause(this, sourceConf) : this.config.whereCause) : '';
+        utils.source = event.detail.source;
+
+        libs.remoteAction(this, 'query', {
+            isNeedDescribe: true,
+            sObjApiName: sourceConf.sObjApiName,
+            relField: sourceConf.relField === 'Id' ? '' : sourceConf.relField,
+            addCondition: sourceCause && chartCause ? sourceCause + ' AND ' + chartCause : sourceCause + chartCause,
+            fields: this.config.fields ? Array.from(new Set(sourceConf.fields).add(...this.config.fields)) : sourceConf.fields,
+            callback: ((nodeName, data) => {
+                let records = data[nodeName].records.length > 0 ? data[nodeName].records : [];
+                if (this.config.onDataLoad && typeof this.config.onDataLoad === 'function') {
+                    records = this.config.onDataLoad(this, records) || [];
+                    if (this._name) {
+                        libs.getGlobalVar(this._name).records = records;
+                    }
+                    this.drawChart();
+                }
+                this.count = this.config.count;
+            })
+        });
     }
     
     @api updateChart() {
-        this._chart.update(this._config.chart);
+        this._chart.update(this.config.chart);
     }
 
     @api resetChart() {
@@ -98,7 +113,7 @@ export default class ChartJS extends LightningElement {
     }
 
     @api renderChart() {
-        this._chart.render(this._config.chart);
+        this._chart.render(this.config.chart);
     }
 
     @api destroyChart() {
@@ -115,7 +130,7 @@ export default class ChartJS extends LightningElement {
 
     viewData() {
         this.dispatchEvent(new CustomEvent('message', {
-            detail: { cmd: 'chart:refresh', value: 'refresh', source: this._name, title: this._config.dataTitle }
+            detail: { cmd: 'chart:refresh', value: 'refresh', source: this._name, title: this.config.dataTitle }
         }));
     }
     

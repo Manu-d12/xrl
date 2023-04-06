@@ -1117,12 +1117,36 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 
 	@api
-	handleEventMessage(event){
-		if(event.detail.cmd.split(':')[1] === 'refresh') {
-			libs.getGlobalVar(this.cfg).records = libs.getGlobalVar(event.detail.source).records || [];
+	handleEventMessage(event) {
+		
+		if(event.detail.cmd.split(':')[1] === 'refresh' && event.detail.cmd.split(':')[0] === 'filter') {
+
+			let sourceConf = libs.getGlobalVar(event.detail.source);
+			libs.remoteAction(this, 'query', {
+				isNeedDescribe: true,
+				sObjApiName: sourceConf.sObjApiName,
+				relField: sourceConf.relField === 'Id' ? '' : sourceConf.relField,
+				addCondition: sourceConf.condition,
+				fields: sourceConf.fields,
+				listViewName: sourceConf.listView?.name,
+				callback: ((nodeName, data) => {  
+					libs.getGlobalVar(this.cfg).records = data[nodeName].records.length > 0 ? data[nodeName].records : [];
+					this.config.records = libs.getGlobalVar(this.cfg).records;
+
+					this.connectedCallback();
+				})
+			});
+			this.title = '';		
+
+		} else if(event.detail.cmd.split(':')[1] === 'refresh' && event.detail.cmd.split(':')[0] === 'chart') {
+
 			this.title = event.detail.title ? event.detail.title + ' - ' : '';
-			this.connectedCallback();
+			libs.getGlobalVar(this.cfg).records = libs.getGlobalVar(event.detail.source).records;
+			this.config.records = libs.getGlobalVar(this.cfg).records;
+			this.connectedCallback();		
+
 		} else if(event.detail.cmd.split(':')[1] === 'updateFields') {
+
 			this.additionalFields = [];
 			event.detail.fields.forEach(f => {
 				let field = {					
