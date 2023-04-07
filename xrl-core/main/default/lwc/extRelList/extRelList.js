@@ -368,10 +368,10 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				let action = this.config.listViewConfig[0].actions.find((el)=>{
 					return el.actionId == 'std:refresh';
 				});
-				this.loadCfg(false);
 				const tempParam = {}; // parameter for the refresh action callback
 				tempParam.action = action;
-				tempParam.selectedRecords = this.template.querySelector('c-Data-Table').getSelectedRecords(); // getting the records here as the c/dataTable component is not yet loaded when called from the handler 
+				tempParam.selectedRecords = this.template.querySelector('c-Data-Table')?.getSelectedRecords(); // getting the records here as the c/dataTable component is not yet loaded when called from the handler 
+				this.loadCfg(false);
 				this.handleStandardCallback('std:refresh', tempParam);
 			}else{
 				const eventErr = new ShowToastEvent({
