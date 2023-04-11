@@ -10,7 +10,7 @@
     </targets>
     <targetConfigs>
         <targetConfig targets="lightning__RecordPage,lightning__HomePage">
-            <property name="apiName" type="String" label="Select a Config" description="Select a Config" datasource="apex://getConfigs"/>
+            <property name="apiName" type="String" label="Select a Config" description="Select a Config" datasource="apex://getComparisonConfigs"/>
             <property name="leftRecord" type="String" label="Select Record for Left" description="Select Record for Left"/>
             <property name="rightRecord" type="String" label="Select Record for Right" description="Select Record for Right"/>
         </targetConfig>

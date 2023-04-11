@@ -1,6 +1,6 @@
-global with sharing class getConfigs extends VisualEditor.DynamicPickList{
+global with sharing class getComparisonConfigs extends VisualEditor.DynamicPickList{
     VisualEditor.DesignTimePageContext context;
-    global getConfigs(VisualEditor.DesignTimePageContext context) {
+    global getComparisonConfigs(VisualEditor.DesignTimePageContext context) {
         this.context = context;
     }
     global override VisualEditor.DataRow getDefaultValue() {
@@ -9,7 +9,7 @@ global with sharing class getConfigs extends VisualEditor.DynamicPickList{
   }
     global override VisualEditor.DynamicPickListRows getValues() {
     List<extRelListConfig__c> allConfigs = [SELECT Id,name,sObjApiName__c,listViewLabel__c,ConfigType__c
-        FROM extRelListConfig__c];
+        FROM extRelListConfig__c WHERE ConfigType__c = 'Comparison'];
     VisualEditor.DynamicPickListRows picklistValues = new VisualEditor.DynamicPickListRows();
     for (extRelListConfig__c configs: allConfigs) {
       picklistValues.addRow(
