@@ -276,14 +276,14 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			this.config.colModel.push(add);
 		});
 		this.config.colModel.forEach(item => {
-			if (item.formatter !== undefined) {
+			if (item.formatter !== undefined && item.formatter!=="") {
 				try {
 					item._formatter = eval('(' + item.formatter + ')');
 				} catch (e) {
 					console.log('EXCEPTION', e);
 				}
 			}
-			if (item.uStyle !== undefined) {
+			if (item.uStyle !== undefined && item.uStyle!== "") {
 				try {
 					item._uStyle = eval('(' + item.uStyle + ')');
 				} catch (e) {
