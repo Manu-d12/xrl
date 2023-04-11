@@ -658,6 +658,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 	async saveRecords(chunk){
 		try{
+			//[DR] in case of saving custom settings need delete all nested attributes inside records, otherwise we will get EXCEPTION "Cannot deserialize instance of <unknown> from null value null or request may be missing a required field"
 			await libs.remoteAction(this, 'saveRecords', { records: chunk, 
 				sObjApiName: this.config.sObjApiName,
 				rollback:this.config.listViewConfig[0].rollBack ? this.config.listViewConfig[0].rollBack : false,
