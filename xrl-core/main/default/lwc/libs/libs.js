@@ -424,6 +424,14 @@ export let libs = {
 	},
 	help : function(index, params) {
 		// Need to open a new tab and redirect user to specific article
+		const baseUrl = 'https://help.hypercomps.com/';
+		switch(index.split(':')[1]){
+			case 'extRelList':
+				window.open(baseUrl, "_blank");
+				break;
+			default:
+				window.open(baseUrl, "_blank");
+		}
 		return 'in test';
 	},
 	standardActions: function(){
