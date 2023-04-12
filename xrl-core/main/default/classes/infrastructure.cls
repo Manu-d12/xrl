@@ -118,6 +118,7 @@ global with sharing class infrastructure {
 				Schema.DescribeFieldResult tmp = fieldsMap.get(fItem).getDescribe();
 				describeResult.put(tmp.getName(), tmp);
 			}
+			result.put('describeSObject',JSON.serialize(Schema.getGlobalDescribe().get(sObjApiName).getDescribe()));
 			result.put('describe', JSON.serialize(describeResult));
 		}
 
@@ -177,6 +178,7 @@ global with sharing class infrastructure {
 				Schema.DescribeFieldResult tmp = fieldsMap.get(fItem).getDescribe();
 				describeResult.put(tmp.getName(), tmp);
 			}
+			result.put('describeSObject',JSON.serialize(Schema.getGlobalDescribe().get(sObjApiName).getDescribe()));
 			result.put('describe', JSON.serialize(describeResult));
 		}
 
@@ -234,6 +236,7 @@ global with sharing class infrastructure {
 				Schema.DescribeFieldResult tmp = fieldsMap.get(fItem).getDescribe();
 				describeResult.put(tmp.getName(), tmp);
 			}
+			result.put('describeSObject',JSON.serialize(Schema.getGlobalDescribe().get(sObjApiName).getDescribe()));
 			result.put('describe', JSON.serialize(describeResult));
 		}
 		result.put('currency', new map < string, object > {
@@ -280,6 +283,7 @@ global with sharing class infrastructure {
 				Schema.DescribeFieldResult tmp = fieldsMap.get(fItem).getDescribe();
 				describeResult.put(tmp.getName(), tmp);
 			}
+			result.put('describeSObject',JSON.serialize(Schema.getGlobalDescribe().get(sObjApiName).getDescribe()));
 			result.put('describe', JSON.serialize(describeResult));
 		}
 
@@ -324,6 +328,7 @@ global with sharing class infrastructure {
 				Schema.DescribeFieldResult tmp = fieldsMap.get(fItem).getDescribe();
 				describeResult.put(tmp.getName(), tmp);
 			}
+			result.put('describeSObject',JSON.serialize(Schema.getGlobalDescribe().get(sObjApiName).getDescribe()));
 			result.put('describe', JSON.serialize(describeResult));
 		}
 
