@@ -80,6 +80,8 @@ global with sharing class infrastructure {
 		System.debug(publicGroups);
 
 		result.put('userInfo', new map < string, object > {
+			'id'=> userinfo.getUserId(),
+			'name'=> userDetails.Name,
 			'timezone'=>UserInfo.getTimeZone().getID(),
 			'locale' => userInfo.getLocale().replaceAll('_', '-').replace('-EURO', ''),
 			'isAdminAccess' => isAdminAccess,
