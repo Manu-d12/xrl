@@ -251,7 +251,6 @@ global with sharing class infrastructure {
 	private static map < string, object > getConfigById(map < string, object > data) {
 		string configId = (string) data.get('configId');
 		string sObjApiName = (string) data.get('sObjApiName');
-		string currentRecordId = (string) data.get('currentRecordId');
 		boolean isNeedDescribe = true;
 
 		map < string, object > result = new map < string, object > {};
