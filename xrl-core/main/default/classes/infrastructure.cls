@@ -113,16 +113,7 @@ global with sharing class infrastructure {
 
 		if (string.isBlank(addCondition)) addCondition = '';
 
-		if (isNeedDescribe == true) {
-			map < string, Schema.DescribeFieldResult > describeResult = new map < string, Schema.DescribeFieldResult > ();
-			map < String, Schema.SObjectField > fieldsMap = Schema.getGlobalDescribe().get(sObjApiName).getDescribe().fields.getMap();
-			for (string fItem: fieldsMap.keySet()) {
-				Schema.DescribeFieldResult tmp = fieldsMap.get(fItem).getDescribe();
-				describeResult.put(tmp.getName(), tmp);
-			}
-			result.put('describeSObject',JSON.serialize(Schema.getGlobalDescribe().get(sObjApiName).getDescribe()));
-			result.put('describe', JSON.serialize(describeResult));
-		}
+		result.putAll(getDescribeData(isNeedDescribe,sObjApiName));
 
 		if (UserInfo.isMultiCurrencyOrganization() && !sObjApiName.contains('History')) {
 			System.debug('Multi Currency');
@@ -173,16 +164,7 @@ global with sharing class infrastructure {
 		map < string, object > result = new map < string, object > ();
 		result.put('SOQL', SOQL);
 
-		if (isNeedDescribe == true && sObjApiName != null) {
-			map < string, Schema.DescribeFieldResult > describeResult = new map < string, Schema.DescribeFieldResult > ();
-			map < String, Schema.SObjectField > fieldsMap = Schema.getGlobalDescribe().get(sObjApiName).getDescribe().fields.getMap();
-			for (string fItem: fieldsMap.keySet()) {
-				Schema.DescribeFieldResult tmp = fieldsMap.get(fItem).getDescribe();
-				describeResult.put(tmp.getName(), tmp);
-			}
-			result.put('describeSObject',JSON.serialize(Schema.getGlobalDescribe().get(sObjApiName).getDescribe()));
-			result.put('describe', JSON.serialize(describeResult));
-		}
+		result.putAll(getDescribeData(isNeedDescribe,sObjApiName));
 
 		sObject[] records = database.query(SOQL);
 		SObjectAccessDecision decision = Security.stripInaccessible(AccessType.READABLE, records);
@@ -225,29 +207,13 @@ global with sharing class infrastructure {
 			if (item.isAdminConfig__c) result.put('baseConfig', item.JSON__c);
 			listViews.add(view);
 		}
+		result.putAll(getOtherConfigInfo(isNeedDescribe,sObjApiName));
 		Map<Id, UserRecordAccess> extRecordAccess = new Map<Id, UserRecordAccess>([SELECT RecordId, HasEditAccess FROM UserRecordAccess WHERE UserId = :UserInfo.getUserId() AND RecordId IN :extIds]);
 		for(map < string, object > singleView : listViews){
 			singleView.put('hasEditAccess', (extRecordAccess.get((string) singleView.get('id'))).get('HasEditAccess'));
 		}
 		result.put('listViews', listViews);
-
-		if (isNeedDescribe == true) {
-			map < string, Schema.DescribeFieldResult > describeResult = new map < string, Schema.DescribeFieldResult > ();
-			map < String, Schema.SObjectField > fieldsMap = Schema.getGlobalDescribe().get(sObjApiName).getDescribe().fields.getMap();
-			for (string fItem: fieldsMap.keySet()) {
-				Schema.DescribeFieldResult tmp = fieldsMap.get(fItem).getDescribe();
-				describeResult.put(tmp.getName(), tmp);
-			}
-			result.put('describeSObject',JSON.serialize(Schema.getGlobalDescribe().get(sObjApiName).getDescribe()));
-			result.put('describe', JSON.serialize(describeResult));
-		}
-		result.put('currency', new map < string, object > {
-			'orgCurrency' => UserInfo.getDefaultCurrency(),
-			'isMultyCurrencyOrg' => UserInfo.isMultiCurrencyOrganization()
-		});
-
 		result.put('iconMap', retrieveIconForObject(sObjApiName));
-		result.put('Financial', getFiscalData());
 
 		return result;
 	}
@@ -277,23 +243,7 @@ global with sharing class infrastructure {
 			listViews.add(view);
 		}
 		result.put('listViews', listViews);
-
-		if (isNeedDescribe == true && sObjApiName != null) {
-			map < string, Schema.DescribeFieldResult > describeResult = new map < string, Schema.DescribeFieldResult > ();
-			map < String, Schema.SObjectField > fieldsMap = Schema.getGlobalDescribe().get(sObjApiName).getDescribe().fields.getMap();
-			for (string fItem: fieldsMap.keySet()) {
-				Schema.DescribeFieldResult tmp = fieldsMap.get(fItem).getDescribe();
-				describeResult.put(tmp.getName(), tmp);
-			}
-			result.put('describeSObject',JSON.serialize(Schema.getGlobalDescribe().get(sObjApiName).getDescribe()));
-			result.put('describe', JSON.serialize(describeResult));
-		}
-
-		result.put('currency', new map < string, object > {
-			'orgCurrency' => UserInfo.getDefaultCurrency(),
-			'isMultyCurrencyOrg' => UserInfo.isMultiCurrencyOrganization()
-		});
-		result.put('Financial', getFiscalData());
+		result.putAll(getOtherConfigInfo(isNeedDescribe,sObjApiName));
 
 		return result;
 	}
@@ -323,6 +273,22 @@ global with sharing class infrastructure {
 			listViews.add(view);
 		}
 		result.put('listViews', listViews);
+		result.putAll(getOtherConfigInfo(isNeedDescribe,sObjApiName));
+
+		return result;
+	}
+	private static Map<String,Object> getOtherConfigInfo(Boolean isNeedDescribe ,String sObjApiName){
+		Map<String,Object> result = new Map<String,Object>();
+		result.putAll(getDescribeData(isNeedDescribe, sObjApiName));
+		result.put('currency', new map < string, object > {
+			'orgCurrency' => UserInfo.getDefaultCurrency(),
+			'isMultyCurrencyOrg' => UserInfo.isMultiCurrencyOrganization()
+		});
+		result.put('Financial', getFiscalData());
+		return result;
+	}
+	private static Map<String,Object> getDescribeData(Boolean isNeedDescribe ,String sObjApiName) {
+		Map<String,Object> result = new Map<String,Object>();
 		if (isNeedDescribe == true && sObjApiName != null) {
 			map < string, Schema.DescribeFieldResult > describeResult = new map < string, Schema.DescribeFieldResult > ();
 			map < String, Schema.SObjectField > fieldsMap = Schema.getGlobalDescribe().get(sObjApiName).getDescribe().fields.getMap();
@@ -333,13 +299,6 @@ global with sharing class infrastructure {
 			result.put('describeSObject',JSON.serialize(Schema.getGlobalDescribe().get(sObjApiName).getDescribe()));
 			result.put('describe', JSON.serialize(describeResult));
 		}
-
-		result.put('currency', new map < string, object > {
-			'orgCurrency' => UserInfo.getDefaultCurrency(),
-			'isMultyCurrencyOrg' => UserInfo.isMultiCurrencyOrganization()
-		});
-		result.put('Financial', getFiscalData());
-
 		return result;
 	}
 	private static object deleteConfig(map < string, object > data) {
