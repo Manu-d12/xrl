@@ -9,7 +9,7 @@ global with sharing class getConfigs extends VisualEditor.DynamicPickList{
   }
     global override VisualEditor.DynamicPickListRows getValues() {
     List<extRelListConfig__c> allConfigs = [SELECT Id,name,sObjApiName__c,listViewLabel__c,ConfigType__c
-        FROM extRelListConfig__c];
+        FROM XRL__extRelListConfig__c];
     VisualEditor.DynamicPickListRows picklistValues = new VisualEditor.DynamicPickListRows();
     for (extRelListConfig__c configs: allConfigs) {
       picklistValues.addRow(

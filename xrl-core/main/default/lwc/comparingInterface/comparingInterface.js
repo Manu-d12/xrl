@@ -252,8 +252,8 @@ export default class ComparingInterface extends LightningElement {
         let childRecordsResult = [];
         Object.keys(childRecords1).forEach((el)=>{
             result = {};
-            result[this.config.json.obj1] = {};
-            result[this.config.json.obj2] = {};
+            result[this.config.json.childApiNames.obj1] = {};
+            result[this.config.json.childApiNames.obj2] = {};
             if(childRecords2[el]){
                 result[this.config.json.childApiNames.obj1][this.config.json.uniqueKey.obj1] = el;
                 result[this.config.json.childApiNames.obj2][this.config.json.uniqueKey.obj2] = el;
@@ -267,8 +267,8 @@ export default class ComparingInterface extends LightningElement {
         });
         Object.keys(childRecords2).forEach((el)=>{
             result = {};
-            result[this.config.json.obj1] = {};
-            result[this.config.json.obj2] = {};
+            result[this.config.json.childApiNames.obj1] = {};
+            result[this.config.json.childApiNames.obj2] = {};
             Object.assign(result[this.config.json.childApiNames.obj2],childRecords2[el]);
             childRecordsResult.push(result);
         });
