@@ -657,10 +657,13 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 		this.resetChangedRecords(validatedRecords.length);
 	}
-	async saveRecords(chunk){
+	async saveRecords(chunkIn){
 		try{
 			//[DR] in case of saving custom settings need delete all nested attributes inside records, otherwise we will get EXCEPTION "Cannot deserialize instance of <unknown> from null value null or request may be missing a required field"
-			chunk = JSON.parse(JSON.stringify(chunk, (key, value) => {return typeof(value) === 'object' && key!=="" ? null : value;}));
+			let chunk = [];
+			chunkIn.forEach((item) =>{
+				chunk.push(JSON.parse(JSON.stringify(item, (key, value) => {return typeof(value) === 'object' && key!=="" ? null : value;})))
+			});
 			await libs.remoteAction(this, 'saveRecords', { records: chunk, 
 				sObjApiName: this.config.sObjApiName,
 				rollback:this.config.listViewConfig[0].rollBack ? this.config.listViewConfig[0].rollBack : false,
