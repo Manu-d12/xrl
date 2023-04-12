@@ -105,6 +105,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		libs.getGlobalVar(this.name).userInfo = data.userInfo;
 		libs.getGlobalVar(this.name).financial = data[cmd].Financial;
 		this.config.describe = data[cmd].describe ? JSON.parse(data[cmd].describe) : {};
+		this.config.describeObject = data[cmd].describeSObject ? JSON.parse(data[cmd].describeSObject) : {};
 		libs.getGlobalVar(this.name).iconName = data[cmd].iconMap.iconURL;
 		libs.getGlobalVar(this.name).iconStyle = data[cmd].iconMap.iconURL.includes('img/icon') ? 'width:32px;height:32px;background-color: #d8c760;margin: 10px;'
 		 : 'width:32px;height:32px;margin: 10px;';
@@ -659,6 +660,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	async saveRecords(chunk){
 		try{
 			//[DR] in case of saving custom settings need delete all nested attributes inside records, otherwise we will get EXCEPTION "Cannot deserialize instance of <unknown> from null value null or request may be missing a required field"
+			chunk = JSON.parse(JSON.stringify(chunk, (key, value) => {return typeof(value) === 'object' && key!=="" ? null : value;}));
 			await libs.remoteAction(this, 'saveRecords', { records: chunk, 
 				sObjApiName: this.config.sObjApiName,
 				rollback:this.config.listViewConfig[0].rollBack ? this.config.listViewConfig[0].rollBack : false,
