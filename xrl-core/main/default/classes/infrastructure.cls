@@ -859,14 +859,15 @@ global with sharing class infrastructure {
 		return iconPropertyMap;
 	}
 
-	private static List < String > objectList() {
+	private static Map<String,String> objectList() {
 		Map < String, Schema.SObjectType > gd = Schema.getGlobalDescribe();
 
-		List < String > objs = new List < String > ();
+		Map<String,String>  objs = new Map<String,String> ();
 
 		for (Schema.SObjectType thisObj: gd.values()) {
-			if (thisObj.getDescribe().isQueryable()) {
-				objs.add(String.valueOf(thisObj));
+			Schema.DescribeSObjectResult objResult = thisObj.getDescribe();
+			if (objResult.isQueryable()) {
+				objs.put(String.valueOf(objResult.getName()),objResult.getLabel());
 			}
 		}
 		return objs;
