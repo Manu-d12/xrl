@@ -58,8 +58,7 @@ export default class extRelListSettings extends LightningElement {
 
 		for (let item in tmp) {
 			if(this.config.isHistoryGrid && tmp[item].isReadOnly) continue;
-			if(fieldParams.fieldName.includes('.') && item === 'isEditable') continue;
-			if(!fieldParams.updateable && item === 'isEditable') continue;
+			if((!fieldParams.updateable || fieldParams.fieldName.includes('.')) && item === 'isEditable') continue;
 			let defValue = (item === 'fieldName') 
 				? this.config.dialog.field 
 				: fieldParams[item] === undefined
