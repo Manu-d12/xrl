@@ -333,16 +333,16 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			if (rowName !== undefined) {
 				this.config._inlineEditRow = JSON.parse(JSON.stringify(this.records[this.config._inlineEdit]));
 				let cItem = this.getColItem(rowName);
-				if(rowName.includes('.') && cItem._editOptions){
-					this.config._inlineEditRow[rowName.split('.')[0]+'Id'] = value;
+				if(cItem.type === 'reference' && cItem._editOptions){
+					this.config._inlineEditRow[cItem.fieldName] = value;
 					let newVal = cItem._editOptions.find((el)=>{
 						return el.value === value;
 					});
-					if(this.config._inlineEditRow[rowName.split('.')[0]]){
-						this.config._inlineEditRow[rowName.split('.')[0]].Id = newVal.value;
-						this.config._inlineEditRow[rowName.split('.')[0]].Name = newVal.label;
+					if(this.config._inlineEditRow[cItem.referenceTo]){
+						this.config._inlineEditRow[cItem.referenceTo].Id = newVal.value;
+						this.config._inlineEditRow[cItem.referenceTo].Name = newVal.label;
 					}else{
-						this.config._inlineEditRow[rowName.split('.')[0]] ={
+						this.config._inlineEditRow[cItem.referenceTo] ={
 							Id: newVal.value,
 							Name: newVal.label
 						};
