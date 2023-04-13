@@ -28,7 +28,7 @@ export default class ActionBar extends LightningElement {
                 this.actionscfg._handleEvent(event);
             }else if(actionDetails.actionCallBack != undefined){
                 //Callback execution
-                let fn = eval('(' + actionDetails.actionCallBack + ')')(this.config.dataTable._selectedRecords());
+                let fn = eval('(' + actionDetails.actionCallBack + ')')(this.config.dataTable._selectedRecords(), this, libs);
             }else{
                 console.log('No Action Configured');
                 const eventErr = new ShowToastEvent({

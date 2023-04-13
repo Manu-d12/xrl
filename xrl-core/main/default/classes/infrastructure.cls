@@ -103,6 +103,7 @@ global with sharing class infrastructure {
 		string limitCondition = (string) data.get('limit');
 		string listViewName = (string) data.get('listViewName');
 		string SQL = (string) data.get('SQL');
+		boolean isCreateble = Schema.getGlobalDescribe().get(sObjApiName).getDescribe().isCreateable();
 
 		boolean isNeedDescribe = (boolean) data.get('isNeedDescribe') == true;
 		set < string > fields = (set < string > ) JSON.deserialize(JSON.serialize(data.get('fields')), set < string > .class);
@@ -115,7 +116,7 @@ global with sharing class infrastructure {
 
 		result.putAll(getDescribeData(isNeedDescribe,sObjApiName));
 
-		if (UserInfo.isMultiCurrencyOrganization() && !sObjApiName.contains('History')) {
+		if (UserInfo.isMultiCurrencyOrganization() && isCreateble) {
 			System.debug('Multi Currency');
 			soqlFields.add('CurrencyIsoCode');
 		}
