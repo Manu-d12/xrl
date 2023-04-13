@@ -6,8 +6,8 @@
                 <template if:true={config.dataTable.rowChecked}>
                     <lightning-button-icon if:true={action.actionIconName} key={action.actionId} icon-name={action.actionIconName} 
                     id={action.actionId} data-id={action.actionId} title={action.actionTip} 
-                    onclick={handleEventClick} class="slds-m-left_x-small"></lightning-button-icon>
-                    <lightning-button if:false={action.actionIconName} key={action.actionId} variant="brand" 
+                    onclick={handleEventClick} class="slds-m-left_x-small" variant={action.actionVariant}></lightning-button-icon>
+                    <lightning-button if:false={action.actionIconName} key={action.actionId} variant={action.actionVariant}
                     id={action.actionId} data-id={action.actionId} label={action.actionLabel} title={action.actionTip} 
                     onclick={handleEventClick} class="slds-m-left_x-small"></lightning-button>
                 </template>
@@ -15,8 +15,8 @@
             <template if:false={action.actionVisibleOnRecordSelection}>
                 <lightning-button-icon if:true={action.actionIconName} key={action.actionId} icon-name={action.actionIconName} 
                 id={action.actionId} data-id={action.actionId} title={action.actionTip} 
-                onclick={handleEventClick} class="slds-m-left_x-small"></lightning-button-icon>
-                <lightning-button if:false={action.actionIconName} key={action.actionId} variant="brand" 
+                onclick={handleEventClick} class="slds-m-left_x-small" variant={action.actionVariant}></lightning-button-icon>
+                <lightning-button if:false={action.actionIconName} key={action.actionId} variant={action.actionVariant}
                 id={action.actionId} data-id={action.actionId} label={action.actionLabel} title={action.actionTip} 
                 onclick={handleEventClick} class="slds-m-left_x-small"></lightning-button>
             </template>
