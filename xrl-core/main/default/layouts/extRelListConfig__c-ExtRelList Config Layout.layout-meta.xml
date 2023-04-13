@@ -20,7 +20,7 @@
                 <field>listViewLabel__c</field>
             </layoutItems>
             <layoutItems>
-                <behavior>Required</behavior>
+                <behavior>Edit</behavior>
                 <field>relFieldApiName__c</field>
             </layoutItems>
             <layoutItems>
