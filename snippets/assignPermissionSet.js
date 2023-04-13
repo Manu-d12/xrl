@@ -7,10 +7,10 @@ insert psa;
 Custom Action implementation
 
 function(lst, scope, libs) {
-    let prmSetId = '0PS5G000002bMxC'; // PermissionSetId, Of course we can assign more than 1 PermissionSet to same user
+    let prmSetId = '0PS5G000002bMxC';
     let prmSet = [];
     lst.forEach((i) => {
-        if (!i.SetupOwnerId.startsWith('005')) return; // Check that Custom Setting related to User and not to Profile or OrgId
+        if (!i.SetupOwnerId.startsWith('005')) return;
         prmSet.push({
             PermissionSetId: prmSetId,
             AssigneeId: i.SetupOwnerId
@@ -19,6 +19,14 @@ function(lst, scope, libs) {
     libs.remoteAction(scope, 'saveRecords', {
         records: prmSet,
         sObjApiName: 'PermissionSetAssignment',
-        isInsert: true
+        isInsert: true,
+        callback: function(resultCmd, result) {
+            libs.showToast(scope,{
+                title : "BINGO",
+                message : "Updated records - " + result[resultCmd].length,
+                variant : "success",
+                mode : "sticky"
+             })
+        }
     });
 }

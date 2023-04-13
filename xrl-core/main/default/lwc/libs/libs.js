@@ -422,6 +422,10 @@ export let libs = {
 			}
 		})
 	},
+	showToast : function(scope, params) {
+		const event = new ShowToastEvent(params);
+		scope.dispatchEvent(event);
+	},
 	help : function(index, params) {
 		// Need to open a new tab and redirect user to specific article
 		const baseUrl = 'https://help.hypercomps.com/';
