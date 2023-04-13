@@ -386,7 +386,8 @@ global with sharing class infrastructure {
 	private static object saveRecords(map < string, object > data) {
 		//https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_Security.htm#apex_System_Security_stripInaccessible
 		string sObjApiName = (string) data.get('sObjApiName');
-		boolean isRollback = (boolean) data.get('rollback');
+		boolean isRollback = (boolean) data.get('rollback') == true;
+		boolean isInsert = (boolean) data.get('isInsert') == true;
 		Type T = type.forName('list<' + sObjApiName + '>');
 		sObject[] records = (sObject[]) JSON.deserialize(JSON.serialize(data.get('records')), T);
 		/*This part only for security review. Please don't remove
@@ -406,7 +407,7 @@ global with sharing class infrastructure {
 		// Savepoint sp = Database.setSavepoint();
 		system.debug('RollBack ' + isRollback);
  
-		List<Database.SaveResult> srs = Database.update(records, isRollback); 
+		List<Database.SaveResult> srs = (isInsert == true) ? Database.insert(records, isRollback) : Database.update(records, isRollback); 
 		for (Database.SaveResult sr : srs) {
 			if (!sr.isSuccess()) {
 				String error = '';
