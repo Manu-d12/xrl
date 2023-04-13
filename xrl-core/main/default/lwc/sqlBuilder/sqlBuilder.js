@@ -391,7 +391,7 @@ export default class SqlBuilder extends LightningElement {
                     type: describe[key].type,
                     updateable: describe[key].updateable,
                     isNameField: describe[key] && describe[key].nameField === true,
-                    referenceTo: sObjName
+                    referenceTo: describe[key].referenceTo[0],
                 };
                 fieldMap.helpText = fieldMap.fieldName +  ' (' + describe[key].type + ')'; // assigning outside to get the fieldname to be populated first
                 // the fieldname was previously used as the helptext but 
@@ -406,7 +406,7 @@ export default class SqlBuilder extends LightningElement {
                     });
                 }
 				if (describe[key].updateable || describe[key].nameField) {
-                    if (fieldMap.type === 'picklist' || fieldMap.type === 'reference' || fieldMap.type === 'multipicklist') {
+                    if (fieldMap.type === 'picklist' || fieldMap.type === 'multipicklist') {
                         fieldMap.isEditableAsPicklist = true;
                     } else if (fieldMap.type === 'boolean') {
                         fieldMap.isEditableBool = true;
@@ -427,7 +427,7 @@ export default class SqlBuilder extends LightningElement {
                         css: 'slds-item', 
                         type: describe[key].type,
                         isNameField: describe[key] && describe[key].nameField === true,
-                        referenceTo: sObjName,
+                        referenceTo: describe[key].referenceTo[0],
                     };
                     fieldMap.helpText = describe[key].relationshipName + ' (' + describe[key].referenceTo?.join(', ') + ')';
                     // I noticed that in some reference fields, there are multiple objects in the referenceTo array, so I joined all of them to the helpText

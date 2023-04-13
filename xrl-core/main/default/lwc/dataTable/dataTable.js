@@ -655,14 +655,14 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					// Need get all visible references fields and get data for thise fields
 					// let record = this.records[calculatedInd];
 					// record._focus = colName;
-					cItem.wrapClass = cItem.type === 'picklist' || cItem.type === 'multipicklist' || (cItem.fieldName.split('.')[1] && cItem.isNameField) ? 'slds-cell-wrap' : cItem.wrapClass;
+					cItem.wrapClass = cItem.type === 'picklist' || cItem.type === 'multipicklist' || (cItem.type === 'reference') ? 'slds-cell-wrap' : cItem.wrapClass;
 
-					if(cItem.fieldName.split('.')[1] && cItem.isNameField && !cItem._editOptions){
+					if(cItem.type === 'reference' && !cItem._editOptions){
 						cItem._editOptions = [];
 						await libs.remoteAction(this, 'query', {
 							fields: ['Id','Name'],
 							relField: '',
-							sObjApiName: cItem.fieldName.split('.')[0],
+							sObjApiName: cItem.referenceTo,
 							callback: ((nodeName, data) => {
 								console.log('accountRecords', data[nodeName].records.length);
 								data[nodeName].records.forEach((el)=>{
