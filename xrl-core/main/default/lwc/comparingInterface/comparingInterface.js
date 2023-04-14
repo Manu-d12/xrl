@@ -45,6 +45,7 @@ export default class ComparingInterface extends LightningElement {
     async setConfig(cmd,data){
         if(JSON.parse(data[cmd].userConfig) === undefined) return;
         libs.getGlobalVar(this.name).userInfo = data.userInfo;
+        libs.getGlobalVar(this.name).currency =  data[cmd].currency;
         libs.getGlobalVar(this.name).currentRecordId = this.recordId;
         console.log('Cn',JSON.parse(data[cmd].userConfig));
         this.config.json = JSON.parse(data[cmd].userConfig);
@@ -57,6 +58,7 @@ export default class ComparingInterface extends LightningElement {
         libs.setGlobalVar(JSON.parse(data[cmd].userConfig).dataTable.uniqueName,{
             "listViewConfig":JSON.parse(data[cmd].userConfig).dataTable.dtConfig,
             "userInfo": data.userInfo,
+            "currency": data[cmd].currency,
             "_LABELS": this.config._LABELS
         });
         this.config.obj1Fields = [];
