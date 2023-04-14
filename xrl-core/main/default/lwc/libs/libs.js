@@ -453,6 +453,16 @@ export let libs = {
 		}
 		return 'in test';
 	},
+	replaceLiteralsInStr : function(str, name){
+		let GLOBALVARS = globalVars[name];
+		const regex = /%%.*?%%/g;
+		let result = str.replace(regex, function(x){
+			let field = x.replaceAll('%','');
+			let value = libs.getLookupValue(GLOBALVARS, field);
+			return value;
+		});
+		return result;
+	},	
 	replaceLiterals : function(str,name){
 		const regex = /%.*?%/g;
 		const replacements = {

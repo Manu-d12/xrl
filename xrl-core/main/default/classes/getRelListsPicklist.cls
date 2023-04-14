@@ -48,7 +48,14 @@ global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickLi
 					}
 				}
 			}
-		}else{
+			for (Schema.SObjectType thisObj: gd.values()) {
+				if (thisObj.getDescribe().isQueryable() && String.valueOf(thisObj) !=context.entityName) {
+					picklistValues.addRow(
+						new VisualEditor.DataRow('- INDIRECT ' + String.valueOf(thisObj), String.valueOf(thisObj) + '::' + String.valueOf(thisObj) + '::')
+					);
+				}
+			}
+		}  else {
 			for (Schema.SObjectType thisObj: gd.values()) {
 				if (thisObj.getDescribe().isQueryable()) {
 					picklistValues.addRow(
