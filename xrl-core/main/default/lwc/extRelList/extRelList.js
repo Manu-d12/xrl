@@ -104,6 +104,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		console.log(cmd, JSON.parse(JSON.stringify(data)), JSON.parse(JSON.stringify(data[cmd])));
 		libs.getGlobalVar(this.name).userInfo = data.userInfo;
 		libs.getGlobalVar(this.name).financial = data[cmd].Financial;
+		libs.getGlobalVar(this.name).recordId = this.recordId;
 		this.config.describe = data[cmd].describe ? JSON.parse(data[cmd].describe) : {};
 		this.config.describeObject = data[cmd].describeSObject ? JSON.parse(data[cmd].describeSObject) : {};
 		libs.getGlobalVar(this.name).iconName = data[cmd].iconMap.iconURL;
@@ -274,7 +275,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			isNeedDescribe: true,
 			sObjApiName: this.config.sObjApiName,
 			relField: this.config.relField,
-			addCondition: this.config.listViewConfig[0].addCondition,
+			addCondition: libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name),
 			orderBy: this.config.listViewConfig[0].orderBy,
 			fields: this.config.fields,
 			listViewName: this.config?.listView?.name,
