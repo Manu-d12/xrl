@@ -324,6 +324,13 @@ export let libs = {
 				"tooltip": _labels.tooltip_changeRowStyleByFunction,
 				"placeHolder": _labels.placeHolder_rowCss,
 				"cmd" : "dialog:setTableParam"
+			},
+			"rowRecalcApex": {
+				"type": "string",
+				"label": 'Apex class for row recalculation',
+				"tooltip": 'Apex class for row recalculation',
+				"placeHolder": 'Apex class for row recalculation',
+				"cmd" : "dialog:setTableParam"
 			}
 			
 			
