@@ -617,7 +617,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			this.loadCfg(false);
 		}
 	}
-	async deleteRecords(chunk){
+
+	async deleteRecords(chunkIn){
+		let chunk = this.stripChunk(chunkIn);
 		try{
 			const a = await libs.remoteAction(this, 'delRecords', { records: chunk, 
 				sObjApiName: this.config.sObjApiName
@@ -626,6 +628,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			console.log(error);
 		}
 	}
+
 	async prepareRecordsForSave(){
 		let changedItems = this.template.querySelector('c-Data-Table').getRecords().filter(el => {
 			return this.config.listViewConfig[0]._changedRecords.has(el.Id)
@@ -660,10 +663,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	async saveRecords(chunkIn){
 		try{
 			//[DR] in case of saving custom settings need delete all nested attributes inside records, otherwise we will get EXCEPTION "Cannot deserialize instance of <unknown> from null value null or request may be missing a required field"
-			let chunk = [];
-			chunkIn.forEach((item) =>{
-				chunk.push(JSON.parse(JSON.stringify(item, (key, value) => {return typeof(value) === 'object' && key!=="" ? null : value;})))
-			});
+			let chunk = this.stripChunk(chunkIn);
 			await libs.remoteAction(this, 'saveRecords', { records: chunk, 
 				sObjApiName: this.config.sObjApiName,
 				rollback:this.config.listViewConfig[0].rollBack ? this.config.listViewConfig[0].rollBack : false,
@@ -672,6 +672,13 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		} catch (error) {
 			console.log(error);
 		}
+	}
+	stripChunk(chunkIn) {
+		let chunk = [];
+		chunkIn.forEach((item) =>{
+			chunk.push(JSON.parse(JSON.stringify(item, (key, value) => {return typeof(value) === 'object' && key!=="" ? null : value;})))
+		});
+		return chunk;
 	}
 	isThereUnsavedRecords(){
 		return this.config.listViewConfig[0]._changedRecords ? true : false;
