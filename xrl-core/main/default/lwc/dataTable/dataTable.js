@@ -333,16 +333,16 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			if (rowName !== undefined) {
 				this.config._inlineEditRow = JSON.parse(JSON.stringify(this.records[this.config._inlineEdit]));
 				let cItem = this.getColItem(rowName);
-				if(rowName.includes('.') && cItem._editOptions){
-					this.config._inlineEditRow[rowName.split('.')[0]+'Id'] = value;
+				if(cItem.type === 'reference' && cItem._editOptions){
+					this.config._inlineEditRow[cItem.fieldName] = value;
 					let newVal = cItem._editOptions.find((el)=>{
 						return el.value === value;
 					});
-					if(this.config._inlineEditRow[rowName.split('.')[0]]){
-						this.config._inlineEditRow[rowName.split('.')[0]].Id = newVal.value;
-						this.config._inlineEditRow[rowName.split('.')[0]].Name = newVal.label;
+					if(this.config._inlineEditRow[cItem.referenceTo]){
+						this.config._inlineEditRow[cItem.referenceTo].Id = newVal.value;
+						this.config._inlineEditRow[cItem.referenceTo].Name = newVal.label;
 					}else{
-						this.config._inlineEditRow[rowName.split('.')[0]] ={
+						this.config._inlineEditRow[cItem.referenceTo] ={
 							Id: newVal.value,
 							Name: newVal.label
 						};
@@ -655,14 +655,14 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					// Need get all visible references fields and get data for thise fields
 					// let record = this.records[calculatedInd];
 					// record._focus = colName;
-					cItem.wrapClass = cItem.type === 'picklist' || cItem.type === 'multipicklist' || (cItem.fieldName.split('.')[1] && cItem.isNameField) ? 'slds-cell-wrap' : cItem.wrapClass;
+					cItem.wrapClass = cItem.type === 'picklist' || cItem.type === 'multipicklist' || (cItem.type === 'reference') ? 'slds-cell-wrap' : cItem.wrapClass;
 
-					if(cItem.fieldName.split('.')[1] && cItem.isNameField && !cItem._editOptions){
+					if(cItem.type === 'reference' && !cItem._editOptions){
 						cItem._editOptions = [];
 						await libs.remoteAction(this, 'query', {
 							fields: ['Id','Name'],
 							relField: '',
-							sObjApiName: cItem.fieldName.split('.')[0],
+							sObjApiName: cItem.referenceTo,
 							callback: ((nodeName, data) => {
 								console.log('accountRecords', data[nodeName].records.length);
 								data[nodeName].records.forEach((el)=>{
