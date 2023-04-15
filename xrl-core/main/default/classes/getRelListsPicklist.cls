@@ -12,7 +12,7 @@ global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickLi
 		system.debug(LoggingLevel.Error, 'GET RELLIsts ' + context);
 	}
 	global override VisualEditor.DataRow getDefaultValue() {
-		VisualEditor.DataRow defaultValue = new VisualEditor.DataRow('red', 'RED');
+		VisualEditor.DataRow defaultValue = new VisualEditor.DataRow('', 'Please select sObject');
 		return defaultValue;
 	}
 
@@ -22,7 +22,7 @@ global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickLi
 		if (context.pageType == 'RecordPage') {
 			Schema.DescribeSObjectResult describeResult = gd.get(context.entityName).getDescribe();
 			List < Schema.ChildRelationship > childRelationships = describeResult.getChildRelationships();
-
+			
 			for (Schema.ChildRelationship thisChild: childRelationships) {
 				if (thisChild.getRelationshipName() != null) {
 					string sObjApiName = string.valueOf(thisChild.getChildSObject());
@@ -48,22 +48,18 @@ global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickLi
 					}
 				}
 			}
-			for (Schema.SObjectType thisObj: gd.values()) {
-				if (thisObj.getDescribe().isQueryable() && String.valueOf(thisObj) !=context.entityName) {
-					picklistValues.addRow(
-						new VisualEditor.DataRow('- INDIRECT ' + String.valueOf(thisObj), String.valueOf(thisObj) + '::' + String.valueOf(thisObj) + '::')
-					);
-				}
-			}
-		}  else {
-			for (Schema.SObjectType thisObj: gd.values()) {
-				if (thisObj.getDescribe().isQueryable()) {
-					picklistValues.addRow(
-						new VisualEditor.DataRow(String.valueOf(thisObj), String.valueOf(thisObj) + '::' + String.valueOf(thisObj) + '::')
-					);
-				}
-			}
-		}
+  		}
+        
+        for (Schema.SObjectType thisObj: gd.values()) {
+            if (thisObj.getDescribe().isQueryable()) {
+                string sObjLabel = ((context.pageType == 'RecordPage') ? '>' : '') + thisObj.getDescribe().getLabelPlural();
+                string namespace = String.valueOf(thisObj).replace('^(.*?)__.*$','$1');
+                sObjLabel += namespace!='' &&  namespace.endsWith('__') ? '(' + namespace + ')' : '';
+                picklistValues.addRow(
+                    new VisualEditor.DataRow(sObjLabel, String.valueOf(thisObj) + '::' + String.valueOf(thisObj) + '::')
+                );
+            }
+        }
 		return picklistValues;
 	}
 }
