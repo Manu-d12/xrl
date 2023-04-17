@@ -463,18 +463,6 @@ export let libs = {
 		});
 		return result;
 	},	
-	replaceLiterals : function(str,name){
-		const regex = /%.*?%/g;
-		const replacements = {
-			'CurrentUser.Id': globalVars[name].userInfo.id,
-			'CurrentUser.Name': globalVars[name].userInfo.name,
-			'CurrentRecord.Id':  globalVars[name].currentRecordId,
-		};
-		const getReplacement = match => replacements[match.slice(1, -1)];
-		let replacementStr = str.replace(regex, getReplacement);
-		console.log('getReplacement',replacementStr);
-		return replacementStr;
-	},
 	standardActions: function(){
 		let _labels = globalVars[Object.keys(globalVars)[0]]._LABELS;
 		let actions = [
