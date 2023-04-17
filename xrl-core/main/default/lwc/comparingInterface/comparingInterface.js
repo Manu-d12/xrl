@@ -46,7 +46,7 @@ export default class ComparingInterface extends LightningElement {
         if(JSON.parse(data[cmd].userConfig) === undefined) return;
         libs.getGlobalVar(this.name).userInfo = data.userInfo;
         libs.getGlobalVar(this.name).currency =  data[cmd].currency;
-        libs.getGlobalVar(this.name).currentRecordId = this.recordId;
+        libs.getGlobalVar(this.name).recordId = this.recordId;
         console.log('Cn',JSON.parse(data[cmd].userConfig));
         this.config.json = JSON.parse(data[cmd].userConfig);
         if(this.config.json.actions && this.config.json.actions.length > 0){
@@ -91,7 +91,7 @@ export default class ComparingInterface extends LightningElement {
             this.config.userSelections.recOne = [this.recordId];
         }else if(this.leftRecord !== ''){
             await libs.remoteAction(this, 'customSoql', {
-                SOQL: libs.replaceLiterals(this.leftRecord,this.name),
+                SOQL: libs.replaceLiteralsInStr(this.leftRecord,this.name),
                 callback: ((nodeName, data1) => {
                     if(this.config.json.QueryFromConfig.returnType === 'parent'){
                         this.config.userSelections.recOne = data1[nodeName].records.map(val =>  val.Id );
@@ -123,7 +123,7 @@ export default class ComparingInterface extends LightningElement {
             this.config.userSelections.recTwo = [this.recordId];
         }else if(this.rightRecord !== ''){
             await libs.remoteAction(this, 'customSoql', {
-                SOQL: libs.replaceLiterals(this.rightRecord,this.name),
+                SOQL: libs.replaceLiteralsInStr(this.rightRecord,this.name),
                 callback: ((nodeName, data1) => {
                     if(this.config.json.QueryFromConfig.returnType === 'parent'){
                         this.config.userSelections.recTwo = data1[nodeName].records.map(val =>  val.Id );
