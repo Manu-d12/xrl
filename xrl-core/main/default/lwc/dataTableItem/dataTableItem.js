@@ -44,6 +44,7 @@ export default class dataTableItem extends LightningElement {
 		[row,val] = libs.getLookupRow(this.row, this.col.fieldName);
 		if (typeof(this.col._formatter) === 'function') {
 			val = this.col._formatter(row, this.col, val);
+			val = this.col.type === 'currency' ? this.formatNumber(val,this.getCurrencySymbol()) : val;
 		} 
 		else if(this.showEdit && this.col.isNameField && this.col.fieldName.split('.')[1]){
 			// console.log('HERE>>dt');
