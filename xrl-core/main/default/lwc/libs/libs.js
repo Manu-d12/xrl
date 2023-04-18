@@ -454,7 +454,7 @@ export let libs = {
 		return 'in test';
 	},
 	replaceLiteralsInStr : function(str, name){
-		if str === undefined return str;
+		if (str === undefined) return str;
 		let GLOBALVARS = globalVars[name];
 		const regex = /%%.*?%%/g;
 		let result = str.replace(regex, function(x){
