@@ -26,6 +26,11 @@
                 <default>false</default>
                 <label>Layout</label>
             </value>
+            <value>
+                <fullName>Comparison</fullName>
+                <default>false</default>
+                <label>Comparison</label>
+            </value>
         </valueSetDefinition>
     </valueSet>
 </CustomField>
