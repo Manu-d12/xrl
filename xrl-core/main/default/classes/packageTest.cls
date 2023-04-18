@@ -118,6 +118,19 @@ public class packageTest {
     }
 
     @isTest
+    public static void testGetSobjFields() {
+        VisualEditor.DesignTimePageContext ctx = new VisualEditor.DesignTimePageContext();
+        ctx.entityName = 'Account';
+        getSobjFields gsf = new getSobjFields(ctx);
+        test.startTest();
+        VisualEditor.DataRow row = gsf.getDefaultValue();
+        VisualEditor.DynamicPickListRows rows = gsf.getValues();
+        test.stopTest();
+        System.assertNotEquals(null, row);
+        System.assertNotEquals(null, rows);
+    }
+
+    @isTest
     public static void testGetRelListsPicklist() {
         VisualEditor.DesignTimePageContext ctx = new VisualEditor.DesignTimePageContext();
         ctx.entityName = 'Account';
