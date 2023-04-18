@@ -1,0 +1,34 @@
+<template>
+    <template if:true={isLoading}>
+      <lightning-card>
+        <div class="spinnerContainer">
+          <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </div>
+      </lightning-card>
+    </template>
+    <template if:false={isLoading}>
+      <div class="slds-path">
+        <div class="slds-grid slds-path__track">
+          <div class="slds-grid slds-path__scroller-container">
+            <div class="slds-path__scroller">
+              <div class="slds-path__scroller_inner">
+                <ul class="slds-path__nav" role="listbox" aria-orientation="horizontal">
+                  <template for:each={config.steps} for:item="step">
+                    <li if:false={step.hidden} class={step.class} role="presentation" key={step.value}
+                      data-id={step.value} onclick={handleClick}>
+                      <a class="slds-path__link" href="#" id={step.value} role="option">
+                        <div class="slds-path__stage">
+                          <span class="slds-col">{step.label}</span>
+                        </div>
+                        <div class="slds-col slds-path__title">{step.label}</div>
+                      </a>
+                    </li>
+                  </template>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+  </template>
