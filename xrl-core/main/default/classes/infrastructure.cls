@@ -191,8 +191,7 @@ global with sharing class infrastructure {
 		list < map < string, object >> listViews = new list < map < string, object >> {};
 		List<String> extIds = new List<String>();
 
-		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c, CreatedBy.Name FROM extRelListConfig__c WHERE sObjApiName__c =: sObjApiName AND relFieldApiName__c =: relField AND Is_Active__c = TRUE AND RecordType.Name = 'Config'
-			ORDER BY isAdminConfig__c DESC, listViewName__c ASC LIMIT 20];
+		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c, CreatedBy.Name FROM extRelListConfig__c WHERE sObjApiName__c =: sObjApiName AND relFieldApiName__c =: relField AND Is_Active__c = TRUE ORDER BY isAdminConfig__c DESC, listViewName__c ASC LIMIT 20];
 		for (integer i = 0; i < lst.size(); i++) {
 			extRelListConfig__c item = lst[i];
 			extIds.add(item.Id);
@@ -335,10 +334,6 @@ global with sharing class infrastructure {
 			listViewLabel;
 		boolean isAdminConf = listViewName == '_admin' ? isAdminAccess : listViewAdmin;
 
-		RecordType rt = [SELECT Id FROM RecordType WHERE Name = 'Config'
-			AND(SobjectType = 'TTNAMESPACE__extRelListConfig__c'
-				OR SobjectType = 'XRL__extRelListConfig__c') limit 1];
-
 		if(listViewName.equals('_admin')){
 			delete [select Id from extRelListConfig__c where listViewName__c = '_admin'];
 		}
@@ -354,8 +349,7 @@ global with sharing class infrastructure {
 			isAdminConfig__c = isAdminConf,
 			JSON__c = config,
 			ConfigType__c = String.isNotBlank(configType) ? configType : 'XRL',
-			uniqKey__c = sObjApiName + ':' + relField + ':' + isAdminConf + ':' + (string.isBlank(listViewName) ? '' : listViewName),
-			RecordTypeId = rt.Id
+			uniqKey__c = sObjApiName + ':' + relField + ':' + isAdminConf + ':' + (string.isBlank(listViewName) ? '' : listViewName)
 		);
 
 		upsert listView uniqKey__c;
