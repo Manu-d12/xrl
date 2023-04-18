@@ -17,6 +17,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	@api configuration;
 	@api addTemplate;
 	@api isFullscreen;
+	@api flexipageRegionWidth;
 
 	@track config = {};
 	@track localConfig = {};
@@ -105,6 +106,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		libs.getGlobalVar(this.name).userInfo = data.userInfo;
 		libs.getGlobalVar(this.name).financial = data[cmd].Financial;
 		libs.getGlobalVar(this.name).recordId = this.recordId;
+		libs.getGlobalVar(this.name).componentWidth = this.flexipageRegionWidth;
 		this.config.describe = data[cmd].describe ? JSON.parse(data[cmd].describe) : {};
 		this.config.describeObject = data[cmd].describeSObject ? JSON.parse(data[cmd].describeSObject) : {};
 		libs.getGlobalVar(this.name).iconName = data[cmd].iconMap.iconURL;

@@ -4,17 +4,19 @@
 	
 	<div style="height: 100%; position: relative;" ondropdownevent={handleDropDownEvents}>
 		<div class="slds-grid slds-m-around_xx-small">
-			<div class="slds-size_1-of-1 recordInfo">
+			<div class="slds-size_7-of-12 recordInfo">
 			  {title}{recordInfo} {updateInfo}
 			</div>
-		</div>
-		<div if:true={config.pager.pagerTop} class="slds-align_absolute-center slds-m-around_xx-small">
-			<lightning-button-icon variant="brand" size="small" data-id=":pagerFirst" onclick={handleEventPager} icon-name="utility:arrow_left"></lightning-button-icon>&nbsp;
-			<lightning-button-icon variant="brand" size="small" data-id=":pagerPrev" onclick={handleEventPager} icon-name="utility:chevronleft"></lightning-button-icon>&nbsp;&nbsp;
-			Page&nbsp;<lightning-input variant="label-hidden" data-id=":pagerCurPage" onchange={handleEventPager} type="number" value={config.pager.curPage} style="width:80px"></lightning-input>&nbsp;of {config.pager.numPages}&nbsp;&nbsp;
-			<lightning-button-icon variant="brand" size="small" data-id=":pagerNext" onclick={handleEventPager} icon-name="utility:chevronright"></lightning-button-icon>&nbsp;
-			<lightning-button-icon variant="brand" size="small"  data-id=":pagerLast" onclick={handleEventPager} icon-name="utility:arrow_right"></lightning-button-icon>
-			<lightning-combobox variant="label-hidden" data-id=":pagerPageSize" placeholder="Choose count" value={config.pager.pageSize} options={config.pager.pageSizeOptions} onchange={handleEventPager} class="slds-p-horizontal_xx-small" style="width:80px"></lightning-combobox>
+			<div class="slds-size_5-of-12 slds-col_bump-left">
+				<div if:true={config.pager.pagerTop} class="slds-float_right slds-align_absolute-center slds-m-around_xx-small">
+					<lightning-button-icon variant="brand" size="small" data-id=":pagerFirst" onclick={handleEventPager} icon-name="utility:arrow_left"></lightning-button-icon>&nbsp;
+					<lightning-button-icon variant="brand" size="small" data-id=":pagerPrev" onclick={handleEventPager} icon-name="utility:chevronleft"></lightning-button-icon>&nbsp;&nbsp;
+					Page&nbsp;<lightning-input variant="label-hidden" data-id=":pagerCurPage" onchange={handleEventPager} type="number" value={config.pager.curPage} style="width:80px"></lightning-input>&nbsp;of {config.pager.numPages}&nbsp;&nbsp;
+					<lightning-button-icon variant="brand" size="small" data-id=":pagerNext" onclick={handleEventPager} icon-name="utility:chevronright"></lightning-button-icon>&nbsp;
+					<lightning-button-icon variant="brand" size="small"  data-id=":pagerLast" onclick={handleEventPager} icon-name="utility:arrow_right"></lightning-button-icon>
+					<lightning-combobox variant="label-hidden" data-id=":pagerPageSize" placeholder="Choose count" value={config.pager.pageSize} options={config.pager.pageSizeOptions} onchange={handleEventPager} class="slds-p-horizontal_xx-small" style="width:80px"></lightning-combobox>
+				</div>
+			</div>
 		</div>
 		<table role="grid" if:true={tableRecords} class="slds-table slds-table_bordered slds-table_col-bordered extRelList" style="table-layout: fixed;">
 			<thead>
@@ -125,13 +127,18 @@
 			</tbody>
 			
 		</table>
-		<div if:true={config.pager.pagerBottom} class="slds-align_absolute-center slds-m-around_xx-small">
-			<lightning-button-icon variant="brand" size="small" data-id=":pagerFirst" onclick={handleEventPager} icon-name="utility:arrow_left"></lightning-button-icon>&nbsp;
-			<lightning-button-icon variant="brand" size="small" data-id=":pagerPrev" onclick={handleEventPager} icon-name="utility:chevronleft"></lightning-button-icon>&nbsp;&nbsp;
-			Page&nbsp;<lightning-input variant="label-hidden" data-id=":pagerCurPage" onchange={handleEventPager} type="number" value={config.pager.curPage} style="width:80px"></lightning-input>&nbsp;of {config.pager.numPages}&nbsp;&nbsp;
-			<lightning-button-icon variant="brand" size="small" data-id=":pagerNext" onclick={handleEventPager} icon-name="utility:chevronright"></lightning-button-icon>&nbsp;
-			<lightning-button-icon variant="brand" size="small"  data-id=":pagerLast" onclick={handleEventPager} icon-name="utility:arrow_right"></lightning-button-icon>
-			<lightning-combobox variant="label-hidden" data-id=":pagerPageSize" placeholder="Choose count" value={config.pager.pageSize} options={config.pager.pageSizeOptions} onchange={handleEventPager} class="slds-p-horizontal_xx-small" style="width:80px"></lightning-combobox>
+		<div class="slds-grid slds-m-around_xx-small">
+			<div class="slds-size_7-of-12"></div>
+			<div class="slds-size_5-of-12 slds-col_bump-left">
+				<div if:true={config.pager.pagerBottom} class="slds-float_right slds-align_absolute-center slds-m-around_xx-small">
+					<lightning-button-icon variant="brand" size="small" data-id=":pagerFirst" onclick={handleEventPager} icon-name="utility:arrow_left"></lightning-button-icon>&nbsp;
+					<lightning-button-icon variant="brand" size="small" data-id=":pagerPrev" onclick={handleEventPager} icon-name="utility:chevronleft"></lightning-button-icon>&nbsp;&nbsp;
+					Page&nbsp;<lightning-input variant="label-hidden" data-id=":pagerCurPage" onchange={handleEventPager} type="number" value={config.pager.curPage} style="width:80px"></lightning-input>&nbsp;of {config.pager.numPages}&nbsp;&nbsp;
+					<lightning-button-icon variant="brand" size="small" data-id=":pagerNext" onclick={handleEventPager} icon-name="utility:chevronright"></lightning-button-icon>&nbsp;
+					<lightning-button-icon variant="brand" size="small"  data-id=":pagerLast" onclick={handleEventPager} icon-name="utility:arrow_right"></lightning-button-icon>
+					<lightning-combobox variant="label-hidden" data-id=":pagerPageSize" placeholder="Choose count" value={config.pager.pageSize} options={config.pager.pageSizeOptions} onchange={handleEventPager} class="slds-p-horizontal_xx-small" style="width:80px"></lightning-combobox>
+				</div>
+			</div>
 		</div>
 	</div>
 

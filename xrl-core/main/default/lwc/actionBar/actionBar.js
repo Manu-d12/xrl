@@ -8,7 +8,10 @@ export default class ActionBar extends LightningElement {
     connectedCallback(){
         this.config.dataTable = libs.getGlobalVar(this.actionscfg._cfgName).listViewConfig[0];
         this.config.actions = [...this.actionscfg.actions];
-        this.config.actions = this.sortRecords(this.config.actions, 'actionOrder', true);
+        this.config.visibleActions = this.config.actions.filter((el) => !el.actionIsHidden);
+        this.config.visibleActions = this.sortRecords(this.config.visibleActions, 'actionOrder', true);
+        let cmpWidth = libs.getGlobalVar(this.actionscfg._cfgName).componentWidth;
+        this.config.showActionDropdown = this.config.visibleActions.length > 2 && (cmpWidth === 'MEDIUM' || cmpWidth === 'SMALL');
     }
     handleEventClick(event){
         
