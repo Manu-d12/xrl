@@ -70,7 +70,7 @@ global with sharing class infrastructure {
 			result.put('exception', new map < string, string > {
 				'title' => 'EXCEPTION',
 				'message' => e.getMessage(),
-				'debugMessage' => e.getStackTraceString(),
+				'debugMessage' => string.valueOf(e.getStackTraceString()),
 				'lineNumber' => string.valueOf(e.getLineNumber())
 			});
 		}
