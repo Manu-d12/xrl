@@ -69,7 +69,9 @@ global with sharing class infrastructure {
 
 			result.put('exception', new map < string, string > {
 				'title' => 'EXCEPTION',
-				'message' => e.getMessage() + ' : ' + e.getStackTraceString()
+				'message' => e.getMessage(),
+				'debugMessage' => e.getStackTraceString(),
+				'lineNumber' => string.valueOf(e.getLineNumber())
 			});
 		}
 		result.put(cmd + 'Result', resultMethod);
@@ -334,7 +336,7 @@ global with sharing class infrastructure {
 		boolean isAdminConf = listViewName == '_admin' ? isAdminAccess : listViewAdmin;
 
 		RecordType rt = [SELECT Id FROM RecordType WHERE Name = 'Config'
-			AND(SobjectType = 'extRelListConfig__c'
+			AND(SobjectType = 'TTNAMESPACE__extRelListConfig__c'
 				OR SobjectType = 'XRL__extRelListConfig__c') limit 1];
 
 		if(listViewName.equals('_admin')){
@@ -402,7 +404,9 @@ global with sharing class infrastructure {
 		//update securityDecision.getRecords() update records that can be updated
 		*/
         if (data.get('beforeSaveAction') != null) {
+			system.debug(LoggingLevel.Error, 'APEX INVOCATION ' + (string) data.get('beforeSaveAction'));
             invokeApex((string) data.get('beforeSaveAction'), data);
+			system.debug(LoggingLevel.Error, 'APEX INVOCATION END ' + (string) data.get('beforeSaveAction'));
         }
         sObject[] records = (sObject[]) JSON.deserialize(JSON.serialize(data.get('records')), T);
 		// Savepoint sp = Database.setSavepoint();
@@ -892,11 +896,14 @@ global with sharing class infrastructure {
 		return years;
 	}
     
-    private static void invokeApex(string helperType, map<string, string> data) {
-        string helperTypeClass = 'HLP_' + helperType.replace('.', '_');
+    private static void invokeApex(string helperType, map<string, object> data) {
+		string nameSpacePrefix = (string) data.get('nameSpacePrefix');
+		string[] apexHelper = helperType.split('.');
+		
+        string helperTypeClass = 'HLP_' + apexHelper[0];// customActions.getPackage, customActions.getPackage, customActions, Stratavar.customActions
     	
         // check class exist or not
-        ApexClass[] A = [SELECT Id, NamespacePrefix FROM ApexClass WHERE Name =: helperTypeClass LIMIT 1];
+        ApexClass[] A = [SELECT Id, NamespacePrefix FROM ApexClass WHERE Name =: helperTypeClass ORDER BY NamespacePrefix ASC NULLS FIRST LIMIT 1];
         
         if (A.size() == 0) throw new InfrastructureException(null, 'Can\'t find class {1}'.replace('{1}', helperType) + ':' + helperTypeClass, exceptionType.CLASS_NOT_FOUND);
         
