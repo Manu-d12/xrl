@@ -389,7 +389,7 @@ global with sharing class infrastructure {
 		boolean isRollback = (boolean) data.get('rollback') == true;
 		boolean isInsert = (boolean) data.get('isInsert') == true;
 		Type T = type.forName('list<' + sObjApiName + '>');
-		sObject[] records = (sObject[]) JSON.deserialize(JSON.serialize(data.get('records')), T);
+		
 		/*This part only for security review. Please don't remove
 		SObjectAccessDecision decision = Security.stripInaccessible(AccessType.UPDATABLE,records);
 
@@ -402,8 +402,9 @@ global with sharing class infrastructure {
 		//update securityDecision.getRecords() update records that can be updated
 		*/
         if (data.get('beforeSaveAction') != null) {
-            invokeApex((string) data.get('beforeSaveAction'), records);
+            invokeApex((string) data.get('beforeSaveAction'), data);
         }
+        sObject[] records = (sObject[]) JSON.deserialize(JSON.serialize(data.get('records')), T);
 		// Savepoint sp = Database.setSavepoint();
 		system.debug('RollBack ' + isRollback);
  
@@ -891,37 +892,20 @@ global with sharing class infrastructure {
 		return years;
 	}
     
-    private static void invokeApex(string helperType, sObject[] records) {
+    private static void invokeApex(string helperType, map<string, string> data) {
         string helperTypeClass = 'HLP_' + helperType.replace('.', '_');
-    	try {
-            // check class exist or not
-            ApexClass[] A = [SELECT Id, NamespacePrefix FROM ApexClass WHERE Name =: helperTypeClass LIMIT 1];
-            
-            if (A.size() == 0) throw new InfrastructureException(null, 'Can\'t find class {1}'.replace('{1}', helperType) + ':' + helperTypeClass, exceptionType.CLASS_NOT_FOUND);
-                        
-            Type T = string.isEmpty(A[0].namespacePrefix) ? type.forName(helperType) : type.forName(A[0].namespacePrefix, helperType);
-            if (T == null) throw new InfrastructureException(null, ('Can\'t find method {1} in class ' + helperType).replace('{1}', helperType) + ':' + helperTypeClass, exceptionType.INSTANCE_CLASS_NOT_FOUND);
-            
-            //system.debug(LoggingLevel.Error, JSON.serialize(data));
-            //system.debug(LoggingLevel.Error, T.toString());
-            
-            
-            /*handler handlerClass = (handler) JSON.deserialize(allParams, T);
-            try {
-                result = handlerClass.execute(data);
-            } catch (Exception e) {
-                string eMsg = getExceptionString(e, 'IMPLEMENTATION EXCEPTION');
-                system.debug(LoggingLevel.Error, eMsg);
-                infrastructure.addError('-1', eMsg);
-                infrastructure.addStackTrace('-1', infrastructure.getStackTraceString(e, 'EXCEPTION'));
-            }*/
-        } catch (Exception E) {
-            //string eMsg = getExceptionString(e, 'EXCEPTION');
-            //system.debug(LoggingLevel.Error, eMsg);
-            //infrastructure.addError('-1', eMsg);
-            //infrastructure.addStackTrace('-1', infrastructure.getStackTraceString(e, 'EXCEPTION'));
-        }
+    	
+        // check class exist or not
+        ApexClass[] A = [SELECT Id, NamespacePrefix FROM ApexClass WHERE Name =: helperTypeClass LIMIT 1];
         
+        if (A.size() == 0) throw new InfrastructureException(null, 'Can\'t find class {1}'.replace('{1}', helperType) + ':' + helperTypeClass, exceptionType.CLASS_NOT_FOUND);
+        
+        Type T = string.isEmpty(A[0].namespacePrefix) ? type.forName(helperType) : type.forName(A[0].namespacePrefix, helperType);
+        if (T == null) throw new InfrastructureException(null, ('Can\'t find method {1} in class ' + helperType).replace('{1}', helperType) + ':' + helperTypeClass, exceptionType.INSTANCE_CLASS_NOT_FOUND);
+                
+        
+        handler handlerClass = (handler) JSON.deserialize(JSON.serialize(data), T);
+        handlerClass.execute(data);
     }
 
 	global class InfrastructureException extends Exception {
