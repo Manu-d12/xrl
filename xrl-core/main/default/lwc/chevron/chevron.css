@@ -1,0 +1,15 @@
+.spinnerContainer {
+    height: 15px;
+}
+
+.slds-path__nav .disabled.slds-is-incomplete:before, .slds-path__nav .disabled.slds-is-incomplete:after {
+    background-color: rgb(201, 199, 197);
+}
+
+.slds-path__nav .disabled .slds-path__link {
+    cursor: not-allowed;
+}
+
+.slds-path__stage {
+    width: 100%;
+}
