@@ -100,7 +100,7 @@ export default class extRelListSettings extends LightningElement {
                 false;
 
 			
-			let sFields = [{label:'No Grouping',value:''},{label:'Custom Function',value:'groupingFunction'}];
+			let sFields = [{label:'No Grouping',value:''}];
 			sFields = sFields.concat(this.selectedFields);
 			let options = (tmp[item].type === 'combobox') ?
 							(tmp[item].options) ? (tmp[item].options)  : sFields : '';

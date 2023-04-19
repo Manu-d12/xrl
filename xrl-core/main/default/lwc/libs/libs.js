@@ -267,7 +267,7 @@ export let libs = {
 				"type": "function",
 				"label": _labels.lbl_groupingFunction,
 				"tooltip": _labels.tooltip_groupingFunction,
-				"placeHolder": "",
+				"placeHolder": _labels.placeholder_groupingFunction,
 				"cmd" : "dialog:setTableParam"
 			},
 			"groupOrder" : {

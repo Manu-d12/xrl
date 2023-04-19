@@ -668,6 +668,7 @@ global with sharing class infrastructure {
 			'placeHolder_beforeDeleteValidation'=>label.placeHolder_beforeDeleteValidation,
 			'placeholder_actionCallback'=> label.placeholder_actionCallback,
 			'placeHolder_rowCss'=> label.placeHolder_rowCss,
+			'placeholder_groupingFunction'=>label.placeholder_groupingFunction,
 			'title_close' => label.title_close,
 			'title_clear' => label.title_clear,
 			'title_collapse' => label.title_collapse,

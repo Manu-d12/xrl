@@ -1876,6 +1876,19 @@ Once you are done editing the pattern, click outside the input box.</value>
         <value>This function will be used for grouping values</value>
     </labels>
     <labels>
+        <fullName>placeholder_groupingFunction</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>placeholder_groupingFunction</shortDescription>
+        <value>//this function receives the array of groups done on the selected fields
+//it must return the array of groups in same format
+function(groups){
+console.log('From Group Function',groups);
+return groups;
+}</value>
+    </labels>
+    <labels>
         <fullName>lbl_groupFieldName</fullName>
         <categories>XRL</categories>
         <language>en_US</language>
