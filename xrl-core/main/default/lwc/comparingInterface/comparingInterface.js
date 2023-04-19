@@ -87,7 +87,7 @@ export default class ComparingInterface extends LightningElement {
                     })
                 })
             });
-        }else if(this.leftRecord === 'CurrentRecord'){
+        }else if(this.leftRecord === 'CurrentRecord' || this.leftRecord === 'recordId'){
             this.config.userSelections.recOne = [this.recordId];
         }else if(this.leftRecord !== ''){
             await libs.remoteAction(this, 'customSoql', {
@@ -119,7 +119,7 @@ export default class ComparingInterface extends LightningElement {
                     })
                 })
             });
-        }else if(this.rightRecord === 'CurrentRecord'){
+        }else if(this.rightRecord === 'CurrentRecord' || this.rightRecord === 'recordId'){
             this.config.userSelections.recTwo = [this.recordId];
         }else if(this.rightRecord !== ''){
             await libs.remoteAction(this, 'customSoql', {

@@ -66,12 +66,26 @@ global with sharing class infrastructure {
 				}
 			}
 		} catch (exception e) {
-
-			result.put('exception', new map < string, string > {
+		    string stackTrace = e.getStackTraceString();
+			string apexCode;
+			if (stackTrace!=null && stackTrace.indexOf('Class')>-1){
+			  string[] className = stackTrace.substringBetween('Class.',':').split('\\.'); //Class.TTNAMESPACE.infrastructure.saveRecords:
+			  string lineNumber = stackTrace.substringBetween('line ',',');
+              if (!String.isEmpty(className[1])&& !string.isEmpty(lineNumber)) {
+                ApexClass[] a = [SELECT Body FROM ApexClass WHERE Name =: className[1] AND NameSpacePrefix =: className[0] LIMIT 1];
+                if (a.size()>0) {
+					string[] codeLines = a[0].Body.split('\n');
+					apexCode = codeLines.size() >= integer.valueOf(lineNumber) ? codeLines[integer.valueOf(lineNumber) - 1] : null;
+				}
+              }
+			}
+            
+			result.put('exception', new map < string, object > {
 				'title' => 'EXCEPTION',
 				'message' => e.getMessage(),
-				'debugMessage' => string.valueOf(e.getStackTraceString()),
-				'lineNumber' => string.valueOf(e.getLineNumber())
+				'debugMessage' => stackTrace,
+                'apexCode' => apexCode,
+                'input' => data
 			});
 		}
 		result.put(cmd + 'Result', resultMethod);
