@@ -259,15 +259,22 @@ export let libs = {
 			},
 			"groupFieldName" : {
 				"type": "combobox",
-				"label": "Field Name to group records",
-				"tooltip": "Enter the field name by which the records will be grouped",
+				"label": _labels.lbl_groupFieldName,
+				"tooltip": _labels.tooltip_groupFieldName,
 				"cmd" : "dialog:setTableParam",
+			},
+			"groupingFunction": {
+				"type": "function",
+				"label": _labels.lbl_groupingFunction,
+				"tooltip": _labels.tooltip_groupingFunction,
+				"placeHolder": _labels.placeholder_groupingFunction,
+				"cmd" : "dialog:setTableParam"
 			},
 			"groupOrder" : {
 				"defValue": "ASC",
 				"type": "combobox",
-				"label": "Grouping Orders",
-				"tooltip": "ASC for Ascending and DESC for Descending",
+				"label": _labels.lbl_groupOrder,
+				"tooltip": _labels.tooltip_groupOrder,
 				"options": [{label:'ASC',value:'ASC'},{label:'DESC',value:'DESC'}],
 				"cmd" : "dialog:setTableParam",
 			},

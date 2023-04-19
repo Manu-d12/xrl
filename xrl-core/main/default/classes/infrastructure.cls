@@ -638,6 +638,9 @@ global with sharing class infrastructure {
 			'lbl_items'=>label.lbl_items,
 			'lbl_actionWithThisOrderAlreadyExists'=>label.lbl_actionWithThisOrderAlreadyExists,
 			'lbl_conditionAlreadyExists'=>label.lbl_conditionAlreadyExists,
+			'lbl_groupingFunction'=>label.lbl_groupingFunction,
+			'lbl_groupFieldName'=>label.lbl_groupFieldName,
+			'lbl_groupOrder'=>label.lbl_groupOrder,
 			'lbl_resetFilters'=>label.lbl_resetFilters,
 			'lbl_blankValuesNotAllowed'=>label.lbl_blankValuesNotAllowed,
 			'lbl_collapseView'=>label.lbl_collapseView,
@@ -665,6 +668,7 @@ global with sharing class infrastructure {
 			'placeHolder_beforeDeleteValidation'=>label.placeHolder_beforeDeleteValidation,
 			'placeholder_actionCallback'=> label.placeholder_actionCallback,
 			'placeHolder_rowCss'=> label.placeHolder_rowCss,
+			'placeholder_groupingFunction'=>label.placeholder_groupingFunction,
 			'title_close' => label.title_close,
 			'title_clear' => label.title_clear,
 			'title_collapse' => label.title_collapse,
@@ -728,6 +732,9 @@ global with sharing class infrastructure {
 			'tooltip_isColumnFilterable'=>label.tooltip_isColumnFilterable,
 			'tooltip_isColumnSortable'=>label.tooltip_isColumnSortable,
 			'tooltip_isColumnWrapable'=>label.tooltip_isColumnWrapable,
+			'tooltip_groupingFunction'=>label.tooltip_groupingFunction,
+			'tooltip_groupFieldName'=>label.tooltip_groupFieldName,
+			'tooltip_groupOrder'=>label.tooltip_groupOrder,
 			'srcLbl_available' => label.srcLbl_available,
 			'srcLbl_optional' => label.srcLbl_optional
 		};

@@ -13,13 +13,14 @@ export default class ActionBar extends LightningElement {
     }
     get visibleActions(){
         this.config.visibleActions = this.config.actions.filter((el) => {
-            if (this.config.dataTable.rowChecked) {
-              // If rowChecked is true, keep all actions with actionIsHidden false
-              return el.actionIsHidden === false;
-            }
-            // If rowChecked is false, remove actions with actionIsHidden true OR actionVisibleOnRecordSelection true
-            return !(el.actionIsHidden || el.actionVisibleOnRecordSelection);
-          });
+            return el.actionIsHidden === false;           
+        });
+        if(this.config.dataTable.rowChecked === undefined || this.config.dataTable.rowChecked === false){
+            this.config.visibleActions = this.config.visibleActions.filter((el) => {
+                return el.actionVisibleOnRecordSelection === false || el.actionVisibleOnRecordSelection === undefined;           
+            });
+        }
+        console.log('visible actions',this.config.visibleActions.length);
         this.config.visibleActions = this.sortRecords(this.config.visibleActions, 'actionOrder', true);
         return this.config.visibleActions;
     }
