@@ -22,7 +22,7 @@ export default class ComparingInterface extends LightningElement {
         console.log('apiName: ' + this.apiName);
         if(this.apiName === undefined){
             this.getExtRelListConfigs();
-        }else{
+        }else if(this.apiName.split('::')[1]){
             libs.remoteAction(this, 'getConfigById', { configId: this.apiName.split('::')[0], callback: this.setConfig.bind(this) });
         }
     }
@@ -102,6 +102,7 @@ export default class ComparingInterface extends LightningElement {
                 })
             });
         }
+        this.config.cr1 = this.config.cr1 && this.config.cr1.length > 0 ? this.config.cr1 : [];
         selectedObj = this.config.json.obj2;
         selectedFor = 'objTwo';
         this.config.userSelections[selectedFor] = selectedObj;
@@ -133,6 +134,7 @@ export default class ComparingInterface extends LightningElement {
                 })
             });
         }
+        this.config.cr2 = this.config.cr2 && this.config.cr2.length > 0 ? this.config.cr2 : [];
         this.config.showCompareButton = true;
         if((this.config.userSelections.recOne && this.config.userSelections.recTwo) || 
         (this.config.userSelections.recOne?.length > 0 && this.config.cr2?.length > 0) ||
