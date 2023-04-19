@@ -1,18 +1,11 @@
 <template>
     <template if:false={config.showActionDropdown}>
-        <template if:true={actionscfg.actions} for:each={config.visibleActions} for:item="action" for:index="index">
-            <template if:true={action.actionVisibleOnRecordSelection}>
-                <template if:true={config.dataTable.rowChecked}>
-                    <c-action key={action.actionId} data-id={action.actionId} action={action} onclick={handleEventClick}></c-action>
-                </template>
-            </template>
-            <template if:false={action.actionVisibleOnRecordSelection}>
-                <c-action key={action.actionId} data-id={action.actionId} action={action} onclick={handleEventClick}></c-action>
-            </template>
+        <template if:true={visibleActions} for:each={visibleActions} for:item="action" for:index="index">
+            <c-action key={action.actionId} data-id={action.actionId} action={action} onclick={handleEventClick}></c-action>
         </template>
     </template>
     <lightning-button-menu if:true={config.showActionDropdown} variant="border-filled" icon-name="utility:apps" class="slds-p-horizontal_xx-small" menu-alignment="right">
-        <template if:true={actionscfg.actions} for:each={config.visibleActions} for:item="action" for:index="index">
+        <template if:true={visibleActions} for:each={visibleActions} for:item="action" for:index="index">
             <lightning-menu-item key={action.actionId} data-id={action.actionId} label={action.actionLabel} prefix-icon-name={action.actionIconName} onclick={handleEventClick}></lightning-menu-item>
         </template>
     </lightning-button-menu>
