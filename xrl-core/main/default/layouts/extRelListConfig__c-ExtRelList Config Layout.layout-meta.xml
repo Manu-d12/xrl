@@ -20,7 +20,7 @@
                 <field>listViewLabel__c</field>
             </layoutItems>
             <layoutItems>
-                <behavior>Required</behavior>
+                <behavior>Edit</behavior>
                 <field>relFieldApiName__c</field>
             </layoutItems>
             <layoutItems>
@@ -30,10 +30,6 @@
             <layoutItems>
                 <behavior>Required</behavior>
                 <field>uniqKey__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>RecordTypeId</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Required</behavior>

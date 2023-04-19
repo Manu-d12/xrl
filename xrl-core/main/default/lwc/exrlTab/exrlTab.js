@@ -14,9 +14,10 @@ export default class ExrlTab extends LightningElement {
 
     getAllObjects(cmd,data){
         this.config.objList = [];
-        data[cmd].sort().forEach((el)=>{
-            this.config.objList.push({'label':el.toString(),'value':el.toString()});
-        });
+        for(const key in data[cmd]){
+            this.config.objList.push({'label':data[cmd][key],'value':key});
+        }
+        this.config.objList.sort();
     }
     handleOpenGrid(event){
         this.template.querySelector('c-ext-rel-list').updateGridView(this.config.selectedApiName);
@@ -24,8 +25,9 @@ export default class ExrlTab extends LightningElement {
 
     handleSelect(event) {
         let selectedObj = event.detail.payload.value;
-        if(selectedObj !== null){
-            this.config.selectedApiName = selectedObj + '::' + selectedObj + '::';
+        let obj = this.config.objList.find((el) => { return el.value === selectedObj});
+        if(selectedObj !== null && obj !== undefined){
+            this.config.selectedApiName = obj.label + '::' + selectedObj + '::';
             this.handleOpenGrid();
         }
         

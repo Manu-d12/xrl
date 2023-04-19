@@ -1,5 +1,11 @@
 <template>
-    <div class="chart-container">
-        <canvas class="chart"></canvas>
+    <div class="chart-container" style="height: 100%;">
+        <canvas class="chart" style="height: 100%;"></canvas>
+        <div class="info">
+            <div if:true={count} class="counter" style={config.countStyle}>
+                {count} item(s)
+            </div>            
+			<lightning-button-icon if:true={config.hasView} variant="bare" size="large" onclick={viewData} icon-name="utility:preview" title={config.viewTitle}></lightning-button-icon>
+        </div>
     </div>
 </template>

@@ -10,8 +10,11 @@ export default class dataTableItem extends LightningElement {
 	@track config = {};
 	@track showEdit = false;
 	sValue = '';
+	locale = '';
 
 	renderedCallback() {
+		//this.locale = libs.getGlobalVar(this.cfg).userInfo.locale;
+		//console.log('Current Locale ', this.locale);
 		if (this.iseditmode && this.template.querySelector('[data-id="' + this.col.fieldName + '"]') != undefined && this.row._focus === this.col.fieldName) setTimeout((() => { this.template.querySelector('[data-id="' + this.col.fieldName + '"]').focus(); }), 100);
 		//console.log(this.col.options);
 		libs.getGlobalVar(this.cfg).listViewConfig.forEach((el)=>{
@@ -34,13 +37,14 @@ export default class dataTableItem extends LightningElement {
 	get value() {
 		let refTmp = '<a href="/{0}" target="_blank" title="{1}">{1}</a>';
 		//console.log('type', this.col.type, this.col.fieldName)
-		let locale = libs.getGlobalVar(this.cfg).userInfo.locale;
+		this.locale = libs.getGlobalVar(this.cfg).userInfo.locale;
 		//console.log(this.col.fieldName, JSON.stringify(this.row), this.row[this.col.fieldName]);
 		//this.col.fieldName
 		let row,val;
 		[row,val] = libs.getLookupRow(this.row, this.col.fieldName);
 		if (typeof(this.col._formatter) === 'function') {
 			val = this.col._formatter(row, this.col, val);
+			val = this.col.type === 'currency' ? this.formatNumber(val,this.getCurrencySymbol()) : val;
 		} 
 		else if(this.showEdit && this.col.isNameField && this.col.fieldName.split('.')[1]){
 			// console.log('HERE>>dt');
@@ -51,7 +55,7 @@ export default class dataTableItem extends LightningElement {
 				//console.log(val);
 				// console.log(locale);
 				if (val!== undefined && val !=='' && val!==null) {
-					val = new Date(val).toLocaleString(locale,{
+					val = new Date(val).toLocaleString(this.locale,{
 						month : "2-digit",
 						day : "2-digit",
 						year: "numeric",
@@ -65,7 +69,7 @@ export default class dataTableItem extends LightningElement {
 			}
 			if (this.col.type === 'date') {
 				if (val!== undefined && val !=='' && val!==null) {
-					val = new Date(val).toLocaleString(locale,{
+					val = new Date(val).toLocaleString(this.locale,{
 						month : "2-digit",
 						day : "2-digit",
 						year: "numeric"
@@ -83,7 +87,7 @@ export default class dataTableItem extends LightningElement {
 			}
 
 			if (this.col.type === 'currency') {
-				val = val ? (this.formatNumber(val) + '&nbsp;' + this.getCurrencySymbol()): null;
+				val = val ? this.formatNumber(val, this.getCurrencySymbol()) : null;
 			}
 
 			if (this.col.type === 'reference'){
@@ -109,7 +113,7 @@ export default class dataTableItem extends LightningElement {
 		
 		let right = ['number', 'currency','int','double'];
 		let val='';
-		if (right.indexOf(this.col.type)  > -1) {
+		if (right.indexOf(this.col.type)  > -1 && !this.locale.endsWith('US')) {
 			val = 'slds-float_right';
 		}
 		//console.log('getStyle', this.col.fieldName, this.col.type, val, right.indexOf(this.col.type));
@@ -144,11 +148,8 @@ export default class dataTableItem extends LightningElement {
 		return this.col.type === 'multipicklist';
 	}
 
-	formatNumber(num) {
-		const dotTemlate = ' ';
-		return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + dotTemlate).replace(/[,\.].*/,((match) => {
-			return match.replace(/ /g,'');
-		}));
+	formatNumber(number, currency) {
+		return currency != undefined ? new Intl.NumberFormat(this.locale, { style: 'currency', currency: currency }).format(number) : new Intl.NumberFormat(this.locale, { }).format(number);
 	}
 
 	inlineEdit(event) {
@@ -180,10 +181,15 @@ export default class dataTableItem extends LightningElement {
 
 	getCurrencySymbol() {
 		let currency = libs.getGlobalVar(this.cfg).currency;
-		if (currency.isMultyCurrencyOrg === true) {
+		/*if (currency.isMultyCurrencyOrg === true) {
 			return libs.currencyMap(this.row.CurrencyIsoCode);
 		} else {
 			return libs.currencyMap(currency.orgCurrency);
+		}*/
+		if (currency.isMultyCurrencyOrg === true) {
+			return this.row.CurrencyIsoCode;
+		} else {
+			return currency.orgCurrency;
 		}
 	}
 

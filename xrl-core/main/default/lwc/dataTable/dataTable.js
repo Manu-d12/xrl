@@ -14,10 +14,18 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 	@track showPopOver = false;
 	@track popStyle;
+	@track title = '';
 	@api recordId;
 	@api objectApiName;
 	sValues = [];
+	defaultFields = [];
+	additionalFields = [];
 	showPop(event){
+		console.log('Hovered ' + event.pageY + ' ' + event.clientX);
+		this.objectApiName = event.target.getAttribute('data-colname');
+		let col = this.config.colModel.find((el)=>{
+			return el.fieldName === this.objectApiName
+		});
 		let hoverConstValues = {
 			5:810,
 			20:1250,
@@ -26,24 +34,33 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			200:6360
 		};
 		this.popStyle = libs.formatStr("position:absolute;top:{0}px;left:{1}px", [((event.pageY - document.body.scrollTop) - hoverConstValues[this.config.pager.pageSize]), (event.clientX - 52)]);
-		this.objectApiName = event.target.getAttribute('data-colname');
 		let record = this.records.find((el) =>{
 			return el.Id === event.target.getAttribute('data-recordind')
 		});
+		this.config.pageY = event.pageY;
+		this.config.pageX = event.clientX;
 
-		let col = this.config.colModel.find((el)=>{
-			return el.fieldName === this.objectApiName
-		});
-
-		if (col.referenceTo) {
+		if (col.referenceTo ){
 			this.objectApiName = col.referenceTo;
 			this.recordId = record[col.fieldName.split('.')[0]].Id;
-			this.showPopOver = true;
+			//popup will show after 1.5 seconds of hovering
+			this.config.timeoutId = setTimeout(() => {
+				this.showPopOver = true;
+				}, 2000);
 		}
+		  
 
 	}
 	hidePop(event){
-		this.showPopOver=false;
+		console.log('Mouse Out');
+		if((event.pageY >= this.config.pageY - 5 && event.pageY <= this.config.pageY + 5) &&
+		(event.clientX >= this.config.pageX - 5 && event.clientX <= this.config.pageX + 5)){
+			console.log('In range: ' + event.pageY + ' ' + event.clientX);
+		}else{
+			console.log('Not In range: ' + event.pageY + ' ' + event.clientX);
+			clearTimeout(this.config.timeoutId);
+			this.showPopOver=false;
+		}
 	}
 
 	@api
@@ -257,16 +274,21 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		this.config._selectedRecords = this.getSelectedRecords.bind(this);
 		this.config._updateView = this.updateView.bind(this);
 		this.config._countFields = this.config.isShowCheckBoxes === true ? 1 : 0;
-		console.log(JSON.parse(JSON.stringify(this.config.colModel)));
+		this.defaultFields = this.defaultFields.length === 0 ? this.config.colModel.map(f => f.fieldName) : this.defaultFields;
+		this.config.colModel = this.config.colModel.filter(f => this.defaultFields.includes(f.fieldName));
+		this.additionalFields.forEach(add => {
+			if (this.config.colModel.find(f => f.fieldName === add.fieldName)) return;
+			this.config.colModel.push(add);
+		});
 		this.config.colModel.forEach(item => {
-			if (item.formatter !== undefined) {
+			if (item.formatter !== undefined && item.formatter!=="") {
 				try {
 					item._formatter = eval('(' + item.formatter + ')');
 				} catch (e) {
 					console.log('EXCEPTION', e);
 				}
 			}
-			if (item.uStyle !== undefined) {
+			if (item.uStyle !== undefined && item.uStyle!== "") {
 				try {
 					item._uStyle = eval('(' + item.uStyle + ')');
 				} catch (e) {
@@ -316,16 +338,16 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			if (rowName !== undefined) {
 				this.config._inlineEditRow = JSON.parse(JSON.stringify(this.records[this.config._inlineEdit]));
 				let cItem = this.getColItem(rowName);
-				if(rowName.includes('.') && cItem._editOptions){
-					this.config._inlineEditRow[rowName.split('.')[0]+'Id'] = value;
+				if(cItem.type === 'reference' && cItem._editOptions){
+					this.config._inlineEditRow[cItem.fieldName] = value;
 					let newVal = cItem._editOptions.find((el)=>{
 						return el.value === value;
 					});
-					if(this.config._inlineEditRow[rowName.split('.')[0]]){
-						this.config._inlineEditRow[rowName.split('.')[0]].Id = newVal.value;
-						this.config._inlineEditRow[rowName.split('.')[0]].Name = newVal.label;
+					if(this.config._inlineEditRow[cItem.referenceTo]){
+						this.config._inlineEditRow[cItem.referenceTo].Id = newVal.value;
+						this.config._inlineEditRow[cItem.referenceTo].Name = newVal.label;
 					}else{
-						this.config._inlineEditRow[rowName.split('.')[0]] ={
+						this.config._inlineEditRow[cItem.referenceTo] ={
 							Id: newVal.value,
 							Name: newVal.label
 						};
@@ -378,23 +400,35 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		this.config._changedRecords.add(id);
 	}
 
-	// get rowStyle() {
-	// 	return this.config.rowCallback ? 'cursor : pointer' : '';
-	// }
-
 	selectAll(event) {
+		this.config._eventChecked = event.target.checked;
+
+		//Here first we are updating the records which are visible on the screen and later updating other records asynchronously
+		// to ensure minimal response time is maintained
+		let startIndex = (this.config.pager.curPage - 1) * this.config.pager.pageSize;
+		let endIndex = (startIndex + parseInt(this.config.pager.pageSize)) < this.records.length ? (startIndex + parseInt(this.config.pager.pageSize)) : this.records.length;
+		for (let i = startIndex; i < endIndex; i++) {
+			this.records[i]._isChecked = this.config._eventChecked;
+		}
+		
+		setTimeout(()=> {
+			this.checkAll();
+		}, 0);
+		this.rowCheckStatus();	
+	}
+	checkAll(){
 		this.records.forEach(e => {
-			e._isChecked = event.target.checked
+			e._isChecked = this.config._eventChecked
 		});
+		
 		if (this.hasGrouping) {
 			this.groupedRecords.forEach(group => {
-				group.isChecked = event.target.checked;
-				group.records.forEach(rec => {
-					rec._isChecked = event.target.checked;
-				});
+			group.isChecked = this.config._eventChecked;
+			group.records.forEach(rec => {
+				rec._isChecked = this.config._eventChecked;
 			});
-		}	
-		this.rowCheckStatus();	
+			});
+		}
 	}
 
 	toggleGroup(event) {
@@ -434,7 +468,19 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		this.rowCheckStatus();
 	}
 
-	rowCheckStatus(){
+	async rowCheckStatus(){
+		// this.records.forEach(e => {
+		// 	e._isChecked = event.target.checked
+		// });
+		// console.log('SElecting all 2');
+		// if (this.hasGrouping) {
+		// 	this.groupedRecords.forEach(group => {
+		// 		group.isChecked = event.target.checked;
+		// 		group.records.forEach(rec => {
+		// 			rec._isChecked = event.target.checked;
+		// 		});
+		// 	});
+		// }	
 		if(this.getSelectedRecords().length>0){
 			this.config.rowChecked = true;
 		}else{
@@ -614,14 +660,14 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					// Need get all visible references fields and get data for thise fields
 					// let record = this.records[calculatedInd];
 					// record._focus = colName;
-					cItem.wrapClass = cItem.type === 'picklist' || cItem.type === 'multipicklist' || (cItem.fieldName.split('.')[1] && cItem.isNameField) ? 'slds-cell-wrap' : cItem.wrapClass;
+					cItem.wrapClass = cItem.type === 'picklist' || cItem.type === 'multipicklist' || (cItem.type === 'reference') ? 'slds-cell-wrap' : cItem.wrapClass;
 
-					if(cItem.fieldName.split('.')[1] && cItem.isNameField && !cItem._editOptions){
+					if(cItem.type === 'reference' && !cItem._editOptions){
 						cItem._editOptions = [];
 						await libs.remoteAction(this, 'query', {
 							fields: ['Id','Name'],
 							relField: '',
-							sObjApiName: cItem.fieldName.split('.')[0],
+							sObjApiName: cItem.referenceTo,
 							callback: ((nodeName, data) => {
 								console.log('accountRecords', data[nodeName].records.length);
 								data[nodeName].records.forEach((el)=>{
@@ -672,9 +718,10 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}*/
 
 	setFilter(event) {
-		let colName = event.srcElement.getAttribute('data-id') !== null ?
-			event.srcElement.getAttribute('data-id') :
-			event.srcElement.parentNode.getAttribute('data-id');
+		// let colName = event.srcElement.getAttribute('data-id') !== null ?
+		// 	event.srcElement.getAttribute('data-id') :
+		// 	event.srcElement.parentNode.getAttribute('data-id');
+		const colName = event.srcElement.getAttribute('data-id') ?? event.srcElement.parentNode.getAttribute('data-id');
 		let cItem = this.getColItem(colName);
 		let table = this.template.querySelector('.extRelListTable');
 
@@ -707,16 +754,32 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						]
 
 				};
-				if(this.config._isFilterOptions != undefined){
-					this.config._isFilterOptions.filterOption = cItem._filterOption ? cItem._filterOption : 'eq';
-					this.config._isFilterOptions.isUnary = this.config._isFilterOptions.filterOptions.find(item => {return this.config._isFilterOptions.filterOption === item.value}).isUnary != undefined ?
-															this.config._isFilterOptions.filterOptions.find(item => {return this.config._isFilterOptions.filterOption === item.value}).isUnary :
-															false;
-					this.config._isFilterOptions.filterStr = cItem._filterStr;
-					this.config._isFilterOptions.filterStrTo = cItem._filterStrTo;
-					this.config._isFilterOptions.isShowStr = cItem.options === undefined;
-					this.config._isFilterOptions.isShowToStr = this.config._isFilterOptions.filterOption === 'rg';
-					this.config._isFilterOptions.isShowClearBtn = (cItem._filterStr && cItem._filterStr.length > 0);
+				// if(this.config._isFilterOptions != undefined){
+				// 	this.config._isFilterOptions.filterOption = cItem._filterOption ? cItem._filterOption : 'eq';
+				// 	this.config._isFilterOptions.isUnary = this.config._isFilterOptions.filterOptions.find(item => {return this.config._isFilterOptions.filterOption === item.value}).isUnary != undefined ?
+				// 											this.config._isFilterOptions.filterOptions.find(item => {return this.config._isFilterOptions.filterOption === item.value}).isUnary :
+				// 											false;
+				// 	this.config._isFilterOptions.filterStr = cItem._filterStr;
+				// 	this.config._isFilterOptions.filterStrTo = cItem._filterStrTo;
+				// 	this.config._isFilterOptions.isShowStr = cItem.options === undefined;
+				// 	this.config._isFilterOptions.isShowToStr = this.config._isFilterOptions.filterOption === 'rg';
+				// 	this.config._isFilterOptions.isShowClearBtn = (cItem._filterStr && cItem._filterStr.length > 0);
+				// }
+				const { _isFilterOptions } = this.config;
+				const { _filterOption, _filterStr, _filterStrTo } = cItem;
+				if (_isFilterOptions) {
+					const filterOptionObj = _isFilterOptions.filterOptions.find(item => item.value === _filterOption) || {};
+					const isUnary = filterOptionObj.isUnary ?? false;
+					
+					Object.assign(this.config._isFilterOptions, {
+						filterOption: _filterOption || 'eq',
+						isUnary,
+						filterStr: _filterStr,
+						filterStrTo: _filterStrTo,
+						isShowStr: cItem.options === undefined,
+						isShowToStr: _isFilterOptions.filterOption === 'rg',
+						isShowClearBtn: (_filterStr && _filterStr.length > 0)
+					});
 				}
 
 			setTimeout((() => { 
@@ -859,7 +922,10 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		this.config.colModel.forEach((e, index) => { // unsorted -> asc -> desc
 			if (e.isSortable === true && e.isASCSort !== undefined) {
 				e._sortIcon = e.isASCSort === true ? 'utility:arrowdown' : 'utility:arrowup';
-				this.records = libs.sortRecords(this.records, e.type === 'reference' ? e.fieldName + '.Name' : e.fieldName, e.isASCSort);
+				let fieldName = e.fieldName.split('.')[1] != undefined ?
+				e.fieldName.split('.')[1]
+				:e.type === 'reference' ? e.fieldName + '.Name' : e.fieldName;
+				this.records = libs.sortRecords(this.records, fieldName, e.isASCSort,e.fieldName.split('.')[1] != undefined ? e.fieldName.split('.')[0] : undefined);
 			} else {
 				e._sortIcon = undefined;
 				e.isASCSort = undefined;
@@ -895,7 +961,11 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					e._sortIcon = e.isASCSort ? 'utility:arrowdown' : 'utility:arrowup';
 					if (this.hasGrouping && fieldName === this.config.groupingParams.field) this.config.groupingParams.order = e.isASCSort ? 'asc' : 'desc';
 					else {
-						this.records = libs.sortRecords(this.records, e.type === 'reference' ? 'Name' : e.fieldName, e.isASCSort, e.type === 'reference' ? e.fieldName.slice(0,-2) : '');
+						let fieldName = e.fieldName.split('.')[1] != undefined ?
+						e.fieldName.split('.')[1]
+						:e.type === 'reference' ? e.fieldName + '.Name' : e.fieldName;
+						this.records = libs.sortRecords(this.records, fieldName, e.isASCSort,e.fieldName.split('.')[1] != undefined ? e.fieldName.split('.')[0] : undefined);
+						// this.records = libs.sortRecords(this.records, e.type === 'reference' ? 'Name' : e.fieldName, e.isASCSort, e.type === 'reference' ? e.fieldName.slice(0,-2) : '');
 					}
 				} else {
 					e._sortIcon = undefined;
@@ -927,7 +997,11 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		}
 		for (let i = this._sortSequence.length - 1; i >= 0; i--) {
 			let col = this.config.colModel.find(e => {return e.fieldName === this._sortSequence[i];});
-			this.records = libs.sortRecords(this.records, col.type === 'reference' ? col.fieldName + '.Name' : col.fieldName, col.isASCSort);
+			let fieldName = col.fieldName.split('.')[1] != undefined ?
+				col.fieldName.split('.')[1]
+				:col.type === 'reference' ? col.fieldName + '.Name' : col.fieldName;
+			this.records = libs.sortRecords(this.records, fieldName, col.isASCSort,col.fieldName.split('.')[1] != undefined ? col.fieldName.split('.')[0] : undefined);
+			// this.records = libs.sortRecords(this.records, col.type === 'reference' ? col.fieldName + '.Name' : col.fieldName, col.isASCSort);
 		}
 	}
 	setNumPages(value) {
@@ -1048,8 +1122,52 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 
 	@api
-	handleEventMessage(event){
-		if(event.detail.cmd.split(':')[1] === 'refresh') this.connectedCallback();
+	handleEventMessage(event) {
+		
+		if(event.detail.cmd.split(':')[1] === 'refresh' && event.detail.cmd.split(':')[0] === 'filter') {
+
+			let sourceConf = libs.getGlobalVar(event.detail.source);
+			libs.remoteAction(this, 'query', {
+				isNeedDescribe: true,
+				sObjApiName: sourceConf.sObjApiName,
+				relField: sourceConf.relField === 'Id' ? '' : sourceConf.relField,
+				addCondition: sourceConf.condition,
+				fields: sourceConf.fields,
+				listViewName: sourceConf.listView?.name,
+				callback: ((nodeName, data) => {  
+					libs.getGlobalVar(this.cfg).records = data[nodeName].records.length > 0 ? data[nodeName].records : [];
+					this.config.records = libs.getGlobalVar(this.cfg).records;
+
+					this.connectedCallback();
+				})
+			});
+			this.title = '';		
+
+		} else if(event.detail.cmd.split(':')[1] === 'refresh' && event.detail.cmd.split(':')[0] === 'chart') {
+
+			this.title = event.detail.title ? event.detail.title + ' - ' : '';
+			libs.getGlobalVar(this.cfg).records = libs.getGlobalVar(event.detail.source).records;
+			this.config.records = libs.getGlobalVar(this.cfg).records;
+			this.connectedCallback();		
+
+		} else if(event.detail.cmd.split(':')[1] === 'updateFields') {
+
+			this.additionalFields = [];
+			event.detail.fields.forEach(f => {
+				let field = {					
+					"css": "slds-item",
+					"type": "string",
+					"isEditable": false,
+					"isFilterable": true,
+					"isSortable": true,
+					"wrapClass": "slds-truncate",
+					"_filterCondition": "Column Filters"
+				};
+				Object.assign(field, f);
+				this.additionalFields.push(field);
+			});
+			this.connectedCallback();
+		}
 	}
 
 }

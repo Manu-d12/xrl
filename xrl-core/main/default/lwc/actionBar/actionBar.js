@@ -8,7 +8,20 @@ export default class ActionBar extends LightningElement {
     connectedCallback(){
         this.config.dataTable = libs.getGlobalVar(this.actionscfg._cfgName).listViewConfig[0];
         this.config.actions = [...this.actionscfg.actions];
-        this.config.actions = this.sortRecords(this.config.actions, 'actionOrder', true);
+        let cmpWidth = libs.getGlobalVar(this.actionscfg._cfgName).componentWidth;
+        this.config.showActionDropdown = this.visibleActions.length > 2 && (cmpWidth === 'MEDIUM' || cmpWidth === 'SMALL');
+    }
+    get visibleActions(){
+        this.config.visibleActions = this.config.actions.filter((el) => {
+            if (this.config.dataTable.rowChecked) {
+              // If rowChecked is true, keep all actions with actionIsHidden false
+              return el.actionIsHidden === false;
+            }
+            // If rowChecked is false, remove actions with actionIsHidden true OR actionVisibleOnRecordSelection true
+            return !(el.actionIsHidden || el.actionVisibleOnRecordSelection);
+          });
+        this.config.visibleActions = this.sortRecords(this.config.visibleActions, 'actionOrder', true);
+        return this.config.visibleActions;
     }
     handleEventClick(event){
         
@@ -28,15 +41,7 @@ export default class ActionBar extends LightningElement {
                 this.actionscfg._handleEvent(event);
             }else if(actionDetails.actionCallBack != undefined){
                 //Callback execution
-                let fn = eval('(' + actionDetails.actionCallBack + ')')(this.config.dataTable._selectedRecords());
-                libs.getGlobalVar(this.actionscfg._cfgName).records = libs.getGlobalVar(this.actionscfg._cfgName).records.forEach((el)=>{
-                    let r = fn.find((e)=> { return e.Id === el.Id});
-                    if(r != undefined){
-                        el = r;
-                    }
-                });
-                this.config.dataTable._updateView();
-                // fn(event);
+                let fn = eval('(' + actionDetails.actionCallBack + ')')(this.config.dataTable._selectedRecords(), this, libs);
             }else{
                 console.log('No Action Configured');
                 const eventErr = new ShowToastEvent({

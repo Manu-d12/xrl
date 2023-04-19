@@ -70,7 +70,8 @@
 							<lightning-button variant="destructive" label="Cancel" title="Cancel" class="slds-m-right_x-small" data-val="actionCancel" onclick={handleNewAction}></lightning-button>
 						</template>
 						<template if:true={config.dialog.action} for:each={actionItem} for:item="param" for:index="index">
-							<lightning-input if:false={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} type={param.type} label={param.label} disabled={param.isDisabled} value={param.value} data-id="dialog:setActionParam" data-param={param.paramName} data-type={param.type} checked={param.isChecked} onchange={config.dialog.handleEvent}></lightning-input>
+							<lightning-input if:true={param.isText} field-level-help={param.tooltip} key={param.paramName} type={param.type} label={param.label} disabled={param.isDisabled} value={param.value} data-id="dialog:setActionParam" data-param={param.paramName} data-type={param.type} checked={param.isChecked} onchange={config.dialog.handleEvent}></lightning-input>
+							<lightning-combobox if:true={param.isCombo} field-level-help={param.tooltip} key={param.paramName} type={param.type} label={param.label} disabled={param.isDisabled} value={param.value} data-id="dialog:setActionParam" data-param={param.paramName} onchange={config.dialog.handleEvent} options={param.options}></lightning-combobox>
 							<lightning-textarea if:true={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} data-type={param.type} label={param.label} value={param.value} data-id="dialog:setActionParam" data-param={param.paramName} onchange={config.dialog.handleEvent} placeholder={param.placeHolder}></lightning-textarea>
 						</template>
 						<template if:true={config.dialog.action}>

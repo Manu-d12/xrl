@@ -25,7 +25,7 @@ export default class extRelListSettings extends LightningElement {
 	}
 
 	get dialogCss(){
-		return 'max-height:'+screen.availHeight+'px;min-width:fit-content;max-width:80%';
+		return 'max-height:'+screen.availHeight+'px;max-width:80%';
 	}
 
 	get selectedFields() {
@@ -57,7 +57,8 @@ export default class extRelListSettings extends LightningElement {
 		let tmp = libs.colModelItem();
 
 		for (let item in tmp) {
-			if(!fieldParams.updateable && !fieldParams.isNameField && item === 'isEditable') continue;
+			if(this.config.isHistoryGrid && tmp[item].isReadOnly) continue;
+			if(item === 'isEditable' && (!this.config.describeObject.updateable || !fieldParams.updateable || fieldParams.fieldName.includes('.'))) continue;
 			let defValue = (item === 'fieldName') 
 				? this.config.dialog.field 
 				: fieldParams[item] === undefined
@@ -89,6 +90,7 @@ export default class extRelListSettings extends LightningElement {
 		let tmp = libs.tableItem();
 
 		for (let item in tmp) {
+			if(this.config.isHistoryGrid && tmp[item].isReadOnly) continue;
 			let defValue = this.dataTable != undefined ? 
                 (item in this.dataTable ? 
                     this.dataTable[item] :
@@ -146,6 +148,9 @@ export default class extRelListSettings extends LightningElement {
 				"type" : tmp[item].type,
 				"label" : tmp[item].label,
 				"isTextArea" : (tmp[item].type === 'function'),
+				"isText" : (tmp[item].type !== 'combobox' && tmp[item].type !== 'function'),
+				"isCombo" : (tmp[item].type === 'combobox'),
+				"options" : tmp[item].options,
 				"tooltip" : tmp[item].tooltip,
 				"isDisabled" : (fieldParams['isActionStandard'] ? this.config.enableActions.includes(item) ? false : true : false),
 				"value" : defValue,

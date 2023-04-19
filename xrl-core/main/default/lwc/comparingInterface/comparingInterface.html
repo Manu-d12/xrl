@@ -1,0 +1,84 @@
+<template>
+    <lightning-card class=" slds-card_boundary" style="padding:5px; display:block">
+    <!-- Object Selection -->   
+    <div class="slds-grid slds-gutters">
+        <div class="slds-col slds-size_1-of-1">
+            <c-multiselect if:true={config.showConfigSelection} data-id="configId" listsize=20 onselect={handleEvent} options={config.extConfigs} selectedvalue="" label="Select a Config"></c-multiselect>
+        </div>
+    </div>
+    <div class="slds-grid slds-gutters">
+        <!-- For 1st object and record -->
+        <div class="slds-col slds-size_5-of-12" if:true={config.objRecords.objOne}>
+            <div class="slds-text-heading_small">{config.json.obj1} Record(s) Selection</div>          
+            <!-- Record One -->
+            <c-multiselect multiselect=true data-id="recOne" listsize=20 onselect={handleSelect} options={config.objRecords.objOne} selectedvalue="Account" label="Select a Record"></c-multiselect>
+        </div>
+        <!-- For 2nd object and record -->
+        <div class="slds-col slds-size_5-of-12" if:true={config.objRecords.objTwo}>
+            <div class="slds-text-heading_small">{config.json.obj2} Record(s) Selection</div>
+            <!-- Record Two -->
+            <c-multiselect multiselect=true data-id="recTwo" listsize=20 onselect={handleSelect} options={config.objRecords.objTwo} selectedvalue="Account" label="Select a Record"></c-multiselect>
+        </div>
+        <div class="slds-col slds-size_2-of-12" if:true={config.showCompareButton}>
+            <br/><br/>
+            <button data-id="btn:compare" class="slds-button slds-button_brand" onclick={handleEvent} style="float:right;">Compare</button>
+        </div>
+    </div>
+    <template if:true={config.showComparisonTable}>
+        <div class="slds-section slds-is-open">
+            <div aria-hidden="true" class="slds-section__content" id="expando-unique-id">
+                <c-action-Bar if:true={config.actionsBar} actionscfg={config.actionsBar}></c-action-Bar><br>
+                <table if:true={config.compareResult} class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered" aria-label="Example default base table of Opportunities">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th class="" scope="col" colspan="2">
+                                <div class="slds-truncate">Record 1</div>
+                            </th>
+                            <th class="" scope="col" colspan="2">
+                                <div class="slds-truncate">Record 2</div>
+                            </th>
+                        </tr>
+                        <tr class="slds-line-height_reset">
+                            <th class="" scope="col">
+                                <div class="slds-truncate">Field Name</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate">Value</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate">Field Name</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate">Value</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={config.compareResult} for:item="item" for:index="index">
+                            <tr class="slds-hint-parent" key={item}>
+                                <td>
+                                    <div class="slds-truncate">{item.fieldName1}</div>
+                                </td>
+                                <td style={item.css1}>
+                                    <div class="slds-truncate">{item.value1}</div>
+                                </td>
+                                <td>
+                                    <div class="slds-truncate">{item.fieldName2}</div>
+                                </td>
+                                <td style={item.css2}>
+                                    <div class="slds-truncate">{item.value2}</div>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </template>
+    <div if:true={config.showComparisonTable} class="slds-grid slds-gutters">
+        <div class="slds-col slds-size_1-of-1">
+            <c-Data-Table style="width:100%; height:inherit" cfg={config.json.dataTable.uniqueName}></c-Data-Table>
+        </div>
+    </div>
+</lightning-card>
+</template>

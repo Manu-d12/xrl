@@ -12,7 +12,7 @@ global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickLi
 		system.debug(LoggingLevel.Error, 'GET RELLIsts ' + context);
 	}
 	global override VisualEditor.DataRow getDefaultValue() {
-		VisualEditor.DataRow defaultValue = new VisualEditor.DataRow('red', 'RED');
+		VisualEditor.DataRow defaultValue = new VisualEditor.DataRow('', 'Please select sObject');
 		return defaultValue;
 	}
 
@@ -22,14 +22,14 @@ global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickLi
 		if (context.pageType == 'RecordPage') {
 			Schema.DescribeSObjectResult describeResult = gd.get(context.entityName).getDescribe();
 			List < Schema.ChildRelationship > childRelationships = describeResult.getChildRelationships();
-
+			
 			for (Schema.ChildRelationship thisChild: childRelationships) {
 				if (thisChild.getRelationshipName() != null) {
 					string sObjApiName = string.valueOf(thisChild.getChildSObject());
 					string sObjField = string.valueOf(thisChild.getField());
 					string sObjLabel = gd.get(sObjApiName).getDescribe().getLabelPlural();
 					picklistValues.addRow(
-						new VisualEditor.DataRow(sObjLabel, sObjLabel + '::' + sObjApiName + '::' + sObjField)
+						new VisualEditor.DataRow(sObjLabel + ' ('+ sObjField +')', sObjLabel + '::' + sObjApiName + '::' + sObjField)
 					);
 					//only if the history object exists
 					if(gd.containsKey(sObjApiName + 'History') || gd.containsKey(sObjApiName.removeEnd('c') + 'history')){
@@ -37,7 +37,7 @@ global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickLi
 						//for standard history objects
 						if(objToken  != null && !objToken.getDescribe().isCustom()){
 							picklistValues.addRow(
-								new VisualEditor.DataRow(sObjLabel+': History', sObjLabel + 'History::' + sObjApiName + 'History::' + sObjApiName + '.' + sObjField)
+								new VisualEditor.DataRow(sObjLabel+': History (' + sObjField +')', sObjLabel + 'History::' + sObjApiName + 'History::' + sObjApiName + '.' + sObjField)
 							);
 						}else if(objToken  != null && objToken.getDescribe().isCustom()){
 							//for custom history objects
@@ -48,15 +48,18 @@ global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickLi
 					}
 				}
 			}
-		}else{
-			for (Schema.SObjectType thisObj: gd.values()) {
-				if (thisObj.getDescribe().isQueryable()) {
-					picklistValues.addRow(
-						new VisualEditor.DataRow(String.valueOf(thisObj), String.valueOf(thisObj) + '::' + String.valueOf(thisObj) + '::')
-					);
-				}
-			}
-		}
+  		}
+        
+        for (Schema.SObjectType thisObj: gd.values()) {
+            if (thisObj.getDescribe().isQueryable()) {
+                string sObjLabel = ((context.pageType == 'RecordPage') ? '>' : '') + thisObj.getDescribe().getLabelPlural();
+                string namespace = String.valueOf(thisObj).replace('^(.*?)__.*$','$1');
+                sObjLabel += namespace!='' &&  namespace.endsWith('__') ? '(' + namespace + ')' : '';
+                picklistValues.addRow(
+                    new VisualEditor.DataRow(sObjLabel, String.valueOf(thisObj) + '::' + String.valueOf(thisObj) + '::')
+                );
+            }
+        }
 		return picklistValues;
 	}
 }

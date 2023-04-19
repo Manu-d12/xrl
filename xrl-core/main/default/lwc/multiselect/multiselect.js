@@ -12,13 +12,28 @@ export default class Multiselect extends LightningElement {
 
     @track mSelectConfig = {};
 
+    @api setValue(v) {
+        if (typeof v === 'object') this.selectedvalues = v;
+        else this.selectedvalue = v;
+        this.setSelect();
+    }
+
+    @api setOptions(v) {
+        this.options = v;
+        this.setSelect();
+    }
+
     connectedCallback() {
+        this.setSelect();
+    }
+
+    setSelect() {
         this.mSelectConfig.showDropdown = false;
         this.mSelectConfig.showOptionCount = true;
         this.mSelectConfig.minChar = 2;
-        var optionData = this.options ? (JSON.parse(JSON.stringify(this.options))) : null;
-        var value = this.selectedvalue ? (JSON.parse(JSON.stringify(this.selectedvalue))) : null;
-        var values = this.selectedvalues ? (JSON.parse(JSON.stringify(this.selectedvalues))) : null;
+        var optionData = this.options ? (JSON.parse(JSON.stringify(this.options))) : [];
+        var value = this.selectedvalue && !this.multiselect ? (JSON.parse(JSON.stringify(this.selectedvalue))) : '';
+        var values = this.selectedvalues && this.multiselect ? (JSON.parse(JSON.stringify(this.selectedvalues))) : [];
 		if(value || values) {
             var searchString;
         	var count = 0;
@@ -54,7 +69,8 @@ export default class Multiselect extends LightningElement {
             if(this.mSelectConfig.searchString.length >= this.mSelectConfig.minChar) {
                 var flag = true;
                 for(var i = 0; i < this.mSelectConfig.allOptions.length; i++) {
-                    if(this.mSelectConfig.allOptions[i].label.toLowerCase().trim().startsWith(this.mSelectConfig.searchString.toLowerCase().trim())) {
+					if(this.mSelectConfig.allOptions[i].label.toLowerCase().trim().includes(this.mSelectConfig.searchString.toLowerCase().trim()) ||
+                    this.mSelectConfig.allOptions[i].value.toLowerCase().trim().includes(this.mSelectConfig.searchString.toLowerCase().trim())) {
                         this.mSelectConfig.allOptions[i].isVisible = true;
                         flag = false;
                         results.push(this.mSelectConfig.allOptions[i]);
@@ -155,17 +171,15 @@ export default class Multiselect extends LightningElement {
         }
         else{
             this.mSelectConfig.searchString = previousLabel;
-            if(this.mSelectConfig.value || this.mSelectConfig.values.length != 0){
-                this.dispatchEvent(new CustomEvent('select', {
-                    detail: {
-                        'payloadType' : 'multi-select',
-                        'payload' : {
-                            'value' : this.mSelectConfig.value,
-                            'values' : this.mSelectConfig.values
-                        }
+            this.dispatchEvent(new CustomEvent('select', {
+                detail: {
+                    'payloadType' : 'multi-select',
+                    'payload' : {
+                        'value' : this.mSelectConfig.value,
+                        'values' : this.mSelectConfig.values
                     }
-                }));
-            }
+                }
+            }));
             this.mSelectConfig.showDropdown = false;
         }
     }

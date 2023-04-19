@@ -1,0 +1,9 @@
+.hidden {
+    display: none;
+}
+.spinnerDiv {
+    position: relative;
+    display: inline-block;
+    height: 100px;
+    width: 100%;
+}

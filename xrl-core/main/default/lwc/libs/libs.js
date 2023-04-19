@@ -21,6 +21,22 @@ export let libs = {
 		if (typeof(value) !== 'string') value = JSON.stringify(value);
 		localStorage.setItem(uniqKey, value);
 	},
+	loadUserPreferredView: function(uniqKey) {
+		let localViewName = localStorage.getItem(uniqKey);
+		if (localViewName != null && typeof(localViewName) !== 'undefined') {
+			try {
+				let cfg = localViewName;
+				return cfg;
+			} catch (e) {
+				console.log('Saved View Name is broken');
+			}
+		}
+		return undefined;
+	},
+	userListViewPreference: function(uniqKey, value) {
+		if (typeof(value) !== 'string') value = JSON.stringify(value);
+		localStorage.setItem(uniqKey, value);
+	},
 	sortRecords: function(records, fieldName, isASCSort, referenceField) {
 		let keyValue;
 		if(referenceField){
@@ -100,6 +116,10 @@ export let libs = {
 					match;
 			}).replace(/{\d+}/g, '');
 	},
+	/* 
+	isReadOnly (Boolean) - This flag is used for the History grid view. 
+							Items with value 'True' will be hidden from the grid field settings
+	*/
 	colModelItem: function(colModelItem) {
 		let _labels = globalVars[Object.keys(globalVars)[0]]._LABELS;
 		let defParams = {
@@ -148,7 +168,8 @@ export let libs = {
 			"isEditable": {
 				"defValue": false,
 				"type": "checkbox",
-				"label": _labels.lbl_isColumnEditable
+				"label": _labels.lbl_isColumnEditable,
+				"isReadOnly": true,
 			},
 			"isWrapable": {
 				"defValue": false,
@@ -178,6 +199,10 @@ export let libs = {
 			return result;
 		} else return defParams;
 	},
+	/* 
+	isReadOnly (Boolean) - This flag is used for the History grid view. 
+							Items with value 'True' will be hidden from the grid table settings
+	*/
 	tableItem: function() {
 		let _labels = globalVars[Object.keys(globalVars)[0]]._LABELS;
 		let defParams = {
@@ -221,6 +246,7 @@ export let libs = {
 				"type": "checkbox",
 				"label": _labels.lbl_showStandardEdit,
 				"tooltip": _labels.tooltip_replaceInlineEditWithStandardEdit,
+				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
 			},
 			"rollBack" : {
@@ -228,6 +254,7 @@ export let libs = {
 				"type": "checkbox",
 				"label": "Rollback?",
 				"tooltip": "In case of bulk edit if any exception occurs should the entire transaction rolled back?",
+				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
 			},
 			"groupFieldName" : {
@@ -251,11 +278,21 @@ export let libs = {
 				"options": [{label:'ASC',value:'ASC'},{label:'DESC',value:'DESC'}],
 				"cmd" : "dialog:setTableParam",
 			},
+			
 			"saveChunkSize" : {
 				"defValue": 200,
 				"type": "string",
 				"label": _labels.lbl_chunkSizeForSave,
 				"tooltip": _labels.tooltip_numbersOfRecordInChunk,
+				"isReadOnly": true,
+				"cmd" : "dialog:setTableParam",
+			},
+			"deleteChunkSize" : {
+				"defValue": 200,
+				"type": "string",
+				"label": _labels.lbl_deleteChunkSize,
+				"tooltip": _labels.tooltip_deleteChunkSize,
+				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
 			},
 			"beforeSaveValidation": {
@@ -263,26 +300,22 @@ export let libs = {
 				"label": _labels.lbl_beforeSaveValidation,
 				"tooltip": _labels.tooltip_beforeSaveValidation,
 				"placeHolder": _labels.placeHolder_beforeSaveValidation,
+				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam"
 			},
 			"beforeSaveApexAction": {
 				"type": "string",
 				"label": _labels.lbl_beforeSaveApexAction,
 				"tooltip": _labels.tooltip_beforeSaveApexAction,
+				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam"
-			},
-			"deleteChunkSize" : {
-				"defValue": 200,
-				"type": "string",
-				"label": _labels.lbl_deleteChunkSize,
-				"tooltip": _labels.tooltip_deleteChunkSize,
-				"cmd" : "dialog:setTableParam",
 			},
 			"beforeDeleteValidation": {
 				"type": "function",
 				"label": _labels.lbl_beforeDeleteValidation,
 				"tooltip": _labels.tooltip_beforeDeleteValidation,
 				"placeHolder": _labels.placeHolder_beforeDeleteValidation,
+				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam"
 			},
 			"displayOptionListSize" : {
@@ -297,6 +330,13 @@ export let libs = {
 				"label": _labels.lbl_rowCss,
 				"tooltip": _labels.tooltip_changeRowStyleByFunction,
 				"placeHolder": _labels.placeHolder_rowCss,
+				"cmd" : "dialog:setTableParam"
+			},
+			"rowRecalcApex": {
+				"type": "string",
+				"label": 'Apex class for row recalculation',
+				"tooltip": 'Apex class for row recalculation',
+				"placeHolder": 'Apex class for row recalculation',
 				"cmd" : "dialog:setTableParam"
 			}
 			
@@ -345,6 +385,14 @@ export let libs = {
 				"tooltip": _labels.tooltip_actionVisibleOnRecords
 
 			},
+			"actionVariant" : {
+				"type": "combobox",
+				"defValue": "bare",
+				"options" : [{label : "bare", value : "bare"}, {label : "bare-inverse", value : "bare-inverse"}, {label : "border", value : "border"},{label : "border-filled", value : "border-filled"},{label : "border-inverse", value : "border-inverse"},{label : "brand", value : "brand"},{label : "container", value : "container"}],
+				"label": 'variant',
+				"tooltip": 'variant'
+			},
+
 			"actionIconName" : {
 				"type": "text",
 				"label": _labels.lbl_actionIconName,
@@ -396,10 +444,33 @@ export let libs = {
 			}
 		})
 	},
+	showToast : function(scope, params) {
+		const event = new ShowToastEvent(params);
+		scope.dispatchEvent(event);
+	},
 	help : function(index, params) {
 		// Need to open a new tab and redirect user to specific article
+		const baseUrl = 'https://help.hypercomps.com/';
+		switch(index.split(':')[1]){
+			case 'extRelList':
+				window.open(baseUrl, "_blank");
+				break;
+			default:
+				window.open(baseUrl, "_blank");
+		}
 		return 'in test';
 	},
+	replaceLiteralsInStr : function(str, name){
+		if (str === undefined) return str;
+		let GLOBALVARS = globalVars[name];
+		const regex = /%%.*?%%/g;
+		let result = str.replace(regex, function(x){
+			let field = x.replaceAll('%','');
+			let value = libs.getLookupValue(GLOBALVARS, field);
+			return value;
+		});
+		return result;
+	},	
 	standardActions: function(){
 		let _labels = globalVars[Object.keys(globalVars)[0]]._LABELS;
 		let actions = [
@@ -520,7 +591,7 @@ export let libs = {
 			{
 				"label": "Changed Field",
 				"fieldName": "Field",
-				"type": "anyType",
+				"type": "picklist",
 				"updateable": false,
 				"isFilterable": true,
 				"isSortable": true,

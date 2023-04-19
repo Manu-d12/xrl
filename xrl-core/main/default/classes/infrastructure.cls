@@ -30,6 +30,9 @@ global with sharing class infrastructure {
 				when 'query' {
 					resultMethod = getQuery(data);
 				}
+				when 'customSoql' {
+					resultMethod = customSoql(data);
+				}
 				when 'saveListView' {
 					resultMethod = saveListView(data);
 				}
@@ -63,10 +66,26 @@ global with sharing class infrastructure {
 				}
 			}
 		} catch (exception e) {
-
-			result.put('exception', new map < string, string > {
+		    string stackTrace = e.getStackTraceString();
+			string apexCode;
+			if (stackTrace!=null && stackTrace.indexOf('Class')>-1){
+			  string[] className = stackTrace.substringBetween('Class.',':').split('\\.'); //Class.TTNAMESPACE.infrastructure.saveRecords:
+			  string lineNumber = stackTrace.substringBetween('line ',',');
+              if (!String.isEmpty(className[1])&& !string.isEmpty(lineNumber)) {
+                ApexClass[] a = [SELECT Body FROM ApexClass WHERE Name =: className[1] AND NameSpacePrefix =: className[0] LIMIT 1];
+                if (a.size()>0) {
+					string[] codeLines = a[0].Body.split('\n');
+					apexCode = codeLines.size() >= integer.valueOf(lineNumber) ? codeLines[integer.valueOf(lineNumber) - 1] : null;
+				}
+              }
+			}
+            
+			result.put('exception', new map < string, object > {
 				'title' => 'EXCEPTION',
-				'message' => e.getMessage() + ' : ' + e.getStackTraceString()
+				'message' => e.getMessage(),
+				'debugMessage' => stackTrace,
+                'apexCode' => apexCode,
+                'input' => data
 			});
 		}
 		result.put(cmd + 'Result', resultMethod);
@@ -77,6 +96,8 @@ global with sharing class infrastructure {
 		System.debug(publicGroups);
 
 		result.put('userInfo', new map < string, object > {
+			'id'=> userinfo.getUserId(),
+			'name'=> userDetails.Name,
 			'timezone'=>UserInfo.getTimeZone().getID(),
 			'locale' => userInfo.getLocale().replaceAll('_', '-').replace('-EURO', ''),
 			'isAdminAccess' => isAdminAccess,
@@ -95,8 +116,10 @@ global with sharing class infrastructure {
 		string relField = (string) data.get('relField');
 		string addCondition = (string) data.get('addCondition');
 		string orderBy = (string) data.get('orderBy');
+		string limitCondition = (string) data.get('limit');
 		string listViewName = (string) data.get('listViewName');
 		string SQL = (string) data.get('SQL');
+		boolean isCreateble = Schema.getGlobalDescribe().get(sObjApiName).getDescribe().isCreateable();
 
 		boolean isNeedDescribe = (boolean) data.get('isNeedDescribe') == true;
 		set < string > fields = (set < string > ) JSON.deserialize(JSON.serialize(data.get('fields')), set < string > .class);
@@ -107,46 +130,41 @@ global with sharing class infrastructure {
 
 		if (string.isBlank(addCondition)) addCondition = '';
 
-		/*if (isNeedDescribe == true) {
-			map < string, Schema.DescribeFieldResult > describeResult = new map < string, Schema.DescribeFieldResult > ();
-			map < String, Schema.SObjectField > fieldsMap = Schema.getGlobalDescribe().get(sObjApiName).getDescribe().fields.getMap();
-			for (string fItem: fieldsMap.keySet()) {
-				Schema.DescribeFieldResult tmp = fieldsMap.get(fItem).getDescribe();
-				describeResult.put(tmp.getName(), tmp);
-			}
-			result.put('describe', JSON.serialize(describeResult));
-		}*/
+		result.putAll(getDescribeData(isNeedDescribe,sObjApiName));
 
-		if (UserInfo.isMultiCurrencyOrganization()) {
+		if (UserInfo.isMultiCurrencyOrganization() && isCreateble) {
 			System.debug('Multi Currency');
 			soqlFields.add('CurrencyIsoCode');
 		}
 
-		string SOQL = (relField != '') ?
-			'SELECT {fields} FROM {sObjApiName} WHERE {relField}=\'{recordId}\' {addCondition}'.replaceAll('\\{relField\\}', relField != null ? relField : '').replaceAll('\\{recordId\\}', recordId) :
-			'SELECT {fields} FROM {sObjApiName} {addCondition}';
-		
-		if(orderBy != null){
-			SOQL += orderBy;
-		}
-
-		system.debug(LoggingLevel.Error, SOQL);
-
-		SOQL = SOQL.replaceAll('\\{sObjApiName\\}', sObjApiName != null ? sObjApiName : '');
-		SOQL = SOQL.replaceAll('\\{addCondition\\}', addCondition != null ? addCondition : '');
+		// SELECT {fields} FROM {sObjApiName} WHERE {relField}=\'{recordId}\' {addCondition}
+		string SOQL = 'SELECT {fields} FROM {sObjApiName}';
 		SOQL = SOQL.replaceAll('\\{fields\\}', soqlFields != null ? string.join(new list < string > (soqlFields), ',') : '');
+		SOQL = SOQL.replaceAll('\\{sObjApiName\\}', sObjApiName != null ? sObjApiName : '');
+		if (String.isNotBlank(relField) && String.isNotBlank(recordId)) {
+			SOQL += ' WHERE {relField}=\'{recordId}\' '.replaceAll('\\{relField\\}', relField).replaceAll('\\{recordId\\}', recordId) ;
+		}
+		if (String.isNotBlank(addCondition)) {
+			SOQL += String.isNotBlank(relField) && String.isNotBlank(recordId) ? addCondition : ' WHERE ' + addCondition.trim().removeStart('AND');
+		}
+		SOQL += String.isNotBlank(orderBy) ? ' ' + orderBy : '';
+		SOQL += String.isNotBlank(limitCondition) ? ' ' + limitCondition : '';
 
 		//if (string.isBlank(SOQL)) throw new core.appException(null, string.format(core.appLabels.get('errCmdParams'), new string[]{'executeAnon','apexCode'}), core.ExceptionType.API);
 		system.debug(LoggingLevel.Error, 'SOQL ' + SOQL);
 
 		result.put('SOQL', SOQL);
-
+		system.debug('Heap size is ' + limits.getHeapSize() + ' enforced is ' + limits.getLimitHeapSize());
 		sObject[] records = database.query(SOQL);
-
+		system.debug('Heap size is ' + limits.getHeapSize() + ' enforced is ' + limits.getLimitHeapSize());
+		/*
 		SObjectAccessDecision decision = Security.stripInaccessible(AccessType.READABLE, records);
-
 		// Throw an exception if any data was stripped
 		if (!decision.getModifiedIndexes().isEmpty()) {
+			throw new InfrastructureException(null,'Data was stripped', Infrastructure.exceptionType.GENERAL);
+		}
+		*/
+		if (!Security.stripInaccessible(AccessType.READABLE, records).getModifiedIndexes().isEmpty()) {
 			throw new InfrastructureException(null,'Data was stripped', Infrastructure.exceptionType.GENERAL);
 		}
 
@@ -155,6 +173,25 @@ global with sharing class infrastructure {
 		//result.put('config', getConfig(sObjApiName, relField, listViewName));
 		return result;
 		//https://salesforce.stackexchange.com/questions/116688/lightning-get-sobject-tab-icon
+	}
+	private static object customSoql(map < string, object > data) {
+		string SOQL = (string) data.get('SOQL');
+		string sObjApiName = (string) data.get('sObjApiName');
+		boolean isNeedDescribe = true;
+		map < string, object > result = new map < string, object > ();
+		result.put('SOQL', SOQL);
+
+		result.putAll(getDescribeData(isNeedDescribe,sObjApiName));
+
+		sObject[] records = database.query(SOQL);
+		SObjectAccessDecision decision = Security.stripInaccessible(AccessType.READABLE, records);
+
+		// Throw an exception if any data was stripped
+		if (!decision.getModifiedIndexes().isEmpty()) {
+			throw new InfrastructureException(null,'Data was stripped', Infrastructure.exceptionType.GENERAL);
+		}
+		result.put('records', records);
+		return result;
 	}
 
 	private static map < string, object > getConfig(map < string, object > data) {
@@ -168,8 +205,7 @@ global with sharing class infrastructure {
 		list < map < string, object >> listViews = new list < map < string, object >> {};
 		List<String> extIds = new List<String>();
 
-		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c, CreatedBy.Name FROM extRelListConfig__c WHERE sObjApiName__c =: sObjApiName AND relFieldApiName__c =: relField AND Is_Active__c = TRUE AND RecordType.Name = 'Config'
-			ORDER BY isAdminConfig__c DESC, listViewName__c ASC LIMIT 20];
+		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c, CreatedBy.Name FROM extRelListConfig__c WHERE sObjApiName__c =: sObjApiName AND relFieldApiName__c =: relField AND Is_Active__c = TRUE ORDER BY isAdminConfig__c DESC, listViewName__c ASC LIMIT 20];
 		for (integer i = 0; i < lst.size(); i++) {
 			extRelListConfig__c item = lst[i];
 			extIds.add(item.Id);
@@ -187,32 +223,19 @@ global with sharing class infrastructure {
 			if (item.isAdminConfig__c) result.put('baseConfig', item.JSON__c);
 			listViews.add(view);
 		}
+		result.putAll(getOtherConfigInfo(isNeedDescribe,sObjApiName));
 		Map<Id, UserRecordAccess> extRecordAccess = new Map<Id, UserRecordAccess>([SELECT RecordId, HasEditAccess FROM UserRecordAccess WHERE UserId = :UserInfo.getUserId() AND RecordId IN :extIds]);
 		for(map < string, object > singleView : listViews){
 			singleView.put('hasEditAccess', (extRecordAccess.get((string) singleView.get('id'))).get('HasEditAccess'));
 		}
 		result.put('listViews', listViews);
-
-		if (isNeedDescribe == true) {
-			map < string, Schema.DescribeFieldResult > describeResult = new map < string, Schema.DescribeFieldResult > ();
-			map < String, Schema.SObjectField > fieldsMap = Schema.getGlobalDescribe().get(sObjApiName).getDescribe().fields.getMap();
-			for (string fItem: fieldsMap.keySet()) {
-				Schema.DescribeFieldResult tmp = fieldsMap.get(fItem).getDescribe();
-				describeResult.put(tmp.getName(), tmp);
-			}
-			result.put('describe', JSON.serialize(describeResult));
-		}
-		result.put('currency', new map < string, object > {
-			'orgCurrency' => UserInfo.getDefaultCurrency(),
-			'isMultyCurrencyOrg' => UserInfo.isMultiCurrencyOrganization()
-		});
-
 		result.put('iconMap', retrieveIconForObject(sObjApiName));
 
 		return result;
 	}
 	private static map < string, object > getConfigById(map < string, object > data) {
 		string configId = (string) data.get('configId');
+		string sObjApiName = (string) data.get('sObjApiName');
 		boolean isNeedDescribe = true;
 
 		map < string, object > result = new map < string, object > {};
@@ -236,16 +259,13 @@ global with sharing class infrastructure {
 			listViews.add(view);
 		}
 		result.put('listViews', listViews);
-
-		result.put('currency', new map < string, object > {
-			'orgCurrency' => UserInfo.getDefaultCurrency(),
-			'isMultyCurrencyOrg' => UserInfo.isMultiCurrencyOrganization()
-		});
+		result.putAll(getOtherConfigInfo(isNeedDescribe,sObjApiName));
 
 		return result;
 	}
 	private static map < string, object > getConfigByUniqueName(map < string, object > data) {
 		string uniqueName = (string) data.get('uniqueName');
+		string sObjApiName = (string) data.get('sObjApiName');
 		boolean isNeedDescribe = true;
 
 		map < string, object > result = new map < string, object > {};
@@ -269,12 +289,32 @@ global with sharing class infrastructure {
 			listViews.add(view);
 		}
 		result.put('listViews', listViews);
+		result.putAll(getOtherConfigInfo(isNeedDescribe,sObjApiName));
 
+		return result;
+	}
+	private static Map<String,Object> getOtherConfigInfo(Boolean isNeedDescribe ,String sObjApiName){
+		Map<String,Object> result = new Map<String,Object>();
+		result.putAll(getDescribeData(isNeedDescribe, sObjApiName));
 		result.put('currency', new map < string, object > {
 			'orgCurrency' => UserInfo.getDefaultCurrency(),
 			'isMultyCurrencyOrg' => UserInfo.isMultiCurrencyOrganization()
 		});
-
+		result.put('Financial', getFiscalData());
+		return result;
+	}
+	private static Map<String,Object> getDescribeData(Boolean isNeedDescribe ,String sObjApiName) {
+		Map<String,Object> result = new Map<String,Object>();
+		if (isNeedDescribe == true && sObjApiName != null) {
+			map < string, Schema.DescribeFieldResult > describeResult = new map < string, Schema.DescribeFieldResult > ();
+			map < String, Schema.SObjectField > fieldsMap = Schema.getGlobalDescribe().get(sObjApiName).getDescribe().fields.getMap();
+			for (string fItem: fieldsMap.keySet()) {
+				Schema.DescribeFieldResult tmp = fieldsMap.get(fItem).getDescribe();
+				describeResult.put(tmp.getName(), tmp);
+			}
+			result.put('describeSObject',JSON.serialize(Schema.getGlobalDescribe().get(sObjApiName).getDescribe()));
+			result.put('describe', JSON.serialize(describeResult));
+		}
 		return result;
 	}
 	private static object deleteConfig(map < string, object > data) {
@@ -298,6 +338,7 @@ global with sharing class infrastructure {
 		string sObjApiName = (string) data.get('sObjApiName');
 		string relField = (string) data.get('relField');
 		string config = (string) data.get('config');
+		string configType = (string) data.get('configType');
 
 		listViewName = string.isBlank(listViewName) ?
 			(isAdminAccess ? '_admin' : null) :
@@ -307,12 +348,11 @@ global with sharing class infrastructure {
 			listViewLabel;
 		boolean isAdminConf = listViewName == '_admin' ? isAdminAccess : listViewAdmin;
 
-		RecordType rt = [SELECT Id FROM RecordType WHERE Name = 'Config'
-			AND(SobjectType = 'extRelListConfig__c'
-				OR SobjectType = 'XRL__extRelListConfig__c') limit 1];
-
-		if(listViewName.equals('_admin') || listViewName.equals('_default')){
-			delete [select Id from extRelListConfig__c where listViewName__c = '_admin' OR listViewName__c = '_default'];
+		if(listViewName.equals('_admin')){
+			delete [select Id from extRelListConfig__c where listViewName__c = '_admin'];
+		}
+		if(listViewName.equals('_default')){
+			delete [select Id from extRelListConfig__c where listViewName__c = '_default'];
 		}
 
 		extRelListConfig__c listView = new extRelListConfig__c(
@@ -322,8 +362,8 @@ global with sharing class infrastructure {
 			relFieldApiName__c = relField,
 			isAdminConfig__c = isAdminConf,
 			JSON__c = config,
-			uniqKey__c = sObjApiName + ':' + relField + ':' + isAdminConf + ':' + (string.isBlank(listViewName) ? '' : listViewName),
-			RecordTypeId = rt.Id
+			ConfigType__c = String.isNotBlank(configType) ? configType : 'XRL',
+			uniqKey__c = sObjApiName + ':' + relField + ':' + isAdminConf + ':' + (string.isBlank(listViewName) ? '' : listViewName)
 		);
 
 		upsert listView uniqKey__c;
@@ -338,12 +378,12 @@ global with sharing class infrastructure {
 	private static boolean shareRecord(Id recordId){
 		List<extRelListConfig__Share> shrObj = new List<extRelListConfig__Share>();
 
-		for(User u:  [SELECT Id,name,ProfileId,IsActive FROM User WHERE Profile.UserLicense.Name != null AND Id != :UserInfo.getUserId()] ){
+		for(User u:  [SELECT Id,name,ProfileId,IsActive,UserType FROM User WHERE Profile.UserLicense.Name != null AND Id != :UserInfo.getUserId() AND UserType NOT IN ('Guest','CsnOnly','AutomatedProcess','CspLitePortal','CloudIntegrationUser')] ){
 			extRelListConfig__Share jobShr  = new extRelListConfig__Share();
 
 			jobShr.ParentId = recordId;
 			jobShr.UserOrGroupId = u.Id;
-			jobShr.AccessLevel = 'Read';
+			jobShr.AccessLevel = 'edit';
 			jobShr.RowCause = Schema.extRelListConfig__Share.RowCause.Manual;
 			shrObj.add(jobShr);
 		}
@@ -356,9 +396,10 @@ global with sharing class infrastructure {
 	private static object saveRecords(map < string, object > data) {
 		//https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_class_System_Security.htm#apex_System_Security_stripInaccessible
 		string sObjApiName = (string) data.get('sObjApiName');
-		boolean isRollback = (boolean) data.get('rollback');
+		boolean isRollback = (boolean) data.get('rollback') == true;
+		boolean isInsert = (boolean) data.get('isInsert') == true;
 		Type T = type.forName('list<' + sObjApiName + '>');
-		sObject[] records = (sObject[]) JSON.deserialize(JSON.serialize(data.get('records')), T);
+		
 		/*This part only for security review. Please don't remove
 		SObjectAccessDecision decision = Security.stripInaccessible(AccessType.UPDATABLE,records);
 
@@ -371,12 +412,15 @@ global with sharing class infrastructure {
 		//update securityDecision.getRecords() update records that can be updated
 		*/
         if (data.get('beforeSaveAction') != null) {
-            invokeApex((string) data.get('beforeSaveAction'), records);
+			system.debug(LoggingLevel.Error, 'APEX INVOCATION ' + (string) data.get('beforeSaveAction'));
+            invokeApex((string) data.get('beforeSaveAction'), data);
+			system.debug(LoggingLevel.Error, 'APEX INVOCATION END ' + (string) data.get('beforeSaveAction'));
         }
-		Savepoint sp = Database.setSavepoint();
-		system.debug(isRollback);
+        sObject[] records = (sObject[]) JSON.deserialize(JSON.serialize(data.get('records')), T);
+		// Savepoint sp = Database.setSavepoint();
+		system.debug('RollBack ' + isRollback);
  
-		List<Database.SaveResult> srs = Database.update(records, isRollback); 
+		List<Database.SaveResult> srs = (isInsert == true) ? Database.insert(records, isRollback) : Database.update(records, isRollback); 
 		for (Database.SaveResult sr : srs) {
 			if (!sr.isSuccess()) {
 				String error = '';
@@ -597,6 +641,9 @@ global with sharing class infrastructure {
 			'lbl_groupingFunction'=>label.lbl_groupingFunction,
 			'lbl_groupFieldName'=>label.lbl_groupFieldName,
 			'lbl_groupOrder'=>label.lbl_groupOrder,
+			'lbl_resetFilters'=>label.lbl_resetFilters,
+			'lbl_blankValuesNotAllowed'=>label.lbl_blankValuesNotAllowed,
+			'lbl_collapseView'=>label.lbl_collapseView,
 			'msg_enterUniqueActionId'=>label.msg_enterUniqueActionId,
 			'msg_lisViewWasUpdated' => label.msg_lisViewWasUpdated,
 			'msg_requestWasSent' => label.msg_requestWasSent,
@@ -799,14 +846,15 @@ global with sharing class infrastructure {
 		return iconPropertyMap;
 	}
 
-	private static List < String > objectList() {
+	private static Map<String,String> objectList() {
 		Map < String, Schema.SObjectType > gd = Schema.getGlobalDescribe();
 
-		List < String > objs = new List < String > ();
+		Map<String,String>  objs = new Map<String,String> ();
 
 		for (Schema.SObjectType thisObj: gd.values()) {
-			if (thisObj.getDescribe().isQueryable()) {
-				objs.add(String.valueOf(thisObj));
+			Schema.DescribeSObjectResult objResult = thisObj.getDescribe();
+			if (objResult.isQueryable()) {
+				objs.put(String.valueOf(objResult.getName()),objResult.getLabel());
 			}
 		}
 		return objs;
@@ -823,38 +871,62 @@ global with sharing class infrastructure {
 		result.put('describe', JSON.serialize(describeResult));
 		return result;
 	}
+	private static Map<String, Map<String, Object>> getFiscalData(){
+		Map<String, Object> result = new Map<String, Object>();
+
+		Date dat = System.today();
+		Integer yr = dat.year();
+
+		List<Id> fiscalYearList = new List<Id>(new Map<Id, FiscalYearSettings>([
+			SELECT Id FROM FiscalYearSettings 
+			WHERE CALENDAR_YEAR(StartDate) IN (:(yr-1),:yr,:(yr+1))
+			ORDER BY StartDate ASC
+		]).keySet());
+
+		List<Period> periods = [
+			SELECT Id, StartDate, EndDate, FullyQualifiedLabel, Number, FiscalYearSettingsId 
+			FROM Period 
+			WHERE Type = 'Quarter' AND FiscalYearSettingsId IN :fiscalYearList 
+			ORDER BY StartDate ASC
+		];
+		Map<String, Map<String, Object>> years = new Map<String, Map<String, Object>>{
+			'prevYear' => new Map<String, Object>(),
+			'currentYear' => new Map<String, Object>(),
+			'nextYear' => new Map<String, Object>()
+		};
+
+		for (Integer i = 0; i < periods.size(); i++) {
+			Period quarter = periods[i];
+			Integer quarterNum = math.mod(i,4) + 1;
+
+			if (fiscalYearList[0] == quarter.FiscalYearSettingsId) {
+				years.get('prevYear').put('FQ' + quarter.Number, quarter);
+			} else if (fiscalYearList[1] == quarter.FiscalYearSettingsId) {
+				years.get('currentYear').put('FQ' + quarter.Number, quarter);
+			} else {
+				years.get('nextYear').put('FQ' + quarter.Number, quarter);
+			}
+		}
+		return years;
+	}
     
-    private static void invokeApex(string helperType, sObject[] records) {
-        string helperTypeClass = 'HLP_' + helperType.replace('.', '_');
-    	try {
-            // check class exist or not
-            ApexClass[] A = [SELECT Id, NamespacePrefix FROM ApexClass WHERE Name =: helperTypeClass LIMIT 1];
-            
-            if (A.size() == 0) throw new InfrastructureException(null, 'Can\'t find class {1}'.replace('{1}', helperType) + ':' + helperTypeClass, exceptionType.CLASS_NOT_FOUND);
-                        
-            Type T = string.isEmpty(A[0].namespacePrefix) ? type.forName(helperType) : type.forName(A[0].namespacePrefix, helperType);
-            if (T == null) throw new InfrastructureException(null, ('Can\'t find method {1} in class ' + helperType).replace('{1}', helperType) + ':' + helperTypeClass, exceptionType.INSTANCE_CLASS_NOT_FOUND);
-            
-            //system.debug(LoggingLevel.Error, JSON.serialize(data));
-            //system.debug(LoggingLevel.Error, T.toString());
-            
-            
-            /*handler handlerClass = (handler) JSON.deserialize(allParams, T);
-            try {
-                result = handlerClass.execute(data);
-            } catch (Exception e) {
-                string eMsg = getExceptionString(e, 'IMPLEMENTATION EXCEPTION');
-                system.debug(LoggingLevel.Error, eMsg);
-                infrastructure.addError('-1', eMsg);
-                infrastructure.addStackTrace('-1', infrastructure.getStackTraceString(e, 'EXCEPTION'));
-            }*/
-        } catch (Exception E) {
-            //string eMsg = getExceptionString(e, 'EXCEPTION');
-            //system.debug(LoggingLevel.Error, eMsg);
-            //infrastructure.addError('-1', eMsg);
-            //infrastructure.addStackTrace('-1', infrastructure.getStackTraceString(e, 'EXCEPTION'));
-        }
+    private static void invokeApex(string helperType, map<string, object> data) {
+		string nameSpacePrefix = (string) data.get('nameSpacePrefix');
+		string[] apexHelper = helperType.split('.');
+		
+        string helperTypeClass = 'HLP_' + apexHelper[0];// customActions.getPackage, customActions.getPackage, customActions, Stratavar.customActions
+    	
+        // check class exist or not
+        ApexClass[] A = [SELECT Id, NamespacePrefix FROM ApexClass WHERE Name =: helperTypeClass ORDER BY NamespacePrefix ASC NULLS FIRST LIMIT 1];
         
+        if (A.size() == 0) throw new InfrastructureException(null, 'Can\'t find class {1}'.replace('{1}', helperType) + ':' + helperTypeClass, exceptionType.CLASS_NOT_FOUND);
+        
+        Type T = string.isEmpty(A[0].namespacePrefix) ? type.forName(helperType) : type.forName(A[0].namespacePrefix, helperType);
+        if (T == null) throw new InfrastructureException(null, ('Can\'t find method {1} in class ' + helperType).replace('{1}', helperType) + ':' + helperTypeClass, exceptionType.INSTANCE_CLASS_NOT_FOUND);
+                
+        
+        handler handlerClass = (handler) JSON.deserialize(JSON.serialize(data), T);
+        handlerClass.execute(data);
     }
 
 	global class InfrastructureException extends Exception {

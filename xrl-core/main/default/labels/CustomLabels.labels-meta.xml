@@ -1315,7 +1315,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_actionIconName</shortDescription>
-        <value>Name of the icon to be shown</value>
+        <value>Name of the icon to be shown ( www.lightningdesignsystem.com/icons/ )</value>
     </labels>
     <labels>
         <fullName>lbl_actionId</fullName>
@@ -1372,7 +1372,9 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>placeholder_actionCallback</shortDescription>
-        <value>function(){\nconsole.log(&apos;&apos;);\n}</value>
+        <value>function(){
+        console.log(&apos;Custom Action Callback&apos;);
+        }</value>
     </labels>
     <labels>
         <fullName>tooltip_actionIconName</fullName>
@@ -1444,10 +1446,12 @@ function(row,col,val){
         <protected>true</protected>
         <shortDescription>placeHolder_beforeSaveValidation</shortDescription>
         <value>function(record){
-console.log(&apos;Record Type &apos;,record.Type);
-  if(record.Type==&apos;Electrical&apos;) 
-  record.Type==&apos;Mechanical&apos;;
-}</value>
+        console.log(&apos;Record Type &apos;,record.Type);
+        if(record.Type==&apos;Electrical&apos;) 
+        return true;
+        else
+        return false;
+        }</value>
     </labels>
     <labels>
         <fullName>tooltip_beforeSaveValidation</fullName>
@@ -1902,5 +1906,29 @@ Once you are done editing the pattern, click outside the input box.</value>
         <protected>true</protected>
         <shortDescription>tooltip_groupOrder</shortDescription>
         <value>ASC for Ascending and DESC for Descending</value>
+    </labels>
+    <labels>
+        <fullName>lbl_resetFilters</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_resetFilters</shortDescription>
+        <value>Reset Filters</value>
+    </labels>
+    <labels>
+        <fullName>lbl_blankValuesNotAllowed</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_blankValuesNotAllowed</shortDescription>
+        <value>You cannot keep the input blank</value>
+    </labels>
+    <labels>
+        <fullName>lbl_collapseView</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_collapseView</shortDescription>
+        <value>Collapse View</value>
     </labels>
 </CustomLabels>

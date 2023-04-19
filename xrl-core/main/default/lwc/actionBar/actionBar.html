@@ -1,25 +1,12 @@
 <template>
-    <template if:true={actionscfg.actions} for:each={config.actions} for:item="action" for:index="index">
-        <!-- If the action is not hidden -->
-        <template if:false={action.actionIsHidden}>
-            <template if:true={action.actionVisibleOnRecordSelection}>
-                <template if:true={config.dataTable.rowChecked}>
-                    <lightning-button-icon if:true={action.actionIconName} key={action.actionId} icon-name={action.actionIconName} 
-                    id={action.actionId} data-id={action.actionId} title={action.actionTip} 
-                    onclick={handleEventClick} class="slds-m-left_x-small"></lightning-button-icon>
-                    <lightning-button if:false={action.actionIconName} key={action.actionId} variant="brand" 
-                    id={action.actionId} data-id={action.actionId} label={action.actionLabel} title={action.actionTip} 
-                    onclick={handleEventClick} class="slds-m-left_x-small"></lightning-button>
-                </template>
-            </template>
-            <template if:false={action.actionVisibleOnRecordSelection}>
-                <lightning-button-icon if:true={action.actionIconName} key={action.actionId} icon-name={action.actionIconName} 
-                id={action.actionId} data-id={action.actionId} title={action.actionTip} 
-                onclick={handleEventClick} class="slds-m-left_x-small"></lightning-button-icon>
-                <lightning-button if:false={action.actionIconName} key={action.actionId} variant="brand" 
-                id={action.actionId} data-id={action.actionId} label={action.actionLabel} title={action.actionTip} 
-                onclick={handleEventClick} class="slds-m-left_x-small"></lightning-button>
-            </template>
+    <template if:false={config.showActionDropdown}>
+        <template if:true={visibleActions} for:each={visibleActions} for:item="action" for:index="index">
+            <c-action key={action.actionId} data-id={action.actionId} action={action} onclick={handleEventClick}></c-action>
         </template>
     </template>
+    <lightning-button-menu if:true={config.showActionDropdown} variant="border-filled" icon-name="utility:apps" class="slds-p-horizontal_xx-small" menu-alignment="right">
+        <template if:true={visibleActions} for:each={visibleActions} for:item="action" for:index="index">
+            <lightning-menu-item key={action.actionId} data-id={action.actionId} label={action.actionLabel} prefix-icon-name={action.actionIconName} onclick={handleEventClick}></lightning-menu-item>
+        </template>
+    </lightning-button-menu>
 </template>

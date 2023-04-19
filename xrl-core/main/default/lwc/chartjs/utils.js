@@ -1,5 +1,7 @@
 export let utils = {
 
+    source: '',
+
     randomColors(length, opacity) {
         return [...new Array(length || 0)].map(() => {
             let r = Math.floor(Math.random() * 255);
@@ -10,10 +12,10 @@ export let utils = {
     },
 
     paletteColors(length, index, opacity) {
-        return [...new Array(length || 0)].map((c, i) => {
-            let color = this.palettes[index || 0][i % length];
+        return length ? [...new Array(length)].map((c, i) => {
+            let color = this.palettes[index || 0][i % this.palettes[index || 0].length];
             return opacity ? color.replace(',1)', ',' + opacity + ')') : color;
-        });
+        }) : [];
     },
 
     palettes: [

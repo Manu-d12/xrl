@@ -41,29 +41,22 @@ export default class SqlBuilder extends LightningElement {
         });
         return breadCrumbStr;
     }
-    get livequery(){
-        if(this.config.sqlBuilder.selectedFields.length > 0){
-            let query = 'SELECT ';
-            this.config.sqlBuilder.selectedFields.forEach((el)=>{
-                query += el.fieldName + ', ';
-            });
-            query = query.slice(0, -2);
-            query += ' FROM ' + this.config.sObjApiName;
-            if(this.config.sqlBuilder.conditions.length > 0){
-                query += ' WHERE ';
-                query += this.generateCondition();
-            }
-            if(this.config.sqlBuilder.orderings.length > 0){
-                let str = ' ORDER BY ';
-                this.config.sqlBuilder.orderings.forEach((el)=>{
-                    str += el.field.fieldName + ' ' + el.sortOrder + ' ' +el.emptyField + ', ';
-                });
-                str = str.slice(0, -2);
-                query += str;
-            }
-            return query;
+    get livequery() {
+        const { sqlBuilder, sObjApiName } = this.config;
+      
+        if (sqlBuilder.selectedFields.length === 0) {
+          return null;
         }
-    }
+      
+        const selectedFields = sqlBuilder.selectedFields.map(({ fieldName }) => fieldName).join(", ");
+        const whereClause = sqlBuilder.conditions.length > 0 ? ` WHERE ${this.generateCondition()}` : "";
+        const orderByClause = sqlBuilder.orderings.length > 0
+          ? ` ORDER BY ${sqlBuilder.orderings.map(({ field: { fieldName }, sortOrder, emptyField }) => `${fieldName} ${sortOrder} ${emptyField}`).join(", ")}`
+          : "";
+      
+        return `SELECT ${selectedFields} FROM ${sObjApiName}${whereClause}${orderByClause}`;
+      }
+      
     dialogValues(val){
         this.config.dialog.listViewConfig.colModel = this.config.sqlBuilder.selectedFields;
         let conStr = this.generateCondition();
@@ -151,6 +144,7 @@ export default class SqlBuilder extends LightningElement {
         if(val === "sqlBuilder:deleteSelectedField"){
             let field = event.target.getAttribute('data-val');                
             this.config.sqlBuilder.selectedFields = this.config.sqlBuilder.selectedFields.filter(function(e) { return e.fieldName !== field });
+            this.ElementList = this.ElementList.filter(function(e) { return e !== field; });
             this.dialogValues();
         }
 
@@ -208,29 +202,38 @@ export default class SqlBuilder extends LightningElement {
             };
         }
         if(val === "sqlBuilder:conditions:addCondition"){
-            this.config.sqlBuilder.openConditionInput = false;
-            this.config.sqlBuilder.conditionOperations = undefined;
-            this.config.sqlBuilder.currentCondition.key = this.config.sqlBuilder.conditions.field + this.config.sqlBuilder.conditions.length;
-            if(this.config.sqlBuilder.currentCondition.index === undefined){
-                if(!this.isConditionExists(this.config.sqlBuilder.currentCondition,this.config.sqlBuilder.conditions)){
-                    this.config.sqlBuilder.currentCondition.index = '#' + (this.config.sqlBuilder.conditions.length + 1);
-                    this.config.sqlBuilder.conditionOrdering += (this.config.sqlBuilder.conditions.length + 1) === 1 ?
-                    '#' + (this.config.sqlBuilder.conditions.length + 1) : ' AND #' + (this.config.sqlBuilder.conditions.length + 1);
-                    this.config.sqlBuilder.conditions.push(this.config.sqlBuilder.currentCondition);
+            if((this.config.sqlBuilder.currentCondition.operator.isUnary != undefined && this.config.sqlBuilder.currentCondition.operator.isUnary === true) 
+            || this.config.sqlBuilder.currentCondition.value != undefined){
+                this.config.sqlBuilder.openConditionInput = false;
+                this.config.sqlBuilder.conditionOperations = undefined;
+                this.config.sqlBuilder.currentCondition.key = this.config.sqlBuilder.conditions.field + this.config.sqlBuilder.conditions.length;
+                if(this.config.sqlBuilder.currentCondition.index === undefined){
+                    if(!this.isConditionExists(this.config.sqlBuilder.currentCondition,this.config.sqlBuilder.conditions)){
+                        this.config.sqlBuilder.currentCondition.index = '#' + (this.config.sqlBuilder.conditions.length + 1);
+                        this.config.sqlBuilder.conditionOrdering += (this.config.sqlBuilder.conditions.length + 1) === 1 ?
+                        '#' + (this.config.sqlBuilder.conditions.length + 1) : ' AND #' + (this.config.sqlBuilder.conditions.length + 1);
+                        this.config.sqlBuilder.conditions.push(this.config.sqlBuilder.currentCondition);
+                    }else{
+                        const toast = new ShowToastEvent({
+                            title: 'Error',
+                            message: this.config._LABELS.lbl_conditionAlreadyExists,
+                            variant: 'error'
+                        });
+                        this.dispatchEvent(toast);
+                    }
                 }else{
-                    const toast = new ShowToastEvent({
-                        title: 'Error',
-                        message: this.config._LABELS.lbl_conditionAlreadyExists,
-                        variant: 'error'
-                    });
-                    this.dispatchEvent(toast);
+                    let fieldInd = this.config.sqlBuilder.conditions.findIndex((el)=> el.index.toString() === this.config.sqlBuilder.currentCondition.index);
+                    this.config.sqlBuilder.conditions[fieldInd] = this.config.sqlBuilder.currentCondition;
                 }
+                this.dialogValues(true);
             }else{
-                let fieldInd = this.config.sqlBuilder.conditions.findIndex((el)=> el.index.toString() === this.config.sqlBuilder.currentCondition.index);
-                this.config.sqlBuilder.conditions[fieldInd] = this.config.sqlBuilder.currentCondition;
+                const toast = new ShowToastEvent({
+                    title: 'Error',
+                    message: this.config._LABELS.lbl_blankValuesNotAllowed,
+                    variant: 'error'
+                });
+                this.dispatchEvent(toast);
             }
-            this.dialogValues(true);
-            // this.config.sqlBuilder.conditionOperations = false;
         }
         if(val === "sqlBuilder:conditions:conditionText"){
             this.config.sqlBuilder.currentCondition.value = event.target.value;
@@ -322,6 +325,7 @@ export default class SqlBuilder extends LightningElement {
             this.config.sqlBuilder.currentOrder.emptyField = emptyField;
         }
         if(val === "sqlBuilder:ordering:addOrdering"){
+            this.config.sqlBuilder.currentOrder.sortOrder = this.config.sqlBuilder.currentOrder.sortOrder === undefined ? 'ASC' : this.config.sqlBuilder.currentOrder.sortOrder;
             this.upsertArray(this.config.sqlBuilder.orderings,this.config.sqlBuilder.currentOrder);
             this.config.sqlBuilder.currentOrder = false;
             this.dialogValues(true);
@@ -376,19 +380,9 @@ export default class SqlBuilder extends LightningElement {
     generateFields(describe,objStr,sObjName){
         let fields = [];
         let fieldMap = {}; // moving this outside the loop to avoid re-creation and ease changing the properties
+        /*eslint-disable*/
         for (let key in describe) {
-            if (describe[key].type === 'reference') {
-                fieldMap = { 
-                    label: describe[key].relationshipName + ' > ', 
-                    fieldName: describe[key].relationshipName,
-                    refObj: describe[key].referenceTo[0], 
-                    css: 'slds-item', 
-                    type: describe[key].type,
-                };
-                fieldMap.helpText = describe[key].relationshipName + ' (' + describe[key].referenceTo?.join(', ') + ')';
-                // I noticed that in some reference fields, there are multiple objects in the referenceTo array, so I joined all of them to the helpText
-                fields.push(fieldMap);	
-            }else{
+
                 let itemCss = this.config.sqlBuilder.selectedFields.find(el => el.fieldName === (objStr ? objStr + describe[key].name : describe[key].name)) ? 'slds-item slds-theme_alt-inverse' : 'slds-item';
                  fieldMap = { 
                     label: describe[key].label, 
@@ -397,7 +391,7 @@ export default class SqlBuilder extends LightningElement {
                     type: describe[key].type,
                     updateable: describe[key].updateable,
                     isNameField: describe[key] && describe[key].nameField === true,
-                    referenceTo: sObjName
+                    referenceTo: describe[key].referenceTo[0],
                 };
                 fieldMap.helpText = fieldMap.fieldName +  ' (' + describe[key].type + ')'; // assigning outside to get the fieldname to be populated first
                 // the fieldname was previously used as the helptext but 
@@ -411,10 +405,9 @@ export default class SqlBuilder extends LightningElement {
                         )
                     });
                 }
-                if (describe[key].updateable || describe[key].nameField) {
-                    if (fieldMap.type === 'picklist' || fieldMap.type === 'reference' || fieldMap.type === 'multipicklist') {
+				if (describe[key].updateable || describe[key].nameField) {
+                    if (fieldMap.type === 'picklist' || fieldMap.type === 'multipicklist') {
                         fieldMap.isEditableAsPicklist = true;
-                        console.log('picklist', fieldMap);
                     } else if (fieldMap.type === 'boolean') {
                         fieldMap.isEditableBool = true;
                     } else {
@@ -426,7 +419,20 @@ export default class SqlBuilder extends LightningElement {
                 fieldMap.isFilterable = true;
                 fieldMap.isSortable = true;
                 fields.push(fieldMap);
-            }
+                if (describe[key].type === 'reference') {
+                    fieldMap = { 
+                        label: describe[key].label + ' > ', 
+                        fieldName: describe[key].relationshipName,
+                        refObj: describe[key].referenceTo[0], 
+                        css: 'slds-item', 
+                        type: describe[key].type,
+                        isNameField: describe[key] && describe[key].nameField === true,
+                        referenceTo: describe[key].referenceTo[0],
+                    };
+                    fieldMap.helpText = describe[key].relationshipName + ' (' + describe[key].referenceTo?.join(', ') + ')';
+                    // I noticed that in some reference fields, there are multiple objects in the referenceTo array, so I joined all of them to the helpText
+                    fields.push(fieldMap);	
+                }
         }
         return fields;
     }
@@ -498,67 +504,50 @@ export default class SqlBuilder extends LightningElement {
         this.config.sqlBuilder._objectStack = [{relationShip:this.config.sObjApiName,referredObj:this.config.sObjApiName}];
         this.config.sqlBuilder.searchTerm = '';
     }
-    //need to improve this function
-    isStrAllowed(val){
-        if(this.areBracketsBalanced(val)){
-            let status = true;
-            for(let i = 0; i < val.length; i++){
-                let char = val[i];
-                if(char == ')' || char == '(' || char == ' ' || char == '#') continue;
-                else if(/^\d+$/.test(char)){
-                    //checking if it is number
-                }
-                else if((char == 'A' || char == 'a') && val[i+2] != undefined && (val[i+2] == 'D' || val[i+2] == 'd')){
-                    i =i+2;
-                }
-                else if((char == 'O' || char == 'o') && val[i+1] != undefined && (val[i+1] == 'R' || val[i+1] == 'r')){
-                    i = i +1;
-                }else{
-                    console.log('NOt Valid', char);
-                    status = false;
-                    const toast = new ShowToastEvent({
-                        title: 'Error',
-                        message: this.config._LABELS.msg_invalidInputSqlBuilderConditionFormat,
-                        variant: 'error'
-                    });
-                    this.dispatchEvent(toast);
-                    break;
-                }
-            }
-            return status;
-        }else{
-            console.log('Brackets mismatched');
-            const toast = new ShowToastEvent({
-                title: 'Error',
-                message: this.config._LABELS.msg_invalidInputSqlBuilderConditionFormat,
-                variant: 'error'
-            });
-            this.dispatchEvent(toast);
-            return false;
-        }
-    }
-    areBracketsBalanced(expr){
-        let stack = [];
-        for(let i = 0; i < expr.length; i++){
-            let x = expr[i];
-            if (x == '('){ 
-                stack.push(x);
-                continue;
-            }
-
-            if (x == ')' && stack.length == 0)
-                return false;
-                
-            let check;
-            switch (x){
-            case ')':
-                check = stack.pop();
-                if (check == '{' || check == '[')
+    isStrAllowed(expression) {
+        const validChars = [' ', 'AND', 'OR', '(', ')', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '#'];
+        const stack = [];
+        let i = 0;
+    
+        while (i < expression.length) {
+            const char = expression[i];
+    
+            if (char === '(') {
+                stack.push(char);
+            } else if (char === ')') {
+                if (stack.length === 0) {
+                    console.log('Invalid expression: Mismatched parentheses');
                     return false;
-                break;
+                }
+                stack.pop();
+            } else if (!validChars.includes(char)) {
+                let j = i;
+                while (j < expression.length && expression[j] !== ' ') {
+                    j++;
+                }
+                const word = expression.substring(i, j);
+                if (!validChars.includes(word)) {
+                    console.log(`Invalid character: "${word}"`);
+                    return false;
+                }
+                i = j - 1;
+            } else if (char === '#') {
+                if (i === expression.length - 1 || !(/[0-9]/.test(expression[i+1]))) {
+                    console.log('Invalid expression: "#" must be followed by a number');
+                    return false;
+                }
             }
+    
+            i++;
         }
     
-        return (stack.length == 0);
-    }
+        if (stack.length !== 0) {
+            console.log('Invalid expression: Mismatched parentheses');
+            return false;
+        }
+    
+        console.log('Valid expression');
+        return true;
+    }      
+    
 }
