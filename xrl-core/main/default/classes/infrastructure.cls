@@ -906,9 +906,9 @@ global with sharing class infrastructure {
     
     private static void invokeApex(string helperType, map<string, object> data) {
 		string nameSpacePrefix = (string) data.get('nameSpacePrefix');
-		string[] apexHelper = helperType.split('.');
+		string[] apexHelper = helperType.split('\\.');
 		
-        string helperTypeClass = 'HLP_' + apexHelper[0];// customActions.getPackage, customActions.getPackage, customActions, Stratavar.customActions
+        string helperTypeClass = apexHelper[0];// customActions.getPackage, customActions.getPackage, customActions, Stratavar.customActions
     	
         // check class exist or not
         ApexClass[] A = [SELECT Id, NamespacePrefix FROM ApexClass WHERE Name =: helperTypeClass ORDER BY NamespacePrefix ASC NULLS FIRST LIMIT 1];
@@ -918,7 +918,6 @@ global with sharing class infrastructure {
         Type T = string.isEmpty(A[0].namespacePrefix) ? type.forName(helperType) : type.forName(A[0].namespacePrefix, helperType);
         if (T == null) throw new InfrastructureException(null, ('Can\'t find method {1} in class ' + helperType).replace('{1}', helperType) + ':' + helperTypeClass, exceptionType.INSTANCE_CLASS_NOT_FOUND);
                 
-        
         handler handlerClass = (handler) JSON.deserialize(JSON.serialize(data), T);
         handlerClass.execute(data);
     }
