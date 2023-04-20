@@ -10,8 +10,16 @@ export default class Chevron extends LightningElement {
 
     connectedCallback() {
         let conf = libs.getGlobalVar(this.name);
-        this.config = this.parseConfig(conf.pathConfig);
-        this.selected = this.config.selected || 0;
+        this.config = this.parseConfig(conf.chevronConfig);
+        this.selected = this.config.selected || 0;      
+        let chevronStep = libs.getGlobalVar('chevronStep');
+        if (chevronStep && chevronStep[this.name]) {
+            this.selected = chevronStep[this.name];
+        } else {
+            chevronStep = chevronStep || {};
+            chevronStep[this.name] = this.selected;
+            libs.setGlobalVar('chevronStep', chevronStep);
+        }
         this.setSteps();
     }
 
@@ -28,11 +36,12 @@ export default class Chevron extends LightningElement {
         let newStep = Number(e.currentTarget.dataset.id);
         if (this.config.steps[newStep].disabled) return;
         this.selected = newStep;
+        libs.getGlobalVar('chevronStep')[this.name] = newStep;
         if (this.config.steps[newStep].callback && typeof this.config.steps[newStep].callback === 'function') {
             this.config.steps[newStep].callback(this, libs);
         }
         this.setSteps();
-        this.dispatchEvent(new CustomEvent('message', { detail: { cmd: 'path:change', source: this.name } }));
+        this.dispatchEvent(new CustomEvent('message', { detail: { cmd: 'chevron:change', source: this.name, cfg: this.config.steps[newStep].cfg } }));
     }
 
     parseConfig(v) {

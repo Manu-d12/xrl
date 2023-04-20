@@ -66,6 +66,7 @@ export default class Layout extends LightningElement {
 				if(el.cmpName === 'dataTable') this.components.push({isDataTable:true,key:'sFilter'+index});
 				if(el.cmpName === 'serversideFilter') this.components.push({isServerFilter:true,key:'dataTable'+index});
 				if(el.cmpName === 'chart') this.components.push({isChart:true,key:'chart'+index});
+				if(el.cmpName === 'chevron') this.components.push({isChevron:true,key:'chevron'+index});
 			});
 			// this.config.listViewName = jsonDetails[0].name;
 			// this.config.sObjApiName = jsonDetails[0].sObjApiName;
@@ -193,6 +194,12 @@ export default class Layout extends LightningElement {
 				ch.parentElement.parentElement.classList.add('slds-is-open');
 				ch.parentElement.parentElement.scrollIntoView(true, {behavior: 'smooth'});
 			});
+		} else if(event.detail.cmd.startsWith('chevron:')) {
+			if (event.detail.cfg) {
+				this.configId = event.detail.cfg;
+				this.connectedCallback();
+				this.isLoaded = false;
+			}
 		}
 		if(event.detail.cmd.startsWith('global:')) this.handleGlobalMessage(event);
 	}
@@ -228,6 +235,7 @@ export default class Layout extends LightningElement {
 				cmp.isDataTable = cmp.cmpName === 'dataTable';
 				cmp.isServerFilter = cmp.cmpName === 'serversideFilter';
 				cmp.isChart = cmp.cmpName === 'chart';
+				cmp.isChevron = cmp.cmpName === 'chevron';
 		
 				// Set component configuration
 				this.name = cmp.uniqueName;
@@ -255,6 +263,10 @@ export default class Layout extends LightningElement {
 				} else if (cmp.isChart) {
 					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
 						this.config.chartConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig) : [];
+					} });
+				} else if (cmp.isChevron) {
+					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
+						this.config.chevronConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig) : [];
 					} });
 				}
 			}
