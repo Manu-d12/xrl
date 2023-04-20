@@ -25,6 +25,8 @@
                                 cfg={component.uniqueName}></c-Data-Table>
                             <c-chartjs if:true={component.isChart} style={component.cmpStyle} name={component.uniqueName}
                                 onmessage={handleChildMessage}></c-chartjs>
+                            <c-chevron if:true={component.isChevron} style={component.cmpStyle} name={component.uniqueName}
+                                onmessage={handleChildMessage}></c-chevron>
                         </template>
                         <template if:true={component.isCollapsible}>
                             <div class="slds-section" data-id={component.uniqueName}>
@@ -43,6 +45,8 @@
                                         cfg={component.uniqueName}></c-Data-Table>
                                     <c-chartjs if:true={component.isChart} style={component.cmpStyle} name={component.uniqueName}
                                         onmessage={handleChildMessage}></c-chartjs>
+                                    <c-chevron if:true={component.isChevron} style={component.cmpStyle} name={component.uniqueName}
+                                        onmessage={handleChildMessage}></c-chevron>
                                 </div>
                             </div>
                         </template>
