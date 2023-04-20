@@ -21,7 +21,7 @@
         </div>
         <div class="slds-col slds-size_2-of-12" if:true={config.showCompareButton}>
             <br/><br/>
-            <button data-id="btn:compare" class="slds-button slds-button_brand" onclick={handleEvent} style="float:right;">Compare</button>
+            <button data-id="btn:compare" class={config.json.compareButton.class} onclick={handleEvent} style="float:right;">{config.json.compareButton.label}</button>
         </div>
     </div>
     <template if:true={config.showComparisonTable}>

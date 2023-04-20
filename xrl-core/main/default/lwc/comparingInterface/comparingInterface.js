@@ -87,7 +87,7 @@ export default class ComparingInterface extends LightningElement {
                 })
             });
         }
-        if((selectedFor.startsWith('obj') && this.leftRecord === undefined) || ((this.leftRecord !== 'CurrentRecord' && this.leftRecord !== 'recordId') && this.config.cr1 === undefined)){
+        if(selectedFor.startsWith('obj') && (this.leftRecord !== 'CurrentRecord' && this.leftRecord !== 'recordId')){
             //Getting the records from depending on selected object
             await libs.remoteAction(this, 'query', {
                 sObjApiName: selectedObj,
@@ -122,7 +122,7 @@ export default class ComparingInterface extends LightningElement {
                 })
             });
         }
-        if((selectedFor.startsWith('obj') && this.rightRecord === undefined) || ((this.rightRecord !== 'CurrentRecord' && this.rightRecord !== 'recordId') && this.config.cr2 === undefined)){
+        if(selectedFor.startsWith('obj') && (this.rightRecord !== 'CurrentRecord' && this.rightRecord !== 'recordId')){
             //Getting the records from depending on selected object
             await libs.remoteAction(this, 'query', {
                 sObjApiName: selectedObj,
@@ -142,14 +142,21 @@ export default class ComparingInterface extends LightningElement {
         if((this.config.userSelections.recOne?.length > 0 && this.config.userSelections.recTwo?.length > 0) || 
         (this.config.userSelections.recOne?.length > 0 && this.config.cr2?.length > 0) ||
         (this.config.userSelections.recTwo?.length > 0 && this.config.cr1?.length > 0)) {
-            this.config.showCompareButton = false;
+            // this.config.showCompareButton = false;
             this.handleComparison();
         }
     }
     handleSelect(event){
         let selectedObj = event.detail.payload.values;
         let selectedFor = event.target.getAttribute('data-id');
-        this.config.userSelections[selectedFor] = selectedObj;
+        JSON.parse(JSON.stringify(selectedObj)).forEach(el => {
+            if(this.config.userSelections[selectedFor] === undefined){
+                this.config.userSelections[selectedFor] = [];
+            }
+            if(!this.config.userSelections[selectedFor].includes(el)){
+                this.config.userSelections[selectedFor].push(el);
+            }
+        });
     }
     //handling all the events here
     handleEvent(event){
