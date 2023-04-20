@@ -72,7 +72,7 @@ global with sharing class infrastructure {
 			  string[] className = stackTrace.substringBetween('Class.',':').split('\\.'); //Class.TTNAMESPACE.infrastructure.saveRecords:
 			  string lineNumber = stackTrace.substringBetween('line ',',');
               if (!String.isEmpty(className[1])&& !string.isEmpty(lineNumber)) {
-                ApexClass[] a = [SELECT Body FROM ApexClass WHERE Name =: className[1] AND NameSpacePrefix =: className[0] LIMIT 1];
+                ApexClass[] a = [SELECT Body FROM ApexClass WHERE Name =: className[1] OR Name =: className[0] LIMIT 1];
                 if (a.size()>0) {
 					string[] codeLines = a[0].Body.split('\n');
 					apexCode = codeLines.size() >= integer.valueOf(lineNumber) ? codeLines[integer.valueOf(lineNumber) - 1] : null;
