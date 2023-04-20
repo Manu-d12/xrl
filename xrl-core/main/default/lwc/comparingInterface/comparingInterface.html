@@ -80,5 +80,8 @@
             <c-Data-Table style="width:100%; height:inherit" cfg={config.json.dataTable.uniqueName}></c-Data-Table>
         </div>
     </div>
+    <div if:true={config.isSpinner} class="spinner">
+        <lightning-spinner size="medium" variant="brand"></lightning-spinner>
+    </div>
 </lightning-card>
 </template>

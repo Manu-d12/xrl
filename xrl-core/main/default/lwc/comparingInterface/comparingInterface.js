@@ -73,7 +73,21 @@ export default class ComparingInterface extends LightningElement {
         let selectedFor = 'objOne';
         this.config.userSelections[selectedFor] = selectedObj;
         console.log(this.config.userSelections[selectedFor]);
-        if(selectedFor.startsWith('obj') && this.leftRecord === undefined){
+        if(this.leftRecord !== undefined && this.leftRecord !== 'CurrentRecord' && this.leftRecord !== 'recordId'){
+            await libs.remoteAction(this, 'customSoql', {
+                SOQL: libs.replaceLiteralsInStr(this.leftRecord,this.name),
+                callback: ((nodeName, data1) => {
+                    if(this.config.json.QueryFromConfig.returnType === 'parent'){
+                        this.config.userSelections.recOne = data1[nodeName].records.map(val =>  val.Id );
+                    }else if(this.config.json.QueryFromConfig.returnType === 'child'){
+                        console.log('length 2', this.config.json.uniqueKey.obj1);
+                        this.config.cr1 = data1[nodeName].records;
+                        this.config.cr1 = this.config.cr1 && this.config.cr1.length > 0 ? this.config.cr1 : [];
+                    }
+                })
+            });
+        }
+        if((selectedFor.startsWith('obj') && this.leftRecord === undefined) || ((this.leftRecord !== 'CurrentRecord' && this.leftRecord !== 'recordId') && this.config.cr1 === undefined)){
             //Getting the records from depending on selected object
             await libs.remoteAction(this, 'query', {
                 sObjApiName: selectedObj,
@@ -84,30 +98,31 @@ export default class ComparingInterface extends LightningElement {
                     this.config.objRecords[selectedFor]= [];
                     data[nodeName].records.forEach((el)=>{
                         this.config.objRecords[selectedFor].push({'label':el.Name,'value':el.Id});
-                    })
+                    });
+                    this.config.showCompareButton = true;
                 })
             });
         }else if(this.leftRecord === 'CurrentRecord' || this.leftRecord === 'recordId'){
             this.config.userSelections.recOne = [this.recordId];
-        }else if(this.leftRecord !== ''){
-            await libs.remoteAction(this, 'customSoql', {
-                SOQL: libs.replaceLiteralsInStr(this.leftRecord,this.name),
-                callback: ((nodeName, data1) => {
-                    if(this.config.json.QueryFromConfig.returnType === 'parent'){
-                        this.config.userSelections.recOne = data1[nodeName].records.map(val =>  val.Id );
-                    }else if(this.config.json.QueryFromConfig.returnType === 'child'){
-                        console.log('length 2', this.config.json.uniqueKey.obj1);
-                        this.config.cr1 = data1[nodeName].records;
-                    }
-                })
-            });
         }
-        this.config.cr1 = this.config.cr1 && this.config.cr1.length > 0 ? this.config.cr1 : [];
         selectedObj = this.config.json.obj2;
         selectedFor = 'objTwo';
         this.config.userSelections[selectedFor] = selectedObj;
         console.log(this.config.userSelections[selectedFor]);
-        if(selectedFor.startsWith('obj') && this.rightRecord === undefined){
+        if(this.rightRecord !== undefined && this.rightRecord !== 'CurrentRecord' && this.rightRecord !== 'recordId'){
+            await libs.remoteAction(this, 'customSoql', {
+                SOQL: libs.replaceLiteralsInStr(this.rightRecord,this.name),
+                callback: ((nodeName, data1) => {
+                    if(this.config.json.QueryFromConfig.returnType === 'parent'){
+                        this.config.userSelections.recTwo = data1[nodeName].records.map(val =>  val.Id );
+                    }else if(this.config.json.QueryFromConfig.returnType === 'child'){
+                        this.config.cr2 = data1[nodeName].records;
+                        this.config.cr2 = this.config.cr2 && this.config.cr2.length > 0 ? this.config.cr2 : [];
+                    }
+                })
+            });
+        }
+        if((selectedFor.startsWith('obj') && this.rightRecord === undefined) || ((this.rightRecord !== 'CurrentRecord' && this.rightRecord !== 'recordId') && this.config.cr2 === undefined)){
             //Getting the records from depending on selected object
             await libs.remoteAction(this, 'query', {
                 sObjApiName: selectedObj,
@@ -122,21 +137,9 @@ export default class ComparingInterface extends LightningElement {
             });
         }else if(this.rightRecord === 'CurrentRecord' || this.rightRecord === 'recordId'){
             this.config.userSelections.recTwo = [this.recordId];
-        }else if(this.rightRecord !== ''){
-            await libs.remoteAction(this, 'customSoql', {
-                SOQL: libs.replaceLiteralsInStr(this.rightRecord,this.name),
-                callback: ((nodeName, data1) => {
-                    if(this.config.json.QueryFromConfig.returnType === 'parent'){
-                        this.config.userSelections.recTwo = data1[nodeName].records.map(val =>  val.Id );
-                    }else if(this.config.json.QueryFromConfig.returnType === 'child'){
-                        this.config.cr2 = data1[nodeName].records;
-                    }
-                })
-            });
         }
-        this.config.cr2 = this.config.cr2 && this.config.cr2.length > 0 ? this.config.cr2 : [];
         this.config.showCompareButton = true;
-        if((this.config.userSelections.recOne && this.config.userSelections.recTwo) || 
+        if((this.config.userSelections.recOne?.length > 0 && this.config.userSelections.recTwo?.length > 0) || 
         (this.config.userSelections.recOne?.length > 0 && this.config.cr2?.length > 0) ||
         (this.config.userSelections.recTwo?.length > 0 && this.config.cr1?.length > 0)) {
             this.config.showCompareButton = false;
@@ -212,7 +215,7 @@ export default class ComparingInterface extends LightningElement {
     }
     async getChildRecords(){
 
-        if(this.leftRecord === 'CurrentRecord' || this.leftRecord === undefined || this.config.json.QueryFromConfig.returnType !== 'child'){
+        if(this.leftRecord === 'CurrentRecord' || this.leftRecord === undefined || this.config.cr1 === undefined || this.config.json.QueryFromConfig.returnType !== 'child'){
             await libs.remoteAction(this, 'query', {
                 sObjApiName: this.config.json.childApiNames.obj1,
                 fields: this.config.json.fields.obj1,
@@ -224,7 +227,7 @@ export default class ComparingInterface extends LightningElement {
             });
         }
         
-        if(this.rightRecord === 'CurrentRecord' || this.rightRecord === undefined || this.config.json.QueryFromConfig.returnType !== 'child'){
+        if(this.rightRecord === 'CurrentRecord' || this.rightRecord === undefined || this.config.cr2 === undefined || this.config.json.QueryFromConfig.returnType !== 'child'){
             await libs.remoteAction(this, 'query', {
                 sObjApiName: this.config.json.childApiNames.obj2,
                 fields: this.config.json.fields.obj2,
