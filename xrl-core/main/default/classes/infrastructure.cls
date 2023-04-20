@@ -1,6 +1,8 @@
 global with sharing class infrastructure {
 	private static id recordId;
 	private static boolean isAdminAccess = false;
+	private static map<string, object[]> debugLog;
+	private static boolean isDebug = false;
     
     global abstract class handler {
         global abstract object execute(map < string, object > data);
@@ -12,6 +14,8 @@ global with sharing class infrastructure {
 		object resultMethod;
 
 		recordId = (string) data.get('recordId');
+		isDebug = (boolean) data.get('isDebug') == true;
+		if (isDebug == true) data.remove('isDebug');
 		try {
 
 			list < PermissionSetAssignment > permission = [SELECT Id FROM PermissionSetAssignment WHERE AssigneeId =: UserInfo.getUserId() AND PermissionSet.Name = 'XRL_Admin'];
@@ -106,6 +110,9 @@ global with sharing class infrastructure {
 			'publicGroups' => publicGroups,
 			'permissionSets' => permissionSets
 		});
+		if (isDebug == true){
+			result.put('DEBUGLOG', debugLog);
+		}
 		//result.put('log', log);
 		return result;
 	}
@@ -399,7 +406,8 @@ global with sharing class infrastructure {
 		boolean isRollback = (boolean) data.get('rollback') == true;
 		boolean isInsert = (boolean) data.get('isInsert') == true;
 		Type T = type.forName('list<' + sObjApiName + '>');
-		
+		if (T == null) throw new InfrastructureException(null, ('Can\'t find sObject {1}').replace('{1}', sObjApiName), exceptionType.INSTANCE_CLASS_NOT_FOUND);
+
 		/*This part only for security review. Please don't remove
 		SObjectAccessDecision decision = Security.stripInaccessible(AccessType.UPDATABLE,records);
 
@@ -420,8 +428,8 @@ global with sharing class infrastructure {
 		// Savepoint sp = Database.setSavepoint();
 		system.debug('RollBack ' + isRollback);
  
-		List<Database.SaveResult> srs = (isInsert == true) ? Database.insert(records, isRollback) : Database.update(records, isRollback); 
-		for (Database.SaveResult sr : srs) {
+		Database.UpsertResult[] srs = Database.upsert(records, isRollback);
+        for (Database.UpsertResult sr : srs) {
 			if (!sr.isSuccess()) {
 				String error = '';
 				for (Database.Error err : sr.getErrors()) {
@@ -431,7 +439,6 @@ global with sharing class infrastructure {
 				}
 			}
 		}
-		// update records;
 		return records;
 	}
 
@@ -929,6 +936,19 @@ global with sharing class infrastructure {
         handlerClass.execute(data);
     }
 
+	global static void addDebugLog(string key, object value) {
+		if (isDebug != true) return;
+		if (debugLog == null) debugLog = new map<string, object[]>();
+		if (!debugLog.containsKey(key)) debugLog.put(key, new object[]{});
+		debugLog.get(key).add(value);
+	}
+
+    global static void addDebugLog(string key, string value) {
+		if (isDebug != true) return;
+		if (debugLog == null) debugLog = new map<string, object[]>();
+		if (!debugLog.containsKey(key)) debugLog.put(key, new object[]{});
+		debugLog.get(key).add(value);
+	}
 	global class InfrastructureException extends Exception {
 		public ExceptionType eType;
 		public String message;
