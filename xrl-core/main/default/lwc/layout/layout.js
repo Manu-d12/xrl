@@ -186,8 +186,13 @@ export default class Layout extends LightningElement {
 	}
 	handleChildMessage(event){
 		if(event.detail.cmd.startsWith('filter:')) {
-			this.template.querySelectorAll('c-Data-Table')?.forEach(ch => ch.handleEventMessage(event));
-			if (event.detail.cmd.split(':')[1] === 'refresh') this.template.querySelectorAll('c-chartjs')?.forEach(ch => ch.handleEventMessage(event));
+			let comp = this.config.tabularConfig.dataModel.find(cmp => cmp.uniqueName === event.detail.source);
+			this.template.querySelectorAll('c-Data-Table')?.forEach(ch => {
+				if (comp.targets.includes(ch.cfg)) ch.handleEventMessage(event);
+			});
+			if (event.detail.cmd.split(':')[1] === 'refresh') this.template.querySelectorAll('c-chartjs')?.forEach(ch => {
+				if (comp.targets.includes(ch.name)) ch.handleEventMessage(event);
+			});
 		} else if(event.detail.cmd.startsWith('chart:')) {
 			this.template.querySelectorAll('c-Data-Table')?.forEach(ch => {
 				ch.handleEventMessage(event);
@@ -275,6 +280,7 @@ export default class Layout extends LightningElement {
 			this.config = libs.getGlobalVar(this.tabConfigName);
 			this.config.isTabular = true;
 			this.config.isLoaded = true;
+			setTimeout(() => this.toggleOnInit(), 100);
 		} catch (error) {
 			console.error(error);
 		}
@@ -336,5 +342,14 @@ export default class Layout extends LightningElement {
 	toggleSection(event) {
         let section = this.template.querySelector('[data-id="' + event.currentTarget.dataset.id + '"]');
 		section.classList.toggle('slds-is-open');
-    } 
+    }
+
+	toggleOnInit() {
+		this.config.tabularConfig.dataModel.forEach(cmp => {
+			if (cmp.isCollapsible && !cmp.isCollapsed) {
+				let section = this.template.querySelector('[data-id="' + cmp.uniqueName + '"]');
+				section.classList.toggle('slds-is-open');
+			}
+		});
+	}
 }
