@@ -56,7 +56,7 @@ global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickLi
                 string namespace = String.valueOf(thisObj).replace('^(.*?)__.*$','$1');
                 sObjLabel += namespace!='' &&  namespace.endsWith('__') ? '(' + namespace + ')' : '';
                 picklistValues.addRow(
-                    new VisualEditor.DataRow(sObjLabel, String.valueOf(thisObj) + '::' + String.valueOf(thisObj) + '::')
+                    new VisualEditor.DataRow(sObjLabel, String.valueOf(thisObj.getDescribe().getLabelPlural()) + '::' + String.valueOf(thisObj) + '::')
                 );
             }
         }
