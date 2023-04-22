@@ -127,13 +127,16 @@ global with sharing class infrastructure {
 		string listViewName = (string) data.get('listViewName');
 		string SQL = (string) data.get('SQL');
 		boolean isCreateble = Schema.getGlobalDescribe().get(sObjApiName).getDescribe().isCreateable();
-
+		integer loadChunkSize = (integer) data.get('loadChunkSize');
 		boolean isNeedDescribe = (boolean) data.get('isNeedDescribe') == true;
-		set < string > fields = (set < string > ) JSON.deserialize(JSON.serialize(data.get('fields')), set < string > .class);
+		
 
 		set < string > soqlFields = new set < string > { 'Id' };
-
-		soqlFields.addAll(fields);
+	
+        if (loadChunkSize!= null) {
+          set < string > fields = (set < string > ) JSON.deserialize(JSON.serialize(data.get('fields')), set < string > .class);
+          soqlFields.addAll(fields);
+        }
 
 		if (string.isBlank(addCondition)) addCondition = '';
 
@@ -648,6 +651,7 @@ global with sharing class infrastructure {
 			'lbl_groupingFunction'=>label.lbl_groupingFunction,
 			'lbl_groupFieldName'=>label.lbl_groupFieldName,
 			'lbl_groupOrder'=>label.lbl_groupOrder,
+            'lbl_loadChunkSize' => label.lbl_loadChunkSize,
 			'lbl_resetFilters'=>label.lbl_resetFilters,
 			'lbl_blankValuesNotAllowed'=>label.lbl_blankValuesNotAllowed,
 			'lbl_collapseView'=>label.lbl_collapseView,
@@ -742,6 +746,7 @@ global with sharing class infrastructure {
 			'tooltip_groupingFunction'=>label.tooltip_groupingFunction,
 			'tooltip_groupFieldName'=>label.tooltip_groupFieldName,
 			'tooltip_groupOrder'=>label.tooltip_groupOrder,
+            'tooltip_loadChunkSize' => label.tooltip_loadChunkSize,
 			'srcLbl_available' => label.srcLbl_available,
 			'srcLbl_optional' => label.srcLbl_optional
 		};

@@ -295,6 +295,14 @@ export let libs = {
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
 			},
+			"loadChunkSize" : {
+				//"defValue": 200,
+				"type": "string",
+				"label": _labels.lbl_loadChunkSize,
+				"tooltip": _labels.tooltip_loadChunkSize,
+				"isReadOnly": true,
+				"cmd" : "dialog:setTableParam",
+			},
 			"beforeSaveValidation": {
 				"type": "function",
 				"label": _labels.lbl_beforeSaveValidation,
@@ -415,6 +423,10 @@ export let libs = {
 		scope.config.isSpinner = true;
 		let outParams = {};
 		Object.assign(outParams, params, { recordId: scope.recordId });
+		if (cmd === 'query' && scope.config.dataTableConfig && scope.config.dataTableConfig.loadChunkSize) {
+			console.log('query', scope.config.dataTableConfig.loadChunkSize);
+			outParams.loadChunkSize = scope.config.dataTableConfig.loadChunkSize;
+		}
 		delete outParams.callback;
 		await apexInterface({ cmd: cmd, data: outParams }).then(result => {
 			console.log(result);

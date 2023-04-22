@@ -1276,6 +1276,21 @@ function(row,col,val){
         <protected>false</protected>
         <shortDescription>tooltip_deleteChunkSize</shortDescription>
         <value>Please enter the chunk size for bulk delete operation</value>
+    </labels><labels>
+        <fullName>lbl_loadChunkSize</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_loadChunkSize</shortDescription>
+        <value>Load chunk size</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_loadChunkSize</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_loadChunkSize</shortDescription>
+        <value>Please enter the chunk size for bulk load operation</value>
     </labels>
     <labels>
         <fullName>lbl_beforeDeleteValidation</fullName>
