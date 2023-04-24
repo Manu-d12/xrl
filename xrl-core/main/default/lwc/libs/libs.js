@@ -406,6 +406,12 @@ export let libs = {
 				"label": _labels.lbl_actionIconName,
 				"tooltip": _labels.tooltip_actionIconName
 			},
+			"refreshAfterCustomActionExecution" : {
+				"defValue":false,
+				"type": "checkbox",
+				"label": _labels.lbl_refreshAfterCustomActionExecution,
+				"tooltip": _labels.tooltip_refreshAfterCustomActionExecution
+			},
 			"actionOrder" : {
 				"type": "text",
 				"label": _labels.lbl_actionOrder,

@@ -1959,4 +1959,20 @@ return groups;
         <shortDescription>lbl_collapseView</shortDescription>
         <value>Collapse View</value>
     </labels>
+    <labels>
+        <fullName>lbl_refreshAfterCustomActionExecution</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_refreshAfterCustomActionExecution</shortDescription>
+        <value>Refresh Grid after Custom Action Execution?</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_refreshAfterCustomActionExecution</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_refreshAfterCustomActionExecution</shortDescription>
+        <value>Refresh Grid after Custom Action Execution?</value>
+    </labels>
 </CustomLabels>
