@@ -81,7 +81,7 @@
                     <div style="border:0.5px solid rgb(183, 180, 180);">
                         <div class="slds-grid slds-gutters">
                             <div class="slds-col slds-size_5-of-12">
-                                <div if:true={config.sqlBuilder.conditionOperations} class="slds-text-heading_small slds-text-align_center" style="padding-left: 5px;">
+                                <div if:true={config.sqlBuilder.conditionOperations} class="slds-text-heading_small slds-text-align_center" style="padding-left: 5px;overflow-wrap: break-word;">
                                     <b>{config._LABELS.lbl_availableOperations}</b> for {config.sqlBuilder.currentCondition.field}
                                     <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_availableOperationTooltip}></lightning-helptext>
                                 </div>
