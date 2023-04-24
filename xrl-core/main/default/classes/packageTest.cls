@@ -44,6 +44,7 @@ public class packageTest {
         data.put('addCondition', 'AND Subject = \'test case\'');
         data.put('fields', new list < string > {'Subject'});
         data.put('listViewName', '_admin');
+        data.put('loadChunkSize', '10000');
         test.startTest();
         map < string, object > res = infrastructure.dispatcherAura('query', data);
         test.stopTest();
