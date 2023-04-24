@@ -430,12 +430,12 @@ export let filterLibs = {
 				: field.endsWith('__c')
 					? field.replace(/__c$/,'__r')
 					: '';
-			console.log('record[field].Name', record[fName].Name, record, field, fName);
-			return record[fName].Name;
+			console.log('record[field].Name', record[fName]?.Name, record, field, fName);
+			return record[fName]?.Name;
 		}
 		let formatter = filter.formatter ? eval('(' + filter.formatter + ')') : null;
 		let value = filter.type !== "reference"
-			? filter.fieldName.split('.')[1] != undefined ? record[filter.fieldName.split('.')[0]][filter.fieldName.split('.')[1]]
+			? filter.fieldName.split('.')[1] != undefined ? record[filter.fieldName.split('.')[0]] && record[filter.fieldName.split('.')[0]][filter.fieldName.split('.')[1]] ? record[filter.fieldName.split('.')[0]][filter.fieldName.split('.')[1]] : ''
 			:record[filter.fieldName]
 			: getRefField(filter.fieldName);
 		// console.log(value);

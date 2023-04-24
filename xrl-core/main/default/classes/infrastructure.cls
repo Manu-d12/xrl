@@ -127,7 +127,7 @@ global with sharing class infrastructure {
 		string listViewName = (string) data.get('listViewName');
 		string SQL = (string) data.get('SQL');
 		boolean isCreateble = Schema.getGlobalDescribe().get(sObjApiName).getDescribe().isCreateable();
-		integer loadChunkSize = (integer) data.get('loadChunkSize');
+		integer loadChunkSize = Integer.valueof(((String)data.get('loadChunkSize')).trim());
 		boolean isNeedDescribe = (boolean) data.get('isNeedDescribe') == true;
 		
 

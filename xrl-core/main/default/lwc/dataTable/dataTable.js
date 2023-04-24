@@ -919,8 +919,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				e._sortIcon = e.isASCSort === true ? 'utility:arrowdown' : 'utility:arrowup';
 				let fieldName = e.fieldName.split('.')[1] != undefined ?
 				e.fieldName.split('.')[1]
-				:e.type === 'reference' ? e.fieldName + '.Name' : e.fieldName;
-				this.records = libs.sortRecords(this.records, fieldName, e.isASCSort,e.fieldName.split('.')[1] != undefined ? e.fieldName.split('.')[0] : undefined);
+				:e.type === 'reference' ? 'Name' : e.fieldName;
+				this.records = libs.sortRecords(this.records, fieldName, e.isASCSort,e.fieldName.split('.')[1] != undefined ? e.fieldName.split('.')[0] : e.type === 'reference' ? e.fieldName.slice(0,-2) : '');
 			} else {
 				e._sortIcon = undefined;
 				e.isASCSort = undefined;
@@ -958,8 +958,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					else {
 						let fieldName = e.fieldName.split('.')[1] != undefined ?
 						e.fieldName.split('.')[1]
-						:e.type === 'reference' ? e.fieldName + '.Name' : e.fieldName;
-						this.records = libs.sortRecords(this.records, fieldName, e.isASCSort,e.fieldName.split('.')[1] != undefined ? e.fieldName.split('.')[0] : undefined);
+						:e.type === 'reference' ? 'Name' : e.fieldName;
+						console.log('fieldName: ' + fieldName, e.fieldName.split('.')[1] != undefined ? e.fieldName.split('.')[0] : undefined);
+						this.records = libs.sortRecords(this.records, fieldName, e.isASCSort,e.fieldName.split('.')[1] != undefined ? e.fieldName.split('.')[0] : e.type === 'reference' ? e.fieldName.slice(0,-2) : '');
 						// this.records = libs.sortRecords(this.records, e.type === 'reference' ? 'Name' : e.fieldName, e.isASCSort, e.type === 'reference' ? e.fieldName.slice(0,-2) : '');
 					}
 				} else {
@@ -994,8 +995,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			let col = this.config.colModel.find(e => {return e.fieldName === this._sortSequence[i];});
 			let fieldName = col.fieldName.split('.')[1] != undefined ?
 				col.fieldName.split('.')[1]
-				:col.type === 'reference' ? col.fieldName + '.Name' : col.fieldName;
-			this.records = libs.sortRecords(this.records, fieldName, col.isASCSort,col.fieldName.split('.')[1] != undefined ? col.fieldName.split('.')[0] : undefined);
+				:col.type === 'reference' ? 'Name' : col.fieldName;
+			this.records = libs.sortRecords(this.records, fieldName, col.isASCSort,col.fieldName.split('.')[1] != undefined ? col.fieldName.split('.')[0] : col.type === 'reference' ? col.fieldName.slice(0,-2) : '');
 			// this.records = libs.sortRecords(this.records, col.type === 'reference' ? col.fieldName + '.Name' : col.fieldName, col.isASCSort);
 		}
 	}

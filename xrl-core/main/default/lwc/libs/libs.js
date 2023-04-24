@@ -41,7 +41,7 @@ export let libs = {
 		let keyValue;
 		if(referenceField){
 			keyValue = (a) => {
-				return a[referenceField][fieldName];
+				return a[referenceField] ? a[referenceField][fieldName] : '';
 			};
 		}else{
 			keyValue = (a) => {
