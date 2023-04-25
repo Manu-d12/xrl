@@ -6,7 +6,10 @@
             </div>
         </div>
         <c-ext-rel-list if:false={config.urlParameters.c__apiName} api-name={extApiName} name=""></c-ext-rel-list>
-        <c-ext-rel-list if:true={config.urlParameters.c__apiName} api-name={config.selectedApiName} name={config.uniqName} record-id={config.recordId} is-fullscreen="true"></c-ext-rel-list>
+        <template if:true={config.urlParameters.c__apiName}>
+            <c-ext-rel-list if:true={config.recordId} api-name={config.selectedApiName} name={config.uniqName} record-id={config.recordId} is-fullscreen="true"></c-ext-rel-list>
+            <c-ext-rel-list if:false={config.recordId} api-name={config.selectedApiName} name={config.uniqName} is-fullscreen="true"></c-ext-rel-list>
+        </template>
         <div if:true={config.isSpinner} class="spinner">
             <lightning-spinner size="medium" variant="brand" alternative-text="loading"></lightning-spinner>
         </div>
