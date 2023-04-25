@@ -1172,7 +1172,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					this[NavigationMixin.Navigate]({
 						type: 'standard__navItemPage',
 						attributes: {
-							apiName: 'TTNAMESPACE__EXRL',
+							apiName: 'XRL__EXRL',
 						},
 						state: stateVars
 					});
