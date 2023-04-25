@@ -8,8 +8,10 @@ export default class ExrlTab extends LightningElement {
         this.config.urlParameters = this.getQueryParameters();
         this.config.selectedApiName = this.config.urlParameters.c__apiName ? atob(this.config.urlParameters.c__apiName) : "";
         this.config.uniqName = this.config.urlParameters.c__name ? atob(this.config.urlParameters.c__name) : "";
-        this.config.recordId = this.config.urlParameters.c__recordId ? atob(this.config.urlParameters.c__recordId) : "";
-        libs.remoteAction(this, 'objectList', {callback: this.getAllObjects.bind(this) });
+        this.config.recordId = this.config.urlParameters.c__recordId ? atob(this.config.urlParameters.c__recordId) !== undefined ? atob(this.config.urlParameters.c__recordId) : false : false;
+        if(!this.config.urlParameters.c__apiName){
+            libs.remoteAction(this, 'objectList', {callback: this.getAllObjects.bind(this) });
+        }
     }
 
     getAllObjects(cmd,data){

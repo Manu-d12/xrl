@@ -508,6 +508,7 @@ export let libs = {
 				"actionTip": _labels.title_delete,
 				"actionCallBack": "",
 				"actionIsHidden": false,
+				"actionVisibleOnRecordSelection":true,
 				"actionIconName": "utility:delete",
 				"isActionStandard":true,
 				"actionOrder":10
