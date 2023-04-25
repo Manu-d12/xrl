@@ -127,13 +127,13 @@ global with sharing class infrastructure {
 		string listViewName = (string) data.get('listViewName');
 		string SQL = (string) data.get('SQL');
 		boolean isCreateble = Schema.getGlobalDescribe().get(sObjApiName).getDescribe().isCreateable();
-		integer loadChunkSize = Integer.valueof(((String)data.get('loadChunkSize')).trim());
+		integer loadChunkSize = data.get('loadChunkSize')!=null ? Integer.valueof(((String)data.get('loadChunkSize')).trim()) : null;
 		boolean isNeedDescribe = (boolean) data.get('isNeedDescribe') == true;
 		
 
 		set < string > soqlFields = new set < string > { 'Id' };
 	
-        if (loadChunkSize!= null) {
+        if (loadChunkSize == null) {
           set < string > fields = (set < string > ) JSON.deserialize(JSON.serialize(data.get('fields')), set < string > .class);
           soqlFields.addAll(fields);
         }
@@ -408,6 +408,7 @@ global with sharing class infrastructure {
 		string sObjApiName = (string) data.get('sObjApiName');
 		boolean isRollback = (boolean) data.get('rollback') == true;
 		boolean isInsert = (boolean) data.get('isInsert') == true;
+		string beforeSaveValidationClass = (string) data.get('beforeSaveAction');
 		Type T = type.forName('list<' + sObjApiName + '>');
 		if (T == null) throw new InfrastructureException(null, ('Can\'t find sObject {1}').replace('{1}', sObjApiName), exceptionType.INSTANCE_CLASS_NOT_FOUND);
 
@@ -422,7 +423,7 @@ global with sharing class infrastructure {
 		}
 		//update securityDecision.getRecords() update records that can be updated
 		*/
-        if (data.get('beforeSaveAction') != null) {
+        if (!string.isEmpty(beforeSaveValidationClass)) {
 			system.debug(LoggingLevel.Error, 'APEX INVOCATION ' + (string) data.get('beforeSaveAction'));
             invokeApex((string) data.get('beforeSaveAction'), data);
 			system.debug(LoggingLevel.Error, 'APEX INVOCATION END ' + (string) data.get('beforeSaveAction'));
