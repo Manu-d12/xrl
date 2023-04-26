@@ -69,11 +69,11 @@
 								<!--<lightning-input if:true={hItem.isEditable} type={hItem.type} field-level-help={hItem.inlineHelpText} data-rowind={index} data-colname={hItem.fieldName} onchange={inlineEdit}></lightning-input>-->
 								<template if:true={hItem.isNameField}>
 									<c-data-Table-Item if:false={dItem._isEditable} row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} data-recordind={dItem.Id} cfg={cfg} class={hItem.wrapClass} style="width:100%" onmouseover={showPop} onmouseout={hidePop}></c-data-Table-Item>
-									<c-data-Table-Item if:true={dItem._isEditable} iseditmode="true" row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} class={hItem.wrapClass} data-recordind={dItem.Id} cfg={cfg} style="width:100%"></c-data-Table-Item>
+									<c-data-Table-Item if:true={dItem._isEditable} iseditmode="true" row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} class="slds-cell-wrap" data-recordind={dItem.Id} cfg={cfg} style="width:100%"></c-data-Table-Item>
 								</template>
 								<template if:false={hItem.isNameField}>
 									<c-data-Table-Item if:false={dItem._isEditable} row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} data-recordind={dItem.Id} cfg={cfg} class={hItem.wrapClass} style="width:100%"></c-data-Table-Item>
-									<c-data-Table-Item if:true={dItem._isEditable} iseditmode="true" row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} class={hItem.wrapClass} data-recordind={dItem.Id} cfg={cfg} style="width:100%"></c-data-Table-Item>
+									<c-data-Table-Item if:true={dItem._isEditable} iseditmode="true" row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} class="slds-cell-wrap" data-recordind={dItem.Id} cfg={cfg} style="width:100%"></c-data-Table-Item>
 								</template>
 							</span>
 							<span if:true={hItem.isActions} class="slds-grid slds-grid_align-spread">
@@ -113,11 +113,11 @@
 								<span if:false={hItem.isActions} data-groupind={group.title} data-rowid={dItem.Id} class="slds-grid slds-grid_align-spread">
 									<template if:true={hItem.isNameField}>
 										<c-data-Table-Item if:false={dItem._isEditable} row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} data-recordind={dItem.Id} cfg={cfg} class={hItem.wrapClass} style="width:100%" onmouseenter={showPop} onmouseleave={hidePop}></c-data-Table-Item>
-										<c-data-Table-Item if:true={dItem._isEditable} iseditmode="true" row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} class={hItem.wrapClass} data-recordind={dItem.Id} cfg={cfg} style="width:100%"></c-data-Table-Item>
+										<c-data-Table-Item if:true={dItem._isEditable} iseditmode="true" row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} class="slds-cell-wrap" data-recordind={dItem.Id} cfg={cfg} style="width:100%"></c-data-Table-Item>
 									</template>
 									<template if:false={hItem.isNameField}>
 										<c-data-Table-Item if:false={dItem._isEditable} row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} cfg={cfg} class={hItem.wrapClass} style="width:100%"></c-data-Table-Item>
-										<c-data-Table-Item if:true={dItem._isEditable} iseditmode="true" row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} cfg={cfg} class={hItem.wrapClass} data-recordind={dItem.Id} style="width:100%"></c-data-Table-Item>
+										<c-data-Table-Item if:true={dItem._isEditable} iseditmode="true" row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} cfg={cfg} class="slds-cell-wrap" data-recordind={dItem.Id} style="width:100%"></c-data-Table-Item>
 									</template>
 								</span>
 							</td>
