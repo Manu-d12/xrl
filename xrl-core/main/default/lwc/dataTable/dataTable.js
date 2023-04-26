@@ -814,6 +814,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		console.log(fieldName);
 		if (fieldName === 'saveFilter') {
 			this.searchFinish({which : 13});
+			this.config.pager.curPage = 1;
 			return;
 		} 
 		if (this.config._isFilterOptions.isShowStr) {

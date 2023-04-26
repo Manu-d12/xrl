@@ -974,6 +974,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			}else{
 				libs.getGlobalVar(this.name).records = this.allRecords;
 			}
+			this.config.listViewConfig[0].pager.curPage = 1;
 			this.template.querySelector('c-Data-Table').updateView();
         }
 	}
