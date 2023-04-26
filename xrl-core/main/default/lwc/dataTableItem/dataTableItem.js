@@ -22,7 +22,7 @@ export default class dataTableItem extends LightningElement {
 				this.config.dataTableCfg = el;
 			}
 		});
-		if (this.col.isEditable && this.row._focus === this.col.fieldName && this.config.dataTableCfg._inlineEdit != undefined && this.row._isEditable){
+		if (this.col.isEditable && this.config.dataTableCfg._inlineEdit != undefined && this.row._isEditable){
 			this.showEdit = true;
 		}
 		window.addEventListener('keydown', (event) => {
@@ -157,7 +157,6 @@ export default class dataTableItem extends LightningElement {
 		// let config = libs.getGlobalVar(this.cfg).listViewConfig;
 		// console.log(config);
 		let value = this.col.isEditableBool ? event.target.checked : (this.col.type === 'picklist' || this.col._isLookUpEdit) ? event.detail.payload.value : this.col.type === 'multipicklist' ? event.detail.payload.values.join(';') : event.target.value;
-		// console.log('HERE>ie', event.detail.payload.value);
 		// value = event.detail.payload.value;
 		this.config.dataTableCfg._saveEdit(true, this.col.fieldName, value);
 	}

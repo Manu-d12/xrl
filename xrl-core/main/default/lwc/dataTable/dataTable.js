@@ -331,7 +331,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	saveEditCallback(isNeedSave, rowName, value) {
 		if (isNeedSave === true) {
 			if (rowName !== undefined) {
-				this.config._inlineEditRow = JSON.parse(JSON.stringify(this.records[this.config._inlineEdit]));
+				this.config._inlineEditRow = this.config._inlineEditRow !== undefined ? 
+				this.config._inlineEditRow : JSON.parse(JSON.stringify(this.records[this.config._inlineEdit]));
 				let cItem = this.getColItem(rowName);
 				if(cItem.type === 'reference' && cItem._editOptions){
 					this.config._inlineEditRow[cItem.fieldName] = value;
@@ -360,6 +361,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					let globalItem = libs.getGlobalVar(this.cfg).records.find(el=>{
 						return el.Id === this.config._inlineEditRow.Id;
 					})
+					this.records[this.config._inlineEdit]._isEditable = false;
 					Object.assign(globalItem, this.records[this.config._inlineEdit]);
 					this.changeRecord(this.config._inlineEditRow.Id);
 				}
@@ -655,23 +657,42 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					// Need get all visible references fields and get data for thise fields
 					// let record = this.records[calculatedInd];
 					// record._focus = colName;
-					cItem.wrapClass = cItem.type === 'picklist' || cItem.type === 'multipicklist' || (cItem.type === 'reference') ? 'slds-cell-wrap' : cItem.wrapClass;
+					// cItem.wrapClass = cItem.type === 'picklist' || cItem.type === 'multipicklist' || (cItem.type === 'reference') ? 'slds-cell-wrap' : cItem.wrapClass;
 
-					if(cItem.type === 'reference' && !cItem._editOptions){
-						cItem._editOptions = [];
-						await libs.remoteAction(this, 'query', {
-							fields: ['Id','Name'],
-							relField: '',
-							sObjApiName: cItem.referenceTo,
-							callback: ((nodeName, data) => {
-								console.log('accountRecords', data[nodeName].records.length);
-								data[nodeName].records.forEach((el)=>{
-									cItem._editOptions.push({"label":el.Name,"value":el.Id});
-								});
-							})
-						});
-						cItem._isLookUpEdit = true;
-					}
+					this.config.colModel.forEach(async (el) => {
+						if(el.isEditable && el.type === 'reference' && !el._editOptions){
+							el._editOptions = [];
+							await libs.remoteAction(this, 'query', {
+								fields: ['Id','Name'],
+								relField: '',
+								sObjApiName: el.referenceTo,
+								callback: ((nodeName, data) => {
+									console.log('accountRecords', data[nodeName].records.length);
+									data[nodeName].records.forEach((e)=>{
+										el._editOptions.push({"label":e.Name,"value":e.Id});
+									});
+								})
+							});
+							el._isLookUpEdit = true;
+						}
+					});
+					// cItem.wrapClass = 'slds-cell-wrap';
+
+					// if(cItem.type === 'reference' && !cItem._editOptions){
+					// 	cItem._editOptions = [];
+					// 	await libs.remoteAction(this, 'query', {
+					// 		fields: ['Id','Name'],
+					// 		relField: '',
+					// 		sObjApiName: cItem.referenceTo,
+					// 		callback: ((nodeName, data) => {
+					// 			console.log('accountRecords', data[nodeName].records.length);
+					// 			data[nodeName].records.forEach((el)=>{
+					// 				cItem._editOptions.push({"label":el.Name,"value":el.Id});
+					// 			});
+					// 		})
+					// 	});
+					// 	cItem._isLookUpEdit = true;
+					// }
 					// record._isEditable = true;
 
 
@@ -814,6 +835,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		console.log(fieldName);
 		if (fieldName === 'saveFilter') {
 			this.searchFinish({which : 13});
+			this.config.pager.curPage = 1;
 			return;
 		} 
 		if (this.config._isFilterOptions.isShowStr) {

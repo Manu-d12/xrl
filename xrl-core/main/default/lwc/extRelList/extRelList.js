@@ -556,9 +556,18 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			let copyRecords = records;
 			records = [];
 			copyRecords.forEach((el)=>{
-				let rec = eval('('+this.config.listViewConfig[0].beforeDeleteValidation+')')(el);
-				if(rec){
-					records.push(el);
+				try{
+					let rec = eval('('+this.config.listViewConfig[0].beforeDeleteValidation+')')(el);
+					if(rec){
+						records.push(el);
+					}
+				}catch(e){
+					libs.showToast(this,{
+						title: 'Error',
+						message: e.toString(),
+						variant: 'error'
+					});
+					console.log('Error', e);
 				}
 			});
 		}
@@ -573,35 +582,6 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			let chunk = records.slice(index,records[(parseInt(index)+parseInt(deleteChunk))] ? (parseInt(index)+parseInt(deleteChunk)) : (records.length));
 			index += records[(parseInt(index)+parseInt(deleteChunk))] ? parseInt(deleteChunk) : (records.length);
 			await this.deleteRecords(chunk);
-			// libs.remoteAction(this, 'delRecords', { records: chunk, 
-			// 	sObjApiName: this.config.sObjApiName,
-			// 	callback: function(cmd,result){
-			// 		if(result.delRecordsResult.error.startsWith('Error')){
-			// 			const toast = new ShowToastEvent({
-			// 				title: 'Error',
-			// 				message: result.delRecordsResult.error,
-			// 				variant: 'error'
-			// 			});
-			// 			this.dispatchEvent(toast);
-			// 		}else{
-			// 			this.config.deleteIndex += result.delRecordsResult.length;
-			// 		}
-			// 		if(!result.delRecordsResult.error.startsWith('Error') && this.config.deleteIndex === (parseInt(this.config.recordsLen))){
-			// 			const toast = new ShowToastEvent({
-			// 				title: 'Success',
-			// 				message: "Successfully deleted",
-			// 				variant: 'success'
-			// 			});
-			// 			this.dispatchEvent(toast);
-			// 			this.showDialog = false;
-			// 			this.config.records = this.config.records.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
-			// 			//HYPER-243
-			// 			this.allRecords = this.allRecords.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
-			// 			this.template.querySelector('c-Data-Table').updateView();
-			// 			this.config.listViewConfig[0].rowChecked = false;
-			// 		}
-			// 	} 
-			// });
 		}
 		const toast = new ShowToastEvent({
 			title: 'Success',
@@ -642,9 +622,18 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if(this.config.listViewConfig[0].beforeSaveValidation !== undefined && 
 			this.config.listViewConfig[0].beforeSaveValidation !== ""){
 			changedItems.forEach((el)=>{
-				let rec = eval('('+this.config.listViewConfig[0].beforeSaveValidation+')')(el);
-				if(rec){
-					validatedRecords.push(el);
+				try{
+					let rec = eval('('+this.config.listViewConfig[0].beforeSaveValidation+')')(el);
+					if(rec){
+						validatedRecords.push(el);
+					}
+				}catch(e){
+					libs.showToast(this,{
+						title: 'Error',
+						message: e.toString(),
+						variant: 'error'
+					});
+					console.log('Error', e);
 				}
 			});
 		}else{
@@ -655,7 +644,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let index = 0;
 
 
-		while(index <= validatedRecords.length){
+		while(validatedRecords.length > 0 && index < validatedRecords.length){
 			let lIndex = validatedRecords[(parseInt(index)+parseInt(saveChunk))] ? (parseInt(index)+parseInt(saveChunk)) : (validatedRecords.length);
 			let chunk = validatedRecords.slice(index,lIndex);
 			index += validatedRecords[(parseInt(index)+parseInt(saveChunk))] ? parseInt(saveChunk) : (validatedRecords.length);
@@ -985,6 +974,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			}else{
 				libs.getGlobalVar(this.name).records = this.allRecords;
 			}
+			this.config.listViewConfig[0].pager.curPage = 1;
 			this.template.querySelector('c-Data-Table').updateView();
         }
 	}
