@@ -258,7 +258,11 @@ export let libs = {
 				"cmd" : "dialog:setTableParam",
 			},
 			"groupFieldName" : {
+				"defValue": "",
 				"type": "combobox",
+				"optionsCallBack" : function(scope){
+					return scope.config.groupingFields;
+				},
 				"label": _labels.lbl_groupFieldName,
 				"tooltip": _labels.tooltip_groupFieldName,
 				"cmd" : "dialog:setTableParam",
@@ -312,7 +316,11 @@ export let libs = {
 				"cmd" : "dialog:setTableParam"
 			},
 			"beforeSaveApexAction": {
-				"type": "string",
+				"defValue": "",
+				"type": "combobox",
+				"optionsCallBack" : function(scope){
+					return scope.config.apexInterfaceList;
+				},
 				"label": _labels.lbl_beforeSaveApexAction,
 				"tooltip": _labels.tooltip_beforeSaveApexAction,
 				"isReadOnly": true,
@@ -341,7 +349,11 @@ export let libs = {
 				"cmd" : "dialog:setTableParam"
 			},
 			"rowRecalcApex": {
-				"type": "string",
+				"defValue": "",
+				"type": "combobox",
+				"optionsCallBack" : function(scope){
+					return scope.config.apexInterfaceList;
+				},
 				"label": 'Apex class for row recalculation',
 				"tooltip": 'Apex class for row recalculation',
 				"placeHolder": 'Apex class for row recalculation',
@@ -419,7 +431,10 @@ export let libs = {
 			},
 			"actionFlowName" : {
 				"defValue":"",
-				"type": "text",
+				"type": "combobox",
+				"optionsCallBack" : function(scope){
+					return scope.config.flowList;
+				},
 				"label": _labels.lbl_actionFlowName
 			}
 		}

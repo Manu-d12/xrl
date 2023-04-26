@@ -8,9 +8,42 @@ export default class extRelListSettings extends LightningElement {
 	@track dataTable;
 	@track showDialog = false;
 
+
+	getFlowList() {
+		let SOQL = "SELECT Id, DurableId, ApiName, Label, Description, ProcessType, TriggerType, NamespacePrefix, ActiveVersionId, LatestVersionId, LastModifiedBy, IsActive, IsOutOfDate, LastModifiedDate, IsTemplate, IsSwingFlow, Builder, ManageableState, InstalledPackageName, TriggerOrder FROM FlowDefinitionView WHERE (ProcessType = 'Flow' OR ProcessType='AutoLaunchedFlow')AND IsActive = true";
+		libs.remoteAction(this, 'customSoql', {
+			SOQL: SOQL,
+			callback: ((nodeName, data) => {
+				let options =  [{label : "None", value : ""}];
+				console.log('optionsCallBack', data);
+				data[nodeName].records.forEach(e=>{
+					options.push({label : e.ProcessType + '-' + e.Label, value: e.ProcessType + '::' + e.ApiName})	
+				});
+				this.config.flowList = options;
+			})
+		});
+	}
+
+	getApexInterfaceList() {
+		//let SOQL = "SELECT ClassName, ClassNamespacePrefix FROM ApexTypeImplementor WHERE InterfaceName = 'RoundingStratergy' and IsConcrete=true";
+		let SOQL = "SELECT Name FROM ApexClass LIMIT 10";
+		libs.remoteAction(this, 'customSoql', {
+			SOQL: SOQL,
+			callback: ((nodeName, data) => {
+				let options =  [{label : "None", value : ""}];
+				data[nodeName].records.forEach(e=>{
+					options.push({label : e.Name, value: e.Name})	
+				});
+				this.config.apexInterfaceList = options;
+			})
+		});
+	}
+
 	connectedCallback() {
 		console.log(this.cfg);
 		this.config = libs.getGlobalVar(this.cfg);
+		this.getFlowList();
+		this.getApexInterfaceList();
 		this.config.dialog.allActions = [];
 		this.config.dialog.useExampleParams = {};
 		this.config.dialog.listViewConfig.actions.forEach((el)=>{
@@ -102,8 +135,10 @@ export default class extRelListSettings extends LightningElement {
 			
 			let sFields = [{label:'No Grouping',value:''}];
 			sFields = sFields.concat(this.selectedFields);
-			let options = (tmp[item].type === 'combobox') ?
-							(tmp[item].options) ? (tmp[item].options)  : sFields : '';
+			this.config.groupingFields = sFields;
+			/*let options = (tmp[item].type === 'combobox') ?
+							(tmp[item].options) ? (tmp[item].options)  : sFields : '';*/
+						
 			result.push({
 				"paramName" : item,
 				"type" : tmp[item].type,
@@ -114,7 +149,8 @@ export default class extRelListSettings extends LightningElement {
 				"value" : defValue,
 				"isChecked" : (tmp[item].type === 'checkbox') ? defValue : undefined,
 				"isComboBox" : (tmp[item].type === 'combobox'),
-				"options": options,
+				//"options": options,
+				"options" : typeof(tmp[item].optionsCallBack) == 'function' ?  tmp[item].optionsCallBack(this) : tmp[item].options,
 				"cmd": tmp[item].cmd,
 				"placeHolder" : tmp[item].placeHolder
 			})
@@ -143,19 +179,20 @@ export default class extRelListSettings extends LightningElement {
 			: fieldParams[item] === undefined
 				? tmp[item].defValue
 				: fieldParams[item];
+			let options = typeof(tmp[item].optionsCallBack) == 'function' ?  tmp[item].optionsCallBack(this) : tmp[item].options;
 			result.push({
 				"paramName" : item,
 				"type" : tmp[item].type,
 				"label" : tmp[item].label,
 				"isTextArea" : (tmp[item].type === 'function'),
 				"isText" : (tmp[item].type !== 'combobox' && tmp[item].type !== 'function'),
-				"isCombo" : (tmp[item].type === 'combobox'),
-				"options" : tmp[item].options,
+				"options" : options,
 				"tooltip" : tmp[item].tooltip,
 				"isDisabled" : (fieldParams['isActionStandard'] ? this.config.enableActions.includes(item) ? false : true : false),
 				"value" : defValue,
 				"isChecked" : (tmp[item].type === 'checkbox') ? defValue : undefined,
-				"placeHolder" : tmp[item].placeHolder
+				"placeHolder" : tmp[item].placeHolder,
+				"isCombo" : (tmp[item].type === 'combobox' && options != undefined)
 			})
 		}
 		return result;
