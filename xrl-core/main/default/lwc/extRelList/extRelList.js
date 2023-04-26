@@ -1204,34 +1204,48 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 
 	}
+	handleFlowStatusChange(event) {
+		console.log('FLOW', event.detail);
+	}
 
-	handleEventFlow(action){	
+	handleEventFlow(action){
+		
+		if (action.target) {
+		let val = action.target.getAttribute('data-id');
+			console.log(action.detail);	
+			if (val === 'flow:close') this.config.flowApiName = undefined;
+		}
+
 		let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
 
 		let recordIdList;
 		if (records.length !== 0) {
 			recordIdList = records.map(rec => rec.Id);
-			
-			libs.remoteAction(this, 'invokeAction', { name: action.name, recordIdList: recordIdList, callback: (cmd, data) => {
-				console.log(cmd, data);
-				let res = JSON.parse(data.invokeActionResult);
-				if (res.isSuccess) {
-					const event = new ShowToastEvent({
-						title: 'Success',
-						message: res.message ? res.message : (action.label + ' execution finished'),
-						variant: 'success'
-					});
-					this.dispatchEvent(event);
-					this.loadCfg();
-				} else {
-					const event = new ShowToastEvent({
-						title: 'Error',
-						message: res.message ? res.message : (action.label + ' execution failed'),
-						variant: 'error'
-					});
-					this.dispatchEvent(event);
-				}				
-			}});
+			if (action.name.startsWith('AutoLaunchedFlow')) {
+				libs.remoteAction(this, 'invokeAction', { name: action.name, recordIdList: recordIdList, callback: (cmd, data) => {
+					console.log(cmd, data);
+					let res = JSON.parse(data.invokeActionResult);
+					if (res.isSuccess) {
+						const event = new ShowToastEvent({
+							title: 'Success',
+							message: res.message ? res.message : (action.label + ' execution finished'),
+							variant: 'success'
+						});
+						this.dispatchEvent(event);
+						this.loadCfg();
+					} else {
+						const event = new ShowToastEvent({
+							title: 'Error',
+							message: res.message ? res.message : (action.label + ' execution failed'),
+							variant: 'error'
+						});
+						this.dispatchEvent(event);
+					}				
+				}});
+			} else {
+				this.config.flowApiName = action.name.split(/::/)[1];
+				//Need to run screen flow
+			}
 		}else{
 			const event = new ShowToastEvent({
 				title: 'Error',
