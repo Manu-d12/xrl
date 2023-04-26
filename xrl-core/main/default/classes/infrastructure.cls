@@ -503,8 +503,8 @@ global with sharing class infrastructure {
 
 		map < string, object > params = new map < string, object > ();
 		if (recordIdList != null) params.put('recordIdList', recordIdList);
-
-		Flow.Interview flow = Flow.Interview.createInterview(name, params);
+		string[] tmp = name.split('__');
+		Flow.Interview flow = tmp.size() > 1 ? Flow.Interview.createInterview(tmp[0], tmp[1], params) :Flow.Interview.createInterview(name, params);
 		flow.start();
 		String result = (String) flow.getVariableValue('result');
 

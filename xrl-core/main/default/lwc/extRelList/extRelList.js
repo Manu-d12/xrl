@@ -1222,7 +1222,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if (records.length !== 0) {
 			recordIdList = records.map(rec => rec.Id);
 			if (action.name.startsWith('AutoLaunchedFlow')) {
-				libs.remoteAction(this, 'invokeAction', { name: action.name, recordIdList: recordIdList, callback: (cmd, data) => {
+				libs.remoteAction(this, 'invokeAction', { name: action.name.split(/::/)[1], recordIdList: recordIdList, callback: (cmd, data) => {
 					console.log(cmd, data);
 					let res = JSON.parse(data.invokeActionResult);
 					if (res.isSuccess) {
