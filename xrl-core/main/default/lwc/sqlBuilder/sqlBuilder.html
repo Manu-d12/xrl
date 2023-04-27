@@ -34,10 +34,10 @@
                         <ul class="slds-has-dividers_around-space">
                             <template if:true={config.sqlBuilder.selectedFields} for:each={config.sqlBuilder.selectedFields} for:item="field" for:index="index">
                                 <li class="slds-item Items" data-val={field.fieldName} key={field.fieldName} style="cursor: pointer;margin-top: 0px;padding:5px;" draggable="true" onchange={Change} ondrop={Drop} ondragstart={DragStart} ondragover={DragOver}>
-                                    <lightning-icon size="small" data-val={field.fieldName} icon-name="utility:rows" alternative-text="Rows" title="Rows"></lightning-icon>
+                                    <lightning-icon size="small" data-val={field.fieldName} icon-name="utility:drag_and_drop" alternative-text="Rows" title="Rows"></lightning-icon>
                                     &nbsp;<lightning-helptext class="placeTopItem" content={field.helpText}></lightning-helptext>
                                     &nbsp;{field.label}
-                                    <lightning-icon if:false={field.locked} size="small" data-id="sqlBuilder:deleteSelectedField" data-val={field.fieldName} onclick={handleBuilderEvent} style="float: right;" icon-name="utility:delete" alternative-text={config._LABELS.altTxt_delete} title={config._LABELS.altTxt_delete}></lightning-icon>
+                                    <lightning-icon if:false={field.locked} size="x-small" data-id="sqlBuilder:deleteSelectedField" data-val={field.fieldName} onclick={handleBuilderEvent} style="float: right;" icon-name="utility:delete" alternative-text={config._LABELS.altTxt_delete} title={config._LABELS.altTxt_delete}></lightning-icon>
                                     <lightning-icon if:true={field.locked} size="small" data-val={field.fieldName} onclick={handleBuilderEvent} style="float: right;" icon-name="utility:lock" alternative-text={config._LABELS.altTxt_locked} title={config._LABELS.altTxt_locked}></lightning-icon>
                                 </li>
                             </template>
