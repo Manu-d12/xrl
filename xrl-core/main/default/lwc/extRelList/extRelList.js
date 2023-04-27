@@ -1205,15 +1205,23 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 	}
 	handleFlowStatusChange(event) {
-		console.log('FLOW', event.detail);
+		console.log('FLOW', event.detail.status);
+		if(event.detail.status === 'FINISHED') {
+			delete this.config.flowApiName;
+			delete this.config.flowInputVariables;
+            const outputVariables = event.detail.outputVariables;
+			console.log('FLOW OUTPUT PARAMS',outputVariables)
+		}
 	}
 
 	handleEventFlow(action){
 		
 		if (action.target) {
-		let val = action.target.getAttribute('data-id');
-			console.log(action.detail);	
-			if (val === 'flow:close') this.config.flowApiName = undefined;
+			let val = action.target.getAttribute('data-id');
+			if (val === 'flow:close') {
+				delete this.config.flowApiName;
+				delete this.config.flowInputVariables;
+			}
 		}
 
 		let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
@@ -1244,6 +1252,13 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				}});
 			} else {
 				this.config.flowApiName = action.name.split(/::/)[1];
+				this.config.flowInputVariables = [
+					{
+						name : "records",
+     					type : "SObject",
+     					value : JSON.parse(JSON.stringify(records))
+					}
+				];
 				//Need to run screen flow
 			}
 		}else{
