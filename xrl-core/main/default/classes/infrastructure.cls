@@ -678,6 +678,7 @@ global with sharing class infrastructure {
 			'msg_noCustomActionConfigured'=>label.msg_noCustomActionConfigured,
 			'msg_cannotKeepThisBlank'=>label.msg_cannotKeepThisBlank,
 			'msg_failedValidationCallback'=>label.msg_failedValidationCallback,
+			'msg_yourFileWillStartDownloadingShortly'=>label.msg_yourFileWillStartDownloadingShortly,
 			'placeHolder_beforeSaveValidation'=>label.placeHolder_beforeSaveValidation,
 			'placeHolder_beforeDeleteValidation'=>label.placeHolder_beforeDeleteValidation,
 			'placeholder_actionCallback'=> label.placeholder_actionCallback,

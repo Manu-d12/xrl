@@ -1983,4 +1983,12 @@ return groups;
         <shortDescription>msg_failedValidationCallback</shortDescription>
         <value>Validation failed for one or more records. Please check console logs for more details</value>
     </labels>
+    <labels>
+        <fullName>msg_yourFileWillStartDownloadingShortly</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_yourFileWillStartDownloadingShortly</shortDescription>
+        <value>Your file will start downloading shortly</value>
+    </labels>
 </CustomLabels>
