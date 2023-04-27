@@ -318,6 +318,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 						console.log('picklist', e);
 					} else if (e.type === 'boolean') {
 						e.isEditableBool = true;
+					} else if (e.type === 'textarea') {
+						e.isEditableTextArea = true;
 					} else {
 						e.isEditableRegular = true;
 					}

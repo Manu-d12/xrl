@@ -410,6 +410,8 @@ export default class SqlBuilder extends LightningElement {
                         fieldMap.isEditableAsPicklist = true;
                     } else if (fieldMap.type === 'boolean') {
                         fieldMap.isEditableBool = true;
+                    } else if (fieldMap.type === 'textarea') {
+						fieldMap.isEditableTextArea = true;
                     } else {
                         fieldMap.isEditableRegular = true;
                     }
