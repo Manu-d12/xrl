@@ -510,7 +510,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if (val.startsWith('delete:dialog')) {
 			if (event.detail.action === 'cancel') this.showDialog = false;
 			else {
-				event.target.setLoading(true);
+				this.showDialog = false;
 				this.prepareRecordsToDelete();
 				this.handleStandardCallback('std:delete');
 			}
@@ -550,18 +550,20 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
 		console.log(records);
 
+		let allRecordsValidation = true;
+
 		//user validation callback
 		if(this.config.listViewConfig[0].beforeDeleteValidation !== undefined && 
 			this.config.listViewConfig[0].beforeDeleteValidation !== ""){
-			let copyRecords = records;
-			records = [];
-			copyRecords.forEach((el)=>{
+			records.forEach((el)=>{
 				try{
 					let rec = eval('('+this.config.listViewConfig[0].beforeDeleteValidation+')')(el);
-					if(rec){
-						records.push(el);
+					if(!rec){
+						console.error('Failed Validation for ',JSON.parse(JSON.stringify(el)));
+						allRecordsValidation = false;
 					}
 				}catch(e){
+					allRecordsValidation = false;
 					libs.showToast(this,{
 						title: 'Error',
 						message: e.toString(),
@@ -570,6 +572,16 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					console.log('Error', e);
 				}
 			});
+		}
+
+		if(!allRecordsValidation){
+			libs.showToast(this,{
+				title: 'Error',
+				message: this.config._LABELS.msg_failedValidationCallback,
+				variant: 'error'
+			});
+			console.error('Validation Not passed');
+			return;
 		}
 
 		//chunking the data and sending it to apex
@@ -617,15 +629,16 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			return this.config.listViewConfig[0]._changedRecords.has(el.Id)
 		});
 		
-		let validatedRecords = [];
+		let allRecordsValidation = true;
 
 		if(this.config.listViewConfig[0].beforeSaveValidation !== undefined && 
 			this.config.listViewConfig[0].beforeSaveValidation !== ""){
 			changedItems.forEach((el)=>{
 				try{
 					let rec = eval('('+this.config.listViewConfig[0].beforeSaveValidation+')')(el);
-					if(rec){
-						validatedRecords.push(el);
+					if(!rec){
+						console.error('Failed Validation for ',JSON.parse(JSON.stringify(el)));
+						allRecordsValidation = false;
 					}
 				}catch(e){
 					libs.showToast(this,{
@@ -636,21 +649,28 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					console.log('Error', e);
 				}
 			});
-		}else{
-			validatedRecords = changedItems;
 		}
 
 		let saveChunk = this.config.listViewConfig[0].saveChunkSize ? this.config.listViewConfig[0].saveChunkSize : 200; //200 is the default value for saveChunk
 		let index = 0;
 
+		if(!allRecordsValidation){
+			libs.showToast(this,{
+				title: 'Error',
+				message: this.config._LABELS.msg_failedValidationCallback,
+				variant: 'error'
+			});
+			console.error('Validation Not passed');
+			return;
+		}
 
-		while(validatedRecords.length > 0 && index < validatedRecords.length){
-			let lIndex = validatedRecords[(parseInt(index)+parseInt(saveChunk))] ? (parseInt(index)+parseInt(saveChunk)) : (validatedRecords.length);
-			let chunk = validatedRecords.slice(index,lIndex);
-			index += validatedRecords[(parseInt(index)+parseInt(saveChunk))] ? parseInt(saveChunk) : (validatedRecords.length);
+		while(changedItems.length > 0 && index < changedItems.length){
+			let lIndex = changedItems[(parseInt(index)+parseInt(saveChunk))] ? (parseInt(index)+parseInt(saveChunk)) : (changedItems.length);
+			let chunk = changedItems.slice(index,lIndex);
+			index += changedItems[(parseInt(index)+parseInt(saveChunk))] ? parseInt(saveChunk) : (changedItems.length);
 			await this.saveRecords(chunk);
 		}
-		this.resetChangedRecords(validatedRecords.length);
+		this.resetChangedRecords(changedItems.length);
 	}
 	async saveRecords(chunkIn){
 		try{
