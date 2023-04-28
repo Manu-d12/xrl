@@ -582,6 +582,10 @@ export let libs = {
 		  return actions;
 	},
 	historyGrid: function(apiName){
+		//apiName.split('::')[2].split('.')[1] === false means that it is the current object's history
+		//otherwise it is the history grid for parent child.
+		let fieldName = apiName.split('::')[2].split('.')[1] ? apiName.split('::')[2].split('.')[0] + ".Id"
+		: apiName.split('::')[2].split('.')[0].slice(0,-2) + ".Id";
 		let defFields = [
 			{
 				"fieldName" : "Id",
@@ -634,7 +638,7 @@ export let libs = {
 			},
 			{
 				"label": apiName.split('::')[2].split('.')[0] +  " ID",
-				"fieldName": apiName.split('::')[2].split('.')[0] + ".Id",
+				"fieldName": fieldName,
 				"type": "string",
 				"referenceTo": apiName.split('::')[2].split('.')[0],
 				"isFilterable": true,
