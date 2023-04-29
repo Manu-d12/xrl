@@ -1080,10 +1080,16 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			if(!this.isThereUnsavedRecords()){				
 				// HYPER-381
 				this.config.isSpinner = true;
-				setTimeout((() => { 
+				const event = new ShowToastEvent({
+					title: 'Success',
+					message: this.config._LABELS.msg_yourFileWillStartDownloadingShortly,
+					variant: 'success'
+				});
+				this.dispatchEvent(event);
+				setTimeout(async () => { 
 					this.handleEventExport(event);
 					this.handleStandardCallback(val);
-				}), 10);
+				}, 100);
 			}else{
 				const event = new ShowToastEvent({
 					title: 'Error',
@@ -1293,7 +1299,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 	}
 
-	handleEventExport(event) {
+	async handleEventExport(event) {
 		let dataTable = this.template.querySelector('c-Data-Table');
 		let records = dataTable.getSelectedRecords().length ? dataTable.getSelectedRecords() : dataTable.getRecords();
 		let locale = libs.getGlobalVar(this.name).userInfo.locale;
@@ -1318,8 +1324,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			'!cols': []
 		};
 		let columns = this.config.listViewConfig[0].colModel.filter(col => { return !col.isHidden; });
-		records.forEach((rec, i) => {
-			columns.forEach((col, j) => {
+		records.forEach(async (rec, i) => {
+			columns.forEach(async (col, j) => {
 				if (i === 0) {
 					let cell_ref = XLSX.utils.encode_cell({ c: j, r: i });
 					ws[cell_ref] = {
