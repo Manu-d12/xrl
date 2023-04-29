@@ -260,8 +260,8 @@ export let libs = {
 			"groupFieldName" : {
 				"defValue": "",
 				"type": "combobox",
-				"optionsCallBack" : function(scope){
-					return scope.config.groupingFields;
+				"optionsCallBack" : function(scope, sFields){
+					return sFields;
 				},
 				"label": _labels.lbl_groupFieldName,
 				"tooltip": _labels.tooltip_groupFieldName,

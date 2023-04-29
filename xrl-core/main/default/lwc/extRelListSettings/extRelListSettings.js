@@ -135,10 +135,9 @@ export default class extRelListSettings extends LightningElement {
 			
 			let sFields = [{label:'No Grouping',value:''}];
 			sFields = sFields.concat(this.selectedFields);
-			this.config.groupingFields = sFields;
 			/*let options = (tmp[item].type === 'combobox') ?
 							(tmp[item].options) ? (tmp[item].options)  : sFields : '';*/
-						
+			let options = typeof(tmp[item].optionsCallBack) == 'function' ?  tmp[item].optionsCallBack(this, sFields) : tmp[item].options;
 			result.push({
 				"paramName" : item,
 				"type" : tmp[item].type,
@@ -150,7 +149,7 @@ export default class extRelListSettings extends LightningElement {
 				"isChecked" : (tmp[item].type === 'checkbox') ? defValue : undefined,
 				"isComboBox" : (tmp[item].type === 'combobox'),
 				//"options": options,
-				"options" : typeof(tmp[item].optionsCallBack) == 'function' ?  tmp[item].optionsCallBack(this) : tmp[item].options,
+				"options" : options,
 				"cmd": tmp[item].cmd,
 				"placeHolder" : tmp[item].placeHolder
 			})
