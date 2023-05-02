@@ -354,7 +354,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				}
 			} else {
 				let isNeedSaveData = this.config._inlineEditRow !== undefined && JSON.stringify(this.records[this.config._inlineEdit]) !== JSON.stringify(this.config._inlineEditRow);
-
+				console.log('isNeedSaveData', isNeedSaveData);
 				if (isNeedSaveData)	{
 					this.records[this.config._inlineEdit] = JSON.parse(JSON.stringify(this.config._inlineEditRow));
 					//Need also Update a global array
@@ -571,11 +571,13 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			let calculatedInd = this.hasGrouping ? this.records.findIndex(rec => rowId === rec.Id) : this.calcRowIndex(rowInd);
 
 		if (this.config._inlineEdit !== undefined) {
-			this.records[this.config._inlineEdit]._isEditable = false;
-			if (this.hasGrouping) {
-				let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
-				this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
-			}
+			//making it same as edit quote grid. Don't need to press enter after change in each row.
+			this.saveEditCallback(true); 
+			// this.records[this.config._inlineEdit]._isEditable = false;
+			// if (this.hasGrouping) {
+			// 	let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
+			// 	this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
+			// }
 		}
 		
 		if (this.getSelectedRecords().length > 1) {
