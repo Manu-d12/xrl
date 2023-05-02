@@ -659,6 +659,16 @@ export let libs = {
 		];
 		return defFields;
 	},
+	formatAddress: function(addressObject,locale){
+		let address;
+		if(addressObject === undefined || addressObject === '') return '';
+		if(locale === "en-US" || locale === "en-IN"){
+			address = addressObject?.street + " " + addressObject?.city + ", " + addressObject?.state + ", " + addressObject?.country;
+		}else{
+			address = addressObject?.street + " " + addressObject?.city + " " + addressObject?.state + " " + addressObject?.country;
+		}
+		return address;
+	},
 	currencyMap: function(cur) {
 		let map = {
 			AED: 'د.إ',

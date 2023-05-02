@@ -104,6 +104,9 @@ export default class dataTableItem extends LightningElement {
 				//console.log(this.col.fieldName, JSON.stringify(row), val);
 				val = libs.formatStr(refTmp,[row.Id, val]);
 			}
+			if(this.col.type === 'address'){
+				val = libs.formatAddress(val,this.locale);
+			}
 		}
 		return val;
 		//return this.row[this.col.fieldName];
