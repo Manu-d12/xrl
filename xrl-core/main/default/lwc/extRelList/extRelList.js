@@ -666,13 +666,18 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			return;
 		}
 
+		this.config.saveStatus = 0;
+		let chunkCount = 0;
+
 		while(changedItems.length > 0 && index < changedItems.length){
 			let lIndex = changedItems[(parseInt(index)+parseInt(saveChunk))] ? (parseInt(index)+parseInt(saveChunk)) : (changedItems.length);
 			let chunk = changedItems.slice(index,lIndex);
 			index += changedItems[(parseInt(index)+parseInt(saveChunk))] ? parseInt(saveChunk) : (changedItems.length);
+			chunkCount +=1;
 			await this.saveRecords(chunk);
 		}
-		this.resetChangedRecords(changedItems.length);
+		if(chunkCount === this.config.saveStatus)
+			this.resetChangedRecords(changedItems.length);
 	}
 	async saveRecords(chunkIn){
 		try{
@@ -681,7 +686,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			await libs.remoteAction(this, 'saveRecords', { records: chunk, 
 				sObjApiName: this.config.sObjApiName,
 				rollback:this.config.listViewConfig[0].rollBack ? this.config.listViewConfig[0].rollBack : false,
-				beforeSaveAction: this.config.listViewConfig[0].beforeSaveApexAction ? this.config.listViewConfig[0].beforeSaveApexAction : ''
+				beforeSaveAction: this.config.listViewConfig[0].beforeSaveApexAction ? this.config.listViewConfig[0].beforeSaveApexAction : '',
+				callback: function(nodename,data){
+					this.config.saveStatus += 1;
+					console.log('From callback ', data[nodename]);
+				}
 			});
 		} catch (error) {
 			console.log(error);
