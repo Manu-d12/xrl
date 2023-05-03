@@ -602,6 +602,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						})
 					});
 				}
+				let left = ((event.x - 60) + 320) > screen.availWidth ? (screen.availWidth - 380) : (event.x - 60);
 				this.config._bulkEdit = {
 					rowId : calculatedInd,
 					cItem : cItem,
@@ -609,7 +610,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					value : this.records[calculatedInd][cItem.fieldName],
 					chBoxLabel : libs.formatStr('Update {0} items', [this.getSelectedRecords().length]),
 					chBoxValue : false,
-					style: libs.formatStr("position:absolute;top:{0}px;left:{1}px", [(-table.offsetHeight + event.srcElement.parentElement.parentElement.offsetTop - (this.config.pager.pagerTop === true ? 110 : 40)), (event.x - 60)]),
+					style: libs.formatStr("position:absolute;top:{0}px;left:{1}px", [(-table.offsetHeight + event.srcElement.parentElement.parentElement.offsetTop - (this.config.pager.pagerTop === true ? 110 : 40)), left]),
 				}
 				//this.config._isBulkEdit = true;
 			} else {
@@ -751,11 +752,12 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					{label:'False',value:'false'}
 				];
 			}
+			let left = ((event.x - 52) + 500) > screen.availWidth ? (screen.availWidth - 500) : (event.x - 52);
 			this.config._isFilterOptions = this.config._isFilterOptions && this.config._isFilterOptions.fieldName === colName ?
 				undefined :
 				{
 					fieldName: colName,
-					style: libs.formatStr("position:absolute;top:{0}px;left:{1}px;min-width:fit-content;", [(-table.offsetHeight + 20 - (this.config.pager.pagerTop === true ? 40 : 0)), (event.x - 52)]),
+					style: libs.formatStr("position:absolute;top:{0}px;left:{1}px;min-width:fit-content;", [(-table.offsetHeight + 20 - (this.config.pager.pagerTop === true ? 40 : 0)), left]),
 					type: cItem.type,
 					cItem : cItem,
 					filterStrFocus: true,

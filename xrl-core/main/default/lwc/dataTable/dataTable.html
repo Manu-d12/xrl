@@ -14,7 +14,7 @@
 					Page&nbsp;<lightning-input variant="label-hidden" data-id=":pagerCurPage" onchange={handleEventPager} type="number" value={config.pager.curPage} style="width:80px"></lightning-input>&nbsp;of {config.pager.numPages}&nbsp;&nbsp;
 					<lightning-button-icon variant="brand" size="small" data-id=":pagerNext" onclick={handleEventPager} icon-name="utility:chevronright"></lightning-button-icon>&nbsp;
 					<lightning-button-icon variant="brand" size="small"  data-id=":pagerLast" onclick={handleEventPager} icon-name="utility:arrow_right"></lightning-button-icon>
-					<lightning-combobox variant="label-hidden" data-id=":pagerPageSize" placeholder="Choose count" value={config.pager.pageSize} options={config.pager.pageSizeOptions} onchange={handleEventPager} class="slds-p-horizontal_xx-small" style="width:80px"></lightning-combobox>
+					<lightning-combobox variant="label-hidden" data-id=":pagerPageSize" placeholder="Choose count" value={config.pager.pageSize} options={config.pager.pageSizeOptions} onchange={handleEventPager} class="slds-p-horizontal_xx-small" dropdown-alignment="auto" style="width:80px"></lightning-combobox>
 				</div>
 			</div>
 		</div>
@@ -136,7 +136,7 @@
 					Page&nbsp;<lightning-input variant="label-hidden" data-id=":pagerCurPage" onchange={handleEventPager} type="number" value={config.pager.curPage} style="width:80px"></lightning-input>&nbsp;of {config.pager.numPages}&nbsp;&nbsp;
 					<lightning-button-icon variant="brand" size="small" data-id=":pagerNext" onclick={handleEventPager} icon-name="utility:chevronright"></lightning-button-icon>&nbsp;
 					<lightning-button-icon variant="brand" size="small"  data-id=":pagerLast" onclick={handleEventPager} icon-name="utility:arrow_right"></lightning-button-icon>
-					<lightning-combobox variant="label-hidden" data-id=":pagerPageSize" placeholder="Choose count" value={config.pager.pageSize} options={config.pager.pageSizeOptions} onchange={handleEventPager} class="slds-p-horizontal_xx-small" style="width:80px"></lightning-combobox>
+					<lightning-combobox variant="label-hidden" data-id=":pagerPageSize" placeholder="Choose count" value={config.pager.pageSize} options={config.pager.pageSizeOptions} onchange={handleEventPager} class="slds-p-horizontal_xx-small" dropdown-alignment="auto" style="width:80px"></lightning-combobox>
 				</div>
 			</div>
 		</div>
@@ -151,14 +151,14 @@
 			<div class="slds-popover__body slds-grid" onkeyup={searchFinish}>
 				<lightning-combobox placeholder={config._LABELS.lbl_chooseOperation} value={config._isFilterOptions.filterOption} data-id="filterOperation" onchange={searchOperationChange} options={config._isFilterOptions.filterOptions} class="slds-p-horizontal_xx-small" style="width:fit-content;min-width: fit-content;"></lightning-combobox>
 				<template if:false={config._isFilterOptions.isUnary}>
-				<lightning-input if:true={config._isFilterOptions.isShowStr} type={config._isFilterOptions.type} onchange={searchOnChange} value={config._isFilterOptions.filterStr} tabindex="0" data-id="filterStr" class="slds-p-horizontal_xx-small"></lightning-input>
+					<lightning-input if:true={config._isFilterOptions.isShowStr} type={config._isFilterOptions.type} onchange={searchOnChange} value={config._isFilterOptions.filterStr} tabindex="0" data-id="filterStr" class="slds-p-horizontal_xx-small"></lightning-input>
 					<!--lightning-combobox if:false={config._isFilterOptions.isShowStr} placeholder="Choose operation" onchange={searchOnChange} 
 						value={config._isFilterOptions.filterStr} data-id="filterStr" options={config._isFilterOptions.cItem.options} class="slds-p-horizontal_xx-small">
 					</lightning-combobox-->
 					<!-- <c-multiselect if:false={config._isFilterOptions.isShowStr} placeholder={config._LABELS.lbl_chooseOperation} onchange={searchOnChange} value={config._isFilterOptions.filterStr} data-id="filterStr" options={config._isFilterOptions.cItem.options} issearchable='true' configoptionssize={config.displayOptionListSize} class="slds-p-horizontal_xx-small"></c-multiselect> -->
 					<c-multiselect if:false={config._isFilterOptions.isShowStr} multiselect=true listsize={config.displayOptionListSize} onselect={handleLocalFilterSelect} 
 					data-id="filterStr" options={config._isFilterOptions.cItem.options} selectedvalues={sValues}></c-multiselect>
-
+					<!-- Range -->
 					<lightning-input if:true={config._isFilterOptions.isShowToStr} type={config._isFilterOptions.type} onchange={searchOnChange} value={config._isFilterOptions.filterStrTo}  data-id="filterStrTo" class="slds-p-horizontal_xx-small"></lightning-input>
 				</template>
 				<lightning-button-icon icon-name="utility:save" class="slds-m-left_xx-small" alternative-text={config._LABELS.altTxt_saveFilter} title={config._LABELS.title_saveFilter} data-id="saveFilter" onclick={searchOnChange}></lightning-button-icon>
