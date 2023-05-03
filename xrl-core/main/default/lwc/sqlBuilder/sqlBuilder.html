@@ -164,8 +164,8 @@
                                 </td>
                                 <td>
                                     <div class="slds-truncate">
-                                        <lightning-icon size="xx-small" data-id="sqlBuilder:conditions:editSelectedCondition" data-val={condition.index} onclick={handleBuilderEvent} icon-name="utility:record_update" alternative-text="Edit" title={config._LABELS.title_appliedConditionsActionEdit}></lightning-icon>
-                                        <lightning-icon size="xx-small" data-id="sqlBuilder:conditions:deleteSelectedCondition" data-val={condition.index} onclick={handleBuilderEvent} icon-name="utility:delete" alternative-text="Delete" title={config._LABELS.title_appliedConditionsActionDelete}></lightning-icon>
+                                        <lightning-icon size="x-small" data-id="sqlBuilder:conditions:editSelectedCondition" data-val={condition.index} onclick={handleBuilderEvent} icon-name="utility:record_update" alternative-text="Edit" title={config._LABELS.title_appliedConditionsActionEdit}></lightning-icon>
+                                        <lightning-icon size="x-small" data-id="sqlBuilder:conditions:deleteSelectedCondition" data-val={condition.index} onclick={handleBuilderEvent} icon-name="utility:delete" alternative-text="Delete" title={config._LABELS.title_appliedConditionsActionDelete}></lightning-icon>
                                     </div>
                                 </td>
                             </tr>
@@ -246,7 +246,7 @@
                                 <li class="slds-item" key={field.value} style="margin-top: 0px;padding:5px;">
                                     <lightning-helptext class="placeTopItem" content={field.field.helpText}></lightning-helptext>
                                     &nbsp;{field.field.label} {field.sortOrder} {field.emptyField} 
-                                    <lightning-icon style="float:right;" size="xx-small" data-id="sqlBuilder:ordering:delete" data-val={field.field.fieldName} onclick={handleBuilderEvent} icon-name="utility:delete" alternative-text="Delete" title="Delete"></lightning-icon>
+                                    <lightning-icon style="float:right;" size="x-small" data-id="sqlBuilder:ordering:delete" data-val={field.field.fieldName} onclick={handleBuilderEvent} icon-name="utility:delete" alternative-text="Delete" title="Delete"></lightning-icon>
                                 </li>
                             </template>
                         </ul>
