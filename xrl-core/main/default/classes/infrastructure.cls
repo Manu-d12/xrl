@@ -950,7 +950,7 @@ global with sharing class infrastructure {
         handlerClass.execute(data);
     }
 
-	private static string[] void getIntrLst() {
+	private static string[] getIntrLst() {
         List<ApexClass[]> searchList = [
             FIND 'xrl.infrastructure.handler' IN ALL FIELDS 
             RETURNING ApexClass (Id, Body, Name)
@@ -959,7 +959,7 @@ global with sharing class infrastructure {
         Pattern REGEX = Pattern.compile('(?i)(global) +?class +?(.+?) +?extends +?xrl\\.infrastructure\\.handler');
         
         string[] lst = new string[]{};
-            for (ApexClass item : searchList[0]) {
+        for (ApexClass item : searchList[0]) {
                 system.debug(loggingLevel.Error, 'FOUND ' + item.name);
                 Matcher m = REGEX.matcher(item.Body);
                 while (m.find()) {
@@ -967,8 +967,8 @@ global with sharing class infrastructure {
                     lst.add((className != item.name ? item.name + '.' : '') + className );
                 }
                 
-            }
-        
+         }
+		return lst;
     }
 
 	global static void addDebugLog(string key, object value) {
