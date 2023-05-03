@@ -25,14 +25,12 @@ export default class extRelListSettings extends LightningElement {
 	}
 
 	getApexInterfaceList() {
-		//let SOQL = "SELECT ClassName, ClassNamespacePrefix FROM ApexTypeImplementor WHERE InterfaceName = 'RoundingStratergy' and IsConcrete=true";
-		let SOQL = "SELECT Name FROM ApexClass LIMIT 10";
-		libs.remoteAction(this, 'customSoql', {
+		libs.remoteAction(this, 'getIntrLstl', {
 			SOQL: SOQL,
 			callback: ((nodeName, data) => {
 				let options =  [{label : "None", value : ""}];
-				data[nodeName].records.forEach(e=>{
-					options.push({label : e.Name, value: e.Name})	
+				data[nodeName].forEach(e=>{
+					options.push({label : e, value: e})	
 				});
 				this.config.apexInterfaceList = options;
 			})

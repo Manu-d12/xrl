@@ -63,7 +63,11 @@ global with sharing class infrastructure {
 				}
 				when 'deleteConfig' {
 					resultMethod = deleteConfig(data);
+				}
+				when 'getIntrLst' {
+					resultMethod = getIntrLst();
 				}				
+				
 				when
 				else {
 					//throw new core.appException(null, core.appLabels.get('errCmd'), core.ExceptionType.API);
@@ -944,6 +948,27 @@ global with sharing class infrastructure {
                 
         handler handlerClass = (handler) JSON.deserialize(JSON.serialize(data), T);
         handlerClass.execute(data);
+    }
+
+	private static string[] void getIntrLst() {
+        List<ApexClass[]> searchList = [
+            FIND 'xrl.infrastructure.handler' IN ALL FIELDS 
+            RETURNING ApexClass (Id, Body, Name)
+        ];
+        //global class copyBomItems extends xrl.infrastructure.handler
+        Pattern REGEX = Pattern.compile('(?i)(global) +?class +?(.+?) +?extends +?xrl\\.infrastructure\\.handler');
+        
+        string[] lst = new string[]{};
+            for (ApexClass item : searchList[0]) {
+                system.debug(loggingLevel.Error, 'FOUND ' + item.name);
+                Matcher m = REGEX.matcher(item.Body);
+                while (m.find()) {
+                    string className = m.group(2);  
+                    lst.add((className != item.name ? item.name + '.' : '') + className );
+                }
+                
+            }
+        
     }
 
 	global static void addDebugLog(string key, object value) {
