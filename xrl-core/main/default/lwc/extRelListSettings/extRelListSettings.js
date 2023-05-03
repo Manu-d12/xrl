@@ -26,7 +26,6 @@ export default class extRelListSettings extends LightningElement {
 
 	getApexInterfaceList() {
 		libs.remoteAction(this, 'getIntrLstl', {
-			SOQL: SOQL,
 			callback: ((nodeName, data) => {
 				let options =  [{label : "None", value : ""}];
 				data[nodeName].forEach(e=>{
