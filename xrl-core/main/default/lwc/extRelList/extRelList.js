@@ -1170,7 +1170,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 						actionName: 'new',
 					},
 					state: {
-						defaultFieldValues: encodeDefaultFieldValues(defValue)
+						defaultFieldValues: encodeDefaultFieldValues(defValue),
+				        useRecordTypeCheck: 1
 					}
 				});
 				this.handleStandardCallback(val);
