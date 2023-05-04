@@ -39,6 +39,7 @@ global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickLi
 							picklistValues.addRow(
 								new VisualEditor.DataRow(sObjLabel+': History (' + sObjField +')', sObjLabel + 'History::' + sObjApiName + 'History::' + sObjApiName + '.' + sObjField)
 							);
+							//Example apiName- Account History::AccountHistory::AccountHistory.AccountId
 						}else if(objToken  != null && objToken.getDescribe().isCustom()){
 							//for custom history objects
 							picklistValues.addRow(

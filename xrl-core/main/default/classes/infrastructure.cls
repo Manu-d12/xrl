@@ -146,7 +146,7 @@ global with sharing class infrastructure {
 
 		result.putAll(getDescribeData(isNeedDescribe,sObjApiName));
 
-		if (UserInfo.isMultiCurrencyOrganization() && isCreateble) {
+		if (UserInfo.isMultiCurrencyOrganization() && isCreateble && !sObjApiName.contains('Share')) {
 			System.debug('Multi Currency');
 			soqlFields.add('CurrencyIsoCode');
 		}

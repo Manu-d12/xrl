@@ -29,7 +29,17 @@ export default class ExrlTab extends LightningElement {
         let selectedObj = event.detail.payload.value;
         let obj = this.config.objList.find((el) => { return el.value === selectedObj});
         if(selectedObj !== null && obj !== undefined){
-            this.config.selectedApiName = obj.label + '::' + selectedObj + '::';
+            if(selectedObj.toLowerCase().includes('history')){
+                //for history grids
+                this.config.selectedApiName = selectedObj.includes('__History') ? 
+                obj.label + '::' + selectedObj + '::Parent.' + selectedObj.replace('History','c') //custom history object
+                //Example- History: BoM::nameSpace__Bom__History::Parent.nameSpace__Bom__c
+                : obj.label + '::' + selectedObj + '::' + selectedObj.replace('History','') + 'Id'; //standard history object
+                //Example- Account History::AccountHistory::AccountId
+            }else{
+                //for normal grids
+                this.config.selectedApiName = obj.label + '::' + selectedObj + '::';
+            }
             this.handleOpenGrid();
         }
         
