@@ -868,18 +868,25 @@ global with sharing class infrastructure {
 		return iconPropertyMap;
 	}
 
-	private static Map<String,String> objectList() {
+	private static Map<String,Object> objectList() {
 		Map < String, Schema.SObjectType > gd = Schema.getGlobalDescribe();
 
-		Map<String,String>  objs = new Map<String,String> ();
+		// Map<String,String>  objs = new Map<String,String> ();
 
-		for (Schema.SObjectType thisObj: gd.values()) {
-			Schema.DescribeSObjectResult objResult = thisObj.getDescribe();
-			if (objResult.isQueryable()) {
-				objs.put(String.valueOf(objResult.getName()),objResult.getLabel());
-			}
+		// for (Schema.SObjectType thisObj: gd.values()) {
+		// 	Schema.DescribeSObjectResult objResult = thisObj.getDescribe();
+		// 	if (objResult.isQueryable()) {
+		// 		objs.put(String.valueOf(objResult.getName()),objResult.getLabel());
+		// 	}
+		// }
+		Map<String,Schema.DescribeSObjectResult> objectMap = new Map<String,Schema.DescribeSObjectResult>();
+		map<string, object> result = new map<string, object>{};
+		for(Schema.SObjectType objTyp : gd.Values()){
+			Schema.DescribeSObjectResult descResult = objTyp.getDescribe();
+			objectMap.put(objTyp.getDescribe().getName(), descResult);
 		}
-		return objs;
+		result.put('describe', JSON.serialize(objectMap));
+		return result;
 	}
 	private static map<string, object> objectFieldList(map < string, object > data){
 		string sObjApiName = (string) data.get('sObjApiName');

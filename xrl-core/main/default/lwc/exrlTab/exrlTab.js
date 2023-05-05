@@ -16,8 +16,12 @@ export default class ExrlTab extends LightningElement {
 
     getAllObjects(cmd,data){
         this.config.objList = [];
-        for(const key in data[cmd]){
-            this.config.objList.push({'label':data[cmd][key],'value':key});
+        console.log('getAllObjects',JSON.parse(data[cmd].describe));
+        this.config.allObjectDesc = JSON.parse(data[cmd].describe);
+        for(const key in this.config.allObjectDesc){
+            if(this.config.allObjectDesc[key].queryable){
+                this.config.objList.push({'label':this.config.allObjectDesc[key].label,'value':this.config.allObjectDesc[key].name});
+            }
         }
         this.config.objList.sort();
     }
@@ -27,14 +31,15 @@ export default class ExrlTab extends LightningElement {
 
     handleSelect(event) {
         let selectedObj = event.detail.payload.value;
-        let obj = this.config.objList.find((el) => { return el.value === selectedObj});
+        // let obj = this.config.objList.find((el) => { return el.value === selectedObj});
+        let obj = this.config.allObjectDesc[selectedObj];
         if(selectedObj !== null && obj !== undefined){
             if(selectedObj.toLowerCase().includes('history')){
                 //for history grids
                 this.config.selectedApiName = selectedObj.includes('__History') ? 
-                obj.label + '::' + selectedObj + '::Parent.' + selectedObj.replace('History','c') //custom history object
+                obj.label + '::' + selectedObj + '::Parent.' + obj.associateParentEntity //custom history object
                 //Example- History: BoM::nameSpace__Bom__History::Parent.nameSpace__Bom__c
-                : obj.label + '::' + selectedObj + '::' + selectedObj.replace('History','') + 'Id'; //standard history object
+                : obj.label + '::' + selectedObj + '::' + obj.associateParentEntity + 'Id'; //standard history object
                 //Example- Account History::AccountHistory::AccountId
             }else{
                 //for normal grids
