@@ -82,7 +82,7 @@ export default class ChartJS extends LightningElement {
         let sourceConf = libs.getGlobalVar(event.detail.source);
         let sourceCause = sourceConf.condition;
         let chartCause = this.config.whereCause ? (typeof this.config.whereCause === 'function' ? this.config.whereCause(this, sourceConf) : this.config.whereCause) : '';
-        utils.source = event.detail.source;
+        libs.getGlobalVar(this._name).source = event.detail.source;
 
         libs.remoteAction(this, 'query', {
             isNeedDescribe: true,
@@ -120,8 +120,12 @@ export default class ChartJS extends LightningElement {
         this._chart.destroy();
     }
 
-    @api resizeChart() {
-        this._chart.resize();
+    @api resizeChart(width, height) {
+        if (this._chart) {
+            this.config.chart.options.maintainAspectRatio = false;
+            this._chart.canvas.parentNode.style.height = height - (this.config.hasView ? 36 : 0) + 'px';
+            this._chart.canvas.parentNode.style.width = width + 'px';
+        }        
     }
 
     @api clearChart() {

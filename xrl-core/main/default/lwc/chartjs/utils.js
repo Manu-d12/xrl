@@ -1,7 +1,5 @@
 export let utils = {
 
-    source: '',
-
     randomColors(length, opacity) {
         return [...new Array(length || 0)].map(() => {
             let r = Math.floor(Math.random() * 255);
