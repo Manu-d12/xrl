@@ -16,7 +16,7 @@ export default class ServerFilter extends LightningElement {
     @track isModalOpen = false;
     @track count;
     @track countStyle;
-    _libs = libs;
+
     connectedCallback(){
         this.config = libs.getGlobalVar(this.cfg);        
         this.config.listViewConfig.forEach((el)=>{
@@ -44,7 +44,7 @@ export default class ServerFilter extends LightningElement {
         if (!this.config.fields) {            
             this.config.fields = this.filterJson.additionalFields ? [...this.selectedFields, ...this.filterJson.additionalFields] : this.selectedFields;
         }
-        if (this.filterJson.applyOnInit) setTimeout(() => { this.applyFilter() }, 100);
+        if (this.filterJson.applyOnInit) setTimeout(() => { this.applyFilter() }, 500);
     }
     getColItem(colName) {
 		return this.sFilterfields.find(e => {
@@ -77,10 +77,14 @@ export default class ServerFilter extends LightningElement {
                 element.inputTypeStr = true;
             }
             
-            let val = element.defaultValue && typeof element.defaultValue === 'function' ? element.defaultValue() : element.defaultValue;
+            let val = element.defaultValue && typeof element.defaultValue === 'function' ? element.defaultValue(this, libs) : element.defaultValue;
             if (val) {
                 this.conditionMap[element.fieldName] = val;
                 element.value = val;
+                if (element.inputTypeComboBox) {
+                    let input = this.template.querySelector(`[data-id="${element.fieldName}"]`);
+                    input?.setValue(val);
+                }
             }
             else element.value = element.multiselect ? (element.options?.find(opt => opt.name === 'All') ? ['All'] : []) : '';
         });
@@ -139,7 +143,7 @@ export default class ServerFilter extends LightningElement {
         for (let key in this.conditionMap) {
             let colItem = this.getColItem(key);
             if (colItem.virtual) {
-                if (colItem.searchCallback && typeof colItem.searchCallback === 'function') condition += colItem.searchCallback(this, this.conditionMap[key], this.conditionMap);
+                if (colItem.searchCallback && typeof colItem.searchCallback === 'function') condition += colItem.searchCallback(this, libs, this.conditionMap[key], this.conditionMap);
                 continue;
             }
             if (typeof this.conditionMap[key] === 'object' && JSON.parse(JSON.stringify(this.conditionMap[key])).length > 1 && colItem.type !== 'daterange') {
@@ -250,7 +254,7 @@ export default class ServerFilter extends LightningElement {
     resetFilters() {
         this.conditionMap = {};
         this.sFilterfields.forEach(f => {
-            let val = f.defaultValue && typeof f.defaultValue === 'function' ? f.defaultValue() : f.defaultValue;
+            let val = f.defaultValue && typeof f.defaultValue === 'function' ? f.defaultValue(this, libs) : f.defaultValue;
             if (val)  {
                 this.conditionMap[f.fieldName] = val;
                 f.value = val;

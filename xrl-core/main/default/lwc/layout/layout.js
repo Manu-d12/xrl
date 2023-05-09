@@ -25,6 +25,7 @@ export default class Layout extends LightningElement {
 		this.name = this.configId.split('::')[1];
 		this.configId = this.configId.split('::')[0];
 		this.loadCfg(true);
+		window.addEventListener("resize", this.handleResize.bind(this))
 	}
 
 	setCustomLabels(cmd, data) {
@@ -349,6 +350,16 @@ export default class Layout extends LightningElement {
 			if (cmp.isCollapsible && !cmp.isCollapsed) {
 				let section = this.template.querySelector('[data-id="' + cmp.uniqueName + '"]');
 				section.classList.toggle('slds-is-open');
+			}
+		});
+	}
+
+	handleResize() {
+		this.config.tabularConfig.dataModel.forEach(cmp => {
+			if (cmp.isChart) {
+				let container = this.template.querySelector('[data-id="' + cmp.uniqueName + '"]');
+				let chart = this.template.querySelector('[data-name="' + cmp.uniqueName + '"]');
+				chart?.resizeChart(container.offsetWidth, container.offsetHeight);
 			}
 		});
 	}

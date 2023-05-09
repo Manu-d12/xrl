@@ -6,3 +6,6 @@
 .counter {
     align-self: center;
 }
+.chart-container {
+    height: 100%;
+}
