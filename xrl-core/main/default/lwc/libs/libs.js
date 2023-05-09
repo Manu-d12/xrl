@@ -348,6 +348,13 @@ export let libs = {
 				"placeHolder": _labels.placeHolder_rowCss,
 				"cmd" : "dialog:setTableParam"
 			},
+			"afterloadTransformation": {
+				"type": "function",
+				"label": 'afterloadTransformation',
+				"tooltip": 'afterloadTransformation this function must return a records as input also must get records',
+				"placeHolder": 'afterloadTransformation',
+				"cmd" : "dialog:setTableParam"
+			},
 			"rowRecalcApex": {
 				"defValue": "",
 				"type": "combobox",
