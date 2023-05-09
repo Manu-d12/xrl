@@ -285,8 +285,15 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				console.log('length', data[nodeName].records);
 				
 				libs.getGlobalVar(this.name).records = data[nodeName].records.length > 0 ? data[nodeName].records : undefined;
-				
-				this.config.records = libs.getGlobalVar(this.name).records;
+				if(this.config.listViewConfig[0].afterloadTransformation !== undefined && this.config.listViewConfig[0].afterloadTransformation !== ""){
+					try {
+    	                this.config.records = eval('(' + this.config.listViewConfig[0].afterloadTransformation + ')')(this, libs.getGlobalVar(this.name).records);
+        	        } catch(err){
+            	        console.log('EXCEPTION', err);
+                	}
+				} else {
+                    this.config.records = libs.getGlobalVar(this.name).records;
+				}
 				this.allRecords = this.config.records;
 				this.config.listViewConfig[0]._loadCfg = this.loadCfg.bind(this);
 				
