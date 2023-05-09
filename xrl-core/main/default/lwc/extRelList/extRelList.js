@@ -61,6 +61,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		this.config._LABELS = data[cmd];
 	}
 
+	get gridHeader() {
+		return this.config.listViewConfig && this.config.listViewConfig[0].overrideGridHeader !== undefined && this.config.listViewConfig[0].overrideGridHeader !== "" ?
+		this.config.listViewConfig[0].overrideGridHeader : this.config.sObjLabel;
+	}
+
 	loadCfg(isInit) {
 		libs.remoteAction(this, 'getCustomLabels', {callback: this.setCustomLabels.bind(this) });
 		let apiNames = this.apiName.split('::');

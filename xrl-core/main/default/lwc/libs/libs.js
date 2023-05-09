@@ -258,9 +258,15 @@ export let libs = {
 			"rollBack" : {
 				"defValue": false,
 				"type": "checkbox",
-				"label": "Rollback?",
-				"tooltip": "In case of bulk edit if any exception occurs should the entire transaction rolled back?",
+				"label": _labels.lbl_rollback,
+				"tooltip": _labels.tooltip_rollback,
 				"isReadOnly": true,
+				"cmd" : "dialog:setTableParam",
+			},
+			"overrideGridHeader" : {
+				"type": "string",
+				"label": _labels.lbl_overrideGridHeader,
+				"tooltip": _labels.tooltip_overrideGridHeader,
 				"cmd" : "dialog:setTableParam",
 			},
 			"groupFieldName" : {

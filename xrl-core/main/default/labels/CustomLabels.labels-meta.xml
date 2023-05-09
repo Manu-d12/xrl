@@ -1991,4 +1991,36 @@ return groups;
         <shortDescription>msg_yourFileWillStartDownloadingShortly</shortDescription>
         <value>Your file will start downloading shortly</value>
     </labels>
+    <labels>
+        <fullName>lbl_overrideGridHeader</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_overrideGridHeader</shortDescription>
+        <value>Enter the text to display as grid header</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_overrideGridHeader</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_overrideGridHeader</shortDescription>
+        <value>This text will override the default header</value>
+    </labels>
+    <labels>
+        <fullName>lbl_rollback</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_rollback</shortDescription>
+        <value>Rollback?</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_rollback</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_rollback</shortDescription>
+        <value>In case of bulk edit if any exception occurs should the entire transaction rolled back?</value>
+    </labels>
 </CustomLabels>

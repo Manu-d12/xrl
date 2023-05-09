@@ -661,6 +661,8 @@ global with sharing class infrastructure {
 			'lbl_blankValuesNotAllowed'=>label.lbl_blankValuesNotAllowed,
 			'lbl_collapseView'=>label.lbl_collapseView,
 			'lbl_refreshAfterCustomActionExecution'=>label.lbl_refreshAfterCustomActionExecution,
+			'lbl_overrideGridHeader'=>label.lbl_overrideGridHeader,
+			'lbl_rollback'=>label.lbl_rollback,
 			'msg_enterUniqueActionId'=>label.msg_enterUniqueActionId,
 			'msg_lisViewWasUpdated' => label.msg_lisViewWasUpdated,
 			'msg_requestWasSent' => label.msg_requestWasSent,
@@ -756,6 +758,8 @@ global with sharing class infrastructure {
 			'tooltip_groupOrder'=>label.tooltip_groupOrder,
             'tooltip_loadChunkSize' => label.tooltip_loadChunkSize,
 			'tooltip_refreshAfterCustomActionExecution'=>label.tooltip_refreshAfterCustomActionExecution,
+			'tooltip_overrideGridHeader'=>label.tooltip_overrideGridHeader,
+			'tooltip_rollback'=>label.tooltip_rollback,
 			'srcLbl_available' => label.srcLbl_available,
 			'srcLbl_optional' => label.srcLbl_optional
 		};
