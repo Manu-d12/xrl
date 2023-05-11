@@ -6,6 +6,7 @@ Current selected VIEW will be stored to localStorage
 */
 global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickList {
 	VisualEditor.DesignTimePageContext context;
+    static VisualEditor.DynamicPickListRows picklistValues;
 
 	global getRelListsPicklist(VisualEditor.DesignTimePageContext context) {
 		this.context = context;
@@ -13,12 +14,16 @@ global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickLi
 	}
 	global override VisualEditor.DataRow getDefaultValue() {
 		VisualEditor.DataRow defaultValue = new VisualEditor.DataRow('', 'Please select sObject');
+        system.debug(LoggingLevel.Error, 'GET RELLIsts getDefaultValue ' + this.context);
 		return defaultValue;
 	}
 
 	global override VisualEditor.DynamicPickListRows getValues() {
+        if (picklistValues!=null) return picklistValues;
+        
+        system.debug(LoggingLevel.Error, 'GET RELLIsts getValues ' + this.context);
 		Map<String,Schema.SObjectType> gd = Schema.getGlobalDescribe();
-		VisualEditor.DynamicPickListRows picklistValues = new VisualEditor.DynamicPickListRows();
+		picklistValues = new VisualEditor.DynamicPickListRows();
 		if (context.pageType == 'RecordPage') {
 			Schema.DescribeSObjectResult describeResult = gd.get(context.entityName).getDescribe();
 			List < Schema.ChildRelationship > childRelationships = describeResult.getChildRelationships();
