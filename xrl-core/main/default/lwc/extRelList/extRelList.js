@@ -377,7 +377,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	handleEvent(event) {
 		let val = event.target.getAttribute('data-id');
 		console.log(val);
-		if (val.startsWith('help:')) libs.help(val, {});
+		// if (val.startsWith('help:')) libs.help(val, {});
 		if (val === 'globalSearch') this.handleGlobalSearch(event);
 		if (val.startsWith('cfg:')) this.handleEventCfg(event);
 		if (val.startsWith('dialog:')) this.handleEventDialog(event);
@@ -741,6 +741,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				"lockedOptions": libs.sortRecords(lockedOptions, 'label', true),
 				"lockedFields": this.config.lockedFields,
 				"handleEvent": this.handleEventDialog.bind(this),
+				"handleHelpEvent": this.handleHelpEvent.bind(this),
 				"listViewConfig": JSON.parse(JSON.stringify(this.config.listViewConfig[0])),
 				"listViewName": this.config?.listView?.name,
 				"listViewLabel": this.config?.listView?.label,
@@ -1253,6 +1254,12 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			}
 		}
 
+	}
+	handleHelpEvent(event){
+		let val = event.target.getAttribute('data-id');
+		let url = event.target.getAttribute('data-url') ? event.target.getAttribute('data-url') : undefined;
+		console.log(val);
+		libs.help(val, url);
 	}
 	handleFlowStatusChange(event) {
 		console.log('FLOW', event.detail.status);

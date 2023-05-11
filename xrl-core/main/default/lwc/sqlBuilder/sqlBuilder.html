@@ -2,6 +2,11 @@
     <lightning-tabset>
         <!-- Select Field Tab Starts-->
         <lightning-tab label={config._LABELS.lbl_selectFields} value="1" onactive={tabChanged}>
+            <div class="slds-col slds-size_1-of-1">
+                <lightning-icon class="helpArticleIcon" onclick={config.dialog.handleHelpEvent} 
+                data-id="help:sqlBuilderFieldSelection" data-url={config._LABELS.hlpUrl_sqlBuilderFieldSelection} 
+                icon-name="utility:question" size="x-small" alternative-text={config._LABELS.altTxt_hlpUrl} title={config._LABELS.altTxt_hlpUrl}></lightning-icon>
+            </div>
             <div class="slds-grid slds-gutters">
                 <div class="slds-col slds-size_6-of-12">
                     <div class="slds-text-heading_small"><b>{config._LABELS.lbl_availableFieldsFrom}</b> {breadcrumb}
@@ -49,6 +54,12 @@
         <!-- Select Field Tab Ends-->
         <!-- Condition Tab Starts-->
         <lightning-tab label={config._LABELS.lbl_applyConditions} value="2" onactive={tabChanged}>
+            <div class="slds-col slds-size_1-of-1">
+                <lightning-icon class="helpArticleIcon" icon-name="utility:question" 
+                onclick={config.dialog.handleHelpEvent} data-id="help:sqlBuilderApplyCondition" 
+                data-url={config._LABELS.hlpUrl_sqlBuilderApplyCondition} size="x-small" 
+                alternative-text={config._LABELS.altTxt_hlpUrl} title={config._LABELS.altTxt_hlpUrl}></lightning-icon>
+            </div>
             <div class="slds-grid slds-gutters">
                 <div class="slds-col slds-size_5-of-12">
                     <div class="slds-text-heading_small"><b>{config._LABELS.lbl_availableFieldsFrom}</b> {breadcrumb}
@@ -201,6 +212,12 @@
         </lightning-tab>
         <!-- Condition Tab Ends-->
         <lightning-tab label={config._LABELS.lbl_applyOrdering} value="3" onactive={tabChanged}>
+            <div class="slds-col slds-size_1-of-1">
+                <lightning-icon class="helpArticleIcon" icon-name="utility:question" 
+                onclick={config.dialog.handleHelpEvent} data-id="help:sqlBuilderApplyOrdering" 
+                data-url={config._LABELS.hlpUrl_sqlBuilderApplyOrdering} size="x-small" 
+                alternative-text={config._LABELS.altTxt_hlpUrl} title={config._LABELS.altTxt_hlpUrl}></lightning-icon>
+            </div>
             <div class="slds-grid slds-gutters">
                 <div class="slds-col slds-size_5-of-12">
                     <div class="slds-text-heading_small"><b>{config._LABELS.lbl_availableFieldsFrom}</b> {breadcrumb}

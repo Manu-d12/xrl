@@ -31,3 +31,14 @@
 .alignBulkEditCheckbox{
 	right: -4px;
 }
+.helpArticleIcon{
+	position: absolute;
+    right: 0px;
+    top: 1px;
+    border: 1px solid #afa7a7;
+    border-radius: 50%;
+	cursor: pointer;
+}
+.helpLink:hover{
+	text-decoration: underline;
+}

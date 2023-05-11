@@ -109,7 +109,10 @@ export default class extRelListSettings extends LightningElement {
 				"value" : defValue,
 				"isChecked" : (tmp[item].type === 'checkbox') ? defValue : undefined,
 				"placeHolder" : tmp[item].placeHolder,
-				"useExample": tmp[item].useExample
+				"useExample": tmp[item].useExample,
+				"helpId": 'help:' + item,
+				"helpArticleUrl": tmp[item].helpArticleUrl !== undefined ? tmp[item].helpArticleUrl : false,
+				"helpStyle": this.generateStyleForHelp(tmp[item].type)
 			})
 		}
 		// console.log(result, describe[this.config.dialog.field]);
@@ -150,11 +153,19 @@ export default class extRelListSettings extends LightningElement {
 				//"options": options,
 				"options" : options,
 				"cmd": tmp[item].cmd,
-				"placeHolder" : tmp[item].placeHolder
+				"placeHolder" : tmp[item].placeHolder,
+				"helpId": 'help:' + item,
+				"helpArticleUrl": tmp[item].helpArticleUrl !== undefined ? tmp[item].helpArticleUrl : false,
+				"helpStyle": this.generateStyleForHelp(tmp[item].type)
 			})
 		}
 		console.log(result);
 		return result;
+	}
+	generateStyleForHelp(type){
+		return type === 'checkbox' ?
+		'top: 2px;left: 24px;position: absolute;color: rgb(97, 105, 217);cursor: pointer;font-size: 13px;':
+		'top: 4px;left: 0;position: absolute;color: rgb(97, 105, 217);cursor: pointer;font-size: 12px;'
 	}
 
 	get actionItem() {
