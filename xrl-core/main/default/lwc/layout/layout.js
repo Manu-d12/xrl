@@ -265,6 +265,7 @@ export default class Layout extends LightningElement {
 						this.config.relField = this.config.relField || configUniqueName.split(':')[1];
 						this.config.financial = (data[cmd].Financial) ? data[cmd].Financial : {};
 						this.config.describe = (data[cmd].describe) ? JSON.parse(data[cmd].describe) : {};
+						this.config.userInfo = (data.userInfo) ? data.userInfo : {};
 					} });
 				} else if (cmp.isChart) {
 					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
@@ -341,23 +342,23 @@ export default class Layout extends LightningElement {
 	}
 
 	toggleSection(event) {
-        let section = this.template.querySelector('[data-id="' + event.currentTarget.dataset.id + '"]');
+        let section = this.template.querySelector('.slds-section[data-id="' + event.currentTarget.dataset.id + '"]');
 		section.classList.toggle('slds-is-open');
     }
 
 	toggleOnInit() {
 		this.config.tabularConfig.dataModel.forEach(cmp => {
 			if (cmp.isCollapsible && !cmp.isCollapsed) {
-				let section = this.template.querySelector('[data-id="' + cmp.uniqueName + '"]');
+				let section = this.template.querySelector('.slds-section[data-id="' + cmp.uniqueName + '"]');
 				section.classList.toggle('slds-is-open');
 			}
 		});
 	}
 
 	handleResize() {
-		this.config.tabularConfig.dataModel.forEach(cmp => {
+		this.config?.tabularConfig?.dataModel?.forEach(cmp => {
 			if (cmp.isChart) {
-				let container = this.template.querySelector('[data-id="' + cmp.uniqueName + '"]');
+				let container = this.template.querySelector('div[data-id="' + cmp.uniqueName + '"]');
 				let chart = this.template.querySelector('[data-name="' + cmp.uniqueName + '"]');
 				chart?.resizeChart(container.offsetWidth, container.offsetHeight);
 			}

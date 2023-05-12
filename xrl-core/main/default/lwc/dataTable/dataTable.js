@@ -1149,12 +1149,16 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if(event.detail.cmd.split(':')[1] === 'refresh' && event.detail.cmd.split(':')[0] === 'filter') {
 
 			let sourceConf = libs.getGlobalVar(event.detail.source);
+			let fields = new Set(this.defaultFields);
+			this.additionalFields.forEach(f => fields.add(f.fieldName));
+			sourceConf.fields.forEach(f => fields.add(f));
+
 			libs.remoteAction(this, 'query', {
 				isNeedDescribe: true,
 				sObjApiName: sourceConf.sObjApiName,
 				relField: sourceConf.relField === 'Id' ? '' : sourceConf.relField,
 				addCondition: sourceConf.condition,
-				fields: sourceConf.fields,
+				fields: Array.from(fields),
 				listViewName: sourceConf.listView?.name,
 				callback: ((nodeName, data) => {  
 					libs.getGlobalVar(this.cfg).records = data[nodeName].records.length > 0 ? data[nodeName].records : [];

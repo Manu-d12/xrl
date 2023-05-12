@@ -8,7 +8,7 @@ export default class Multiselect extends LightningElement {
     @api label;
     @api disabled = false;
     @api multiselect = false;
-    @api listsize;
+    @api listsize = 20;
 
     @track mSelectConfig = {};
 
@@ -56,9 +56,9 @@ export default class Multiselect extends LightningElement {
         }
         this.mSelectConfig.value = value;
         this.mSelectConfig.values = values;
-        this.mSelectConfig.optionData = optionData.slice(0,this.listsize);
-        this.mSelectConfig.allOptions = optionData;
         this.mSelectConfig.optionLength = optionData.length;
+        this.mSelectConfig.optionData = optionData.sort((a, b) => {return a.selected ? -1 : 1}).slice(0,this.listsize);
+        this.mSelectConfig.allOptions = optionData;
     }
 
     filterOptions(event) {
@@ -82,12 +82,12 @@ export default class Multiselect extends LightningElement {
                     this.mSelectConfig.message = "No results found for '" + this.mSelectConfig.searchString + "'";
                 }else{
                     this.mSelectConfig.optionLength = results.length;
-                    this.mSelectConfig.optionData = results.slice(0,this.listsize);
+                    this.mSelectConfig.optionData = results.sort((a, b) => {return a.selected ? -1 : 1}).slice(0,this.listsize);
                 }
             }
             this.mSelectConfig.showDropdown = true;
         } else {
-            this.mSelectConfig.optionData = this.mSelectConfig.allOptions.slice(0,this.listsize);
+            this.mSelectConfig.optionData = this.mSelectConfig.allOptions.sort((a, b) => {return a.selected ? -1 : 1}).slice(0,this.listsize);
             this.mSelectConfig.showDropdown = false;
         }
     }
@@ -138,7 +138,7 @@ export default class Multiselect extends LightningElement {
                 this.mSelectConfig.showDropdown = true;
             }
             this.mSelectConfig.optionLength = options.length;
-            this.mSelectConfig.optionData = options.slice(0,this.listsize);
+            this.mSelectConfig.optionData = options.sort((a, b) => {return a.selected ? -1 : 1}).slice(0,this.listsize);
         }
 	}
 
