@@ -461,25 +461,17 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					title: this.config._LABELS.title_reqAFeature,
 					contents: [
 						{
-							required: true,
-							isTextarea: true,
+							isIframe: true,
 							name: 'featureText',
-							variant: 'label-hidden',
-							placeholder: this.config._LABELS.lbl_pleaseDescribeFeature,
-							messageWhenValueMissing: this.config._LABELS.errMsg_anEmptyMsgCannotBeSent
+							url: this.config._LABELS.url_reqFeature,
+							style: "border:0; width:100%; height:470px; float:left;"
 						}
 					],
 					buttons: [
 						{
 							name: 'cancel',
-							label: 'Cancel',
+							label: 'Close',
 							variant: 'neutral'
-						},
-						{
-							name: 'send',
-							label: 'Send',
-							variant: 'brand',
-							class: 'slds-m-left_x-small'
 						}
 					],
 					data_id: "reqFeature:dialog"

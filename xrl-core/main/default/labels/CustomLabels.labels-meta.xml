@@ -2167,4 +2167,12 @@ return groups;
         <shortDescription>hlpUrl_pagerTop</shortDescription>
         <value>related-list-view-setup-and-customization/1892316-hypergrid-customization-tablesettings-article#enable-pagination-12</value>
     </labels>
+    <labels>
+        <fullName>url_reqFeature</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>url_reqFeature</shortDescription>
+        <value>https://hypergrid.feedbear.com/boards/hypergrid-feature-requests/?embed=true</value>
+    </labels>
 </CustomLabels>

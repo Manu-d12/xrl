@@ -12,7 +12,7 @@ export default class ChartJS extends LightningElement {
     set cfg(v) {
         try {
             this.config = this.parseConfig(v);
-            if (this.isRendered) this.drawChart();
+            if (this.isRendered) this.config.soql ? this.loadData() : this.drawChart();
         } catch (e) {
             console.log('Failed to parse config', e);
         }
@@ -26,7 +26,7 @@ export default class ChartJS extends LightningElement {
             this._name = v;
             let conf = libs.getGlobalVar(v);
             this.config = this.parseConfig(conf.chartConfig);
-            if (this.isRendered) this.drawChart();
+            if (this.isRendered) this.config.soql ? this.loadData() : this.drawChart();
         } catch (e) {
             console.log('Failed to parse config', e);
         }
@@ -58,7 +58,7 @@ export default class ChartJS extends LightningElement {
             loadScript(this, chartjs + '/chart.js'),
             loadStyle(this, chartjs + '/chart.css')
         ]).then(() => {
-            if (this.config && this.config.drawOnInit && this.isRendered) this.drawChart();
+            if (this.config && (this.config.drawOnInit || this.config.soql) && this.isRendered) this.config.soql ? this.loadData() : this.drawChart();
         });
         window.libs = libs;
         window.utils = utils;
@@ -66,6 +66,24 @@ export default class ChartJS extends LightningElement {
 
     renderedCallback() {       
         this.isRendered = true;
+    }
+
+    loadData() {
+        libs.remoteAction(this, 'customSoql', {
+            SOQL: this.config.soql,
+            sObjApiName: this.config.sObjApiName,
+            callback: ((nodeName, data) => {
+                let records = data[nodeName].records.length > 0 ? data[nodeName].records : [];
+                if (this.config.onDataLoad && typeof this.config.onDataLoad === 'function') {
+                    records = this.config.onDataLoad(this, records) || [];
+                    if (this._name) {
+                        libs.getGlobalVar(this._name).records = records;
+                    }
+                    this.drawChart();
+                }
+                this.count = this.config.count;
+            })
+        });
     }
 
     drawChart() {

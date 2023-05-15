@@ -4,7 +4,7 @@
             <div class="slds-col slds-size_2-of-12" key={field.fieldName} style="padding: 2px;">
                 <lightning-input if:true={field.inputTypeStr} type="text" label={field.label} id={field.fieldName}
                     data-id={field.fieldName} onfocusout={handleChange}></lightning-input>
-                <c-multiselect if:true={field.inputTypeComboBox} multiselect={field.multiselect} listsize=20 onselect={handleSelect} id={field.fieldName} 
+                <c-multiselect if:true={field.inputTypeComboBox} multiselect={field.multiselect} listsize=10000 onselect={handleSelect} id={field.fieldName} 
                     data-id={field.fieldName} options={field.options} selectedvalues={field.value} selectedvalue={field.value} label={field.label}></c-multiselect>
                 <lightning-input if:true={field.inputTypeDate} type="date" label={field.label} id={field.fieldName}
                     data-id={field.fieldName} onfocusout={handleChange}></lightning-input>
