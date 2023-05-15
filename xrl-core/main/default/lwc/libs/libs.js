@@ -163,19 +163,22 @@ export let libs = {
 				"defValue": true,
 				"type": "checkbox",
 				"label": _labels.lbl_isColumnFilterable,
-				"tooltip": _labels.tooltip_isColumnFilterable
+				"tooltip": _labels.tooltip_isColumnFilterable,
+				"helpArticleUrl": _labels.hlpUrl_isFilterable
 			},
 			"isSortable": {
 				"defValue": true,
 				"type": "checkbox",
 				"label": _labels.lbl_isColumnSortable,
-				"tooltip": _labels.tooltip_isColumnSortable
+				"tooltip": _labels.tooltip_isColumnSortable,
+				"helpArticleUrl": _labels.hlpUrl_isSortable
 			},
 			"isEditable": {
 				"defValue": false,
 				"type": "checkbox",
 				"label": _labels.lbl_isColumnEditable,
 				"isReadOnly": true,
+				"helpArticleUrl": _labels.hlpUrl_isEditable,
 			},
 			"isWrapable": {
 				"defValue": false,
@@ -225,6 +228,7 @@ export let libs = {
 				"label": _labels.lbl_showCheckBoxes,
 				"tooltip": _labels.tooltip_addCheckBoxColumnToTable,
 				"cmd" : "dialog:setTableParam",
+				"helpArticleUrl": _labels.hlpUrl_isShowCheckBoxes
 			},
 			"isGlobalSearch": {
 				"defValue": false,
@@ -232,13 +236,15 @@ export let libs = {
 				"label": _labels.lbl_enableGlobalSearch,
 				"tooltip": _labels.tooltip_showGlobalTableSearch,
 				"cmd" : "dialog:setTableParam",
+				"helpArticleUrl": _labels.hlpUrl_isGlobalSearch,
 			},
 			"pagerTop" : {
 				"defValue": true,
 				"type": "checkbox",
 				"label": _labels.lbl_enableTopPagination,
 				"tooltip": _labels.tooltip_showTopPagination,
-				"cmd" : "dialog:setPagerParam"
+				"cmd" : "dialog:setPagerParam",
+				"helpArticleUrl": _labels.hlpUrl_pagerTop,
 			},
 			"pagerBottom" : {
 				"defValue": true,
@@ -246,6 +252,7 @@ export let libs = {
 				"label": _labels.lbl_enableBottomPagination,
 				"tooltip": _labels.tooltip_showBottomPagination,
 				"cmd" : "dialog:setPagerParam",
+				"helpArticleUrl": _labels.hlpUrl_pagerTop,
 			},
 			"showStandardEdit" : {
 				"defValue": false,
@@ -278,6 +285,7 @@ export let libs = {
 				"label": _labels.lbl_groupFieldName,
 				"tooltip": _labels.tooltip_groupFieldName,
 				"cmd" : "dialog:setTableParam",
+				"helpArticleUrl": _labels.hlpUrl_groupFieldName,
 			},
 			"groupingFunction": {
 				"type": "function",
@@ -325,7 +333,8 @@ export let libs = {
 				"tooltip": _labels.tooltip_beforeSaveValidation,
 				"placeHolder": _labels.placeHolder_beforeSaveValidation,
 				"isReadOnly": true,
-				"cmd" : "dialog:setTableParam"
+				"cmd" : "dialog:setTableParam",
+				"helpArticleUrl": _labels.hlpUrl_beforeSaveValidation,
 			},
 			"beforeSaveApexAction": {
 				"defValue": "",
@@ -344,7 +353,8 @@ export let libs = {
 				"tooltip": _labels.tooltip_beforeDeleteValidation,
 				"placeHolder": _labels.placeHolder_beforeDeleteValidation,
 				"isReadOnly": true,
-				"cmd" : "dialog:setTableParam"
+				"cmd" : "dialog:setTableParam",
+				"helpArticleUrl": _labels.hlpUrl_beforeDeleteValidation,
 			},
 			"displayOptionListSize" : {
 				"defValue": 20,
@@ -500,16 +510,41 @@ export let libs = {
 		const event = new ShowToastEvent(params);
 		scope.dispatchEvent(event);
 	},
-	help : function(index, params) {
-		// Need to open a new tab and redirect user to specific article
+	help : function(index, articleUrl) {
 		const baseUrl = 'https://help.hypercomps.com/';
-		switch(index.split(':')[1]){
-			case 'extRelList':
-				window.open(baseUrl, "_blank");
-				break;
-			default:
-				window.open(baseUrl, "_blank");
+		let labels = globalVars[Object.keys(globalVars)[0]]?._LABELS;
+		let url = baseUrl;
+		/*
+			Tab Numbering logic
+			11 - The first character denotes the parent tab number & second character denotes the child tab number,
+				so 11 means that it is the 'Configure' tab of 'Field Selection'
+			4 - As this tab does not have any children tab, so it is a single digit which represents parent tab number
+				This is a example of "Locked Field" tab
+		*/
+		if(articleUrl === undefined){
+			switch(index.split(':')[1]){
+				case 'extRelList':
+					url = baseUrl;
+					break;
+				case '11': //Configure
+					url += labels.hlpUrl_sqlBuilderFieldSelection;
+					break;
+				case '12': //Apply Condition 
+					url += labels.hlpUrl_sqlBuilderApplyCondition;
+					break;
+				case '13': //Apply Ordering
+					url += labels.hlpUrl_sqlBuilderApplyOrdering;
+					break;
+				case '4': //Locked fields
+					url += labels.hlpUrl_lockedFields;
+					break;
+				default:
+					url = baseUrl;
+			}
+		}else{
+			url += articleUrl;
 		}
+		window.open(url, "_blank");
 		return 'in test';
 	},
 	replaceLiteralsInStr : function(str, name){

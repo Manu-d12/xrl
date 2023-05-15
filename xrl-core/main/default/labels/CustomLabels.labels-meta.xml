@@ -1516,6 +1516,14 @@ function(record){
         <value>Share this config with other user/public group/role/role and subordinates of this org</value>
     </labels>
     <labels>
+        <fullName>tooltip_configDelete</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_configDelete</shortDescription>
+        <value>Delete this config</value>
+    </labels>
+    <labels>
         <fullName>title_selectListView</fullName>
         <categories>XRL</categories>
         <language>en_US</language>
@@ -2022,6 +2030,142 @@ return groups;
         <protected>true</protected>
         <shortDescription>tooltip_rollback</shortDescription>
         <value>In case of bulk edit if any exception occurs should the entire transaction rolled back?</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_isFilterable</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_isFilterable</shortDescription>
+        <value>data-lookup-filter-and-search/client-side-filters-in-hypergrid-xrl#column-filters-3</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_isSortable</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_isSortable</shortDescription>
+        <value>data-lookup-filter-and-search/client-side-filters-in-hypergrid-xrl#sorting-columns-4</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_beforeDeleteValidation</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_beforeDeleteValidation</shortDescription>
+        <value>data-editingupdate-operations/enable-validations-to-confirm-the-data-update-xrl#before-delete-validation-callback-6</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_beforeSaveValidation</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_beforeSaveValidation</shortDescription>
+        <value>data-editingupdate-operations/enable-validations-to-confirm-the-data-update-xrl#before-save-validation-callback-1</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_groupFieldName</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_groupFieldName</shortDescription>
+        <value>related-list-view-setup-and-customization/1892316-hypergrid-customization-tablesettings-article#grouped-records-5</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_isGlobalSearch</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_isGlobalSearch</shortDescription>
+        <value>data-lookup-filter-and-search/hypergrid-globalsearch-article</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_sqlBuilderFieldSelection</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_sqlBuilderFieldSelection</shortDescription>
+        <value>getting-started-with-hypergrid-20/hypergrid-advanced-configuration-of-extended-related-lists#reconfigure-columns-2</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_sqlBuilderApplyCondition</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_sqlBuilderApplyCondition</shortDescription>
+        <value>data-lookup-filter-and-search/hypergrid-server-side-filters</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_sqlBuilderApplyOrdering</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_sqlBuilderApplyOrdering</shortDescription>
+        <value>getting-started-with-hypergrid-20/hypergrid-advanced-configuration-of-extended-related-lists#apply-ordering-4</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_lockedFields</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_lockedFields</shortDescription>
+        <value>related-list-view-setup-and-customization/1892316-hypergrid-customization-tablesettings-article#locked-fields-1</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_deleteView</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_deleteView</shortDescription>
+        <value>related-list-view-setup-and-customization/how-to-share-and-delete-xrl-view#delete-an-xrl-configuration-6</value>
+    </labels>
+    <labels>
+        <fullName>altTxt_hlpUrl</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>altTxt_hlpUrl</shortDescription>
+        <value>Click to know more</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_shareView</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_shareView</shortDescription>
+        <value>related-list-view-setup-and-customization/how-to-share-and-delete-xrl-view#share-an-xrl-configuration-among-users-3</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_saveAsView</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_saveAsView</shortDescription>
+        <value>related-list-view-setup-and-customization/1890088-hypergrid-multipleviews-article</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_isEditable</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_isEditable</shortDescription>
+        <value>data-editingupdate-operations/how-to-edit-fields-hypergrid-xrl</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_isShowCheckBoxes</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_isShowCheckBoxes</shortDescription>
+        <value>related-list-view-setup-and-customization/1892316-hypergrid-customization-tablesettings-article#enable-record-selection-and-bulk-actions-9</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_pagerTop</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_pagerTop</shortDescription>
+        <value>related-list-view-setup-and-customization/1892316-hypergrid-customization-tablesettings-article#enable-pagination-12</value>
     </labels>
     <labels>
         <fullName>url_reqFeature</fullName>
