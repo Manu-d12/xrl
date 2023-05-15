@@ -15,6 +15,9 @@
                     <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
                 </div>
                 <template for:each={contents} for:item="item" key={item.name}>
+                    <div if:true={item.isIframe} key={item.name}>
+                        <iframe style={item.style} src={item.url}></iframe>
+                    </div>
                     <div if:true={item.isMessage} key={item.name}>
                         {item.text}
                     </div>
