@@ -2023,4 +2023,12 @@ return groups;
         <shortDescription>tooltip_rollback</shortDescription>
         <value>In case of bulk edit if any exception occurs should the entire transaction rolled back?</value>
     </labels>
+    <labels>
+        <fullName>url_reqFeature</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>url_reqFeature</shortDescription>
+        <value>https://hypergrid.feedbear.com/boards/hypergrid-feature-requests/?embed=true</value>
+    </labels>
 </CustomLabels>
