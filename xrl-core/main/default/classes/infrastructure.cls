@@ -761,7 +761,8 @@ global with sharing class infrastructure {
 			'tooltip_overrideGridHeader'=>label.tooltip_overrideGridHeader,
 			'tooltip_rollback'=>label.tooltip_rollback,
 			'srcLbl_available' => label.srcLbl_available,
-			'srcLbl_optional' => label.srcLbl_optional
+			'srcLbl_optional' => label.srcLbl_optional,
+			'url_reqFeature'=>label.url_reqFeature
 		};
 	}
 

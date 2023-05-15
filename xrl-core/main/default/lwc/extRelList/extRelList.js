@@ -463,7 +463,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 						{
 							isIframe: true,
 							name: 'featureText',
-							url: 'https://hypergrid.feedbear.com/boards/hypergrid-feature-requests/?embed=true',
+							url: this.config._LABELS.url_reqFeature,
 							style: "border:0; width:100%; height:470px; float:left;"
 						}
 					],
