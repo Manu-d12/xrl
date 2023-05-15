@@ -731,6 +731,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			for (let col of this.config.listViewConfig[0].colModel) {
 				lockedOptions.push({ label: col.label, value: col.fieldName });
 			}
+			this.config._tabs = {};
 			this.config.dialog = {
 				"title": this.config.userInfo.isAdminAccess === true ? this.config._LABELS.title_listViewConfiguration + ' ' +  this.config?.listView?.name: this.config._LABELS.title_selectFieldToDisplay + ' ' +  this.config?.listView?.name,
 				"variant": variant,
@@ -1258,7 +1259,13 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	handleHelpEvent(event){
 		let val = event.target.getAttribute('data-id');
 		let url = event.target.getAttribute('data-url') ? event.target.getAttribute('data-url') : undefined;
-		console.log(val);
+		let tabNo = this.config._tabs.currentOpenedTab;
+		//tab no = 1 denotes the field selection tab
+		if(tabNo === "1" && this.config._tabs.sqlBuilderTab !== undefined){
+			tabNo = this.config._tabs.sqlBuilderTab;
+		}
+		val = 'help:' + tabNo;
+		console.log('Help Id ',val);
 		libs.help(val, url);
 	}
 	handleFlowStatusChange(event) {

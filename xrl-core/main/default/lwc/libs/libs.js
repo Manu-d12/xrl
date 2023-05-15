@@ -511,13 +511,32 @@ export let libs = {
 		scope.dispatchEvent(event);
 	},
 	help : function(index, articleUrl) {
-		// Need to open a new tab and redirect user to specific article
 		const baseUrl = 'https://help.hypercomps.com/';
+		let labels = globalVars[Object.keys(globalVars)[0]]?._LABELS;
 		let url = baseUrl;
+		/*
+			Tab Numbering logic
+			11 - The first character denotes the parent tab number & second character denotes the child tab number,
+				so 11 means that it is the 'Configure' tab of 'Field Selection'
+			4 - As this tab does not have any children tab, so it is a single digit which represents parent tab number
+				This is a example of "Locked Field" tab
+		*/
 		if(articleUrl === undefined){
 			switch(index.split(':')[1]){
 				case 'extRelList':
 					url = baseUrl;
+					break;
+				case '11': //Configure
+					url += labels.hlpUrl_sqlBuilderFieldSelection;
+					break;
+				case '12': //Apply Condition 
+					url += labels.hlpUrl_sqlBuilderApplyCondition;
+					break;
+				case '13': //Apply Ordering
+					url += labels.hlpUrl_sqlBuilderApplyOrdering;
+					break;
+				case '4': //Locked fields
+					url += labels.hlpUrl_lockedFields;
 					break;
 				default:
 					url = baseUrl;

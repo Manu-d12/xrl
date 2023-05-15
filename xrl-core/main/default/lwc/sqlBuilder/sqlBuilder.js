@@ -500,11 +500,14 @@ export default class SqlBuilder extends LightningElement {
         });
         return this.ElementList
     }
-    tabChanged(){
+    tabChanged(event){
         this.config.sqlBuilder.isBackNeeded = false;
         this.loadFields(this.config.sObjApiName);
         this.config.sqlBuilder._objectStack = [{relationShip:this.config.sObjApiName,referredObj:this.config.sObjApiName}];
         this.config.sqlBuilder.searchTerm = '';
+        console.log('sqlBuilder tab changed', event.target.value);
+        this.config._tabs.currentOpenedTab = event.target.value;
+        this.config._tabs.sqlBuilderTab = event.target.value;
     }
     isStrAllowed(expression) {
         const validChars = [' ', 'AND', 'OR', '(', ')', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '#'];

@@ -102,15 +102,17 @@ export default class extRelListSettings extends LightningElement {
 			result.push({
 				"paramName" : item,
 				"type" : tmp[item].type,
-				"label" : tmp[item].label,
+				"label" : tmp[item].helpArticleUrl === undefined ? tmp[item].label : '',
 				"isTextArea" : (tmp[item].type === 'function'),
-				"tooltip" : (item === 'fieldName') ? tmp[item].tooltip + '\n' + '.Field Type:' + fieldParams.type : tmp[item].tooltip,
+				"tooltip" : tmp[item].helpArticleUrl === undefined ? (item === 'fieldName') ? tmp[item].tooltip + '\n' + '.Field Type:' + fieldParams.type : tmp[item].tooltip : '',
 				"isDisabled" : (item === 'fieldName'),
 				"value" : defValue,
 				"isChecked" : (tmp[item].type === 'checkbox') ? defValue : undefined,
 				"placeHolder" : tmp[item].placeHolder,
 				"useExample": tmp[item].useExample,
 				"helpId": 'help:' + item,
+				"helpLabel": tmp[item].label,
+				"helpTooltip" : (item === 'fieldName') ? tmp[item].tooltip + '\n' + '.Field Type:' + fieldParams.type : tmp[item].tooltip,
 				"helpArticleUrl": tmp[item].helpArticleUrl !== undefined ? tmp[item].helpArticleUrl : false,
 				"helpStyle": this.generateStyleForHelp(tmp[item].type)
 			})
@@ -143,9 +145,9 @@ export default class extRelListSettings extends LightningElement {
 			result.push({
 				"paramName" : item,
 				"type" : tmp[item].type,
-				"label" : tmp[item].label,
+				"label" : tmp[item].helpArticleUrl === undefined ? tmp[item].label : '',
 				"isTextArea" : (tmp[item].type === 'function'),
-				"tooltip" : tmp[item].tooltip,
+				"tooltip" : tmp[item].helpArticleUrl === undefined ? tmp[item].tooltip : '',
 				//"isDisabled" : (item === 'fieldName'),
 				"value" : defValue,
 				"isChecked" : (tmp[item].type === 'checkbox') ? defValue : undefined,
@@ -155,6 +157,8 @@ export default class extRelListSettings extends LightningElement {
 				"cmd": tmp[item].cmd,
 				"placeHolder" : tmp[item].placeHolder,
 				"helpId": 'help:' + item,
+				"helpLabel": tmp[item].label,
+				"helpTooltip" : tmp[item].tooltip,
 				"helpArticleUrl": tmp[item].helpArticleUrl !== undefined ? tmp[item].helpArticleUrl : false,
 				"helpStyle": this.generateStyleForHelp(tmp[item].type)
 			})
@@ -164,8 +168,14 @@ export default class extRelListSettings extends LightningElement {
 	}
 	generateStyleForHelp(type){
 		return type === 'checkbox' ?
-		'top: 2px;left: 24px;position: absolute;color: rgb(97, 105, 217);cursor: pointer;font-size: 13px;':
-		'top: 4px;left: 0;position: absolute;color: rgb(97, 105, 217);cursor: pointer;font-size: 12px;'
+		'top: 2px;left: 20px;position: absolute;color: rgb(74, 75, 77,1);font-size: 13px;':
+		'top: 0px;left: -2px;position: absolute;color:  rgb(74, 75, 77,1);font-size: 12px;'
+	}
+	changeIcon(event){
+		event.target.iconName = 'utility:question';
+	}
+	changeIconAgain(event){
+		event.target.iconName = 'utility:info';
 	}
 
 	get actionItem() {
@@ -281,5 +291,9 @@ export default class extRelListSettings extends LightningElement {
 
 	addNewUseExampleParam(event){
 		this.config.dialog.useExampleParams[event.target.getAttribute('data-param')] = event.target.getAttribute('data-val').substring(event.target.getAttribute('data-val').indexOf('function')).replaceAll("//","");
+	}
+	tabChanged(event){
+		console.log('tab changed', event.target.value);
+		this.config._tabs.currentOpenedTab = event.target.value;
 	}
 }

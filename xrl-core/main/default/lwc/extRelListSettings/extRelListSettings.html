@@ -13,18 +13,26 @@
 				</h2>
 			</header>
 			<div if:false={config.dialog.saveAs} class="slds-modal__content slds-p-around_medium" style="min-height300px !important;">
-
+				<div class="slds-col slds-size_1-of-1">
+					<lightning-icon 
+						icon-name="utility:question" 
+						onclick={config.dialog.handleHelpEvent} 
+						data-id="help:commonHelpBtn" size="x-small" 
+						alternative-text={config._LABELS.altTxt_hlpUrl} title={config._LABELS.altTxt_hlpUrl}
+						class="helpArticleIcon">
+					</lightning-icon>
+				</div>
 				<!-- Admin Part -->
 				<lightning-tabset if:true={config.userInfo.isAdminAccess}>
 					<!-- Field Selection Starts -->
-					<lightning-tab label={config._LABELS.lbl_fieldSelection}>
+					<lightning-tab label={config._LABELS.lbl_fieldSelection} value="1" onactive={tabChanged}>
 						<!-- <lightning-dual-listbox data-id="dialog:setFields" label={config._LABELS.lbl_selectFields} source-label={config._LABELS.srcLbl_available} selected-label={config._LABELS.lbl_selected} field-level-help={config._LABELS.hlpTxt_selectYourPreferredFields} options={config.dialog.options} value={config.dialog.selectedFields} required-options={config.dialog.requiredOptions} onchange={config.dialog.handleEvent} size="10"></lightning-dual-listbox> -->
 						<!-- <lightning-input type="text" label={config._LABELS.lbl_additionalConditionForWhereClause} field-level-help={config._LABELS.hlpTxt_additionalConditionText} value={config.dialog.listViewConfig.addCondition} data-id="dialog:setAddCondition" onchange={config.dialog.handleEvent} style="margin-top: 10px;"></lightning-input> -->
 						<c-sql-Builder cfg={cfg}></c-sql-Builder>
 					</lightning-tab>
 					<!-- Field Selection Ends -->
 					<!-- Field Settings Starts -->
-					<lightning-tab label={config._LABELS.lbl_fieldSettings} title={config._LABELS.title_youCanDefineAllParametersForFields}>
+					<lightning-tab label={config._LABELS.lbl_fieldSettings} title={config._LABELS.title_youCanDefineAllParametersForFields} value="2" onactive={tabChanged}>
 						<p style="min-height:200px">
 							<lightning-combobox name="status" label={config._LABELS.lbl_fieldSelection} placeholder={config._LABELS.lbl_chooseField} value={config.dialog.selectedFields} data-id="dialog:setField" onchange={config.dialog.handleEvent} options={selectedFields}>
 							</lightning-combobox>
@@ -36,11 +44,14 @@
 									<lightning-button-icon if:true={param.useExample} key={param.paramName} icon-name="utility:copy_to_clipboard" class="slds-m-around_small" title="Use example" data-id="dialog:setFieldParam" data-val={param.placeHolder} data-param={param.paramName} data-type={param.type} onclick={addNewUseExampleParam}></lightning-button-icon>
 									<span>
 										<p if:true={param.helpArticleUrl} 
-										onclick={config.dialog.handleHelpEvent} 
 										data-id={param.helpId} 
-										data-url={param.helpArticleUrl}
-										class="helpLink" style={param.helpStyle}>
-											{param.label}
+										class="helpLink slds-m-left_xx-small" style={param.helpStyle}>
+											{param.helpLabel}
+											<lightning-helptext if:false={config.dialog.saveAs} style="cursor: pointer;"
+												onclick={config.dialog.handleHelpEvent} data-id={param.helpId} data-url={param.helpArticleUrl}
+												onmouseenter={changeIcon} onmouseleave={changeIconAgain}
+												class="inlineHelpIcon" content={param.helpTooltip} alternative-text={config._LABELS.altTxt_hlpUrl}>
+											</lightning-helptext>
 										</p>
 									</span>
 								</div>
@@ -49,7 +60,7 @@
 					</lightning-tab>
 					<!-- Field Settings Ends -->
 					<!-- Table Settings Starts -->
-					<lightning-tab label={config._LABELS.lbl_tableSettings} title={config._LABELS.title_youCanDefineAllGeneralTableParameters}>
+					<lightning-tab label={config._LABELS.lbl_tableSettings} title={config._LABELS.title_youCanDefineAllGeneralTableParameters} value="3" onactive={tabChanged}>
 						<template for:each={tableItem} for:item="param" for:index="index">
 							<div key={param.paramName} style="position:relative">
 								<template if:false={param.isComboBox}>
@@ -62,11 +73,15 @@
 								</template>
 								<span>
 									<p if:true={param.helpArticleUrl} 
-										onclick={config.dialog.handleHelpEvent} 
 										data-id={param.helpId} 
 										data-url={param.helpArticleUrl}
-										class="helpLink" style={param.helpStyle}>
-											{param.label}
+										class="helpLink slds-m-left_xx-small" style={param.helpStyle}>
+										{param.helpLabel}
+										<lightning-helptext if:false={config.dialog.saveAs}
+											onclick={config.dialog.handleHelpEvent} data-id={param.helpId} data-url={param.helpArticleUrl}
+											onmouseenter={changeIcon} onmouseleave={changeIconAgain}
+											class="inlineHelpIcon" content={param.helpTooltip} alternative-text={config._LABELS.altTxt_hlpUrl}>
+										</lightning-helptext>
 										</p>
 								</span>
 								</div>
@@ -74,16 +89,7 @@
 					</lightning-tab>	
 					<!-- Table Settings Ends -->
 					<!-- Locked Fields Starts  -->
-					<lightning-tab label={config._LABELS.lbl_lockedFields}>
-						<lightning-icon 
-							icon-name="utility:question" 
-							onclick={config.dialog.handleHelpEvent} 
-							data-id="help:lockedFields" size="x-small"
-							data-url={config._LABELS.hlpUrl_lockedFields} 
-							alternative-text={config._LABELS.altTxt_hlpUrl} title={config._LABELS.altTxt_hlpUrl}
-							class="helpArticleIcon">
-						</lightning-icon>
-						<!-- <br/> -->
+					<lightning-tab label={config._LABELS.lbl_lockedFields} value="4" onactive={tabChanged}>
 						<lightning-dual-listbox data-id="dialog:setLockedFields" 
 							label={config._LABELS.lbl_selectLockedFields} 
 							source-label={config._LABELS.srcLbl_optional} 
@@ -98,7 +104,7 @@
 					</lightning-tab>
 					<!-- Locked Fields Ends  -->
 					<!-- Action Starts  -->
-					<lightning-tab label="Actions">
+					<lightning-tab label="Actions" value="5" onactive={tabChanged}>
 						<template if:false={config.openNewAction}>
 							<lightning-button if:false={config.dialog.action} variant="brand" label="New Action" title="New Action" class="slds-m-right_x-small" data-val="openNewAction" onclick={handleNewAction}></lightning-button>
 							<lightning-combobox name="status" label="Select Action" placeholder="Choose Action" value={config.dialog.action} data-id="dialog:setAction" onchange={config.dialog.handleEvent} options={config.dialog.allActions}>
@@ -152,10 +158,10 @@
 					class="placeTop" content={config._LABELS.tooltip_configSaveAs} alternative-text={config._LABELS.altTxt_hlpUrl}>
 				</lightning-helptext>
 				<!-- Cancel Button -->
-				<lightning-button if:false={config.dialog.saveAs} variant="base" label={config._LABELS.lbl_cancel} title={config._LABELS.lbl_cancel} icon-name="utility:error" class="slds-m-left_x-small" data-id="dialog:close" onclick={config.dialog.handleEvent}></lightning-button>
+				<lightning-button if:false={config.dialog.saveAs} variant="neutral" label={config._LABELS.lbl_cancel} title={config._LABELS.lbl_cancel} icon-name="utility:error" class="slds-m-left_x-small" data-id="dialog:close" onclick={config.dialog.handleEvent}></lightning-button>
 				<lightning-helptext if:false={config.dialog.saveAs} class="placeTop" content={config._LABELS.tooltip_configCancel}></lightning-helptext>
 				<!-- Share Button -->
-				<lightning-button if:false={config.dialog.saveAs} variant="base" label="Share" title={config._LABELS.lbl_cancel} icon-name="utility:internal_share" class="slds-m-left_x-small" data-id="dialog:config_share" onclick={config.dialog.handleEvent}></lightning-button>
+				<lightning-button if:false={config.dialog.saveAs} variant="neutral" label="Share" title={config._LABELS.lbl_cancel} icon-name="utility:internal_share" class="slds-m-left_x-small" data-id="dialog:config_share" onclick={config.dialog.handleEvent}></lightning-button>
 				<lightning-helptext icon-name="utility:question" if:false={config.dialog.saveAs} 
 					onclick={config.dialog.handleHelpEvent} data-id="help:shareView" data-url={config._LABELS.hlpUrl_shareView}
 					class="placeTop" content={config._LABELS.tooltip_configShare} alternative-text={config._LABELS.altTxt_hlpUrl}>
