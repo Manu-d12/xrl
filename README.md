@@ -52,4 +52,4 @@ sfdx scanner:run:dfa --target "./**/*.cls" --projectdir "./" >SCA.log
 
 
 
-https://login.salesforce.com/packaging/installPackage.apexp?p0=04t8d000000ld6oAAA
+https://login.salesforce.com/packaging/installPackage.apexp?p0=04t8d000000liqMAAQ
