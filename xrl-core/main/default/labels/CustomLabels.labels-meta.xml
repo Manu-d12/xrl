@@ -2173,6 +2173,6 @@ return groups;
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>url_reqFeature</shortDescription>
-        <value>https://hypergrid.feedbear.com/boards/hypergrid-feature-requests/?embed=true</value>
+        <value>https://hypergrid.feedbear.com/boards/hypergrid-feature-requests/?embed=true&amp;email=%%userInfo.email%%&amp;name=%%userInfo.name%%</value>
     </labels>
 </CustomLabels>

@@ -98,7 +98,7 @@ global with sharing class infrastructure {
 		}
 		result.put(cmd + 'Result', resultMethod);
 
-		User userDetails = [SELECT Id, Name, Profile.Name, UserRole.Name FROM User where Id =: userinfo.getUserId()];
+		User userDetails = [SELECT Id, Name, Profile.Name, UserRole.Name, Email FROM User where Id =: userinfo.getUserId()];
 		list < PermissionSetAssignment > permissionSets = [SELECT Id, PermissionSet.Name FROM PermissionSetAssignment WHERE AssigneeId =: UserInfo.getUserId()];
 		List < Group > publicGroups = getGroupsForUser(userinfo.getUserId());
 		System.debug(publicGroups);
@@ -106,6 +106,7 @@ global with sharing class infrastructure {
 		result.put('userInfo', new map < string, object > {
 			'id'=> userinfo.getUserId(),
 			'name'=> userDetails.Name,
+			'email' => userDetails.Email,
 			'timezone'=>UserInfo.getTimeZone().getID(),
 			'locale' => userInfo.getLocale().replaceAll('_', '-').replace('-EURO', ''),
 			'isAdminAccess' => isAdminAccess,

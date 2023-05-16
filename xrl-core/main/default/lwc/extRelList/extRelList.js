@@ -463,8 +463,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 						{
 							isIframe: true,
 							name: 'featureText',
-							url: this.config._LABELS.url_reqFeature,
-							style: "border:0; width:100%; height:470px; float:left;"
+							url: libs.replaceLiteralsInStr(this.config._LABELS.url_reqFeature,this.name),
+							style: "border:0; width:800px; height:470px; float:left;"
 						}
 					],
 					buttons: [
