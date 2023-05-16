@@ -114,7 +114,7 @@ export default class dataTableItem extends LightningElement {
 
 	get style() {
 		
-		let right = ['number', 'currency','int','double'];
+		let right = ['number', 'currency','int','double','percent'];
 		let val='';
 		if (right.indexOf(this.col.type)  > -1 && !this.locale.endsWith('US')) {
 			val = 'slds-float_right';
