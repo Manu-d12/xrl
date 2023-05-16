@@ -89,7 +89,16 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			el.sl = ind + 1;
 			if(this.config.rowCss){
 				el._rowStyle = this.config.rowCallback ? 'cursor : pointer;' : '';
-				el._rowStyle += eval('(' + this.config.rowCss + ')')(el);
+				try{
+					el._rowStyle += eval('(' + this.config.rowCss + ')')(el);
+				}catch(e){
+					libs.showToast(this,{
+						title: 'Error',
+						message: e.toString(),
+						variant: 'error'
+					});
+					console.error('Error',e);
+				}
 			}
 		});
 
