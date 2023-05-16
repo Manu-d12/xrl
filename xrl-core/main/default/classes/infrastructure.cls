@@ -163,7 +163,7 @@ global with sharing class infrastructure {
 			SOQL += String.isNotBlank(relField) && String.isNotBlank(recordId) ? addCondition : ' WHERE ' + addCondition.trim().removeStart('AND');
 		}
 		SOQL += String.isNotBlank(orderBy) ? ' ' + orderBy : '';
-		SOQL += String.isNotBlank(limitCondition) ? ' ' + limitCondition : ' LIMIT 50000'; //putting max limit of 50000
+		SOQL += String.isNotBlank(limitCondition) ? ' ' + limitCondition : ' LIMIT 49950'; //putting max limit of 50000
 
 		//if (string.isBlank(SOQL)) throw new core.appException(null, string.format(core.appLabels.get('errCmdParams'), new string[]{'executeAnon','apexCode'}), core.ExceptionType.API);
 		system.debug(LoggingLevel.Error, 'SOQL ' + SOQL);
