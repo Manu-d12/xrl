@@ -219,7 +219,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		// }
 		console.log('ListViews ', data[cmd].listViews);
 		if(data[cmd].listViews.length !== 0){
-			this.listViews = data[cmd].listViews.map(v => {return {label: v.label ? v.label + ' - ' + v.createdBy : v.name, value: v.name};});		
+			this.listViews = data[cmd].listViews.map(v => {return {label: v.name ? v.name + ' - ' + v.createdBy : v.name, value: v.name};});		
 		}else{
 			this.config.listView = {
 				'hasEditAccess':true
