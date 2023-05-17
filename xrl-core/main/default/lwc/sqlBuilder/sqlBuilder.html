@@ -64,7 +64,7 @@
                         </ul>
                         <div class="slds-scrollable_y" style="height:24rem;padding:4px;">
                             <ul class="slds-has-dividers_around-space">
-                                <template if:true={config.sqlBuilder.fields} for:each={config.sqlBuilder.fields} for:item="field" for:index="index">
+                                <template if:true={filterableFields} for:each={filterableFields} for:item="field" for:index="index">
                                     <li data-id="sqlBuilder:conditions:selectItem" onclick={handleBuilderEvent} style="cursor: pointer;margin-top: 0px;padding:5px;" class={field.css} data-ref={field.refObj} data-val={field.fieldName} key={field.fieldName}>
                                         <lightning-helptext class="placeTopItem" content={field.helpText}></lightning-helptext>
                                         &nbsp;{field.label}                            
