@@ -392,6 +392,7 @@ export default class SqlBuilder extends LightningElement {
                     updateable: describe[key].updateable,
                     isNameField: describe[key] && describe[key].nameField === true,
                     referenceTo: describe[key].referenceTo[0],
+                    filterable: describe[key].filterable,
                 };
                 fieldMap.helpText = fieldMap.fieldName +  ' (' + describe[key].type + ')'; // assigning outside to get the fieldname to be populated first
                 // the fieldname was previously used as the helptext but 
@@ -430,6 +431,7 @@ export default class SqlBuilder extends LightningElement {
                         type: describe[key].type,
                         isNameField: describe[key] && describe[key].nameField === true,
                         referenceTo: describe[key].referenceTo[0],
+                        filterable: describe[key].filterable,
                     };
                     fieldMap.helpText = describe[key].relationshipName + ' (' + describe[key].referenceTo?.join(', ') + ')';
                     // I noticed that in some reference fields, there are multiple objects in the referenceTo array, so I joined all of them to the helpText
@@ -437,6 +439,12 @@ export default class SqlBuilder extends LightningElement {
                 }
         }
         return fields;
+    }
+    get filterableFields(){
+        return this.config.sqlBuilder.fields.filter((el) => {
+            if(el.filterable === true) return true;
+            else return false;
+        });
     }
     generateCondition(){
         let condition = this.config.sqlBuilder.conditionOrdering;

@@ -213,6 +213,7 @@ global with sharing class infrastructure {
 		string sObjApiName = (string) data.get('sObjApiName');
 		string relField = (string) data.get('relField');
 		string listViewName = (string) data.get('listViewName');
+		string configType = String.isNotBlank((string) data.get('configType')) ? (string) data.get('configType') : 'XRL';
 		boolean isNeedDescribe = true;
 
 		map < string, object > result = new map < string, object > {};
@@ -220,7 +221,7 @@ global with sharing class infrastructure {
 		list < map < string, object >> listViews = new list < map < string, object >> {};
 		List<String> extIds = new List<String>();
 
-		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c, CreatedBy.Name FROM extRelListConfig__c WHERE sObjApiName__c =: sObjApiName AND relFieldApiName__c =: relField AND Is_Active__c = TRUE ORDER BY isAdminConfig__c DESC, listViewName__c ASC LIMIT 20];
+		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c, CreatedBy.Name FROM extRelListConfig__c WHERE sObjApiName__c =: sObjApiName AND relFieldApiName__c =: relField AND Is_Active__c = TRUE AND configType__c = :configType ORDER BY isAdminConfig__c DESC, listViewName__c ASC LIMIT 20];
 		for (integer i = 0; i < lst.size(); i++) {
 			extRelListConfig__c item = lst[i];
 			extIds.add(item.Id);
