@@ -105,6 +105,12 @@ export let sqlBuilderLibs = {
 			? actions.find( el => { return el.value === key})
 			: actions;
 	},
+	currencyFilterActions(labels,key) {
+		return this.doubleFilterActions(labels,key);
+	},
+	percentFilterActions(labels,key){
+		return this.doubleFilterActions(labels,key);
+	},
 	datetimeFilterActions(labels,key) {
 		const actions = [
 			{ label: labels.lbl_isEqual, value: 'eq' },
@@ -136,6 +142,12 @@ export let sqlBuilderLibs = {
 		return (key) 
 			? actions.find( el => { return el.value === key})
 			: actions;
+	},
+	currency__condition(filter){
+		return this.double__condition(filter);
+	},
+	percent__condition(filter){
+		return this.double__condition(filter);
 	},
     string__condition(filter) {
         /* eslint-disable */
