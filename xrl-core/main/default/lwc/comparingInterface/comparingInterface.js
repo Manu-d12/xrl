@@ -88,17 +88,28 @@ export default class ComparingInterface extends LightningElement {
             });
         }
         if(selectedFor.startsWith('obj') && (this.leftRecord !== 'CurrentRecord' && this.leftRecord !== 'recordId')){
-            //Getting the records from depending on selected object
+            //Getting the records from depending on selected object1
             await libs.remoteAction(this, 'query', {
                 sObjApiName: selectedObj,
-                fields: ['Id','Name'],
+                fields: this.config.json.parentsRecordsSelectionCallback?.obj1 ? 
+                    this.config.json.parentsRecordsSelectionCallback?.obj1FieldsToRetrieve : ['Id','Name'],
                 relField: '',
                 callback: ((nodeName, data) => {
                     console.log('length', data[nodeName].records.length);
                     this.config.objRecords[selectedFor]= [];
-                    data[nodeName].records.forEach((el)=>{
-                        this.config.objRecords[selectedFor].push({'label':el.Name,'value':el.Id});
-                    });
+                    let callback = this.config.json.parentsRecordsSelectionCallback?.obj1;
+                    if(callback !== undefined && callback !== ''){
+                        try{
+                            this.config.objRecords[selectedFor] = eval( '(' + callback + ')')(data[nodeName].records);
+                        }catch(e){
+                            console.error('Error', e);
+                            this.config.objRecords[selectedFor]= [];
+                        }
+                    }else{
+                        data[nodeName].records.forEach((el)=>{
+                            this.config.objRecords[selectedFor].push({'label':el.Name,'value':el.Id});
+                        });
+                    }
                     this.config.showCompareButton = true;
                 })
             });
@@ -123,16 +134,27 @@ export default class ComparingInterface extends LightningElement {
             });
         }
         if(selectedFor.startsWith('obj') && (this.rightRecord !== 'CurrentRecord' && this.rightRecord !== 'recordId')){
-            //Getting the records from depending on selected object
+            //Getting the records from depending on selected object2
             await libs.remoteAction(this, 'query', {
                 sObjApiName: selectedObj,
-                fields: ['Id','Name'],
+                fields: this.config.json.parentsRecordsSelectionCallback?.obj2 ? 
+                this.config.json.parentsRecordsSelectionCallback?.obj1FieldsToRetrieve : ['Id','Name'],
                 relField: '',
                 callback: ((nodeName, data) => {
                     this.config.objRecords[selectedFor]= [];
-                    data[nodeName].records.forEach((el)=>{
-                        this.config.objRecords[selectedFor].push({'label':el.Name,'value':el.Id});
-                    })
+                    let callback = this.config.json.parentsRecordsSelectionCallback?.obj2;
+                    if(callback !== undefined && callback !== ''){
+                        try{
+                            this.config.objRecords[selectedFor] = eval( '(' + callback + ')')(data[nodeName].records);
+                        }catch(e){
+                            console.error('Error', e);
+                            this.config.objRecords[selectedFor]= [];
+                        }
+                    }else{
+                        data[nodeName].records.forEach((el)=>{
+                            this.config.objRecords[selectedFor].push({'label':el.Name,'value':el.Id});
+                        });
+                    }
                 })
             });
         }else if(this.rightRecord === 'CurrentRecord' || this.rightRecord === 'recordId'){
