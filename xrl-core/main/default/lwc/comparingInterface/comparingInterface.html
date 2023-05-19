@@ -6,16 +6,16 @@
             <c-multiselect if:true={config.showConfigSelection} data-id="configId" listsize=20 onselect={handleEvent} options={config.extConfigs} selectedvalue="" label="Select a Config"></c-multiselect>
         </div>
     </div>
-    <div class="slds-grid slds-gutters">
+    <div class="slds-grid slds-gutters" style="padding:5px;">
         <!-- For 1st object and record -->
         <div class="slds-col slds-size_5-of-12" if:true={config.objRecords.objOne}>
-            <div class="slds-text-heading_small">{config.json.obj1} Record(s) Selection</div>          
+            <div class="slds-text-heading_small">{config.json.obj1.label} Record(s) Selection</div>          
             <!-- Record One -->
             <c-multiselect multiselect=true data-id="recOne" listsize=20 onselect={handleSelect} options={config.objRecords.objOne} selectedvalue="Account" label="Select a Record"></c-multiselect>
         </div>
         <!-- For 2nd object and record -->
         <div class="slds-col slds-size_5-of-12" if:true={config.objRecords.objTwo}>
-            <div class="slds-text-heading_small">{config.json.obj2} Record(s) Selection</div>
+            <div class="slds-text-heading_small">{config.json.obj2.label} Record(s) Selection</div>
             <!-- Record Two -->
             <c-multiselect multiselect=true data-id="recTwo" listsize=20 onselect={handleSelect} options={config.objRecords.objTwo} selectedvalue="Account" label="Select a Record"></c-multiselect>
         </div>

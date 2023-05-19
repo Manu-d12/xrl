@@ -20,7 +20,7 @@
 		</div>
 		<table role="grid" if:true={tableRecords} class="slds-table slds-table_bordered slds-table_col-bordered extRelList" style="table-layout: fixed;">
 			<thead>
-				<tr class="slds-line-height_reset">
+				<tr class="slds-line-height_reset" style="height:50px;">
 					<template if:true={hasGrouping}>
 						<th scope="col" style="width: 5rem;">
 							<div class="slds-truncate">
@@ -38,11 +38,11 @@
 					</th>
 					<template for:each={config.colModel} if:false={hItem.isHidden} for:item="hItem" for:index="index" key={hItem.label}>
 						<th aria-sort="none" if:false={hItem.isActions} class="slds-is-sortable slds-text-title_caps slds-truncate" style={hItem._style} aria-label={hItem.label} scope="col" key={hItem.label}>
-							<span data-id={hItem.fieldName} class="slds-th__action">
+							<span data-id={hItem.fieldName} class="slds-th__action" style="padding-left:1px;">
 								<lightning-icon if:true={hItem.isFilterable} variant={hItem._filterVariant} title={hItem._filterCondition} data-id={hItem.fieldName} icon-name="utility:filterList" size="xx-small" alternative-text="Filter Column" onclick={setFilter} aria-describedby={hItem.fieldName}>&nbsp;</lightning-icon>
 								
-								<span data-id={hItem.fieldName} class="slds-th__action slds-text-link_reset" href="javascript:void(0);" role="button" onclick={changeSort} style="width:80%">
-									<span class="slds-truncate" data-id={hItem.fieldName} title={hItem.label}>{hItem.label}</span>
+								<span data-id={hItem.fieldName} class="slds-th__action slds-text-link_reset col-header" href="javascript:void(0);" role="button" onclick={changeSort} style="width:80%;padding-left:3px;">
+									<span class={colHeaderClass} data-id={hItem.fieldName} title={hItem.label}>{hItem.label}</span>
 									<span if:true={hItem.isSortable} data-id={hItem.fieldName} class="slds-col_bump-left">
 										<lightning-icon data-id={hItem.fieldName} if:true={hItem._sortIcon} icon-name={hItem._sortIcon} size="xx-small" title={config._LABELS.title_sortColumn}></lightning-icon>
 									</span>

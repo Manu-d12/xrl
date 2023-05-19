@@ -36,7 +36,7 @@ export default class ComparingInterface extends LightningElement {
             callback: ((nodeName, data) => {
                 console.log('length', data[nodeName].records.length);
                 data[nodeName].records.forEach((record) => {
-                    this.config.extConfigs.push({'label':record.Name + ' Object1: ' +JSON.parse(record.XRL__JSON__c).obj1 + ' Object2: ' +JSON.parse(record.XRL__JSON__c).obj2, 'value':record.Id});
+                    this.config.extConfigs.push({'label':record.Name + ' Object1: ' +JSON.parse(record.XRL__JSON__c).obj1.apiName + ' Object2: ' +JSON.parse(record.XRL__JSON__c).obj2.apiName, 'value':record.Id});
                 });
                 this.config.showConfigSelection = true;
             })
@@ -69,7 +69,7 @@ export default class ComparingInterface extends LightningElement {
                 this.config.obj2Fields.push(el.obj2FieldName);
             });
         }
-        let selectedObj = this.config.json.obj1;
+        let selectedObj = this.config.json.obj1.apiName;
         let selectedFor = 'objOne';
         this.config.userSelections[selectedFor] = selectedObj;
         console.log(this.config.userSelections[selectedFor]);
@@ -116,7 +116,7 @@ export default class ComparingInterface extends LightningElement {
         }else if(this.leftRecord === 'CurrentRecord' || this.leftRecord === 'recordId'){
             this.config.userSelections.recOne = [this.recordId];
         }
-        selectedObj = this.config.json.obj2;
+        selectedObj = this.config.json.obj2.apiName;
         selectedFor = 'objTwo';
         this.config.userSelections[selectedFor] = selectedObj;
         console.log(this.config.userSelections[selectedFor]);
@@ -197,7 +197,7 @@ export default class ComparingInterface extends LightningElement {
     async handleComparison(){
         if(this.config.json.parentFields && this.config.json.parentFields.length > 0){
             await libs.remoteAction(this, 'query', {
-                sObjApiName: this.config.json.obj1,
+                sObjApiName: this.config.json.obj1.apiName,
                 fields: this.config.obj1Fields,
                 relField: '',
                 addCondition:" Id='" + this.config.userSelections.recOne + "'",
@@ -207,7 +207,7 @@ export default class ComparingInterface extends LightningElement {
                 })
             });
             await libs.remoteAction(this, 'query', {
-                sObjApiName: this.config.json.obj2,
+                sObjApiName: this.config.json.obj2.apiName,
                 fields: this.config.obj2Fields,
                 relField: '',
                 addCondition:" Id='" + this.config.userSelections.recTwo + "'",
@@ -286,6 +286,7 @@ export default class ComparingInterface extends LightningElement {
     compareChildRecords(childRecords1,childRecords2){
         let result = {};
         let childRecordsResult = [];
+        let onlyLeftChildRecords = [];
         Object.keys(childRecords1).forEach((el)=>{
             result = {};
             result[this.config.json.uniqueObjNames.obj1] = {};
@@ -296,11 +297,14 @@ export default class ComparingInterface extends LightningElement {
                 Object.assign(result[this.config.json.uniqueObjNames.obj1],childRecords1[el]);
                 Object.assign(result[this.config.json.uniqueObjNames.obj2],childRecords2[el]);
                 delete childRecords2[el];
+                childRecordsResult.push(result);
             }else{
                 Object.assign(result[this.config.json.uniqueObjNames.obj1],childRecords1[el]);
+                onlyLeftChildRecords.push(result);
             }
-            childRecordsResult.push(result);
         });
+        //putting the records which only have left records
+        childRecordsResult = [...childRecordsResult, ...onlyLeftChildRecords];
         Object.keys(childRecords2).forEach((el)=>{
             result = {};
             result[this.config.json.uniqueObjNames.obj1] = {};

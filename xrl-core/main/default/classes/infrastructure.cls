@@ -682,6 +682,7 @@ global with sharing class infrastructure {
 			'lbl_refreshAfterCustomActionExecution'=>label.lbl_refreshAfterCustomActionExecution,
 			'lbl_overrideGridHeader'=>label.lbl_overrideGridHeader,
 			'lbl_rollback'=>label.lbl_rollback,
+			'lbl_enableColumnHeaderWrap'=>label.lbl_enableColumnHeaderWrap,
 			'msg_enterUniqueActionId'=>label.msg_enterUniqueActionId,
 			'msg_lisViewWasUpdated' => label.msg_lisViewWasUpdated,
 			'msg_requestWasSent' => label.msg_requestWasSent,
@@ -780,6 +781,7 @@ global with sharing class infrastructure {
 			'tooltip_overrideGridHeader'=>label.tooltip_overrideGridHeader,
 			'tooltip_rollback'=>label.tooltip_rollback,
 			'tooltip_configDelete'=>label.tooltip_configDelete,
+			'tooltip_enableColumnHeaderWrap'=>label.tooltip_enableColumnHeaderWrap,
 			'srcLbl_available' => label.srcLbl_available,
 			'srcLbl_optional' => label.srcLbl_optional,
 			'url_reqFeature'=>label.url_reqFeature

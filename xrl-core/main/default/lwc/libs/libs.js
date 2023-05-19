@@ -254,6 +254,13 @@ export let libs = {
 				"cmd" : "dialog:setPagerParam",
 				"helpArticleUrl": _labels.hlpUrl_pagerTop,
 			},
+			"enableColumnHeaderWrap" : {
+				"defValue": false,
+				"type": "checkbox",
+				"label": _labels.lbl_enableColumnHeaderWrap,
+				"tooltip": _labels.tooltip_enableColumnHeaderWrap,
+				"cmd" : "dialog:setTableParam",
+			},
 			"showStandardEdit" : {
 				"defValue": false,
 				"type": "checkbox",

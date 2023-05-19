@@ -2175,4 +2175,20 @@ return groups;
         <shortDescription>url_reqFeature</shortDescription>
         <value>https://hypergrid.feedbear.com/boards/hypergrid-feature-requests/?embed=true&amp;email=%%userInfo.email%%&amp;name=%%userInfo.name%%</value>
     </labels>
+    <labels>
+        <fullName>lbl_enableColumnHeaderWrap</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_enableColumnHeaderWrap</shortDescription>
+        <value>Enable column header text wrap?</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_enableColumnHeaderWrap</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_enableColumnHeaderWrap</shortDescription>
+        <value>This will wrap the texts in the column header</value>
+    </labels>
 </CustomLabels>
