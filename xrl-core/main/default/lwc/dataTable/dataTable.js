@@ -83,6 +83,10 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		this.updateInfo = v;
 	}
 	updateInfo = '';
+	
+	get colHeaderClass(){
+		return this.config.enableColumnHeaderWrap ? 'slds-cell-wrap' : 'slds-truncate';
+	}
 
 	get tableRecords() {
 		this.records.forEach((el,ind) =>{
@@ -301,7 +305,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			}
 			if (item.width !== undefined) {
 				let maxWidth = item.width.replace(';','').slice(-1) === '%' ? ';max-width: 40%;' : ';max-width: 500px;';
-				item._style = 'width: ' + item.width.replace(';','') + maxWidth;
+				item._style = 'width: ' + item.width.replace(';','') + maxWidth + 'padding-left:1px;';
+			}else{
+				item._style = 'padding-left:1px;';
 			}
 			if (item.isHidden!==true) this.config._countFields ++;
 			item.wrapClass = item.isWrapable
