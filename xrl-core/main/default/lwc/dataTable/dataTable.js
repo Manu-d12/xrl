@@ -812,7 +812,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						filterStr: _filterStr,
 						filterStrTo: _filterStrTo,
 						isShowStr: cItem.options === undefined,
-						isShowToStr: _isFilterOptions.filterOption === 'rg',
+						isShowToStr: _filterOption === 'rg',
 						isShowClearBtn: (_filterStr && _filterStr.length > 0)
 					});
 				}
@@ -876,7 +876,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			let cItem = this.getColItem(this.config._isFilterOptions.fieldName);
 			if (cItem) {
 				console.log('column', JSON.stringify(cItem));
-				isNeedRefilter = ((cItem._filterStr !== this.config._isFilterOptions.filterStr) || (this.config._isFilterOptions.isUnary && cItem._filterOption !==this.config._isFilterOptions.filterOption));
+				isNeedRefilter = this.config._isFilterOptions?.filterOption === 'rg'
+					? (cItem._filterStr !== this.config._isFilterOptions?.filterStr) || (cItem._filterStrTo !== this.config._isFilterOptions?._filterStrTo)
+					: ((cItem._filterStr !== this.config._isFilterOptions?.filterStr) || (this.config._isFilterOptions?.isUnary && cItem._filterOption !==this.config._isFilterOptions?.filterOption));
 				if(isNeedRefilter === undefined) isNeedRefilter = true;
 				cItem._filterStr = this.config._isFilterOptions.filterStr;
 				cItem._filterStrTo = this.config._isFilterOptions.filterStrTo;
