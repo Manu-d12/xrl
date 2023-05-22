@@ -449,7 +449,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 
 	checkGroup(event) {
-		let group = this.groupedRecords.find(gr => gr.title === event.target.getAttribute('data-groupind'));
+		let group = this.groupedRecords.find(gr => gr.title.toString() === event.target.getAttribute('data-groupind'));
 		group.isChecked = !group.isChecked;
 		group.records.forEach(rec => {
 			rec._isChecked = group.isChecked;
@@ -462,7 +462,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if (this.hasGrouping) {
 			let rowind = this.records.findIndex(row => row.Id === event.target.getAttribute('data-rowid'));
 			this.records[rowind]._isChecked = event.target.checked;
-			let groupInd = this.groupedRecords.findIndex(gr => gr.title === event.target.getAttribute('data-groupind'));
+			let groupInd = this.groupedRecords.findIndex(gr => gr.title.toString() === event.target.getAttribute('data-groupind'));
 			rowind = this.groupedRecords[groupInd].records.findIndex(row => row.Id === event.target.getAttribute('data-rowid'));
 			this.groupedRecords[groupInd].records[rowind]._isChecked = event.target.checked;
 			let checked = true;
