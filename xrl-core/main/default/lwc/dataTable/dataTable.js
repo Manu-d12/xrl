@@ -862,7 +862,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		} else {
 			this.config._isFilterOptions[fieldName] = event.detail.payload ? event.detail.payload.values : event.detail;
 		}
-		this.config._isFilterOptions.isShowClearBtn = this.config._isFilterOptions.filterStr.length > 0 || (this.config._isFilterOptions.filterStrTo && this.config._isFilterOptions.filterStrTo.length > 0);
+		this.config._isFilterOptions.isShowClearBtn = this.config._isFilterOptions.filterStr?.length > 0 || (this.config._isFilterOptions.filterStrTo && this.config._isFilterOptions.filterStrTo.length > 0);
 		if (this.config._isFilterOptions.isShowClearBtn === false ) this.config._isFilterOptions.filterOption = undefined;
 		else event.target.classList.add('hideIcon');
 	}
