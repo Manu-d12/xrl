@@ -876,7 +876,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			let cItem = this.getColItem(this.config._isFilterOptions.fieldName);
 			if (cItem) {
 				console.log('column', JSON.stringify(cItem));
-				isNeedRefilter = this.config._isFilterOptions?.filterOption === 'rg'
+				isNeedRefilter = this.config._isFilterOptions?.filterStr === "" ? true : this.config._isFilterOptions?.filterOption === 'rg'
 					? (cItem._filterStr !== this.config._isFilterOptions?.filterStr) || (cItem._filterStrTo !== this.config._isFilterOptions?._filterStrTo)
 					: ((cItem._filterStr !== this.config._isFilterOptions?.filterStr) || (this.config._isFilterOptions?.isUnary && cItem._filterOption !==this.config._isFilterOptions?.filterOption));
 				if(isNeedRefilter === undefined) isNeedRefilter = true;
