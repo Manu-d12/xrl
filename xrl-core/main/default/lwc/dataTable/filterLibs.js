@@ -8,7 +8,7 @@ export let filterLibs = {
 			case 'cn':
 				return value.toLowerCase().includes(filter._filterStr.toLowerCase());
 			case 'ncn': 
-				return value == undefined || value == '' ||  (value.toLowerCase().indexOf(filter._filterStr?.toLowerCase()) === -1);
+				return value == undefined || value == '' ||  (value.toLowerCase().indexOf(filter._filterStr.toLowerCase()) === -1);
 			case 'bn': 
 				return value.toLowerCase().startsWith(filter._filterStr.toLowerCase()) === true;
 			case 'nbn': 
@@ -207,8 +207,6 @@ export let filterLibs = {
 					day : "2-digit",
 					year: "numeric",
 					hour: "2-digit",
-					minute: "2-digit",
-					second: "2-digit",
 					timeZone: filter._timezone
 				});
 				return recordDate >= filterDate && recordDate <= filterTwoDate;
