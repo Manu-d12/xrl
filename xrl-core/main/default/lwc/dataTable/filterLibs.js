@@ -209,7 +209,7 @@ export let filterLibs = {
 					hour: "2-digit",
 					minute: "2-digit",
 					second: "2-digit",
-					timeZone: libs.getGlobalVar(this.cfg).userInfo.timezone
+					timeZone: filter._timezone
 				});
 				return recordDate >= filterDate && recordDate <= filterTwoDate;
 			
