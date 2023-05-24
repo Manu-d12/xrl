@@ -1460,7 +1460,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>placeHolder_beforeSaveValidation</shortDescription>
-        <value>function(record){
+        <value>function(scope,libs,record){
         console.log(&apos;Record Type &apos;,record.Type);
         if(record.Type==&apos;Electrical&apos;) 
         return true;
@@ -1482,9 +1482,9 @@ function(row,col,val){
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>placeHolder_beforeDeleteValidation</shortDescription>
-        <value>#This function must accept a value as parameter which will be the record
-#It should return true or false, Only values which returned true will be deleted 
-function(record){
+        <value>#This function will accept 3 values as parameters
+#If a record fails the validation the no records will be deleted
+function(scope,libs,record){
   if(record.Type==&apos;Electrical&apos;)
     return false; 
   else 
