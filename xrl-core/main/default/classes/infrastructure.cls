@@ -910,7 +910,9 @@ global with sharing class infrastructure {
 		map<string, object> result = new map<string, object>{};
 		for(Schema.SObjectType objTyp : gd.Values()){
 			Schema.DescribeSObjectResult descResult = objTyp.getDescribe();
-			objectMap.put(objTyp.getDescribe().getName(), descResult);
+			if (descResult.isQueryable()) {
+				objectMap.put(objTyp.getDescribe().getName(), descResult);
+			}
 		}
 		result.put('describe', JSON.serialize(objectMap));
 		return result;
