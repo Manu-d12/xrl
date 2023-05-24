@@ -2,7 +2,7 @@ export let filterLibs = {
 
     string__filter(filter, record) {
 		let value = this.getValue(filter, record);
-        if ((filter._filterOption !== 'em' && filter._filterOption !== 'ncn' && !value)) return false;
+        if ((filter._filterOption !== 'em' && filter._filterOption !== 'ncn' && !value) || (filter._filterStr === undefined)) return false;
 		/*eslint-disable*/
 		switch (filter._filterOption) {
 			case 'cn':
@@ -174,8 +174,6 @@ export let filterLibs = {
 			day : "2-digit",
 			year: "numeric",
 			hour: "2-digit",
-			minute: "2-digit",
-			second: "2-digit",
 			timeZone: filter._timezone
 		});
 		recordDate = new Date(value).toLocaleString(filter._locale,{
@@ -183,8 +181,6 @@ export let filterLibs = {
 			day : "2-digit",
 			year: "numeric",
 			hour: "2-digit",
-			minute: "2-digit",
-			second: "2-digit",
 			timeZone: filter._timezone
 		});
 
@@ -211,9 +207,7 @@ export let filterLibs = {
 					day : "2-digit",
 					year: "numeric",
 					hour: "2-digit",
-					minute: "2-digit",
-					second: "2-digit",
-					timeZone: libs.getGlobalVar(this.cfg).userInfo.timezone
+					timeZone: filter._timezone
 				});
 				return recordDate >= filterDate && recordDate <= filterTwoDate;
 			

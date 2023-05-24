@@ -449,7 +449,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 
 	checkGroup(event) {
-		let group = this.groupedRecords.find(gr => gr.title === event.target.getAttribute('data-groupind'));
+		let group = this.groupedRecords.find(gr => gr.title.toString() === event.target.getAttribute('data-groupind'));
 		group.isChecked = !group.isChecked;
 		group.records.forEach(rec => {
 			rec._isChecked = group.isChecked;
@@ -462,7 +462,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if (this.hasGrouping) {
 			let rowind = this.records.findIndex(row => row.Id === event.target.getAttribute('data-rowid'));
 			this.records[rowind]._isChecked = event.target.checked;
-			let groupInd = this.groupedRecords.findIndex(gr => gr.title === event.target.getAttribute('data-groupind'));
+			let groupInd = this.groupedRecords.findIndex(gr => gr.title.toString() === event.target.getAttribute('data-groupind'));
 			rowind = this.groupedRecords[groupInd].records.findIndex(row => row.Id === event.target.getAttribute('data-rowid'));
 			this.groupedRecords[groupInd].records[rowind]._isChecked = event.target.checked;
 			let checked = true;
@@ -862,7 +862,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		} else {
 			this.config._isFilterOptions[fieldName] = event.detail.payload ? event.detail.payload.values : event.detail;
 		}
-		this.config._isFilterOptions.isShowClearBtn = this.config._isFilterOptions.filterStr.length > 0 || (this.config._isFilterOptions.filterStrTo && this.config._isFilterOptions.filterStrTo.length > 0);
+		this.config._isFilterOptions.isShowClearBtn = this.config._isFilterOptions.filterStr?.length > 0 || (this.config._isFilterOptions.filterStrTo && this.config._isFilterOptions.filterStrTo.length > 0);
 		if (this.config._isFilterOptions.isShowClearBtn === false ) this.config._isFilterOptions.filterOption = undefined;
 		else event.target.classList.add('hideIcon');
 	}
@@ -876,7 +876,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			let cItem = this.getColItem(this.config._isFilterOptions.fieldName);
 			if (cItem) {
 				console.log('column', JSON.stringify(cItem));
-				isNeedRefilter = this.config._isFilterOptions?.filterOption === 'rg'
+				isNeedRefilter = this.config._isFilterOptions?.filterStr === "" ? true : this.config._isFilterOptions?.filterOption === 'rg'
 					? (cItem._filterStr !== this.config._isFilterOptions?.filterStr) || (cItem._filterStrTo !== this.config._isFilterOptions?._filterStrTo)
 					: ((cItem._filterStr !== this.config._isFilterOptions?.filterStr) || (this.config._isFilterOptions?.isUnary && cItem._filterOption !==this.config._isFilterOptions?.filterOption));
 				if(isNeedRefilter === undefined) isNeedRefilter = true;
