@@ -517,6 +517,9 @@ export let libs = {
 		const event = new ShowToastEvent(params);
 		scope.dispatchEvent(event);
 	},
+	isFunction: function (param) {
+        return param && (typeof (param) === 'function' || typeof param === "string" && param.trim().startsWith('function'))
+    },
 	help : function(index, articleUrl) {
 		const baseUrl = 'https://help.hypercomps.com/';
 		let labels = globalVars[Object.keys(globalVars)[0]]?._LABELS;

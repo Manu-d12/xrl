@@ -563,7 +563,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			this.config.listViewConfig[0].beforeDeleteValidation !== ""){
 			records.forEach((el)=>{
 				try{
-					let rec = eval('('+this.config.listViewConfig[0].beforeDeleteValidation+')')(el);
+					let rec = eval('('+this.config.listViewConfig[0].beforeDeleteValidation+')')(this,libs,el);
 					if(!rec){
 						console.error('Failed Validation for ',JSON.parse(JSON.stringify(el)));
 						allRecordsValidation = false;
@@ -641,7 +641,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			this.config.listViewConfig[0].beforeSaveValidation !== ""){
 			changedItems.forEach((el)=>{
 				try{
-					let rec = eval('('+this.config.listViewConfig[0].beforeSaveValidation+')')(el);
+					let rec = eval('('+this.config.listViewConfig[0].beforeSaveValidation+')')(this,libs,el);
 					if(!rec){
 						console.error('Failed Validation for ',JSON.parse(JSON.stringify(el)));
 						allRecordsValidation = false;
