@@ -24,6 +24,9 @@ global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickLi
         system.debug(LoggingLevel.Error, 'GET RELLIsts getValues ' + this.context);
 		Map<String,Schema.SObjectType> gd = Schema.getGlobalDescribe();
 		picklistValues = new VisualEditor.DynamicPickListRows();
+		picklistValues.addRow(
+        	new VisualEditor.DataRow('[External Data Source]', '::_external_::')
+        );
 		if (context.pageType == 'RecordPage') {
 			Schema.DescribeSObjectResult describeResult = gd.get(context.entityName).getDescribe();
 			List < Schema.ChildRelationship > childRelationships = describeResult.getChildRelationships();
