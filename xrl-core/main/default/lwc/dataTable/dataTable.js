@@ -342,6 +342,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if (this.hasGrouping) this.setGroupRecords();
 		this.config._originalURL = window.location.href;
 	}
+	newValValidation(newValue){
+		return newValue === 'NONE' ? null : newValue;
+	}
 
 	saveEditCallback(isNeedSave, rowName, value) {
 		if (isNeedSave === true) {
@@ -350,22 +353,24 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				this.config._inlineEditRow : JSON.parse(JSON.stringify(this.records[this.config._inlineEdit]));
 				let cItem = this.getColItem(rowName);
 				if(cItem.type === 'reference' && cItem._editOptions){
-					this.config._inlineEditRow[cItem.fieldName] = value;
-					let newVal = cItem._editOptions.find((el)=>{
-						return el.value === value;
-					});
-					if(this.config._inlineEditRow[cItem.referenceTo]){
-						this.config._inlineEditRow[cItem.referenceTo].Id = newVal.value;
-						this.config._inlineEditRow[cItem.referenceTo].Name = newVal.label;
-					}else{
-						this.config._inlineEditRow[cItem.referenceTo] ={
-							Id: newVal.value,
-							Name: newVal.label
-						};
+					this.config._inlineEditRow[cItem.fieldName] = this.newValValidation(value);
+					if(this.config._inlineEditRow[cItem.fieldName] !== null){
+						let newVal = cItem._editOptions.find((el)=>{
+							return el.value === value;
+						});
+						if(this.config._inlineEditRow[cItem.referenceTo]){
+							this.config._inlineEditRow[cItem.referenceTo].Id = newVal.value;
+							this.config._inlineEditRow[cItem.referenceTo].Name = newVal.label;
+						}else{
+							this.config._inlineEditRow[cItem.referenceTo] ={
+								Id: newVal.value,
+								Name: newVal.label
+							};
+						}
 					}
 					
 				}else{
-					this.config._inlineEditRow[rowName] = value;
+					this.config._inlineEditRow[rowName] = this.newValValidation(value);
 				}
 			} else {
 				let isNeedSaveData = this.config._inlineEditRow !== undefined && JSON.stringify(this.records[this.config._inlineEdit]) !== JSON.stringify(this.config._inlineEditRow);
@@ -596,39 +601,47 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		}
 		
 		if (this.getSelectedRecords().length > 1) {
+			//Bulk Edit
 			let table = this.template.querySelector('.extRelListTable');
 			console.log('bulk', table.offsetHeight, event.y, table, event.srcElement.parentElement.parentElement.offsetTop, this.config);
 
-				if (cItem.type === 'reference' && cItem.options === undefined) {
-					let describe = libs.getGlobalVar(this.cfg).describe[cItem.fieldName];
-					libs.remoteAction(this, 'query', {
-						isNeedDescribe: false,
-						sObjApiName: describe.referenceTo[0],
-						fields: ['Id', 'Name'],
-						callback: ((nodeName, data) => {
-							console.log('length', data[nodeName].records);
-							cItem.options = [];
-							data[nodeName].records.forEach(e => {
-								cItem.options.push({label: e.Name, value: e.Id});
-								
-							});
+			if (cItem.type === 'reference' && cItem.options === undefined) {
+				let describe = libs.getGlobalVar(this.cfg).describe[cItem.fieldName];
+				libs.remoteAction(this, 'query', {
+					isNeedDescribe: false,
+					sObjApiName: describe.referenceTo[0],
+					fields: ['Id', 'Name'],
+					callback: ((nodeName, data) => {
+						console.log('length from Citem', data[nodeName].records);
+						cItem.options = [];
+						cItem.refNodeOptions = data[nodeName].records; 
+						if(cItem.nillable === true){
+							cItem.options.push({"label":'--None--',"value":'NONE'});
+							cItem.refNodeOptions.push({"label":'--None--',"Id":'NONE'});
+						}
+						data[nodeName].records.forEach(e => {
+							cItem.options.push({label: e.Name, value: e.Id});
+							
+						});
 
-							//console.log('cItem', col.options, libs.getGlobalVar(this.cfg));
-						})
-					});
-				}
-				let left = ((event.x - 60) + 320) > screen.availWidth ? (screen.availWidth - 380) : (event.x - 60);
-				this.config._bulkEdit = {
-					rowId : calculatedInd,
-					cItem : cItem,
-					type : cItem.type,
-					value : this.records[calculatedInd][cItem.fieldName],
-					chBoxLabel : libs.formatStr('Update {0} items', [this.getSelectedRecords().length]),
-					chBoxValue : false,
-					style: libs.formatStr("position:absolute;top:{0}px;left:{1}px", [(-table.offsetHeight + event.srcElement.parentElement.parentElement.offsetTop - (this.config.pager.pagerTop === true ? 110 : 40)), left]),
-				}
-				//this.config._isBulkEdit = true;
-			} else {
+						//console.log('cItem', col.options, libs.getGlobalVar(this.cfg));
+					})
+				});
+				cItem.isEditableRegular = false;
+			}
+			let left = ((event.x - 60) + 320) > screen.availWidth ? (screen.availWidth - 380) : (event.x - 60);
+			this.config._bulkEdit = {
+				rowId : calculatedInd,
+				cItem : cItem,
+				type : cItem.type,
+				picklist: cItem.isEditableAsPicklist || cItem.type === 'reference', 
+				value : this.records[calculatedInd][cItem.fieldName],
+				chBoxLabel : libs.formatStr('Update {0} items', [this.getSelectedRecords().length]),
+				chBoxValue : false,
+				style: libs.formatStr("position:absolute;top:{0}px;left:{1}px", [(-table.offsetHeight + event.srcElement.parentElement.parentElement.offsetTop - (this.config.pager.pagerTop === true ? 110 : 40)), left]),
+			}
+			//this.config._isBulkEdit = true;
+		} else {
 				let record = this.records[calculatedInd];
 				record._isEditable = true;
 				record._focus = colName;
@@ -641,90 +654,33 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				}
 				this.config._inlineEdit = calculatedInd;
 		
-				if (this.getSelectedRecords().length > 1) {
-					let table = this.template.querySelector('.extRelListTable');
-					console.log('bulk', table.offsetHeight, event.y, table, event.srcElement.parentElement.parentElement.offsetTop, this.config);
-
-					if (cItem.type === 'reference' && cItem.options === undefined) {
-						let describe = libs.getGlobalVar(this.cfg).describe[cItem.fieldName];
-						libs.remoteAction(this, 'query', {
-							isNeedDescribe: false,
-							sObjApiName: describe.referenceTo[0],
-							fields: ['Id', 'Name'],
+				this.config.colModel.forEach(async (el) => {
+					if(el.isEditable && el.type === 'reference' && !el._editOptions){
+						el._editOptions = [];
+						if(cItem.nillable === true){
+							el._editOptions.push({"label":'--None--',"value":'NONE'});
+						}
+						await libs.remoteAction(this, 'query', {
+							fields: ['Id','Name'],
+							relField: '',
+							sObjApiName: el.referenceTo,
 							callback: ((nodeName, data) => {
-								console.log('length', data[nodeName].records);
-								cItem.options = [];
-								data[nodeName].records.forEach(e => {
-									cItem.options.push({label: e.Name, value: e.Id});
+								console.log('accountRecords', data[nodeName].records.length);
+								data[nodeName].records.forEach((e)=>{
+									el._editOptions.push({"label":e.Name,"value":e.Id});
 								});
-								cItem.refNodeOptions = data[nodeName].records; 
 							})
 						});
+						el._isLookUpEdit = true;
 					}
-					this.config._bulkEdit = {
-						rowId : calculatedInd,
-						cItem : cItem,
-						type : cItem.type,
-						value : this.records[calculatedInd][cItem.fieldName],
-						chBoxLabel : libs.formatStr('Update {0} items', [this.getSelectedRecords().length]),
-						chBoxValue : false,
-						style: libs.formatStr("position:absolute;top:{0}px;left:{1}px", [(-table.offsetHeight + event.srcElement.parentElement.parentElement.offsetTop - (this.config.pager.pagerTop === true ? 110 : 40)), (event.x - 60)]),
-					}
-					//this.config._isBulkEdit = true;
-				} else {
-					// Need get all visible references fields and get data for thise fields
-					// let record = this.records[calculatedInd];
-					// record._focus = colName;
-					// cItem.wrapClass = cItem.type === 'picklist' || cItem.type === 'multipicklist' || (cItem.type === 'reference') ? 'slds-cell-wrap' : cItem.wrapClass;
+				});
 
-					this.config.colModel.forEach(async (el) => {
-						if(el.isEditable && el.type === 'reference' && !el._editOptions){
-							el._editOptions = [];
-							await libs.remoteAction(this, 'query', {
-								fields: ['Id','Name'],
-								relField: '',
-								sObjApiName: el.referenceTo,
-								callback: ((nodeName, data) => {
-									console.log('accountRecords', data[nodeName].records.length);
-									data[nodeName].records.forEach((e)=>{
-										el._editOptions.push({"label":e.Name,"value":e.Id});
-									});
-								})
-							});
-							el._isLookUpEdit = true;
-						}
-					});
-					// cItem.wrapClass = 'slds-cell-wrap';
-
-					// if(cItem.type === 'reference' && !cItem._editOptions){
-					// 	cItem._editOptions = [];
-					// 	await libs.remoteAction(this, 'query', {
-					// 		fields: ['Id','Name'],
-					// 		relField: '',
-					// 		sObjApiName: cItem.referenceTo,
-					// 		callback: ((nodeName, data) => {
-					// 			console.log('accountRecords', data[nodeName].records.length);
-					// 			data[nodeName].records.forEach((el)=>{
-					// 				cItem._editOptions.push({"label":el.Name,"value":el.Id});
-					// 			});
-					// 		})
-					// 	});
-					// 	cItem._isLookUpEdit = true;
-					// }
-					// record._isEditable = true;
-
-
-					// this.config._inlineEdit = calculatedInd;
-
-						if (this.hasGrouping) {
-							this.groupedRecords[groupInd].records[groupRowInd]._isEditable = true;
-							this.groupedRecords[groupInd].records[groupRowInd]._focus = colName;
-						}
+				if (this.hasGrouping) {
+					this.groupedRecords[groupInd].records[groupRowInd]._isEditable = true;
+					this.groupedRecords[groupInd].records[groupRowInd]._focus = colName;
 				}
 		}
 	}
-
-		//console.log('dbl click', event, colName, rowInd);
 	}
 
 	handleDropDownEvents(event) {
@@ -1097,8 +1053,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			
 			// let origItem = origRecords.find(elem => {return elem.Id === item.Id});
 			let origItem = that.origRecords.get(item.Id);
-			item[fieldName] = v;
-			origItem[fieldName] = v;
+			item[fieldName] = that.newValValidation(v);
+			origItem[fieldName] = that.newValValidation(v);
 			if (refNode !== undefined) {
 				console.log('REFERENCE', refNode, refNodeValue);
 				item[refNode] = refNodeValue;
