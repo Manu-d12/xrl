@@ -342,6 +342,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if (this.hasGrouping) this.setGroupRecords();
 		this.config._originalURL = window.location.href;
 	}
+	newValValidation(newValue){
+		return newValue === 'NONE' ? null : newValue;
+	}
 
 	saveEditCallback(isNeedSave, rowName, value) {
 		if (isNeedSave === true) {
@@ -350,22 +353,24 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				this.config._inlineEditRow : JSON.parse(JSON.stringify(this.records[this.config._inlineEdit]));
 				let cItem = this.getColItem(rowName);
 				if(cItem.type === 'reference' && cItem._editOptions){
-					this.config._inlineEditRow[cItem.fieldName] = value;
-					let newVal = cItem._editOptions.find((el)=>{
-						return el.value === value;
-					});
-					if(this.config._inlineEditRow[cItem.referenceTo]){
-						this.config._inlineEditRow[cItem.referenceTo].Id = newVal.value;
-						this.config._inlineEditRow[cItem.referenceTo].Name = newVal.label;
-					}else{
-						this.config._inlineEditRow[cItem.referenceTo] ={
-							Id: newVal.value,
-							Name: newVal.label
-						};
+					this.config._inlineEditRow[cItem.fieldName] = this.newValValidation(value);
+					if(this.config._inlineEditRow[cItem.fieldName] !== null){
+						let newVal = cItem._editOptions.find((el)=>{
+							return el.value === value;
+						});
+						if(this.config._inlineEditRow[cItem.referenceTo]){
+							this.config._inlineEditRow[cItem.referenceTo].Id = newVal.value;
+							this.config._inlineEditRow[cItem.referenceTo].Name = newVal.label;
+						}else{
+							this.config._inlineEditRow[cItem.referenceTo] ={
+								Id: newVal.value,
+								Name: newVal.label
+							};
+						}
 					}
 					
 				}else{
-					this.config._inlineEditRow[rowName] = value;
+					this.config._inlineEditRow[rowName] = this.newValValidation(value);
 				}
 			} else {
 				let isNeedSaveData = this.config._inlineEditRow !== undefined && JSON.stringify(this.records[this.config._inlineEdit]) !== JSON.stringify(this.config._inlineEditRow);
@@ -609,11 +614,15 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					callback: ((nodeName, data) => {
 						console.log('length from Citem', data[nodeName].records);
 						cItem.options = [];
+						cItem.refNodeOptions = data[nodeName].records; 
+						if(cItem.nillable === true){
+							cItem.options.push({"label":'--None--',"value":'NONE'});
+							cItem.refNodeOptions.push({"label":'--None--',"Id":'NONE'});
+						}
 						data[nodeName].records.forEach(e => {
 							cItem.options.push({label: e.Name, value: e.Id});
 							
 						});
-						cItem.refNodeOptions = data[nodeName].records; 
 
 						//console.log('cItem', col.options, libs.getGlobalVar(this.cfg));
 					})
@@ -648,6 +657,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				this.config.colModel.forEach(async (el) => {
 					if(el.isEditable && el.type === 'reference' && !el._editOptions){
 						el._editOptions = [];
+						if(cItem.nillable === true){
+							el._editOptions.push({"label":'--None--',"value":'NONE'});
+						}
 						await libs.remoteAction(this, 'query', {
 							fields: ['Id','Name'],
 							relField: '',
@@ -1041,8 +1053,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			
 			// let origItem = origRecords.find(elem => {return elem.Id === item.Id});
 			let origItem = that.origRecords.get(item.Id);
-			item[fieldName] = v;
-			origItem[fieldName] = v;
+			item[fieldName] = that.newValValidation(v);
+			origItem[fieldName] = that.newValValidation(v);
 			if (refNode !== undefined) {
 				console.log('REFERENCE', refNode, refNodeValue);
 				item[refNode] = refNodeValue;

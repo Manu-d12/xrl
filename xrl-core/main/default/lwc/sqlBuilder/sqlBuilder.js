@@ -393,6 +393,7 @@ export default class SqlBuilder extends LightningElement {
                     isNameField: describe[key] && describe[key].nameField === true,
                     referenceTo: describe[key].referenceTo[0],
                     filterable: describe[key].filterable,
+                    nillable: describe[key].nillable,
                 };
                 fieldMap.helpText = fieldMap.fieldName +  ' (' + describe[key].type + ')'; // assigning outside to get the fieldname to be populated first
                 // the fieldname was previously used as the helptext but 
@@ -400,6 +401,11 @@ export default class SqlBuilder extends LightningElement {
                 // changing the fieldname was not an option as it is used in the code for sql queries
                 if(describe[key].type === 'picklist' || describe[key].type === 'multipicklist'){
                     fieldMap.options = [];
+                    if(describe[key].nillable){
+                        fieldMap.options.push(
+                            { label: '--None--', value: 'NONE' }
+                        )
+                    }
                     describe[key].picklistValues.forEach(field => {
                         fieldMap.options.push(
                             { label: field.label != null ? field.label : field.value, value: field.value }
