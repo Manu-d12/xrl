@@ -218,7 +218,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		this.records.forEach(r => {
 		
 			let groupName;
-			if(this.config.groupingParams.field.split('.')[1]){
+			if(this.config.groupingParams.field.split('.')[1] && r[this.config.groupingParams.field.split('.')[0]] !== undefined) {
 				groupName = r[this.config.groupingParams.field.split('.')[0]][this.config.groupingParams.field.split('.')[1]] || 'empty';
 			}else{
 				groupName = r[this.config.groupingParams.field] || 'empty';
@@ -614,7 +614,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					callback: ((nodeName, data) => {
 						console.log('length from Citem', data[nodeName].records);
 						cItem.options = [];
-						cItem.refNodeOptions = data[nodeName].records; 
+						cItem.refNodeOptions = [...data[nodeName].records]; 
 						if(cItem.nillable === true){
 							cItem.options.push({"label":'--None--',"value":'NONE'});
 							cItem.refNodeOptions.push({"label":'--None--',"Id":'NONE'});
