@@ -363,7 +363,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if(this.template.querySelector('c-Data-Table')){
 			this.template.querySelector('c-Data-Table').setUpdateInfo('• ' + validatedRecordSize + ' ' +this.config._LABELS.msg_itemsUpdated);
 		}
-		setTimeout((() => { this.template.querySelector('c-Data-Table').setUpdateInfo(''); }), 3000);
+		setTimeout((() => { this.template.querySelector('c-Data-Table')?.setUpdateInfo(''); }), 3000);
 		const toast = new ShowToastEvent({
 			title: 'Success',
 			message: validatedRecordSize + ' ' +this.config._LABELS.msg_itemsUpdated,
