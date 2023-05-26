@@ -1,7 +1,7 @@
 <template>
     <section role="dialog" tabindex="0" class="slds-modal slds-fade-in-open slds-modal_prompt" aria-modal="true">
 		<div class="slds-modal__container">
-			<header class="slds-modal__header">
+			<header class={headerStyle}>
 				<button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" data-id="cancel" style="display:block" onclick={handleClick}>
 					<svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
 						<use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#close"></use>
