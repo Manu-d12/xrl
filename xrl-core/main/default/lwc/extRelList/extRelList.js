@@ -763,6 +763,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			if(this.config.listView.id != undefined){
 				this.dialogCfg = {
 					title: this.config._LABELS.lbl_confirmDelete,
+					headerStyle: 'slds-modal__header slds-theme_error',
 					contents: [
 						{
 							isMessage: true,
@@ -1121,6 +1122,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				if(records.length > 0){
 					this.dialogCfg = {
 						title: this.config._LABELS.lbl_confirmDelete,
+						headerStyle: 'slds-modal__header slds-theme_error',
 						contents: [
 							{
 								isMessage: true,

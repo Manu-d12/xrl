@@ -167,11 +167,13 @@
 					class="placeTop" content={config._LABELS.tooltip_configShare} alternative-text={config._LABELS.altTxt_hlpUrl}>
 				</lightning-helptext>
 				<!-- Delete Config Button -->
-				<lightning-button if:false={config.dialog.saveAs} variant="destructive" label="Delete" title="Delete" icon-name="utility:delete" class="slds-m-left_x-small" data-id="dialog:config_delete" onclick={config.dialog.handleEvent}></lightning-button>
-				<lightning-helptext icon-name="utility:question" if:false={config.dialog.saveAs} 
-					onclick={config.dialog.handleHelpEvent} data-id="help:deleteView" data-url={config._LABELS.hlpUrl_deleteView}
-					class="placeTop" content={config._LABELS.tooltip_configDelete} alternative-text={config._LABELS.altTxt_hlpUrl}>
-				</lightning-helptext>
+				<template if:true={config.listView.id}>
+					<lightning-button if:false={config.dialog.saveAs} variant="destructive" label="Delete" title="Delete" icon-name="utility:delete" class="slds-m-left_x-small" data-id="dialog:config_delete" onclick={config.dialog.handleEvent}></lightning-button>
+					<lightning-helptext icon-name="utility:question" if:false={config.dialog.saveAs} 
+						onclick={config.dialog.handleHelpEvent} data-id="help:deleteView" data-url={config._LABELS.hlpUrl_deleteView}
+						class="placeTop" content={config._LABELS.tooltip_configDelete} alternative-text={config._LABELS.altTxt_hlpUrl}>
+					</lightning-helptext>
+				</template>
 				<template if:true={config.buttons} for:each={config.buttons} for:item="btn" for:index="index">
 					<lightning-button key={btn.label} variant={btn.variant} label={btn.label} data-id={btn.dataId} icon-name={btn.iconName} onclick={config.callback} class="slds-m-around_small"></lightning-button>
 				</template>

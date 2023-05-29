@@ -17,6 +17,7 @@ export default class Dialog extends LightningElement {
         this.title = this.cfg.title;
         this.contents = this.cfg.contents || [];
         this.buttons = this.cfg.buttons || [];
+        this.headerStyle = this.cfg.headerStyle || 'slds-modal__header';
         this.isLoading = false;
     }
 
