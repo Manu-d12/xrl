@@ -923,7 +923,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_configure</shortDescription>
-        <value>Configure</value>
+        <value>Configure for</value>
     </labels>
     <labels>
         <fullName>lbl_actionWithThisOrderAlreadyExists</fullName>

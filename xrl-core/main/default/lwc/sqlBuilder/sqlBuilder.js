@@ -298,9 +298,20 @@ export default class SqlBuilder extends LightningElement {
             let refObj = event.target.getAttribute('data-ref');
             if( refObj === null){
                 let orderField = event.target.getAttribute('data-val');
-                let selectedField = this.config.sqlBuilder.fields.find((el) => el.fieldName === orderField);
-                this.config.sqlBuilder.currentOrder = {field:selectedField,
-                    emptyField:this.config.sqlBuilder.emptyFieldOptions[0].value};
+                const i = this.config.sqlBuilder.orderings.findIndex(_item => _item.field.fieldName === orderField);
+                let selectedField;
+                if( i === -1 ){
+                    selectedField = this.config.sqlBuilder.fields.find((el) => el.fieldName === orderField);
+                    this.config.sqlBuilder.currentOrder = {field:selectedField,
+                        emptyField:this.config.sqlBuilder.emptyFieldOptions[0].value,
+                        sortOrder:this.config.sqlBuilder.sortOrderOptions[0].value};
+                }else{
+                    selectedField = this.config.sqlBuilder.orderings[i];
+                    this.config.sqlBuilder.currentOrder = {field:selectedField.field,
+                        emptyField:selectedField.emptyField,
+                        sortOrder:selectedField.sortOrder
+                    };
+                }
             }else{
                 if(this.config.sqlBuilder._objectStack.length <=4 ){
                     this.config.sqlBuilder._objectStack.push({relationShip:event.target.getAttribute('data-val'),referredObj:refObj});

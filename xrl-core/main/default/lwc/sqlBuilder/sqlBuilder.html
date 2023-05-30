@@ -227,10 +227,10 @@
                 </div>
                 <div class="slds-col slds-size_3-of-12">
                     <template if:true={config.sqlBuilder.currentOrder}>
-                        <div class="slds-text-heading_small"><b>{config._LABELS.lbl_configure}</b></div>
+                        <div class="slds-text-heading_small"><b>{config._LABELS.lbl_configure}</b> {config.sqlBuilder.currentOrder.field.fieldName}</div>
                         <div style="height:25rem;">
-                                <lightning-combobox if:true={config.sqlBuilder.currentOrder} data-id="sqlBuilder:ordering:sortOrder" onchange={handleBuilderEvent} options={config.sqlBuilder.sortOrderOptions} value={value} label={config._LABELS.lbl_selectSortOrder}></lightning-combobox>
-                                <lightning-combobox if:true={config.sqlBuilder.currentOrder} data-id="sqlBuilder:ordering:emptyFieldPosition" onchange={handleBuilderEvent} options={config.sqlBuilder.emptyFieldOptions} value={value} label={config._LABELS.lbl_selectEmptyFieldLocation}></lightning-combobox>
+                                <lightning-combobox if:true={config.sqlBuilder.currentOrder} data-id="sqlBuilder:ordering:sortOrder" onchange={handleBuilderEvent} options={config.sqlBuilder.sortOrderOptions} value={config.sqlBuilder.currentOrder.sortOrder} label={config._LABELS.lbl_selectSortOrder}></lightning-combobox>
+                                <lightning-combobox if:true={config.sqlBuilder.currentOrder} data-id="sqlBuilder:ordering:emptyFieldPosition" onchange={handleBuilderEvent} options={config.sqlBuilder.emptyFieldOptions} value={config.sqlBuilder.currentOrder.emptyField} label={config._LABELS.lbl_selectEmptyFieldLocation}></lightning-combobox>
                                 <br/>
                                 <button data-id="sqlBuilder:ordering:addOrdering" onclick={handleBuilderEvent} class="slds-button slds-button_brand" title={config._LABELS.title_addOrdering}>{config._LABELS.lbl_addOrdering}</button>
                         </div>
@@ -246,7 +246,7 @@
                                 <li class="slds-item" key={field.value} style="margin-top: 0px;padding:5px;">
                                     <lightning-helptext class="placeTopItem" content={field.field.helpText}></lightning-helptext>
                                     &nbsp;{field.field.label} {field.sortOrder} {field.emptyField} 
-                                    <lightning-icon style="float:right;" size="x-small" data-id="sqlBuilder:ordering:delete" data-val={field.field.fieldName} onclick={handleBuilderEvent} icon-name="utility:delete" alternative-text="Delete" title="Delete"></lightning-icon>
+                                    <lightning-icon style="float:right;cursor:pointer" size="x-small" data-id="sqlBuilder:ordering:delete" data-val={field.field.fieldName} onclick={handleBuilderEvent} icon-name="utility:delete" alternative-text="Delete" title="Delete"></lightning-icon>
                                 </li>
                             </template>
                         </ul>
