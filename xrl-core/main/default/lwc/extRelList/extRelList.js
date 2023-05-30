@@ -1251,16 +1251,26 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 	}
 	handleHelpEvent(event){
-		let val = event.target.getAttribute('data-id');
-		let url = event.target.getAttribute('data-url') ? event.target.getAttribute('data-url') : undefined;
-		let tabNo = this.config._tabs.currentOpenedTab;
-		//tab no = 1 denotes the field selection tab
-		if(tabNo === "1" && this.config._tabs.sqlBuilderTab !== undefined){
-			tabNo = this.config._tabs.sqlBuilderTab;
+		try{
+			let val = event.target.getAttribute('data-id');
+			let url = event.target.getAttribute('data-url') ? event.target.getAttribute('data-url') : undefined;
+			if(val ==='help:extRelList'){
+				libs.help(val,undefined);
+				return;
+			}
+			let tabNo = this.config._tabs?.currentOpenedTab;
+			//tab no = 1 denotes the field selection tab
+			if(tabNo === "1" && this.config._tabs?.sqlBuilderTab !== undefined){
+				tabNo = this.config._tabs?.sqlBuilderTab;
+			}
+			val = 'help:' + tabNo;
+			console.log('Help Id ',val);
+			libs.help(val, url);
+		}catch(e){
+			console.log('Error in handleHelpEvent:', e);
+			//opening index url of help page
+			libs.help('help:extRelList', undefined);
 		}
-		val = 'help:' + tabNo;
-		console.log('Help Id ',val);
-		libs.help(val, url);
 	}
 	handleFlowStatusChange(event) {
 		console.log('FLOW', event.detail.status);
