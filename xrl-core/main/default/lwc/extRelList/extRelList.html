@@ -4,7 +4,9 @@
 			<div class="slds-grid slds-wrap">
 				<div class="slds-col slds-grow-none slds-col_bump-right">
 					<h3 slot="title">
-						<img src={config.iconName} alt={config.sObjLabel} style={config.iconStyle}>
+						<img if:true={config.isIconUrl} src={config.iconName} alt={config.sObjLabel} style={config.iconStyle}>
+						<lightning-icon if:false={config.isIconUrl} icon-name={config.iconName} size="medium" style="margin-left:5px;"></lightning-icon>
+						<span if:false={config.isIconUrl}> &nbsp; </span>
 						<span style="font-size: 1.5em;font-weight: 700;">{gridHeader}</span>
 					</h3>
 				</div>

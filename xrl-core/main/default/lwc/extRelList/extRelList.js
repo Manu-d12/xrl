@@ -114,10 +114,10 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		libs.getGlobalVar(this.name).componentWidth = this.flexipageRegionWidth;
 		this.config.describe = data[cmd].describe ? JSON.parse(data[cmd].describe) : {};
 		this.config.describeObject = data[cmd].describeSObject ? JSON.parse(data[cmd].describeSObject) : {};
-		libs.getGlobalVar(this.name).iconName = data[cmd].iconMap.iconURL;
-		libs.getGlobalVar(this.name).iconStyle = data[cmd].iconMap.iconURL.includes('img/icon') ? 'width:32px;height:32px;background-color: #d8c760;margin: 10px;'
-		 : 'width:32px;height:32px;margin: 10px;';
-		 this.config.actionsBar = {};
+		libs.getGlobalVar(this.name).iconName = data[cmd].iconMap.iconURL === undefined ? "/img/icon/t4v35/standard/custom_120.png" : data[cmd].iconMap.iconURL;
+		libs.getGlobalVar(this.name).iconStyle = libs.getGlobalVar(this.name).iconName?.includes('custom_120.png') ? 'width:32px;height:32px;margin: 5px;background-color:#d8c760;' : 'width:32px;height:32px;margin: 5px;';
+		this.config.isIconUrl = data[cmd].iconMap.iconURL?.includes('https') || libs.getGlobalVar(this.name).iconName?.includes('custom_120.png');
+		this.config.actionsBar = {};
 
 		let adminConfig = (data[cmd].baseConfig) ? JSON.parse(data[cmd].baseConfig) : [];
 		let userConfig = (data[cmd].userConfig) ? JSON.parse(JSON.stringify(data[cmd].userConfig)) : [];
