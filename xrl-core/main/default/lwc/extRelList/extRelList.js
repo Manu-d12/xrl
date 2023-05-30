@@ -219,7 +219,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		// }
 		console.log('ListViews ', data[cmd].listViews);
 		if(data[cmd].listViews.length !== 0){
-			this.listViews = data[cmd].listViews.map(v => {return {label: v.name ? v.name + ' - ' + v.createdBy : v.name, value: v.name};});		
+			this.listViews = data[cmd].listViews.map(v => {return {label: v.label ? v.label + ' - ' + v.createdBy : v.name, value: v.name};});		
 		}else{
 			this.config.listView = {
 				'hasEditAccess':true
@@ -725,7 +725,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			}
 			this.config._tabs = {};
 			this.config.dialog = {
-				"title": this.config.userInfo.isAdminAccess === true ? this.config._LABELS.title_listViewConfiguration + ' ' +  this.config?.listView?.name: this.config._LABELS.title_selectFieldToDisplay + ' ' +  this.config?.listView?.name,
+				"title": this.config.userInfo.isAdminAccess === true ? this.config._LABELS.title_listViewConfiguration + ' ' +  this.config?.listView?.label: this.config._LABELS.title_selectFieldToDisplay + ' ' +  this.config?.listView?.label,
 				"variant": variant,
 				"css": 'slds-modal__header slds-theme_{1} slds-theme_alert-texture'.replace('{1}', variant),
 				"options": libs.sortRecords(fields, 'label', true),
@@ -953,13 +953,15 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			this.config.dialog.title = this.config.userInfo.isAdminAccess === true ? this.config._LABELS.title_listViewConfiguration + ' ' +  this.config?.listView?.name: this.config._LABELS.title_selectFieldToDisplay + ' ' +  this.config?.listView?.name;
 			this.config.dialog.saveAs = false;
 		}
-		if (val === 'dialog:saveAsName') {
-			this.config.dialog.listViewName = event.target.value.substring(0,20);
-		}
+		//HYPER-455
+		// if (val === 'dialog:saveAsName') {
+		// 	this.config.dialog.listViewName = event.target.value.substring(0,20);
+		// }
 		if (val === 'dialog:saveAsLabel') {
 			this.config.dialog.listViewLabel = event.target.value.substring(0,20);
 		}
 		if (val === 'dialog:saveAsFinish') {
+			this.config.dialog.listViewName = libs.uuidv4(); //HYPER-455
 			console.log('SaveAs Finish', this.config.dialog.listViewName);
 			console.log(JSON.parse(JSON.stringify(this.config.dialog)));
 			//
