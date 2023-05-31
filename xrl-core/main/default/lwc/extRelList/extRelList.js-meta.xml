@@ -11,15 +11,12 @@
     <targetConfigs>
         <targetConfig targets="lightning__RecordPage">
             <property required="true" name="apiName" type="String" label="Related List" description="Choose Needed RelatedList." datasource="apex://getRelListsPicklist"/>
-            <property required="true" name="name" type="String" label="Uniq name" description="Enter uniq name of RelatedList."/>
         </targetConfig>
         <targetConfig targets="lightning__HomePage">
             <property required="true" default="" name="apiName" type="String" label="Related List" description="Choose Needed RelatedList." datasource="apex://getRelListsPicklist"/>
-            <property required="true" default="" name="name" type="String" label="Uniq name" description="Enter uniq name of RelatedList."/>
         </targetConfig>
         <targetConfig targets="lightning__AppPage">
             <property required="true" default="" name="apiName" type="String" label="Related List" description="Choose Needed RelatedList." datasource="apex://getRelListsPicklist"/>
-            <property required="true" default="" name="name" type="String" label="Uniq name" description="Enter uniq name of RelatedList."/>
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>

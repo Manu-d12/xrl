@@ -455,6 +455,7 @@ global with sharing class infrastructure {
 	private static object delRecords(map < string, object > data) {
 		string sObjApiName = (string) data.get('sObjApiName');
 		Type T = type.forName('list<' + sObjApiName + '>');
+		boolean isRollback = (boolean) data.get('rollback') == true;
 		sObject[] records = (sObject[]) JSON.deserialize(JSON.serialize(data.get('records')), T);
 
 		map < string, object > result = new map < string, object > ();
