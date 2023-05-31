@@ -460,7 +460,7 @@ global with sharing class infrastructure {
 
 		map < string, object > result = new map < string, object > ();
 		Savepoint sp = Database.setSavepoint();
-		Database.DeleteResult[] srs = Database.upsert(records, isRollback);
+		Database.DeleteResult[] srs = Database.delete(records, isRollback);
         for (Database.DeleteResult sr : srs) {
 			if (!sr.isSuccess()) {
 				String error = '';
