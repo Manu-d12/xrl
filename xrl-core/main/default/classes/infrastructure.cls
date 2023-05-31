@@ -245,7 +245,7 @@ global with sharing class infrastructure {
 			singleView.put('hasEditAccess', (extRecordAccess.get((string) singleView.get('id'))).get('HasEditAccess'));
 		}
 		result.put('listViews', listViews);
-		result.put('iconMap', retrieveIconForObject(sObjApiName));
+		result.put('iconMap', getIconName(sObjApiName));
 
 		return result;
 	}
@@ -818,82 +818,36 @@ global with sharing class infrastructure {
 		return groupIds;
 	}
 
-	/***
-	 * Explores the schema of the soject passed in and finds lightning icon style and image url for sObject
-	 * If nothing is found, defaults to the custom icon
-	 *
-	 * @param   sObjectTypeName       the sObject to find the icon for
-	 * @return  Map<String,String>    Map of properties about the icon to be consumed by the front end.
-	 *                                Right now, returns values for keys: iconStyle,iconURL
-	 */
-	private static Map < String, String > retrieveIconForObject(String sObjectName) {
-		String iconStyle;
-		String iconURL;
-		String iconTag;
+	private static Map < String, String > getIconName(String sObjectName){
 		Map < String, String > iconPropertyMap = new Map < String, String > ();
-		List < Schema.DescribeTabSetResult > tabSetDesc = Schema.describeTabs();
-		List < Schema.DescribeTabResult > tabDesc = new List < Schema.DescribeTabResult > ();
-		List < Schema.DescribeIconResult > iconDesc = new List < Schema.DescribeIconResult > ();
+        String u;
+        List<Schema.DescribeTabSetResult> tabSetDesc = Schema.describeTabs();
+        List<Schema.DescribeTabResult> tabDesc = new List<Schema.DescribeTabResult>();
+        List<Schema.DescribeIconResult> iconDesc = new List<Schema.DescribeIconResult>();
 
-		for (Schema.DescribeTabSetResult tsr: tabSetDesc) {
-			tabDesc.addAll(tsr.getTabs());
-		tabDesc.addAll(tsr.getTabs()); 
-			tabDesc.addAll(tsr.getTabs());
-		tabDesc.addAll(tsr.getTabs()); 
-			tabDesc.addAll(tsr.getTabs());
-		tabDesc.addAll(tsr.getTabs()); 
-			tabDesc.addAll(tsr.getTabs());
-		tabDesc.addAll(tsr.getTabs()); 
-			tabDesc.addAll(tsr.getTabs());
-		}
-		for (Schema.DescribeTabResult tr: tabDesc) {
-			if (sObjectName == tr.getSobjectName()) {
-				system.debug(tr.getIcons());
-				if (!tr.getIcons().isEmpty()) {
-					iconDesc.addAll(tr.getIcons());
-				} else {
-					if (tr.isCustom() == true) {
-						iconStyle = 'slds-icon-standard-custom';
-						iconURL = '/img/icon/t4v35/standard/custom_120.png';
-					} else {
-						iconStyle = 'slds-icon-standard-' + sObjectName.toLowerCase();
-						iconURL = '/img/icon/t4v35/standard/' + sObjectName.toLowerCase() + '_120.png';
-					}
-				}
-			}
-		}
-		for (Schema.DescribeIconResult ir: iconDesc) {
-			if (ir.getTheme() == 'custom' && !ir.getContentType().startsWith('image/svg')) { //custom icon thats not an svg
-				iconTag = 'custom';
-				iconURL = ir.getURL();
-				iconStyle = 'slds-icon-standard-custom';
+        for(Schema.DescribeTabSetResult tsr : tabSetDesc) { tabDesc.addAll(tsr.getTabs()); }
+
+        for(Schema.DescribeTabResult tr : tabDesc) {
+            if( sObjectName == tr.getSobjectName() ) {
+                if( tr.isCustom() == true ) {
+                    iconDesc.addAll(tr.getIcons());
+                } else {
+                    u = 'standard:' + sObjectName.toLowerCase();
+                }
+            }
+        }
+        for (Schema.DescribeIconResult ir : iconDesc) {
+            if (ir.getContentType() == 'image/svg+xml'){
+                u = 'custom:' + ir.getUrl().substringBetween('custom/','.svg').substringBefore('_');
+                break;
+            }else if(ir.getContentType() == 'image/png'){
+				u = ir.getUrl();
 				break;
-			} else if (ir.getWidth() == 120 && ir.getTheme() == 'theme4' && ir.getContentType() == 'image/png') { //large lightning icon image
-				if (ir.getURL().contains('/custom/')) { //Icon is from the Custom Sprite
-					iconTag = ir.getURL().substringBetween('custom/', '.png').substringBefore('_');
-					iconURL = '/img/icon/t4v35/custom/' + iconTag + '_120.png';
-					iconStyle = 'slds-icon-custom-' + iconTag;
-					break;
-				} else if (ir.getURL().contains('/standard/')) { //Icon is from the Standard Sprite
-					iconTag = ir.getURL().substringBetween('standard/', '.png').substringBefore('_');
-					iconURL = '/img/icon/t4v35/standard/' + iconTag + '_120.png';
-					iconStyle = 'slds-icon-standard-' + iconTag;
-					break;
-				}
 			}
-		}
-		//if no icons are found, just default to the Custom lightning icon
-		if (iconStyle == null) {
-			iconStyle = 'slds-icon-standard-custom';
-			iconURL = '/img/icon/t4v35/standard/custom_120.png';
-			iconTag = 'No Lightning Icon Found';
-		}
-		//return a map with our properties for the front end
-		iconPropertyMap.put('iconStyle', iconStyle);
-		iconPropertyMap.put('iconURL', iconURL);
-
-		return iconPropertyMap;
-	}
+        }
+		iconPropertyMap.put('iconURL', u);
+        return iconPropertyMap;
+    }
 
 	private static Map<String,Object> objectList() {
 		Map < String, Schema.SObjectType > gd = Schema.getGlobalDescribe();
