@@ -459,17 +459,18 @@ global with sharing class infrastructure {
 
 		map < string, object > result = new map < string, object > ();
 		Savepoint sp = Database.setSavepoint();
-		try { 
-			delete records;
-			result.put('success', 'Success');
-			result.put('length',records.size());
-			result.put('error', 'Success: The following exception has occurred: ');
-		} catch(DmlException e) {
-			Database.rollback(sp);
-			System.debug('The following exception has occurred: ' + e.getMessage());
-			result.put('error', 'Error: The following exception has occurred: ' + e.getMessage());
+		Database.DeleteResult[] srs = Database.upsert(records, isRollback);
+        for (Database.DeleteResult sr : srs) {
+			if (!sr.isSuccess()) {
+				String error = '';
+				for (Database.Error err : sr.getErrors()) {
+					// if(isRollback == true)
+					// 	Database.rollback(sp);
+					throw new InfrastructureException(null,String.valueOf(err.getStatusCode()) + ': ' + err.getMessage() , Infrastructure.exceptionType.GENERAL);
+				}
+			}
 		}
-		return result;
+		return records;
 	}
 
 	private static object requestFeature(map < string, object > data) {

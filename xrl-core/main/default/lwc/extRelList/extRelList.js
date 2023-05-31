@@ -620,7 +620,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	async deleteRecords(chunkIn){
-		let chunk = this.stripChunk(chunkIn);
+		let chunk = chunkIn.map((item)=>{return {Id:item.Id}});
 		try{
 			const a = await libs.remoteAction(this, 'delRecords', { records: chunk, 
 				sObjApiName: this.config.sObjApiName
