@@ -648,7 +648,8 @@ export let libs = {
 	historyGrid: function(apiName){
 		//apiName.split('::')[2].split('.')[1] === false means that it is the current object's history
 		//otherwise it is the history grid for parent child.
-		let fieldName = apiName.split('::')[2].split('.')[1] ? apiName.split('::')[2].split('.')[0] + ".Id"
+		let isChildObjectHistory = apiName.split('::')[2].split('.')[1] !== undefined;
+		let fieldName = isChildObjectHistory ? apiName.split('::')[2].split('.')[0] + "Id"
 		: apiName.split('::')[2].split('.')[0].slice(0,-2) + ".Id";
 		let defFields = [
 			{
@@ -659,6 +660,7 @@ export let libs = {
 				"isSortable": true,
 				"isNameField": false,
 				"isEditable": false,
+				"isHidden": true,
 			},
 			{
 				"label": "New Value",
@@ -701,15 +703,7 @@ export let libs = {
 				"isEditable": false,
 			},
 			{
-				"label": apiName.split('::')[2].split('.')[0] +  " ID",
-				"fieldName": fieldName,
-				"type": "string",
-				"referenceTo": apiName.split('::')[2].split('.')[0],
-				"isFilterable": true,
-				"isSortable": true,
-			},
-			{
-				"label": "Full Name",
+				"label": "Changed By",
 				"fieldName": "CreatedBy.Name",
 				"css": "slds-item",
 				"type": "string",
@@ -721,6 +715,16 @@ export let libs = {
 				"isSortable": true,
 			}
 		];
+		if(isChildObjectHistory){
+			defFields.splice(0,0,{
+				"label": apiName.split('::')[2].split('.')[0] +  " ID",
+				"fieldName": fieldName,
+				"type": "reference",
+				"referenceTo": apiName.split('::')[2].split('.')[0],
+				"isFilterable": true,
+				"isSortable": true,
+			});
+		}
 		return defFields;
 	},
 	formatAddress: function(addressObject,locale){
