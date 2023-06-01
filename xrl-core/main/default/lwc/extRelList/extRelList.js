@@ -232,7 +232,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		this.config.listViewConfig[0]?.colModel?.forEach(e => {
 			let describe = this.config.describe[e.fieldName];
 			if (describe && describe.type === 'reference') {
-				this.config.fields.push(describe.relationshipName ? describe.relationshipName + '.Name' : e.fieldName);
+				let nameField = describe.relationshipName === 'Case' ? '.CaseNumber' : '.Name';
+				this.config.fields.push(describe.relationshipName ? describe.relationshipName + nameField : e.fieldName);
 				if (e.locked) this.config.lockedFields.push(describe.relationshipName ? describe.relationshipName + '.Name' : e.fieldName);
 			}
 			this.config.fields.push(e.fieldName);

@@ -439,7 +439,7 @@ export default class SqlBuilder extends LightningElement {
                 fieldMap.isFilterable = true;
                 fieldMap.isSortable = true;
                 fields.push(fieldMap);
-                if (describe[key].type === 'reference' && describe[key].relationshipName !== null) {
+                if (!this.config.isHistoryGrid && describe[key].type === 'reference' && describe[key].relationshipName !== null) {
                     fieldMap = { 
                         label: describe[key].label + ' > ', 
                         fieldName: describe[key].relationshipName,
