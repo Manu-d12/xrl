@@ -279,32 +279,124 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	loadRecords() {
-		libs.remoteAction(this, 'query', {
+		this.loadBulkData();
+		// libs.remoteAction(this, 'query', {
+		// 	isNeedDescribe: true,
+		// 	sObjApiName: this.config.sObjApiName,
+		// 	relField: this.config.relField,
+		// 	addCondition: libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name),
+		// 	orderBy: this.config.listViewConfig[0].orderBy,
+		// 	fields: this.config.fields,
+		// 	listViewName: this.config?.listView?.name,
+		// 	callback: ((nodeName, data) => {
+		// 		console.log('length', data[nodeName].records);
+				
+		// 		libs.getGlobalVar(this.name).records = data[nodeName].records.length > 0 ? data[nodeName].records : undefined;
+		// 		if(this.config.listViewConfig[0].afterloadTransformation !== undefined && this.config.listViewConfig[0].afterloadTransformation !== ""){
+		// 			try {
+    	//                 this.config.records = eval('(' + this.config.listViewConfig[0].afterloadTransformation + ')')(this, libs.getGlobalVar(this.name).records);
+        // 	        } catch(err){
+        //     	        console.log('EXCEPTION', err);
+        //         	}
+		// 		} else {
+        //             this.config.records = libs.getGlobalVar(this.name).records;
+		// 		}
+		// 		this.allRecords = this.config.records;
+		// 		this.config.listViewConfig[0]._loadCfg = this.loadCfg.bind(this);
+				
+		// 		console.log('loadRecords', libs.getGlobalVar(this.name));
+		// 		this.generateColModel();
+		// 	})
+		// });
+	}
+	async loadBulkData(){
+		let soqlRel = '';
+		if(this.config.relField !== undefined && this.config.relField !== ''){
+			soqlRel = " WHERE " + this.config.relField + "='" + this.recordId + "'";
+		}
+		await libs.remoteAction(this, 'customSoql', {
+			isNeedDescribe: true,
+			sObjApiName: this.config.sObjApiName,
+			SOQL: 'SELECT Count(Id) totalRecordsCount FROM ' + this.config.sObjApiName + soqlRel,
+			isAggregateResult: true,
+			callback: ((nodeName, data) => {
+				console.log('Returned records', data[nodeName].records);
+				this.config.totalRecordsCount = data[nodeName].records[0].totalRecordsCount;
+			})
+		});
+		console.log('Total records', this.config.totalRecordsCount);
+		this.config.listOfRecordIds = [];
+		this.config.fetchIdLimit = 49950;
+		for (let i = 1; i < ((parseInt(this.config.totalRecordsCount) / parseInt(this.config.fetchIdLimit)) + 1);i++) {
+			if(i === 1) await this.getBulkRecordsId('',this.config.fetchIdLimit);
+			else{
+				await this.getBulkRecordsId(" AND Id > '" + this.config.listOfRecordIds[parseInt(this.config.listOfRecordIds.length)-1].Id+"'",this.config.fetchIdLimit);
+			}
+			console.log('Verifying loop', i);
+		}
+		console.log('All records Id fetched successfully', this.config.listOfRecordIds.length);
+		this.config.loadRecordsChunkSize = 20000;
+		this.config.listOfBulkRecords = [];
+		let startIndex = 0;
+		let endIndex = parseInt(this.config.loadRecordsChunkSize) - 1;
+		for (let i = 1; i < ((parseInt(this.config.totalRecordsCount) / parseInt(this.config.loadRecordsChunkSize)) + 1);i++) {
+			let recordsIds = [];
+			let chunkRecords = this.config.listOfRecordIds.slice(startIndex, endIndex);
+			chunkRecords.forEach(e => {
+				recordsIds.push(e.Id);
+			});
+			startIndex = startIndex + parseInt(recordsIds.length);
+			endIndex = endIndex + parseInt(recordsIds.length);
+			let con = libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name);
+			let condition = " AND Id IN ('" + recordsIds.join("','") + "') " + (con !== undefined ? con : '');
+			// console.log('condition',condition, i);
+			await this.getBulkRecords(this.config.fields,this.config.sObjApiName,condition,this.config.listViewConfig[0].orderBy,this.config.loadRecordsChunkSize);
+		}
+		console.log('All records fetched successfully', JSON.parse(JSON.stringify(this.config.listOfBulkRecords)));
+		libs.getGlobalVar(this.name).records = JSON.parse(JSON.stringify(this.config.listOfBulkRecords)).length > 0 ? JSON.parse(JSON.stringify(this.config.listOfBulkRecords)) : undefined;
+		if(this.config.listViewConfig[0].afterloadTransformation !== undefined && this.config.listViewConfig[0].afterloadTransformation !== ""){
+			try {
+				this.config.records = eval('(' + this.config.listViewConfig[0].afterloadTransformation + ')')(this, libs.getGlobalVar(this.name).records);
+			} catch(err){
+				console.log('EXCEPTION', err);
+			}
+		} else {
+			this.config.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.name).records));
+		}
+		this.allRecords = this.config.records;
+		this.config.listViewConfig[0]._loadCfg = this.loadCfg.bind(this);
+		
+		console.log('loadRecords', libs.getGlobalVar(this.name));
+		this.generateColModel();
+	}
+	async getBulkRecordsId(whereCondition,limit){
+		await libs.remoteAction(this, 'query', {
 			isNeedDescribe: true,
 			sObjApiName: this.config.sObjApiName,
 			relField: this.config.relField,
-			addCondition: libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name),
-			orderBy: this.config.listViewConfig[0].orderBy,
-			fields: this.config.fields,
+			addCondition: whereCondition,
+			orderBy: ' ORDER BY Id ASC',
+			fields: ['Id'],
 			listViewName: this.config?.listView?.name,
 			callback: ((nodeName, data) => {
-				console.log('length', data[nodeName].records);
-				
-				libs.getGlobalVar(this.name).records = data[nodeName].records.length > 0 ? data[nodeName].records : undefined;
-				if(this.config.listViewConfig[0].afterloadTransformation !== undefined && this.config.listViewConfig[0].afterloadTransformation !== ""){
-					try {
-    	                this.config.records = eval('(' + this.config.listViewConfig[0].afterloadTransformation + ')')(this, libs.getGlobalVar(this.name).records);
-        	        } catch(err){
-            	        console.log('EXCEPTION', err);
-                	}
-				} else {
-                    this.config.records = libs.getGlobalVar(this.name).records;
-				}
-				this.allRecords = this.config.records;
-				this.config.listViewConfig[0]._loadCfg = this.loadCfg.bind(this);
-				
-				console.log('loadRecords', libs.getGlobalVar(this.name));
-				this.generateColModel();
+				console.log('record Ids chunk size', data[nodeName].records);
+				this.config.listOfRecordIds = this.config.listOfRecordIds.concat(data[nodeName].records);
+			})
+		});
+	}
+	async getBulkRecords(fields,sObjApiName,whereCondition,orderBy,limit){
+		await libs.remoteAction(this, 'query', {
+			isNeedDescribe: true,
+			sObjApiName: this.config.sObjApiName,
+			relField: this.config.relField,
+			addCondition: whereCondition,
+			orderBy: this.config.listViewConfig[0].orderBy === undefined ? '' : this.config.listViewConfig[0].orderBy,
+			fields: this.config.fields,
+			limit: 'LIMIT ' + limit,
+			listViewName: this.config?.listView?.name,
+			callback: ((nodeName, data) => {
+				console.log('records chunk size', data[nodeName].records);
+				this.config.listOfBulkRecords = this.config.listOfBulkRecords.concat(data[nodeName].records);
 			})
 		});
 	}

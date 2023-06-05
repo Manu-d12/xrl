@@ -164,7 +164,7 @@ global with sharing class infrastructure {
 		}
 		SOQL += String.isNotBlank(orderBy) ? ' ' + orderBy : '';
 		SOQL += String.isNotBlank(limitCondition) ? ' ' + limitCondition : ' LIMIT 49950'; //putting max limit of 50000
-
+		system.debug(LoggingLevel.Error, 'SOQL Limit ' + String.valueOf(relField));
 		//if (string.isBlank(SOQL)) throw new core.appException(null, string.format(core.appLabels.get('errCmdParams'), new string[]{'executeAnon','apexCode'}), core.ExceptionType.API);
 		system.debug(LoggingLevel.Error, 'SOQL ' + SOQL);
 
@@ -192,20 +192,26 @@ global with sharing class infrastructure {
 	private static object customSoql(map < string, object > data) {
 		string SOQL = (string) data.get('SOQL');
 		string sObjApiName = (string) data.get('sObjApiName');
+		boolean isAggregateResult = data.get('isAggregateResult') != null ? (boolean) data.get('isAggregateResult') : false;
 		boolean isNeedDescribe = true;
 		map < string, object > result = new map < string, object > ();
 		result.put('SOQL', SOQL);
 
 		result.putAll(getDescribeData(isNeedDescribe,sObjApiName));
 
-		sObject[] records = database.query(SOQL);
-		SObjectAccessDecision decision = Security.stripInaccessible(AccessType.READABLE, records);
+		if(isAggregateResult == false){
+			sObject[] records = database.query(SOQL);
+			SObjectAccessDecision decision = Security.stripInaccessible(AccessType.READABLE, records);
 
-		// Throw an exception if any data was stripped
-		if (!decision.getModifiedIndexes().isEmpty()) {
-			throw new InfrastructureException(null,'Data was stripped', Infrastructure.exceptionType.GENERAL);
+			// Throw an exception if any data was stripped
+			if (!decision.getModifiedIndexes().isEmpty()) {
+				throw new InfrastructureException(null,'Data was stripped', Infrastructure.exceptionType.GENERAL);
+			}
+			result.put('records', records);
+		}else{
+			AggregateResult[] records = database.query(SOQL);
+			result.put('records', records);
 		}
-		result.put('records', records);
 		return result;
 	}
 
