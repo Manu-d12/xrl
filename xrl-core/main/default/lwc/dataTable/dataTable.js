@@ -845,7 +845,11 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			}
 			this.config._isFilterOptions = undefined;
 			if (isNeedRefilter) {
-				this.filterTable();
+				this.config.isSpinner = true;
+				setTimeout((() => { 
+					this.filterTable();
+				}), 10);
+				// this.filterTable();
 				console.log('column', JSON.stringify(cItem));
 			}
 
@@ -909,6 +913,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		this.setNumPages(this.config.pager.pageSize);
 		
 		if (this.hasGrouping) this.setGroupRecords();
+		this.config.isSpinner = false;
 	}
 
 
