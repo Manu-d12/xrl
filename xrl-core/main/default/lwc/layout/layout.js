@@ -68,6 +68,7 @@ export default class Layout extends LightningElement {
 				if(el.cmpName === 'serversideFilter') this.components.push({isServerFilter:true,key:'dataTable'+index});
 				if(el.cmpName === 'chart') this.components.push({isChart:true,key:'chart'+index});
 				if(el.cmpName === 'chevron') this.components.push({isChevron:true,key:'chevron'+index});
+				if(el.cmpName === 'actionBar') this.components.push({isActionBar:true,key:'actionBar'+index});
 			});
 			// this.config.listViewName = jsonDetails[0].name;
 			// this.config.sObjApiName = jsonDetails[0].sObjApiName;
@@ -220,9 +221,10 @@ export default class Layout extends LightningElement {
 			this.config.rows = this.config.tabularConfig.tableDefinition.rows;
 			this.config.cols = this.config.tabularConfig.tableDefinition.cols;
 			let colSize = 12 / parseInt(this.config.cols);
+			let sortedDataModel = this.config.tabularConfig.dataModel.toSorted((a, b) => {return a.cmpName === 'actionBar' ? 1 : 0;});
 
 			// Loop through data model components
-			for (const cmp of this.config.tabularConfig.dataModel) {
+			for (const cmp of sortedDataModel) {
 				
 				cmp.class = this.config.cols != 12 ? `slds-col slds-size_${cmp.colSize || colSize}-of-12` : 'slds-col slds-size_12-of-12';
 
@@ -242,6 +244,7 @@ export default class Layout extends LightningElement {
 				cmp.isServerFilter = cmp.cmpName === 'serversideFilter';
 				cmp.isChart = cmp.cmpName === 'chart';
 				cmp.isChevron = cmp.cmpName === 'chevron';
+				cmp.isActionBar = cmp.cmpName === 'actionBar';
 		
 				// Set component configuration
 				this.name = cmp.uniqueName;
@@ -274,6 +277,16 @@ export default class Layout extends LightningElement {
 				} else if (cmp.isChevron) {
 					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
 						this.config.chevronConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig) : [];
+					} });
+				} else if (cmp.isActionBar) {
+					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
+						this.config.actionsBar = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig) : [];
+						cmp.config = {
+							'actions': this.config.actionsBar?.actions || [],
+							'_handleEvent': this.handleEvent.bind(this),
+							'_cfgName': cmp.tableName,
+							'_barName': this.name
+						};
 					} });
 				}
 			}
@@ -363,5 +376,84 @@ export default class Layout extends LightningElement {
 				chart?.resizeChart(container.offsetWidth, container.offsetHeight);
 			}
 		});
+	}
+
+	handleEvent(event, cfg) {
+		console.log('action', event, event.target, JSON.parse(JSON.stringify(cfg)));
+		let actionId = event?.target?.getAttribute('data-id');
+
+		if (actionId.startsWith('std:')) {
+			this.handleStandardAction(event, cfg);
+		}		
+		if (actionId.startsWith('custom:')) {
+			this.handleCustomAction(event, cfg);
+		}
+	}
+
+	handleStandardAction(event, cfg) {
+		let actionId = event?.target?.getAttribute('data-id');
+
+		let table = libs.getGlobalVar(cfg._cfgName).listViewConfig[0];
+		let action = cfg.actions.find(act => act.actionId === actionId);
+
+		if (actionId === 'std:delete') {
+			let records = table._selectedRecords();
+			if(records.length > 0){
+				this.dialogCfg = {
+					title: this.config._LABELS.lbl_confirmDelete,
+					contents: [
+						{
+							isMessage: true,
+							name: 'deleteConfirm',
+							text: this.config._LABELS.msg_deleteConfirm1 + ' ' + records.length + ' ' + this.config._LABELS.msg_deleteConfirm2
+						}
+					],
+					buttons: [
+						{
+							name: 'cancel',
+							label: this.config._LABELS.lbl_cancel,
+							variant: 'neutral'
+						},
+						{
+							name: 'delete',
+							label: this.config._LABELS.title_delete,
+							variant: 'brand',
+							class: 'slds-m-left_x-small'
+						}
+					],
+					data_id: cfg._cfgName + ':' + cfg._barName + ':' + actionId
+				};
+				this.showDialog = true;
+			} else {
+				libs.showToast(this, {
+					title: 'Error',
+					message: this.config._LABELS.lbl_deleteNoRecordSelectedError,
+					variant: 'error'
+				});
+			}
+		}
+	}
+
+	handleCustomAction(event, cfg) {
+		let actionId = event?.target?.getAttribute('data-id');
+
+		let table = libs.getGlobalVar(cfg._cfgName).listViewConfig[0];
+		let action = cfg.actions.find(act => act.actionId === actionId);	
+
+		if (action.validationCallBack) {
+			let valid = eval('(' + action.validationCallBack + ')')(table._selectedRecords(), this, libs);
+			// error dialog
+		}
+
+		// confirmation dialog
+		// data input dialog
+		// action callback
+		// completed callback	}
+
+	handleEventDialog(event) {
+		console.log('dialog', this.dialogCfg.data_id, event, JSON.parse(JSON.stringify(event.detail)));		
+		if (event.detail.action === 'cancel') {
+			this.showDialog = false;
+		}
 	}
 }
