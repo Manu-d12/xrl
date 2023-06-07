@@ -448,7 +448,8 @@ export default class Layout extends LightningElement {
 		// confirmation dialog
 		// data input dialog
 		// action callback
-		// completed callback	}
+		// completed callback	
+	}
 
 	handleEventDialog(event) {
 		console.log('dialog', this.dialogCfg.data_id, event, JSON.parse(JSON.stringify(event.detail)));		

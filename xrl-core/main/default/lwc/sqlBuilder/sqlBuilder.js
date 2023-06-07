@@ -92,8 +92,12 @@ export default class SqlBuilder extends LightningElement {
             if( refObj === null){
                 //adding the validation of 20 max columns
                 if(this.config.sqlBuilder.selectedFields.length < 20){
-                    this.toggleArrayElement(this.config.sqlBuilder.selectedFields,event.target.getAttribute('data-val'));
                     event.target.classList.add('slds-theme_alt-inverse');
+                    let f = this.config.sqlBuilder.fields.find((el) => el.fieldName === event.target.getAttribute('data-val'));
+                    if(f !== undefined){
+                        f.css = 'slds-item slds-theme_alt-inverse';
+                    }
+                    this.toggleArrayElement(this.config.sqlBuilder.selectedFields,event.target.getAttribute('data-val'));
                     this.ElementList.push(event.target.getAttribute('data-val'));
                     this.dialogValues();
                 }else{
@@ -144,6 +148,10 @@ export default class SqlBuilder extends LightningElement {
         if(val === "sqlBuilder:deleteSelectedField"){
             let field = event.target.getAttribute('data-val');                
             this.config.sqlBuilder.selectedFields = this.config.sqlBuilder.selectedFields.filter(function(e) { return e.fieldName !== field });
+            let f = this.config.sqlBuilder.fields.find((el) => el.fieldName === field);
+            if(f !== undefined){
+                f.css = 'slds-item';
+            }
             this.ElementList = this.ElementList.filter(function(e) { return e !== field; });
             this.dialogValues();
         }
