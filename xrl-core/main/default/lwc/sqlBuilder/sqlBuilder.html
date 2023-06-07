@@ -107,7 +107,7 @@
                                         <lightning-combobox if:true={config.sqlBuilder.openConditionInput.isPicklist} data-id="sqlBuilder:conditions:conditionText" onchange={handleBuilderEvent} options={config.sqlBuilder.currentCondition.fieldOptions} value={config.sqlBuilder.currentCondition.value} label="Select"></lightning-combobox>
                                     </template>
                                     <template if:true={config.sqlBuilder.openConditionInput.isRange}>
-                                        <lightning-input data-id="sqlBuilder:conditions:conditionTextRange" onchange={handleBuilderEvent} type={config.sqlBuilder.currentCondition.fieldType} label={config._LABELS.lbl_enterValue}></lightning-input>
+                                        <lightning-input data-id="sqlBuilder:conditions:conditionTextRange" onchange={handleBuilderEvent} type={config.sqlBuilder.currentCondition.fieldType} label={config._LABELS.lbl_enterValue} value={config.sqlBuilder.currentCondition.valueRange}></lightning-input>
                                     </template>
                                 </template>
                                 <br/>
@@ -159,8 +159,8 @@
                                     <div class="slds-truncate">{condition.operator.label}</div>
                                 </td>
                                 <td class="slds-truncate">
-                                    <div if:false={condition.valueRange} class="slds-truncate" style="max-width:20rem;" title={condition.value}>{condition.value} </div>
-                                    <div if:true={condition.valueRange} class="slds-truncate" style="max-width:20rem;" title={condition.valueRange}>Between {condition.value} and {condition.valueRange}</div>
+                                    <div if:false={condition.valueRange} class="slds-truncate" style="max-width:20rem;" title={condition.value}>{condition._formattedValue} </div>
+                                    <div if:true={condition.valueRange} class="slds-truncate" style="max-width:20rem;" title={condition.valueRange}>Between {condition._formattedValue} and {condition._formattedValueRange}</div>
                                 </td>
                                 <td>
                                     <div class="slds-truncate">

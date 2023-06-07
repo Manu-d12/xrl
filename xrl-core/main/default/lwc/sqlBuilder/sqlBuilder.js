@@ -200,6 +200,7 @@ export default class SqlBuilder extends LightningElement {
                 isPicklist: this.config.sqlBuilder.currentCondition.fieldType === 'picklist' || this.config.sqlBuilder.currentCondition.fieldType === 'boolean' ? true : false,
                 isRange: operator === 'rg' ? true : false
             };
+            this.config.sqlBuilder.currentCondition.valueRange = this.config.sqlBuilder.openConditionInput.isRange ? this.config.sqlBuilder.currentCondition.valueRange : false;
         }
         if(val === "sqlBuilder:conditions:addCondition"){
             if((this.config.sqlBuilder.currentCondition.operator.isUnary != undefined && this.config.sqlBuilder.currentCondition.operator.isUnary === true) 
@@ -236,9 +237,11 @@ export default class SqlBuilder extends LightningElement {
             }
         }
         if(val === "sqlBuilder:conditions:conditionText"){
+            this.config.sqlBuilder.currentCondition._formattedValue = this.formatConditionValue(this.config.sqlBuilder.currentCondition.fieldType,event.target.value);
             this.config.sqlBuilder.currentCondition.value = event.target.value;
         }
         if(val === "sqlBuilder:conditions:conditionTextRange"){
+            this.config.sqlBuilder.currentCondition._formattedValueRange = this.formatConditionValue(this.config.sqlBuilder.currentCondition.fieldType,event.target.value);
             this.config.sqlBuilder.currentCondition.valueRange = event.target.value;
         }
         if(val === "sqlBuilder:conditions:deleteSelectedCondition"){
@@ -274,6 +277,7 @@ export default class SqlBuilder extends LightningElement {
                 isPicklist: this.config.sqlBuilder.currentCondition.fieldType === 'picklist' ? true : false,
                 isRange: this.config.sqlBuilder.currentCondition.operator.value === 'rg' ? true : false
             };
+            this.config.sqlBuilder.currentCondition.valueRange = this.config.sqlBuilder.openConditionInput.isRange ? this.config.sqlBuilder.currentCondition.valueRange : false;
         }
         if(val === "sqlBuilder:conditions:orderingConditions"){
             console.log('sqlBuilder:conditions:orderingConditions', event.target.value);
@@ -364,6 +368,21 @@ export default class SqlBuilder extends LightningElement {
         if(!isValExists){
             array.push(field); 
         }
+    }
+    formatConditionValue(type,value){
+        if(type === 'date' || type === 'datetime'){
+                let formattedDate = new Date(value).toLocaleString(this.config.userInfo.locale,{
+					month : "2-digit",
+					day : "2-digit",
+					year: "numeric",
+					hour: "2-digit",
+                    minute: "2-digit",
+					timeZone: this.config.userInfo.timezone
+				});
+                return formattedDate;
+            }else{
+                return value;
+            }
     }
     loadFields(sObjName){
         let objStr = '';
