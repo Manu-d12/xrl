@@ -444,6 +444,7 @@ export default class Layout extends LightningElement {
 			let valid = eval('(' + action.validationCallBack + ')')(table._selectedRecords(), this, libs);
 			// error dialog
 		}
+	}
 
 		// confirmation dialog
 		// data input dialog
