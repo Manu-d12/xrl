@@ -597,7 +597,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let deleteChunk = this.config.listViewConfig[0].deleteChunkSize ? this.config.listViewConfig[0].deleteChunkSize : 200; //200 is the default value for saveChunk
 		let index = 0;
 
-		libs.getGlobalVar(this.name).isExceptionInRemoteAction = false;
+		this.config.isExceptionInRemoteAction = false;
 
 		while(index < records.length){
 			let chunk = records.slice(index,records[(parseInt(index)+parseInt(deleteChunk))] ? (parseInt(index)+parseInt(deleteChunk)) : (records.length));
