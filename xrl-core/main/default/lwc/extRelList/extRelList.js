@@ -597,17 +597,21 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let deleteChunk = this.config.listViewConfig[0].deleteChunkSize ? this.config.listViewConfig[0].deleteChunkSize : 200; //200 is the default value for saveChunk
 		let index = 0;
 
+		libs.getGlobalVar(this.name).isExceptionInRemoteAction = false;
+
 		while(index < records.length){
 			let chunk = records.slice(index,records[(parseInt(index)+parseInt(deleteChunk))] ? (parseInt(index)+parseInt(deleteChunk)) : (records.length));
 			index += records[(parseInt(index)+parseInt(deleteChunk))] ? parseInt(deleteChunk) : (records.length);
 			await this.deleteRecords(chunk);
 		}
-		const toast = new ShowToastEvent({
-			title: 'Success',
-			message: this.config._LABELS.msg_successfullyDeleted,
-			variant: 'success'
-		});
-		this.dispatchEvent(toast);
+		if(this.config.isExceptionInRemoteAction === false){
+			const toast = new ShowToastEvent({
+				title: 'Success',
+				message: this.config._LABELS.msg_successfullyDeleted,
+				variant: 'success'
+			});
+			this.dispatchEvent(toast);
+		}
 		this.showDialog = false;
 		if(records.length < 1000){
 			this.config.records = this.config.records.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
