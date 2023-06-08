@@ -337,6 +337,10 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				]
 			}
 		}
+		else{
+			this.config.pager.curPage = 1;
+			this.config.pager.pageSize = '20';
+		}
 		this.setNumPages(this.config.pager.pageSize);
 
 		if (this.hasGrouping) this.setGroupRecords();
