@@ -573,7 +573,7 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_showStandardEdit</shortDescription>
-        <value>Enable standard edit(it will replace inline editing)?</value>
+        <value>Enable standard edit(it will replace inline editing when single record is selected)?</value>
     </labels>
     <labels>
         <fullName>tooltip_replaceInlineEditWithStandardEdit</fullName>
@@ -581,7 +581,7 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>tooltip_replaceInlineEditWithStandardEdit</shortDescription>
-        <value>Replace inline edit with standard edit?</value>
+        <value>Replace inline edit with standard edit for single record?</value>
     </labels>
     <labels>
         <fullName>lbl_chunkSizeForSave</fullName>
