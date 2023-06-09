@@ -460,16 +460,21 @@ global with sharing class infrastructure {
 
 		map < string, object > result = new map < string, object > ();
 		Savepoint sp = Database.setSavepoint();
-		Database.DeleteResult[] srs = Database.delete(records, isRollback);
-        for (Database.DeleteResult sr : srs) {
-			if (!sr.isSuccess()) {
-				String error = '';
-				for (Database.Error err : sr.getErrors()) {
-					// if(isRollback == true)
-					// 	Database.rollback(sp);
-					throw new InfrastructureException(null,String.valueOf(err.getStatusCode()) + ': ' + err.getMessage() , Infrastructure.exceptionType.GENERAL);
+		try{
+			Database.DeleteResult[] srs = Database.delete(records, isRollback);
+			for (Database.DeleteResult sr : srs) {
+				if (!sr.isSuccess()) {
+					String error = '';
+					for (Database.Error err : sr.getErrors()) {
+						// if(isRollback == true)
+						// 	Database.rollback(sp);
+						throw new InfrastructureException(null,String.valueOf(err.getStatusCode()) + ': ' + err.getMessage() , Infrastructure.exceptionType.GENERAL);
+					}
 				}
 			}
+		}catch (Exception e){
+			Database.rollback(sp);
+			throw new InfrastructureException(null,String.valueOf(e.getMessage()) , Infrastructure.exceptionType.GENERAL);
 		}
 		return records;
 	}
@@ -707,6 +712,7 @@ global with sharing class infrastructure {
 			'msg_cannotKeepThisBlank'=>label.msg_cannotKeepThisBlank,
 			'msg_failedValidationCallback'=>label.msg_failedValidationCallback,
 			'msg_yourFileWillStartDownloadingShortly'=>label.msg_yourFileWillStartDownloadingShortly,
+			'msg_entityIsDeleted'=>label.msg_entityIsDeleted,
 			'placeHolder_beforeSaveValidation'=>label.placeHolder_beforeSaveValidation,
 			'placeHolder_beforeDeleteValidation'=>label.placeHolder_beforeDeleteValidation,
 			'placeholder_actionCallback'=> label.placeholder_actionCallback,

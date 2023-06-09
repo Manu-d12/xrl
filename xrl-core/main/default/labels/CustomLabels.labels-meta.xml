@@ -2191,4 +2191,12 @@ return groups;
         <shortDescription>tooltip_enableColumnHeaderWrap</shortDescription>
         <value>This will wrap the texts in the column header</value>
     </labels>
+    <labels>
+        <fullName>msg_entityIsDeleted</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_entityIsDeleted</shortDescription>
+        <value>Error: Changes are not saved because one or more Item is deleted</value>
+    </labels>
 </CustomLabels>

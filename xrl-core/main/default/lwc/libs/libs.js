@@ -492,17 +492,10 @@ export let libs = {
 			console.log(result);
 			scope.config.isSpinner = false;
 			if ('exception' in result) {
+				scope.config.isExceptionInRemoteAction = true;
 				console.error(result.exception, result.log);
 				//HYPER-247
-				let formattedErrMsg = '';
-				if(result.exception.message.includes('Update failed') && result.exception.message.includes('max length')){
-					formattedErrMsg = (result.exception.message.substring(
-						result.exception.message.indexOf(";") + 1, 
-						result.exception.message.lastIndexOf("):")
-					) + ')').replaceAll('&quot;','"');
-				}else{
-					formattedErrMsg = result.exception.message;
-				}
+				let formattedErrMsg = this.formatErrMessage(result.exception.message);				
 				const event = new ShowToastEvent({
 					title: result.exception.title,
 					message: formattedErrMsg,
@@ -515,6 +508,22 @@ export let libs = {
 				}
 			}
 		})
+	},
+	formatErrMessage: function(errMsg) {
+		let message = '';
+		if(errMsg.includes('Update failed') && errMsg.includes('max length')){
+			message = (errMsg.substring(
+				errMsg.indexOf(";") + 1, 
+				errMsg.lastIndexOf("):")
+			) + ')').replaceAll('&quot;','"');
+		}
+		else if(errMsg.includes('ENTITY_IS_DELETED: entity is deleted')){
+			message = globalVars[Object.keys(globalVars)[0]]._LABELS.msg_entityIsDeleted;
+		}
+		else{
+			message = errMsg;
+		}
+		return message;
 	},
 	showToast : function(scope, params) {
 		const event = new ShowToastEvent(params);
