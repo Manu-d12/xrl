@@ -147,7 +147,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				"isNameField": false,
 				"isEditable": false,
 				"isFilterable": true,
-				"isSortable": true
+				"isSortable": true,
+				"helpText": 'Id (id)'
 			}];
 			if(this.config.sObjApiName.toLowerCase().includes('history')){
 				this.config.dataTableConfig.colModel = libs.historyGrid(this.apiName);
