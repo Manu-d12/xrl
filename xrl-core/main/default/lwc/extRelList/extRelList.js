@@ -11,7 +11,7 @@ import { loadScript, loadStyle } from 'lightning/platformResourceLoader';
 export default class extRelList extends NavigationMixin(LightningElement) {
 
 	@api apiName;
-	@api name;
+	@api name; // already part of managed package and can't be removed
 	@api recordId;
 	@api defaultListView;	
 	@api configuration;
@@ -30,6 +30,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 	constructor() {
 		super();
+		this.name = libs.uuidv4();// Need get current listView ccordingly position in localStorage
 		Promise.all([
 			loadStyle(this, resource + '/css/extRelList.css'),
 			loadScript(this, resource + '/js/xlsx.full.min.js'),
