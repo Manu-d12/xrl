@@ -68,6 +68,9 @@ export let libs = {
 		node[(varName.indexOf(':') > -1) ? varName.split(':')[1] : varName] = value; //JSON.parse(JSON.stringify(value));
 		console.log('GLOBAL VARS', globalVars);
 	},
+	getGlobalVarsCount : function() {
+		return Object.keys(globalVars).length;
+	},
 	getGlobalVar: function(varName) {
 		//console.log(globalVars);
 		return globalVars[varName];

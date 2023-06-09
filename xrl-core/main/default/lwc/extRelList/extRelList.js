@@ -30,7 +30,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 	constructor() {
 		super();
-		this.name = libs.uuidv4();// Need get current listView ccordingly position in localStorage
+		this.name = libs.getGlobalVarsCount();
 		Promise.all([
 			loadStyle(this, resource + '/css/extRelList.css'),
 			loadScript(this, resource + '/js/xlsx.full.min.js'),
