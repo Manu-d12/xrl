@@ -55,7 +55,7 @@ export default class dataTableItem extends LightningElement {
 				//console.log(val);
 				// console.log(locale);
 				if (val!== undefined && val !=='' && val!==null) {
-					val = new Date(val).toLocaleString(this.locale,{
+					return new Date(val).toLocaleString(this.locale,{
 						month : "2-digit",
 						day : "2-digit",
 						year: "numeric",
@@ -69,7 +69,7 @@ export default class dataTableItem extends LightningElement {
 			}
 			if (this.col.type === 'date') {
 				if (val!== undefined && val !=='' && val!==null) {
-					val = new Date(val).toLocaleString(this.locale,{
+					return new Date(val).toLocaleString(this.locale,{
 						month : "2-digit",
 						day : "2-digit",
 						year: "numeric"
@@ -77,35 +77,36 @@ export default class dataTableItem extends LightningElement {
 				}
 			}
 			if (this.col.type === 'number') {
-				val = val ? this.formatNumber(val) : null;
+				return val!=null && val!=undefined ? this.formatNumber(val) : null;
 			}
 			if (this.col.type === 'double') {
-				val = val ? this.formatNumber(val) : null;
+				return val!=null && val!=undefined ? this.formatNumber(val) : null;
 			}
 			if (this.col.type === 'int') {
-				val = val ? this.formatNumber(val) : null;
+				return val!=null && val!=undefined ? this.formatNumber(val) : null;
 			}
 
 			if (this.col.type === 'currency') {
-				val = val ? this.formatNumber(val, this.getCurrencySymbol()) : null;
+				return val!=null && val!=undefined ? this.formatNumber(val, this.getCurrencySymbol()) : null;
 			}
 
 			if (this.col.type === 'reference'){
-				val = libs.formatStr(refTmp,[val, row.Name ? row.Name : row.CaseNumber ? row.CaseNumber : '']); // Need to investigate this line. Why sometimes for reference we have 'Invalid Name'
+				return libs.formatStr(refTmp,[val, row.Name ? row.Name : row.CaseNumber ? row.CaseNumber : '']); // Need to investigate this line. Why sometimes for reference we have 'Invalid Name'
 			}
 			if (this.col.type === 'boolean'){
 				this.isBool = true;
+				return val;
 			}
 			if (this.col.type === 'encryptedstring'){
-				val = val ? "*".repeat(val.length) : '';
+				return val ? "*".repeat(val.length) : '';
 			}
 
 			if (this.col.isNameField === true) {
 				//console.log(this.col.fieldName, JSON.stringify(row), val);
-				val = libs.formatStr(refTmp,[this.col.fieldName.split('.')[1] !== undefined && row[this.col.fieldName.split('.')[0]] !== undefined ? row[this.col.fieldName.split('.')[0]].Id : row.Id, val]);
+				return libs.formatStr(refTmp,[this.col.fieldName.split('.')[1] !== undefined && row[this.col.fieldName.split('.')[0]] !== undefined ? row[this.col.fieldName.split('.')[0]].Id : row.Id, val]);
 			}
 			if(this.col.type === 'address'){
-				val = libs.formatAddress(val,this.locale);
+				return libs.formatAddress(val,this.locale);
 			}
 		}
 		return val;
