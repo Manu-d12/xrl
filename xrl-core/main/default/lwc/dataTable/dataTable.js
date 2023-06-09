@@ -646,6 +646,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				rowId : calculatedInd,
 				cItem : cItem,
 				type : cItem.type,
+				length : cItem.length,
 				picklist: cItem.isEditableAsPicklist || cItem.type === 'reference', 
 				value : this.records[calculatedInd][cItem.fieldName],
 				chBoxLabel : libs.formatStr('Update {0} items', [this.getSelectedRecords().length]),
