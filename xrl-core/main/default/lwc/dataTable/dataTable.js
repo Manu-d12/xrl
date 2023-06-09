@@ -938,7 +938,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				let fieldName = e.fieldName.split('.')[1] != undefined ?
 				e.fieldName.split('.')[1]
 				:e.type === 'reference' ? 'Name' : e.fieldName;
-				this.records = libs.sortRecords(this.records, fieldName, e.isASCSort,e.fieldName.split('.')[1] != undefined ? e.fieldName.split('.')[0] : e.type === 'reference' ? e.fieldName.slice(0,-2) : '');
+				let refField = e.fieldName.split('.')[1] != undefined ? e.fieldName.split('.')[0] : e.type === 'reference' ? e.fieldName.slice(0,-2) : '';
+				refField = this.getRefFieldNameConsistsValue(refField);
+				this.records = libs.sortRecords(this.records, fieldName, e.isASCSort,refField);
 			} else {
 				e._sortIcon = undefined;
 				e.isASCSort = undefined;
@@ -977,8 +979,10 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						let fieldName = e.fieldName.split('.')[1] != undefined ?
 						e.fieldName.split('.')[1]
 						:e.type === 'reference' ? 'Name' : e.fieldName;
-						console.log('fieldName: ' + fieldName, e.fieldName.split('.')[1] != undefined ? e.fieldName.split('.')[0] : undefined);
-						this.records = libs.sortRecords(this.records, fieldName, e.isASCSort,e.fieldName.split('.')[1] != undefined ? e.fieldName.split('.')[0] : e.type === 'reference' ? e.fieldName.slice(0,-2) : '');
+						let refField = e.fieldName.split('.')[1] != undefined ? e.fieldName.split('.')[0] : e.type === 'reference' ? e.fieldName : '';
+						refField = this.getRefFieldNameConsistsValue(refField);
+						console.log('fieldName: ' + fieldName, refField);
+						this.records = libs.sortRecords(this.records, fieldName, e.isASCSort,refField);
 						// this.records = libs.sortRecords(this.records, e.type === 'reference' ? 'Name' : e.fieldName, e.isASCSort, e.type === 'reference' ? e.fieldName.slice(0,-2) : '');
 					}
 				} else {
@@ -989,6 +993,17 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			});
 		}
 		if (this.hasGrouping) this.setGroupRecords();
+	}
+
+	getRefFieldNameConsistsValue(fieldName){
+		let refFieldName = '';
+		if (fieldName.endsWith('Id')) {
+			fieldName = fieldName.replace("Id", '');
+		}
+		if (fieldName.endsWith('__c')) {
+			fieldName = fieldName.replace("__c", '__r');
+		}
+		return refFieldName;
 	}
 
 	sortSequence() {
@@ -1014,7 +1029,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			let fieldName = col.fieldName.split('.')[1] != undefined ?
 				col.fieldName.split('.')[1]
 				:col.type === 'reference' ? 'Name' : col.fieldName;
-			this.records = libs.sortRecords(this.records, fieldName, col.isASCSort,col.fieldName.split('.')[1] != undefined ? col.fieldName.split('.')[0] : col.type === 'reference' ? col.fieldName.slice(0,-2) : '');
+			let refField = col.fieldName.split('.')[1] != undefined ? col.fieldName.split('.')[0] : col.type === 'reference' ? col.fieldName.slice(0,-2) : '';
+			refField = this.getRefFieldNameConsistsValue(refField);
+			this.records = libs.sortRecords(this.records, fieldName, col.isASCSort,refField);
 			// this.records = libs.sortRecords(this.records, col.type === 'reference' ? col.fieldName + '.Name' : col.fieldName, col.isASCSort);
 		}
 	}
