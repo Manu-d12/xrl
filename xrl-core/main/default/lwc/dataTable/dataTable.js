@@ -1,3 +1,4 @@
+
 import { LightningElement, api, track } from 'lwc';
 import { libs } from 'c/libs';
 import { filterLibs } from './filterLibs';
@@ -269,6 +270,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	connectedCallback() {
 		//super();
 		this.config = libs.getGlobalVar(this.cfg);
+		let describe = this.config.describe;
 		this.config.listViewConfig.forEach((el)=>{
 			if(el.cmpName === 'dataTable') {
 				this.config = el;
@@ -289,6 +291,12 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			this.config.colModel.push(add);
 		});
 		this.config.colModel.forEach(item => {
+			let fDescribe = describe[item.fieldName];
+			if (fDescribe) {
+				//Need to add dynamyc parameters like a field length;
+				item.length = fDescribe.length;
+				item.inlineHelpText = fDescribe.inlineHelpText;
+			}
 			if (item.formatter !== undefined && item.formatter!=="") {
 				try {
 					item._formatter = eval('(' + item.formatter + ')');
