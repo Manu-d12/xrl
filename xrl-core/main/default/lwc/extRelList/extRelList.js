@@ -30,7 +30,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 	constructor() {
 		super();
-		this.name = libs.getGlobalVarsCount();
+
 		Promise.all([
 			loadStyle(this, resource + '/css/extRelList.css'),
 			loadScript(this, resource + '/js/xlsx.full.min.js'),
@@ -53,6 +53,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	connectedCallback() {
+		this.name = libs.getGlobalVarsCount().toString();
 		console.log('RENDERED');
 		this.loadCfg(true);
 	}
