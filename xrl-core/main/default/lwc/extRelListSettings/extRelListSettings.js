@@ -135,7 +135,10 @@ export default class extRelListSettings extends LightningElement {
                         this.dataTable.pager[item] :
                         (tmp[item] != undefined ? tmp[item].defValue : false))) :
                 false;
-
+			
+			if(this.config.dialog.useExampleParams[item] !== undefined){
+				defValue = this.config.dialog.useExampleParams[item];
+			}
 			
 			let sFields = [{label:'No Grouping',value:''}];
 			sFields = sFields.concat(this.selectedFields);
@@ -156,6 +159,7 @@ export default class extRelListSettings extends LightningElement {
 				"options" : options,
 				"cmd": tmp[item].cmd,
 				"placeHolder" : tmp[item].placeHolder,
+				"useExample": tmp[item].useExample,
 				"helpId": 'help:' + item,
 				"helpLabel": tmp[item].label,
 				"helpTooltip" : tmp[item].tooltip,

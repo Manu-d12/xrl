@@ -690,6 +690,7 @@ global with sharing class infrastructure {
 			'lbl_overrideGridHeader'=>label.lbl_overrideGridHeader,
 			'lbl_rollback'=>label.lbl_rollback,
 			'lbl_enableColumnHeaderWrap'=>label.lbl_enableColumnHeaderWrap,
+			'lbl_afterloadTransformation'=>label.lbl_afterloadTransformation,
 			'msg_enterUniqueActionId'=>label.msg_enterUniqueActionId,
 			'msg_lisViewWasUpdated' => label.msg_lisViewWasUpdated,
 			'msg_requestWasSent' => label.msg_requestWasSent,
@@ -718,6 +719,7 @@ global with sharing class infrastructure {
 			'placeholder_actionCallback'=> label.placeholder_actionCallback,
 			'placeHolder_rowCss'=> label.placeHolder_rowCss,
 			'placeholder_groupingFunction'=>label.placeholder_groupingFunction,
+			'placeHolder_afterloadTransformation'=>label.placeHolder_afterloadTransformation,
 			'title_close' => label.title_close,
 			'title_clear' => label.title_clear,
 			'title_collapse' => label.title_collapse,
@@ -790,6 +792,7 @@ global with sharing class infrastructure {
 			'tooltip_rollback'=>label.tooltip_rollback,
 			'tooltip_configDelete'=>label.tooltip_configDelete,
 			'tooltip_enableColumnHeaderWrap'=>label.tooltip_enableColumnHeaderWrap,
+			'tooltip_afterloadTransformation'=>label.tooltip_afterloadTransformation,
 			'srcLbl_available' => label.srcLbl_available,
 			'srcLbl_optional' => label.srcLbl_optional,
 			'url_reqFeature'=>label.url_reqFeature
