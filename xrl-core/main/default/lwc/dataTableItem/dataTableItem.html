@@ -13,10 +13,10 @@
 				options={col.options} selectedvalue={editValue} data-id={col.fieldName}></c-multiselect>
 			</template>
 			<template if:false={col._isLookUpEdit}>
-				<lightning-input if:true={col.isEditableRegular} maxlength={col.length} type={col.type} field-level-help={col.inlineHelpText} value={editValue} onchange={inlineEdit} data-id={col.fieldName} tabindex="0"></lightning-input>
+				<lightning-input if:true={col.isEditableRegular} maxlength={col.length} type={col.type} field-level-help1={col.inlineHelpText} value={editValue} onchange={inlineEdit} data-id={col.fieldName} tabindex="0"></lightning-input>
 			</template>
 			<template if:true={col.isEditableTextArea}>
-				<lightning-textarea field-level-help={col.inlineHelpText} maxlength={col.length} value={editValue} onchange={inlineEdit} data-id={col.fieldName} tabindex="0"></lightning-textarea>
+				<lightning-textarea field-level-help1={col.inlineHelpText} maxlength={col.length} value={editValue} onchange={inlineEdit} data-id={col.fieldName} tabindex="0"></lightning-textarea>
 			</template>
 			<!-- <span if:false={col.isEditable} title={value} style={uStyle}>
 				<lightning-input type="checkbox" if:true={col.isEditableBool} checked={editValue} disabled="true"> </lightning-input>
