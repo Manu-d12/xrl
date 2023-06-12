@@ -302,7 +302,8 @@ export let libs = {
 				"label": _labels.lbl_groupingFunction,
 				"tooltip": _labels.tooltip_groupingFunction,
 				"placeHolder": _labels.placeholder_groupingFunction,
-				"cmd" : "dialog:setTableParam"
+				"cmd" : "dialog:setTableParam",
+				"useExample":true,
 			},
 			"groupOrder" : {
 				"defValue": "ASC",
@@ -345,6 +346,7 @@ export let libs = {
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
 				"helpArticleUrl": _labels.hlpUrl_beforeSaveValidation,
+				"useExample":true,
 			},
 			"beforeSaveApexAction": {
 				"defValue": "",
@@ -365,6 +367,7 @@ export let libs = {
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
 				"helpArticleUrl": _labels.hlpUrl_beforeDeleteValidation,
+				"useExample":true,
 			},
 			"displayOptionListSize" : {
 				"defValue": 20,
@@ -378,14 +381,16 @@ export let libs = {
 				"label": _labels.lbl_rowCss,
 				"tooltip": _labels.tooltip_changeRowStyleByFunction,
 				"placeHolder": _labels.placeHolder_rowCss,
-				"cmd" : "dialog:setTableParam"
+				"cmd" : "dialog:setTableParam",
+				"useExample":true,
 			},
 			"afterloadTransformation": {
 				"type": "function",
-				"label": 'afterloadTransformation',
-				"tooltip": 'afterloadTransformation this function must return a records as input also must get records',
-				"placeHolder": 'afterloadTransformation',
-				"cmd" : "dialog:setTableParam"
+				"label": _labels.lbl_afterloadTransformation,
+				"tooltip": _labels.tooltip_afterloadTransformation,
+				"placeHolder": _labels.placeHolder_afterloadTransformation,
+				"cmd" : "dialog:setTableParam",
+				"useExample":true,
 			},
 			"rowRecalcApex": {
 				"defValue": "",
@@ -428,7 +433,8 @@ export let libs = {
 				"defValue":'',
 				"type": "function",
 				"label": _labels.lbl_actionCallback,
-				"placeHolder" : _labels.placeholder_actionCallback
+				"placeHolder" : _labels.placeholder_actionCallback,
+				"useExample":true,
 			},
 			"actionIsHidden" : {
 				"defValue":false,

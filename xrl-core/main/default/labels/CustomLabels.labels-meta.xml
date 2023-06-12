@@ -1482,8 +1482,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>placeHolder_beforeDeleteValidation</shortDescription>
-        <value>#This function will accept 3 values as parameters
-#If a record fails the validation the no records will be deleted
+        <value>//Example- If a record fails the validation the no records will be deleted
 function(scope,libs,record){
   if(record.Type==&apos;Electrical&apos;)
     return false; 
@@ -1553,8 +1552,8 @@ function(scope,libs,record){
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>placeHolder_rowCss</shortDescription>
-        <value>function(row){
-//This is the logic of striped row if you want to change row colors please modify according to your needs
+        <value>//Example - This is the logic of striped row if you want to change row colors please modify according to your needs
+function(row){
 if(row.sl % 2 === 0){
 return &quot;background-color:#ffffff;&quot; //white
 }else {
@@ -1904,8 +1903,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>placeholder_groupingFunction</shortDescription>
-        <value>//this function receives the array of groups done on the selected fields
-//it must return the array of groups in same format
+        <value>//Example- this receives the array of groups done on the selected fields and it must return the array of groups in same format
 function(groups){
 console.log('From Group Function',groups);
 return groups;
@@ -2198,5 +2196,31 @@ return groups;
         <protected>true</protected>
         <shortDescription>msg_entityIsDeleted</shortDescription>
         <value>Error: Changes are not saved because one or more Item is deleted</value>
+    </labels>
+    <labels>
+        <fullName>lbl_afterloadTransformation</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_afterloadTransformation</shortDescription>
+        <value>After Load Transformation</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_afterloadTransformation</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_afterloadTransformation</shortDescription>
+        <value>this function must return a records as input also must get records</value>
+    </labels>
+    <labels>
+        <fullName>placeHolder_afterloadTransformation</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>placeHolder_afterloadTransformation</shortDescription>
+        <value>function(scope,records){
+return records;
+}</value>
     </labels>
 </CustomLabels>

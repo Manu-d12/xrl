@@ -41,7 +41,7 @@
 								<div key={param.paramName} style="position:relative">
 									<lightning-input if:false={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} type={param.type} label={param.label} disabled={param.isDisabled} value={param.value} data-id="dialog:setFieldParam" data-param={param.paramName} data-type={param.type} checked={param.isChecked} onchange={config.dialog.handleEvent}></lightning-input>
 									<lightning-textarea if:true={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} data-type={param.type} label={param.label} value={param.value} data-id="dialog:setFieldParam" data-param={param.paramName} onchange={config.dialog.handleEvent} placeholder={param.placeHolder}></lightning-textarea>
-									<lightning-button-icon if:true={param.useExample} key={param.paramName} icon-name="utility:copy_to_clipboard" class="slds-m-around_small" title="Use example" data-id="dialog:setFieldParam" data-val={param.placeHolder} data-param={param.paramName} data-type={param.type} onclick={addNewUseExampleParam}></lightning-button-icon>
+									<lightning-button-icon if:true={param.useExample} key={param.paramName} icon-name="utility:copy_to_clipboard" class="slds-m-around_small" title="Use example" data-id="dialog:setFieldParam" data-val={param.placeHolder} data-param={param.paramName} data-type={param.type} data-place="field" onclick={addNewUseExampleParam}></lightning-button-icon>
 									<span>
 										<p if:true={param.helpArticleUrl} 
 										data-id={param.helpId} 
@@ -66,6 +66,7 @@
 								<template if:false={param.isComboBox}>
 									<lightning-input if:false={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} type={param.type} label={param.label} disabled={param.isDisabled} value={param.value} data-id={param.cmd} data-param={param.paramName} data-type={param.type} checked={param.isChecked} onchange={config.dialog.handleEvent}></lightning-input>
 									<lightning-textarea if:true={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} data-type={param.type} label={param.label} value={param.value} data-id={param.cmd} data-param={param.paramName} onchange={config.dialog.handleEvent} placeholder={param.placeHolder}></lightning-textarea>
+									<lightning-button-icon if:true={param.useExample} key={param.paramName} icon-name="utility:copy_to_clipboard" class="slds-m-around_small" title="Use example" data-id="dialog:setTableParam" data-val={param.placeHolder} data-param={param.paramName} data-type={param.type} data-place="table" onclick={addNewUseExampleParam}></lightning-button-icon>
 								</template>
 								<template if:true={param.isComboBox}>
 									<lightning-combobox key={param.paramName} field-level-help={param.tooltip} label={param.label} placeholder={param.placeHolder} disabled={param.isDisabled} value={param.value} data-id={param.cmd} onchange={config.dialog.handleEvent} data-param={param.paramName} options={param.options}>
@@ -120,6 +121,7 @@
 							<lightning-input if:true={param.isText} field-level-help={param.tooltip} key={param.paramName} type={param.type} label={param.label} disabled={param.isDisabled} value={param.value} data-id="dialog:setActionParam" data-param={param.paramName} data-type={param.type} checked={param.isChecked} onchange={config.dialog.handleEvent}></lightning-input>
 							<lightning-combobox if:true={param.isCombo} field-level-help={param.tooltip} key={param.paramName} type={param.type} label={param.label} disabled={param.isDisabled} value={param.value} data-id="dialog:setActionParam" data-param={param.paramName} onchange={config.dialog.handleEvent} options={param.options}></lightning-combobox>
 							<lightning-textarea if:true={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} data-type={param.type} label={param.label} value={param.value} data-id="dialog:setActionParam" data-param={param.paramName} onchange={config.dialog.handleEvent} placeholder={param.placeHolder}></lightning-textarea>
+							<lightning-button-icon if:true={param.useExample} key={param.paramName} icon-name="utility:copy_to_clipboard" class="slds-m-around_small" title="Use example" data-id="dialog:setTableParam" data-val={param.placeHolder} data-param={param.paramName} data-type={param.type} data-place="action" onclick={addNewUseExampleParam}></lightning-button-icon>
 						</template>
 						<template if:true={config.dialog.action}>
 							<br>
