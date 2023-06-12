@@ -996,12 +996,12 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 
 	getRefFieldNameConsistsValue(fieldName){
-		let refFieldName = '';
+		let refFieldName = fieldName;
 		if (fieldName.endsWith('Id')) {
-			fieldName = fieldName.replace("Id", '');
+			refFieldName = fieldName.replace("Id", '');
 		}
 		if (fieldName.endsWith('__c')) {
-			fieldName = fieldName.replace("__c", '__r');
+			refFieldName = fieldName.replace("__c", '__r');
 		}
 		return refFieldName;
 	}
