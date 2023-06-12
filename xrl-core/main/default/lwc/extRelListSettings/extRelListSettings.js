@@ -202,6 +202,10 @@ export default class extRelListSettings extends LightningElement {
 			: fieldParams[item] === undefined
 				? tmp[item].defValue
 				: fieldParams[item];
+			
+			if(this.config.dialog.useExampleParams[item] !== undefined){
+				defValue = this.config.dialog.useExampleParams[item];
+			}
 			let options = typeof(tmp[item].optionsCallBack) == 'function' ?  tmp[item].optionsCallBack(this) : tmp[item].options;
 			result.push({
 				"paramName" : item,
@@ -215,6 +219,7 @@ export default class extRelListSettings extends LightningElement {
 				"value" : defValue,
 				"isChecked" : (tmp[item].type === 'checkbox') ? defValue : undefined,
 				"placeHolder" : tmp[item].placeHolder,
+				"useExample": tmp[item].useExample,
 				"isCombo" : (tmp[item].type === 'combobox' && options != undefined)
 			})
 		}

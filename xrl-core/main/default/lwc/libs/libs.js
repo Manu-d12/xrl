@@ -433,7 +433,8 @@ export let libs = {
 				"defValue":'',
 				"type": "function",
 				"label": _labels.lbl_actionCallback,
-				"placeHolder" : _labels.placeholder_actionCallback
+				"placeHolder" : _labels.placeholder_actionCallback,
+				"useExample":true,
 			},
 			"actionIsHidden" : {
 				"defValue":false,
