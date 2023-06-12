@@ -129,7 +129,12 @@ export default class dataTableItem extends LightningElement {
 		if (typeof(this.col._uStyle) === 'function') {
 			let row,val;
 			[row,val] = libs.getLookupRow(this.row, this.col.fieldName);
-			value += this.col._uStyle(row, this.col, val);
+			try {
+				value += this.col._uStyle(row, this.col, val);
+			} catch(e) {
+				console.error(e.toString);
+			}
+			value = val;
 		}
 		return value;
 	}
