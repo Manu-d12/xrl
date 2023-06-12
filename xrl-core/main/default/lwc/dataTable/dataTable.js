@@ -295,7 +295,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			let fDescribe = describe[item.fieldName];
 			if (fDescribe) {
 				//Need to add dynamyc parameters like a field length;
-				item.length = fDescribe.length;
+				item.length = fDescribe.length ? fDescribe.length : fDescribe.precision;
 				item.inlineHelpText = fDescribe.inlineHelpText;
 			}
 			if (item.formatter !== undefined && item.formatter!=="") {
