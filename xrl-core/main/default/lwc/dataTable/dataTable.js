@@ -223,7 +223,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			if(this.config.groupingParams.field.split('.')[1] && r[this.config.groupingParams.field.split('.')[0]] !== undefined) {
 				groupName = r[this.config.groupingParams.field.split('.')[0]][this.config.groupingParams.field.split('.')[1]] || 'empty';
 			}else{
-				groupName = r[this.config.groupingParams.field] || 'empty';
+				groupName = r[this.config.groupingParams.field] !== null && r[this.config.groupingParams.field] !== undefined ? r[this.config.groupingParams.field] : 'empty';
 			}
 			let group = result.has(groupName) ? result.get(groupName) : {
 				title: groupName,
