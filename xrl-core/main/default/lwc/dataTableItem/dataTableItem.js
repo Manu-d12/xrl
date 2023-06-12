@@ -85,6 +85,9 @@ export default class dataTableItem extends LightningElement {
 			if (this.col.type === 'int') {
 				return val!=null && val!=undefined ? this.formatNumber(val) : null;
 			}
+			if (this.col.type === 'percent') {
+				return val!=null && val!=undefined ? this.formatNumber(val)+'%' : null;
+			}
 
 			if (this.col.type === 'currency') {
 				return val!=null && val!=undefined ? this.formatNumber(val, this.getCurrencySymbol()) : null;
