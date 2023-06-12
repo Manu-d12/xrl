@@ -871,12 +871,15 @@ global with sharing class infrastructure {
 		// 		objs.put(String.valueOf(objResult.getName()),objResult.getLabel());
 		// 	}
 		// }
-		Map<String,Schema.DescribeSObjectResult> objectMap = new Map<String,Schema.DescribeSObjectResult>();
-		map<string, object> result = new map<string, object>{};
+		Map<String,Map<String,String>> objectMap = new Map<String,Map<String,String>>();
+		map<string, Object> result = new map<string, object>{};
 			for(Schema.SObjectType objTyp : gd.Values()){
 				if(!String.valueOf(objTyp).startsWith('Salesforce')){
 					Schema.DescribeSObjectResult descResult = objTyp.getDescribe();
-					objectMap.put(objTyp.getDescribe().getName(), descResult);
+					if(descResult.isQueryable()){
+						Map<String,String> obj = new Map<String,String>{'label' => descResult.getLabel(), 'name'=> descResult.getName(), 'associateParentEntity'=> descResult.getAssociateParentEntity()};
+						objectMap.put(descResult.getName(), obj);
+					}
 				}
 			}
 		result.put('describe', JSON.serialize(objectMap));

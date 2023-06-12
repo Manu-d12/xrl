@@ -19,9 +19,7 @@ export default class ExrlTab extends LightningElement {
         console.log('getAllObjects',JSON.parse(data[cmd].describe));
         this.config.allObjectDesc = JSON.parse(data[cmd].describe);
         for(const key in this.config.allObjectDesc){
-            if(this.config.allObjectDesc[key].queryable){
-                this.config.objList.push({'label':this.config.allObjectDesc[key].label,'value':this.config.allObjectDesc[key].name});
-            }
+            this.config.objList.push({'label':this.config.allObjectDesc[key].label,'value':this.config.allObjectDesc[key].name});
         }
         this.config.objList.sort();
     }
