@@ -40,7 +40,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		});
 
 		window.addEventListener('beforeunload', (event) => {
-			if (this.config.listViewConfig[0]._changedRecords) {
+			if (this.config.listViewConfig !== undefined && this.config.listViewConfig[0]._changedRecords) {
 				event.preventDefault();
 				event.returnValue = '';
 			}
@@ -72,6 +72,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		libs.remoteAction(this, 'getCustomLabels', {callback: this.setCustomLabels.bind(this) });
 		let apiNames = this.apiName.split('::');
 		console.log(apiNames);
+		if(apiNames[1] === undefined) return;
 		this.localConfig = {};
 
 		let cfg = libs.loadConfig(this.name);

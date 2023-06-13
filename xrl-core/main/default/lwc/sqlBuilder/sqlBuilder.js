@@ -378,19 +378,27 @@ export default class SqlBuilder extends LightningElement {
         }
     }
     formatConditionValue(type,value){
-        if(type === 'date' || type === 'datetime'){
-                let formattedDate = new Date(value).toLocaleString(this.config.userInfo.locale,{
-					month : "2-digit",
-					day : "2-digit",
-					year: "numeric",
-					hour: "2-digit",
-                    minute: "2-digit",
-					timeZone: this.config.userInfo.timezone
-				});
-                return formattedDate;
-            }else{
-                return value;
-            }
+        if(type === 'date'){
+            let formattedDate = new Date(value).toLocaleString(this.config.userInfo.locale,{
+                month : "2-digit",
+                day : "2-digit",
+                year: "numeric"
+            });
+            return formattedDate;
+        }
+        else if(type === 'datetime'){
+            let formattedDate = new Date(value).toLocaleString(this.config.userInfo.locale,{
+                month : "2-digit",
+                day : "2-digit",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second:"2-digit"
+            });
+            return formattedDate;
+        }else{
+            return value;
+        }
     }
     loadFields(sObjName){
         let objStr = '';
