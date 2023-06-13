@@ -23,7 +23,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	additionalFields = [];
 	// Commented out for now, will be released in release 3 - Compact Layout functionality on hover
 	showPop(event){
-		console.log('Hovered ' + event.pageY + ' ' + event.clientX);
+		//console.log('Hovered ' + event.pageY + ' ' + event.clientX);
+
 		// this.objectApiName = event.target.getAttribute('data-colname');
 		// let col = this.config.colModel.find((el)=>{
 		// 	return el.fieldName === this.objectApiName
@@ -54,7 +55,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 	}
 	hidePop(event){
-		console.log('Mouse Out');
+		//console.log('Mouse Out');
+		
 		// if((event.pageY >= this.config.pageY - 5 && event.pageY <= this.config.pageY + 5) &&
 		// (event.clientX >= this.config.pageX - 5 && event.clientX <= this.config.pageX + 5)){
 		// 	console.log('In range: ' + event.pageY + ' ' + event.clientX);
@@ -119,7 +121,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					result.push(this.records[i]);
 				}
 				this.displayedItemCount = this.recordInfo+ ' Showing only '+ endIndex  +' item(s)';
-				console.log('result', JSON.parse(JSON.stringify(result)));
+				//console.log('result', JSON.parse(JSON.stringify(result)));
 				return result;
 			}
 			else if (isPager) {
@@ -137,7 +139,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					if (endIndex < gr.records[gr.records.length - 1].index) {
 						gr.records.splice(endIndex - (gr.records[0].index + 1));
 					}
-					console.log('gr ',gr.records.length);
+					//console.log('gr ',gr.records.length);
 					result.push(gr);
 				}
 				console.log('result size', JSON.parse(JSON.stringify(result)).length);
@@ -155,7 +157,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					result.push(this.records[i]);
 				}
 				this.displayedItemCount = this.recordInfo+ ' Showing only '+ endIndex  +' item(s)';
-				console.log('result', JSON.parse(JSON.stringify(result)));
+				//console.log('result', JSON.parse(JSON.stringify(result)));
 				return result;
 			}
 			else if (isPager) {
@@ -165,7 +167,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				for (let i = startIndex; i < endIndex; i++) {
 					result.push(this.records[i]);
 				}
-				console.log('result', JSON.parse(JSON.stringify(result)));
+				//console.log('result', JSON.parse(JSON.stringify(result)));
 				return result;
 			}
 			// Need for pagination;
@@ -187,7 +189,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 	get hasGrouping() {
 		// return this.config.grouping === true;
-		console.log('hasGrouping ',this.config.groupFieldName !== undefined && this.config.groupFieldName !== null && this.config.groupFieldName !== '');
+		//console.log('hasGrouping ',this.config.groupFieldName !== undefined && this.config.groupFieldName !== null && this.config.groupFieldName !== '');
 		return this.config.groupFieldName !== undefined && this.config.groupFieldName !== null && this.config.groupFieldName !== '';
 	}
 
@@ -257,7 +259,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			group.records.forEach(rec => {rec.index = ind++;})
 		});
 		this.groupedRecords = this.config.groupingFunction != undefined ? eval('(' + this.config.groupingFunction + ')')(result) : result;
-		console.log('groupedRecords', JSON.parse(JSON.stringify(this.groupedRecords)));
+		//console.log('groupedRecords', JSON.parse(JSON.stringify(this.groupedRecords)));
 	}
 
 	getGroupRecIndexes(index) {
@@ -327,9 +329,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		});
 		//this.config.colModel = JSON.parse(JSON.stringify(this.config.colModel));
 		this.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
-		console.log('length from datatable', this.cfg, this.records.length, this.records);
+		//console.log('length from datatable', this.cfg, this.records.length, this.records);
 		this.initSort();
-		console.log('PAGER', this.config.pager);
+		//console.log('PAGER', this.config.pager);
 
 		if (this.config.pager === undefined) {
 			this.config.pager = {
@@ -387,7 +389,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				}
 			} else {
 				let isNeedSaveData = this.config._inlineEditRow !== undefined && JSON.stringify(this.records[this.config._inlineEdit]) !== JSON.stringify(this.config._inlineEditRow);
-				console.log('isNeedSaveData', isNeedSaveData);
+				//console.log('isNeedSaveData', isNeedSaveData);
 				if (isNeedSaveData)	{
 					this.records[this.config._inlineEdit] = JSON.parse(JSON.stringify(this.config._inlineEditRow));
 					//Need also Update a global array
@@ -546,7 +548,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		}*/
 
 		if (typeof(this.config.rowCallback) === 'function') {
-			console.log('this.config.rowCallback', this.config.rowCallback);
+			//console.log('this.config.rowCallback', this.config.rowCallback);
 			this.config.rowCallback(rowId, colName);
 		}
 		let cItem = this.getColItem(colName);
@@ -554,7 +556,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if (cItem && cItem.cellCallback) {
 			cItem.cellCallback(this.calcRowIndex(rowId), colName);
 		}
-		console.log('row click', event, colName, rowId);
+		//console.log('row click', event, colName, rowId);
 	}
 
 	async rowDblCallback(event) {
@@ -570,7 +572,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			event.srcElement.getAttribute('data-rowid') :
 			event.srcElement.parentNode.getAttribute('data-rowid');
 		
-		console.log(rowInd + ' ' + rowId);
+		//console.log(rowInd + ' ' + rowId);
 
 		let cItem = this.getColItem(colName);
 		if (!cItem || !cItem.isEditable) {
@@ -588,7 +590,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			this.config._intervalId = setInterval(() => {
 				if(window.location.href === this.config._originalURL) {
 					this.hasChanged = false;
-					console.log('Refresh',this.config._loadCfg);
+					//console.log('Refresh',this.config._loadCfg);
 					clearInterval(this.config._intervalId);
 					this.config._loadCfg();
 				}
@@ -616,7 +618,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if (this.getSelectedRecords().length > 1) {
 			//Bulk Edit
 			let table = this.template.querySelector('.extRelListTable');
-			console.log('bulk', table.offsetHeight, event.y, table, event.srcElement.parentElement.parentElement.offsetTop, this.config);
+			//console.log('bulk', table.offsetHeight, event.y, table, event.srcElement.parentElement.parentElement.offsetTop, this.config);
 
 			if (cItem.type === 'reference' && cItem.options === undefined) {
 				let describe = libs.getGlobalVar(this.cfg).describe[cItem.fieldName];
@@ -625,7 +627,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					sObjApiName: describe.referenceTo[0],
 					fields: ['Id', 'Name'],
 					callback: ((nodeName, data) => {
-						console.log('length from Citem', data[nodeName].records);
+						//console.log('length from Citem', data[nodeName].records);
 						cItem.options = [];
 						cItem.refNodeOptions = [...data[nodeName].records]; 
 						if(cItem.nillable === true){
@@ -679,7 +681,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 							relField: '',
 							sObjApiName: el.referenceTo,
 							callback: ((nodeName, data) => {
-								console.log('accountRecords', data[nodeName].records.length);
+								//console.log('accountRecords', data[nodeName].records.length);
 								data[nodeName].records.forEach((e)=>{
 									el._editOptions.push({"label":e.Name,"value":e.Id});
 								});
@@ -698,7 +700,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 
 	handleDropDownEvents(event) {
-		console.log('DD Event', event.detail);
+		//console.log('DD Event', event.detail);
 
 		let rowInd = event.detail.index;
 
@@ -730,7 +732,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		let table = this.template.querySelector('.extRelListTable');
 
 		if (cItem) {
-			console.log('cItem', cItem.type);
+			//console.log('cItem', cItem.type);
 			if(cItem.type === 'boolean'){
 				cItem.options = [
 					{label:'True',value:'true'},
@@ -812,7 +814,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		this.searchFinish({which : 13})
 	}
 	handleLocalFilterSelect(event){
-		console.log(event.detail.payload.values);
+		//console.log(event.detail.payload.values);
 		event.detail.value = event.detail.payload.values;
 		this.sValues = JSON.parse(JSON.stringify(event.detail.payload.values));
 		// console.log('hii',JSON.parse(JSON.stringify(event.detail.payload.values)));
@@ -821,7 +823,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 	searchOnChange(event) {
 		let fieldName = event.srcElement.getAttribute('data-id');
-		console.log(fieldName);
+		//console.log(fieldName);
 		if (fieldName === 'saveFilter') {
 			this.searchFinish({which : 13});
 			this.config.pager.curPage = 1;
@@ -845,7 +847,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			let isNeedRefilter = false;
 			let cItem = this.getColItem(this.config._isFilterOptions.fieldName);
 			if (cItem) {
-				console.log('column', JSON.stringify(cItem));
+				//console.log('column', JSON.stringify(cItem));
 				isNeedRefilter = this.config._isFilterOptions?.filterStr === "" ? true : this.config._isFilterOptions?.filterOption === 'rg'
 					? (cItem._filterStr !== this.config._isFilterOptions?.filterStr) || (cItem._filterStrTo !== this.config._isFilterOptions?._filterStrTo)
 					: ((cItem._filterStr !== this.config._isFilterOptions?.filterStr) || (this.config._isFilterOptions?.isUnary && cItem._filterOption !==this.config._isFilterOptions?.filterOption));
@@ -864,7 +866,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					this.filterTable();
 				}), 10);
 				// this.filterTable();
-				console.log('column', JSON.stringify(cItem));
+				//console.log('column', JSON.stringify(cItem));
 			}
 
 		}
@@ -888,7 +890,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		this.config._isFilterOptions.isShowToStr = this.config._isFilterOptions.filterOption === 'rg';
 		this.config._isFilterOptions.isShowStr = !this.config._isFilterOptions.isUnary && !this.config._isFilterOptions.cItem.options;
 		if (this.config._isFilterOptions.isUnary) this.config._isFilterOptions.isShowClearBtn = true;
-		console.log('change operator', this.config._isFilterOptions);
+		//console.log('change operator', this.config._isFilterOptions);
 	}
 
 	popupClose(event) {
@@ -899,13 +901,13 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	filterTable() {
 		let filters = this.getFilters();
 		if (filters.length == 0) {
-			console.log('Need reset filters');
+			//console.log('Need reset filters');
 			this.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
 		} else {
-			console.log('Need filter by', filters.length);
+			//console.log('Need filter by', filters.length);
 			let allRecords = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
 			filters.forEach( filter => {
-				console.log('filter', JSON.parse(JSON.stringify(filter)));
+				//console.log('filter', JSON.parse(JSON.stringify(filter)));
 				if (!filterLibs[filter.type + '__filter']) {
 					console.error('Filter does not support for type', filter.type);
 					return this.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
@@ -981,7 +983,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						:e.type === 'reference' ? 'Name' : e.fieldName;
 						let refField = e.fieldName.split('.')[1] != undefined ? e.fieldName.split('.')[0] : e.type === 'reference' ? e.fieldName : '';
 						refField = this.getRefFieldNameConsistsValue(refField);
-						console.log('fieldName: ' + fieldName, refField);
+						//console.log('fieldName: ' + fieldName, refField);
 						this.records = libs.sortRecords(this.records, fieldName, e.isASCSort,refField);
 						// this.records = libs.sortRecords(this.records, e.type === 'reference' ? 'Name' : e.fieldName, e.isASCSort, e.type === 'reference' ? e.fieldName.slice(0,-2) : '');
 					}
@@ -1057,7 +1059,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				if (value <= 1) this.config.pager.curPage = 1;
 				if (value > this.config.pager.numPages) this.config.pager.curPage = this.config.pager.numPages;
 			}
-			console.log('curPage ',this.config.pager.curPage);
+			//console.log('curPage ',this.config.pager.curPage);
 			return;
 		}
 		switch (fieldName) {
@@ -1073,7 +1075,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			case ':pagerPrev' : 
 				this.config.pager.curPage -= this.config.pager.curPage > 1 ? 1 : 0;
 		}
-		console.log(fieldName);
+		//console.log(fieldName);
 	}
 
 	handleEventBulk() {
@@ -1092,7 +1094,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			item[fieldName] = that.newValValidation(v);
 			origItem[fieldName] = that.newValValidation(v);
 			if (refNode !== undefined) {
-				console.log('REFERENCE', refNode, refNodeValue);
+				//console.log('REFERENCE', refNode, refNodeValue);
 				item[refNode] = refNodeValue;
 				origItem[refNode] = refNodeValue;
 			}
@@ -1111,7 +1113,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		let refNode = describe.relationshipName;
 		let refNodeValue;
 
-		console.log('chBox.checked', chBox.checked, this.config._bulkEdit);
+		//console.log('chBox.checked', chBox.checked, this.config._bulkEdit);
 		
 		if (describe.type === 'reference') {
 
@@ -1119,18 +1121,18 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				return elem.Id === value.value;
 			});
 
-			console.log('this.config._bulkEdit.cItem', refNode, refNodeValue, value.value, this.config._bulkEdit.cItem.options);
+			//console.log('this.config._bulkEdit.cItem', refNode, refNodeValue, value.value, this.config._bulkEdit.cItem.options);
 		}
 		if (chBox.checked === false) {
-			console.log('One item');
+			//console.log('One item');
 			changeItem(this, this.records[this.config._bulkEdit.rowId], this.config._bulkEdit.cItem.fieldName, getValue(this.config._bulkEdit.cItem, value), refNode, refNodeValue);
 		} else {
-			console.log('More then One item');
+			//console.log('More then One item');
 			this.getSelectedRecords().forEach((item) => {
 				changeItem(this, item, this.config._bulkEdit.cItem.fieldName, getValue(this.config._bulkEdit.cItem, value),refNode, refNodeValue);
 			});
 		}
-		console.log('Bulk Edit', getValue(this.config._bulkEdit.cItem, value), chBox.checked);
+		//console.log('Bulk Edit', getValue(this.config._bulkEdit.cItem, value), chBox.checked);
 		this.config._bulkEdit = undefined;
 
 		if (this.hasGrouping) this.setGroupRecords();

@@ -212,7 +212,7 @@ export default class ServerFilter extends LightningElement {
                 }
             }
         }
-        console.log(condition);
+        console.log('WHERE CAUSE', condition);
         return condition;
     }
     handleSelectFields(event) {
@@ -230,7 +230,6 @@ export default class ServerFilter extends LightningElement {
                 this.selectedFields.push(e);
                 let col = {'fieldName':e};
                 let describe = this.config.describe[e];
-                console.log(describe);
                 if (col.label === undefined) col.label = describe.label;
                 if (col.type === undefined) col.type = describe.type;
                 col.updateable = describe.updateable;
