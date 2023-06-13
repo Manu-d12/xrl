@@ -166,8 +166,9 @@ export default class ServerFilter extends LightningElement {
         /*eslint-disable*/
         for (let key in this.conditionMap) {
             let colItem = this.getColItem(key);
-            if (colItem.virtual) {
-                if (colItem.searchCallback && typeof colItem.searchCallback === 'function') condition += colItem.searchCallback(this, libs, this.conditionMap[key], this.conditionMap);
+            
+            if (colItem.searchCallback && typeof colItem.searchCallback === 'function') {
+				condition += colItem.searchCallback(this, libs, this.conditionMap[key], this.conditionMap);
                 continue;
             }
             if (typeof this.conditionMap[key] === 'object' && JSON.parse(JSON.stringify(this.conditionMap[key])).length > 1 && colItem.type !== 'daterange') {
