@@ -40,7 +40,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		});
 
 		window.addEventListener('beforeunload', (event) => {
-			if (this.config.listViewConfig[0]._changedRecords) {
+			if (this.config.listViewConfig !== undefined && this.config.listViewConfig[0]._changedRecords) {
 				event.preventDefault();
 				event.returnValue = '';
 			}
