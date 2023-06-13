@@ -293,6 +293,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			listViewName: this.config?.listView?.name,
 			callback: ((nodeName, data) => {
 				console.log('length', data[nodeName].records);
+				this.config.inaccessibleFields= data[nodeName].removedFields;
 				
 				libs.getGlobalVar(this.name).records = data[nodeName].records.length > 0 ? data[nodeName].records : undefined;
 				if(this.config.listViewConfig[0].afterloadTransformation !== undefined && this.config.listViewConfig[0].afterloadTransformation !== ""){
@@ -315,6 +316,19 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 	generateColModel() {
 		this.config.listViewConfig[0].colModel.forEach(e => {
+			if(e.fieldName.split('.')[1]){
+				if(this.config.inaccessibleFields[e.fieldName.split('.')[0]] && this.config.inaccessibleFields[e.fieldName.split('.')[0]].includes(e.fieldName.split('.')[1])){
+					e._skipFieldFromDisplay = true;
+				}else{
+					e._skipFieldFromDisplay = false;
+				}
+			}else{
+				if(this.config.inaccessibleFields[this.config.sObjApiName] && this.config.inaccessibleFields[this.config.sObjApiName].includes(e.fieldName)){
+					e._skipFieldFromDisplay = true;
+				}else{
+					e._skipFieldFromDisplay = false;
+				}
+			}
 			if(e.fieldName === 'Id'){
 				let describe = this.config.describe[e.fieldName];
 				if (e.label === undefined) e.label = describe.label;
