@@ -587,7 +587,7 @@ export let libs = {
 		return result;
 	},	
 	standardActions: function(){
-		let _labels = globalVars[Object.keys(globalVars)[0]]._LABELS;
+		let _labels = globalVars[Object.keys(globalVars)[0]]._LABELS || {};
 		let actions = [
 			{
 				"actionId": "std:reset_filters",
