@@ -179,11 +179,13 @@ global with sharing class infrastructure {
 			throw new InfrastructureException(null,'Data was stripped', Infrastructure.exceptionType.GENERAL);
 		}
 		*/
-		if (!Security.stripInaccessible(AccessType.READABLE, records).getModifiedIndexes().isEmpty()) {
-			throw new InfrastructureException(null,'Data was stripped', Infrastructure.exceptionType.GENERAL);
-		}
+		SObjectAccessDecision securityDecision = Security.stripInaccessible(AccessType.READABLE,records );
+		// if (!securityDecision.getModifiedIndexes().isEmpty()) {
+		// 	throw new InfrastructureException(null,'Data was stripped', Infrastructure.exceptionType.GENERAL);
+		// }
 
-		result.put('records', records);
+		result.put('records', securityDecision.getRecords());
+		result.put('removedFields', securityDecision.getRemovedFields());
 
 		//result.put('config', getConfig(sObjApiName, relField, listViewName));
 		return result;

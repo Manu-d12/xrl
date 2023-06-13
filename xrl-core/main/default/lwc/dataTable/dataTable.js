@@ -192,7 +192,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 
 	get groupColspan() {
-		let len = this.config.colModel.filter(col => !col.isHidden).length;
+		let len = this.config.colModel.filter(col => !col.isHidden && !col._skipFieldFromDisplay).length;
 		len += !this.config.isShowNumeration ? -1 : 0;
 		return len;
 	}
@@ -292,6 +292,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			this.config.colModel.push(add);
 		});
 		this.config.colModel.forEach(item => {
+			item._hideFromDisplay = item._skipFieldFromDisplay || item.isHidden;
 			let fDescribe = describe[item.fieldName];
 			if (fDescribe) {
 				//Need to add dynamyc parameters like a field length;
@@ -318,7 +319,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			}else{
 				item._style = 'padding-left:1px;';
 			}
-			if (item.isHidden!==true) this.config._countFields ++;
+			if (item.isHidden!==true || item._skipFieldFromDisplay !== true) this.config._countFields ++;
 			item.wrapClass = item.isWrapable
 								? 'slds-cell-wrap'
 								: 'slds-truncate';
