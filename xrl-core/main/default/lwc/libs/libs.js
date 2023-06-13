@@ -679,6 +679,7 @@ export let libs = {
 				"isNameField": false,
 				"isEditable": false,
 				"isHidden": true,
+				"helpText": 'Id (id)',
 			},
 			{
 				"label": "New Value",
@@ -689,6 +690,7 @@ export let libs = {
 				"isSortable": true,
 				"isNameField": false,
 				"isEditable": false,
+				"helpText": 'NewValue (anyType)',
 			},
 			{
 				"label": "Old Value",
@@ -699,6 +701,7 @@ export let libs = {
 				"isSortable": true,
 				"isNameField": false,
 				"isEditable": false,
+				"helpText": 'NewValue (anyType)',
 			},
 			{
 				"label": "Created Date",
@@ -709,6 +712,7 @@ export let libs = {
 				"isSortable": true,
 				"isNameField": false,
 				"isEditable": false,
+				"helpText": 'CreatedDate (dateTime)',
 			},
 			{
 				"label": "Changed Field",
@@ -719,6 +723,7 @@ export let libs = {
 				"isSortable": true,
 				"isNameField": false,
 				"isEditable": false,
+				"helpText": 'Field (picklist)',
 			},
 			{
 				"label": "Changed By",
@@ -731,6 +736,7 @@ export let libs = {
 				"isEditable": false,
 				"isFilterable": true,
 				"isSortable": true,
+				"helpText": 'CreatedBy.Name (string)',
 			}
 		];
 		if(isChildObjectHistory){
@@ -741,6 +747,7 @@ export let libs = {
 				"referenceTo": apiName.split('::')[2].split('.')[0],
 				"isFilterable": true,
 				"isSortable": true,
+				"helpText": fieldName + ' (reference)',
 			});
 		}
 		return defFields;
