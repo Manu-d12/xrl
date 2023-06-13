@@ -57,7 +57,7 @@ export default class ServerFilter extends LightningElement {
             if (element.type === 'picklist') {
                 element.inputTypeComboBox = true;
                 if (element.options && typeof element.options === 'function') {
-                    element.options = element.options(this, libs, field);
+                    element.options = element.options(this, libs, element);
                 }
                 if (element.options[0].value !== 'All' && element.hasAll) {
                     element.options.splice(0, 0, { label: "All", value: "All" });

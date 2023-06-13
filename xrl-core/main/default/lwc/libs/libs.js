@@ -488,6 +488,7 @@ export let libs = {
 	remoteAction: async function(scope, cmd, params) {
 		scope.config.isSpinner = true;
 		let outParams = {};
+		if (scope.recordId!=undefined) libs.setGlobalVar('recordId', scope.recordId);
 		Object.assign(outParams, params, { recordId: scope.recordId });
 		if (cmd === 'query' && scope.config.dataTableConfig && scope.config.dataTableConfig.loadChunkSize) {
 			console.log('query', scope.config.dataTableConfig.loadChunkSize);
