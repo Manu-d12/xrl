@@ -327,6 +327,14 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 								: 'slds-truncate';
 			// item._isReference = (item.isNameField) ? true : false;
 			item._filterCondition = item._filterCondition ? item._filterCondition : this.config._LABELS.lbl_columnFilter;
+			delete item.isASCSort;
+		});
+		//Showing server side sorting
+		this.config.orderMap?.forEach((el) =>{
+			let col = this.config.colModel.find((e) => e.fieldName === el.field.fieldName);
+			if(col != undefined){
+				col.isASCSort = el.sortOrder === 'ASC';
+			}
 		});
 		//this.config.colModel = JSON.parse(JSON.stringify(this.config.colModel));
 		this.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
@@ -907,25 +915,28 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		} else {
 			//console.log('Need filter by', filters.length);
 			let allRecords = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
-			filters.forEach( filter => {
-				//console.log('filter', JSON.parse(JSON.stringify(filter)));
-				if (!filterLibs[filter.type + '__filter']) {
-					console.error('Filter does not support for type', filter.type);
-					return this.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
-				} else {
-					allRecords = allRecords.filter(record=> {
-						if(filter.type === 'reference' && record[(filter.fieldName).slice(0,-2)]){
-							return filterLibs[filter.type + '__filter'](filter, record);
-						}else{
-							filter._locale = libs.getGlobalVar(this.cfg).userInfo.locale;
-							filter._timeZone = libs.getGlobalVar(this.cfg).userInfo.timeZone;
-							return filterLibs[filter.type + '__filter'](filter, record);
-						}
-					})
-					this.records = allRecords;
-				}
-			});
-			
+			try{
+				filters.forEach( filter => {
+					//console.log('filter', JSON.parse(JSON.stringify(filter)));
+					if (!filterLibs[filter.type + '__filter']) {
+						console.error('Filter does not support for type', filter.type);
+						return this.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
+					} else {
+						allRecords = allRecords.filter(record=> {
+							if(filter.type === 'reference' && record[(filter.fieldName).slice(0,-2)]){
+								return filterLibs[filter.type + '__filter'](filter, record);
+							}else{
+								filter._locale = libs.getGlobalVar(this.cfg).userInfo.locale;
+								filter._timeZone = libs.getGlobalVar(this.cfg).userInfo.timeZone;
+								return filterLibs[filter.type + '__filter'](filter, record);
+							}
+						})
+						this.records = allRecords;
+					}
+				});
+			}catch(e) {
+				console.log('Filter error');
+			}
 		}
 		this.setNumPages(this.config.pager.pageSize);
 		
