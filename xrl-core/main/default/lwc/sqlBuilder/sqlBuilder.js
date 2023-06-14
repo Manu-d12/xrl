@@ -146,7 +146,8 @@ export default class SqlBuilder extends LightningElement {
             });
         }
         if(val === "sqlBuilder:deleteSelectedField"){
-            let field = event.target.getAttribute('data-val');                
+            let field = event.target.getAttribute('data-val');   
+            this.config.sqlBuilder.lastDeletedField = field;             
             this.config.sqlBuilder.selectedFields = this.config.sqlBuilder.selectedFields.filter(function(e) { return e.fieldName !== field });
             let col = this.config.sqlBuilder.fields.find((el) => el.fieldName === field);
             if(col !== undefined){
