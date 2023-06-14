@@ -150,6 +150,9 @@ export let filterLibs = {
 	encryptedstring__filter(filter, record) {
         return filterLibs.string__filter(filter, record);
     },
+	id__filter(filter, record) {
+        return filterLibs.string__filter(filter, record);
+    },
 	boolean__filter(filter, record) {
 		let value = this.getValue(filter, record);
         // if (value === null) return false;
@@ -336,6 +339,9 @@ export let filterLibs = {
         return (key) 
 			? actions.find( el => { return el.value === key})
 			: actions;
+	},
+	idFilterActions(labels,key) {
+        return filterLibs.stringFilterActions(labels,key);
 	},
 	encryptedstringFilterActions(labels,key) {
         return filterLibs.stringFilterActions(labels,key);

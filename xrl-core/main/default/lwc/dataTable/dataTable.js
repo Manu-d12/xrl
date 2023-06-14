@@ -915,25 +915,28 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		} else {
 			//console.log('Need filter by', filters.length);
 			let allRecords = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
-			filters.forEach( filter => {
-				//console.log('filter', JSON.parse(JSON.stringify(filter)));
-				if (!filterLibs[filter.type + '__filter']) {
-					console.error('Filter does not support for type', filter.type);
-					return this.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
-				} else {
-					allRecords = allRecords.filter(record=> {
-						if(filter.type === 'reference' && record[(filter.fieldName).slice(0,-2)]){
-							return filterLibs[filter.type + '__filter'](filter, record);
-						}else{
-							filter._locale = libs.getGlobalVar(this.cfg).userInfo.locale;
-							filter._timeZone = libs.getGlobalVar(this.cfg).userInfo.timeZone;
-							return filterLibs[filter.type + '__filter'](filter, record);
-						}
-					})
-					this.records = allRecords;
-				}
-			});
-			
+			try{
+				filters.forEach( filter => {
+					//console.log('filter', JSON.parse(JSON.stringify(filter)));
+					if (!filterLibs[filter.type + '__filter']) {
+						console.error('Filter does not support for type', filter.type);
+						return this.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
+					} else {
+						allRecords = allRecords.filter(record=> {
+							if(filter.type === 'reference' && record[(filter.fieldName).slice(0,-2)]){
+								return filterLibs[filter.type + '__filter'](filter, record);
+							}else{
+								filter._locale = libs.getGlobalVar(this.cfg).userInfo.locale;
+								filter._timeZone = libs.getGlobalVar(this.cfg).userInfo.timeZone;
+								return filterLibs[filter.type + '__filter'](filter, record);
+							}
+						})
+						this.records = allRecords;
+					}
+				});
+			}catch(e) {
+				console.log('Filter error');
+			}
 		}
 		this.setNumPages(this.config.pager.pageSize);
 		
