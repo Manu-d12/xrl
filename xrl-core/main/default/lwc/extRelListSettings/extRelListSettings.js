@@ -62,11 +62,19 @@ export default class extRelListSettings extends LightningElement {
 
 	get selectedFields() {
 		let items = [];
-		let allColumns = this.dataTable.colModel;
-		this.config.dialog.selectedFields.forEach( e=>{
-			let item = allColumns.find((el)=> el.fieldName === e);
-			if (item) items.push({value: item.fieldName, label: item.label});
+		// let allColumns = this.dataTable.colModel;
+		this.config?.sqlBuilder?.selectedFields.forEach( e=>{
+			// let item = allColumns.find((el)=> el.fieldName === e);
+			// if (item) items.push({value: item.fieldName, label: item.label});
+			items.push({value: e.fieldName, label: e.label});
 		});
+		//if the last opened column in field settings is deleted then we need to close the settings from that column
+		if(this.config.dialog.field !== undefined 
+			&& this.config.sqlBuilder.lastDeletedField !== undefined
+			&& !items.includes(this.config.dialog.field)
+			&& this.config.sqlBuilder.lastDeletedField === this.config.dialog.field){
+				this.config.dialog.field = undefined;
+		}
         return items;
     } 
 
@@ -74,12 +82,6 @@ export default class extRelListSettings extends LightningElement {
 		let result = [];
 		if (this.config.dialog.field === undefined) {return result};
 		
-		let describe = this.config.describe;
-		// this.config.listViewConfig.forEach((el)=>{
-		// 	if(el.cmpName === 'dataTable') {
-		// 		this.dataTable = el;
-		// 	}
-		// });
 		let fieldParams = this.config.dialog.listViewConfig.colModel.find( e=>{
 			return e.fieldName === this.config.dialog.field;
 		});
@@ -167,7 +169,7 @@ export default class extRelListSettings extends LightningElement {
 				"helpStyle": this.generateStyleForHelp(tmp[item].type)
 			})
 		}
-		console.log(result);
+		// console.log(result);
 		return result;
 	}
 	generateStyleForHelp(type){
@@ -302,7 +304,6 @@ export default class extRelListSettings extends LightningElement {
 		this.config.dialog.useExampleParams[event.target.getAttribute('data-param')] = event.target.getAttribute('data-val').substring(event.target.getAttribute('data-val').indexOf('function')).replaceAll("//","");
 	}
 	tabChanged(event){
-		console.log('tab changed', event.target.value);
 		this.config._tabs.currentOpenedTab = event.target.value;
 	}
 }

@@ -733,28 +733,27 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	isThereUnsavedRecords(){
 		return this.config.listViewConfig[0]._changedRecords ? true : false;
 	}
+	generateDialogTitle(){
+		let lViewName = this.config?.listView?.label === undefined || this.config?.listView?.label === false ? '' : this.config?.listView?.label;
+		let title = this.config.userInfo.isAdminAccess === true ? 
+			(lViewName !== '' ? 
+			this.config._LABELS.title_listViewConfiguration + ' ' +  lViewName : this.config._LABELS.title_listViewConfiguration.slice(0, -2))
+			:(lViewName !== '' ? 
+			this.config._LABELS.title_selectFieldToDisplay + ' ' +  lViewName : this.config._LABELS.title_selectFieldToDisplay.slice(0, -2));
+		return title;
+		}
 
 	handleEventCfg(event) {
 		if(!this.isThereUnsavedRecords()){
 			this.config = libs.getGlobalVar(this.name);
 			let variant = this.config.userInfo.isAdminAccess === true ? 'error' : 'shade'; // shade, error, warning, info, confirm
-			let fields = [];
-			for (let key in this.config.describe) {
-				fields.push({ label: this.config.describe[key].label, value: this.config.describe[key].name });
-			}
-			let lockedOptions = [];
-			for (let col of this.config.listViewConfig[0].colModel) {
-				lockedOptions.push({ label: col.label, value: col.fieldName });
-			}
 			this.config._tabs = {};
 			this.config.dialog = {
-				"title": this.config.userInfo.isAdminAccess === true ? this.config._LABELS.title_listViewConfiguration + ' ' +  this.config?.listView?.label: this.config._LABELS.title_selectFieldToDisplay + ' ' +  this.config?.listView?.label,
+				"title": this.generateDialogTitle(),
 				"variant": variant,
 				"css": 'slds-modal__header slds-theme_{1} slds-theme_alert-texture'.replace('{1}', variant),
-				"options": libs.sortRecords(fields, 'label', true),
 				"selectedFields": this.config.fields,
 				"requiredOptions": this.config.lockedFields,
-				"lockedOptions": libs.sortRecords(lockedOptions, 'label', true),
 				"lockedFields": this.config.lockedFields,
 				"handleEvent": this.handleEventDialog.bind(this),
 				"handleHelpEvent": this.handleHelpEvent.bind(this),
@@ -973,7 +972,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			this.config.dialog.saveAs = true;
 		}
 		if (val === 'dialog:saveAsCancel') {
-			this.config.dialog.title = this.config.userInfo.isAdminAccess === true ? this.config._LABELS.title_listViewConfiguration + ' ' +  this.config?.listView?.name: this.config._LABELS.title_selectFieldToDisplay + ' ' +  this.config?.listView?.name;
+			this.config.dialog.title = this.generateDialogTitle();
 			this.config.dialog.saveAs = false;
 		}
 		//HYPER-455
