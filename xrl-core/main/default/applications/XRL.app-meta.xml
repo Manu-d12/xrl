@@ -16,5 +16,4 @@
     <tabs>EXRL</tabs>
     <tabs>extRelListConfig__c</tabs>
     <uiType>Lightning</uiType>
-    <utilityBar>XRL_UtilityBar</utilityBar>
 </CustomApplication>
