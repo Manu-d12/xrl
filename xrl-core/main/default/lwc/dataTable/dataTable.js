@@ -330,7 +330,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			delete item.isASCSort;
 		});
 		//Showing server side sorting
-		this.config.orderMap.forEach((el) =>{
+		this.config.orderMap?.forEach((el) =>{
 			let col = this.config.colModel.find((e) => e.fieldName === el.field.fieldName);
 			if(col != undefined){
 				col.isASCSort = el.sortOrder === 'ASC';
