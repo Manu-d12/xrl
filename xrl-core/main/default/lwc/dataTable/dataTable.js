@@ -327,6 +327,14 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 								: 'slds-truncate';
 			// item._isReference = (item.isNameField) ? true : false;
 			item._filterCondition = item._filterCondition ? item._filterCondition : this.config._LABELS.lbl_columnFilter;
+			delete item.isASCSort;
+		});
+		//Showing server side sorting
+		this.config.orderMap.forEach((el) =>{
+			let col = this.config.colModel.find((e) => e.fieldName === el.field.fieldName);
+			if(col != undefined){
+				col.isASCSort = el.sortOrder === 'ASC';
+			}
 		});
 		//this.config.colModel = JSON.parse(JSON.stringify(this.config.colModel));
 		this.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.cfg).records));
