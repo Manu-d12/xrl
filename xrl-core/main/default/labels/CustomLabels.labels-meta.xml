@@ -1583,7 +1583,7 @@ return &quot;background-color:#F5F5F5;&quot; //light grey
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>tooltip_configSaveAsSave</shortDescription>
-        <value>Save this listview with this list view name and label</value>
+        <value>Save this listview with this list view label</value>
     </labels>
     <labels>
         <fullName>tooltip_configSaveAsCancel</fullName>
