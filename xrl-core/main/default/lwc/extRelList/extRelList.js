@@ -1249,6 +1249,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 		if (val.startsWith('std:reset_filters')) {
 			if(!this.isThereUnsavedRecords()){
+				this.config.isSpinner = true;
+				let recs = [... this.config.records];
+				this.config.records = false;
+				const actionsBar = Object.assign({}, this.config.actionsBar);
+				this.config.actionsBar = false;
 				this.config.listViewConfig[0].colModel.forEach( e=>  {
 					if(e._filterStrLastChangeDate !== undefined){
 						e._isFilterOptions = undefined;
@@ -1262,7 +1267,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 						e._filterOption = undefined;
 					}
 				});
-				this.template.querySelector('c-Data-Table').updateView();
+				setTimeout(function(that) {
+					that.config.records = recs; //refreshing the dataTable component
+					that.config.actionsBar = actionsBar;//refreshing the action bar component
+					that.config.isSpinner = false;
+				},1,this);
 			}else{
 				const event = new ShowToastEvent({
 					title: 'Error',

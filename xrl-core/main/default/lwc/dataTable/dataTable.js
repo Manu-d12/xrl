@@ -295,6 +295,16 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		});
 		this.config.colModel.forEach(item => {
 			item._hideFromDisplay = item._skipFieldFromDisplay || item.isHidden;
+			delete item._filterVariant;
+			delete item._isFilterOptions;
+			delete item._filterStrLastChangeDate;
+			delete item.filterStr;
+			delete item.filterStrTo;
+			delete item.isShowClearBtn;
+			delete item._filterCondition;
+			delete item._filterVariant;
+			delete item._filterStr;
+			delete item._filterOption;
 			let fDescribe = describe[item.fieldName];
 			if (fDescribe) {
 				//Need to add dynamyc parameters like a field length;
