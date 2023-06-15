@@ -136,8 +136,8 @@ export default class dataTableItem extends LightningElement {
 				value += this.col._uStyle(row, this.col, val);
 			} catch(e) {
 				console.error(e.toString);
+				value = val;
 			}
-			value = val;
 		}
 		return value;
 	}
