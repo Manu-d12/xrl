@@ -948,7 +948,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	initSort() {
 		this.config.colModel.forEach((e, index) => { // unsorted -> asc -> desc
 			if (e.isSortable === true && e.isASCSort !== undefined) {
-				e._sortIcon = e.isASCSort === true ? 'utility:arrowdown' : 'utility:arrowup';
+				e._sortIcon = e.isASCSort === true ? 'utility:arrowup' : 'utility:arrowdown';
 				let fieldName = e.fieldName.split('.')[1] != undefined ?
 				e.fieldName.split('.')[1]
 				:e.type === 'reference' ? 'Name' : e.fieldName;
@@ -987,7 +987,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			this.config.colModel.forEach((e, index) => { // unsorted -> asc -> desc
 				if (fieldName === e.fieldName && e.isSortable === true && e.isASCSort !== false) {
 					e.isASCSort = e.isASCSort === undefined;
-					e._sortIcon = e.isASCSort ? 'utility:arrowdown' : 'utility:arrowup';
+					e._sortIcon = e.isASCSort ? 'utility:arrowup' : 'utility:arrowdown';
 					if (this.hasGrouping && fieldName === this.config.groupingParams.field) this.config.groupingParams.order = e.isASCSort ? 'asc' : 'desc';
 					else {
 						let fieldName = e.fieldName.split('.')[1] != undefined ?
@@ -1032,7 +1032,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		let col = this.config.colModel.find(e => {return e.fieldName === this._sortSequence[this._sortSequence.length - 1];});
 		if (col.isASCSort !== false) {
 			col.isASCSort = col.isASCSort === undefined;
-			col._sortIcon = col.isASCSort ? 'utility:arrowdown' : 'utility:arrowup';
+			col._sortIcon = col.isASCSort ? 'utility:arrowup' : 'utility:arrowdown';
 		} else {
 			col._sortIcon = undefined;
 			col.isASCSort = undefined;
