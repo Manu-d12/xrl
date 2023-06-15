@@ -329,34 +329,39 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					e._skipFieldFromDisplay = false;
 				}
 			}
-			if(e.fieldName === 'Id'){
-				let describe = this.config.describe[e.fieldName];
+			let describe = this.config.describe[e.fieldName];
+			if(describe !== undefined || describe !== null){
 				if (e.label === undefined) e.label = describe.label;
 				if (e.type === undefined) e.type = describe.type;
 				if (e.updateable === undefined) e.updateable = describe.updateable;
 				if (e.isNameField === undefined) e.isNameField = describe && describe.nameField === true;
-				if (e.type === 'picklist' && e.options === undefined) {
-					e.options = [];
-					describe.picklistValues.forEach(field => {
-						e.options.push(
-							{ label: field.label, value: field.value }
-						)
-					});
-				}
-				if (e.isEditable && describe.updateable) {
-					if (e.type === 'picklist' || e.type === 'reference') {
-						e.isEditableAsPicklist = true;
-						console.log('picklist', e);
-					} else if (e.type === 'boolean') {
-						e.isEditableBool = true;
-					} else if (e.type === 'textarea') {
-						e.isEditableTextArea = true;
-					} else {
-						e.isEditableRegular = true;
-					}
-				} else {
-					e.isEditable = false;
-				}
+				if(e.type === 'picklist' || e.type === 'multipicklist'){
+                    e.options = [];
+                    if(describe.nillable){
+                        e.options.push(
+                            { label: '--None--', value: 'NONE' }
+                        )
+                    }
+                    describe.picklistValues.forEach(field => {
+                        e.options.push(
+                            { label: field.label != null ? field.label : field.value, value: field.value }
+                        )
+                    });
+                }
+				// if (e.isEditable && describe.updateable) {
+				// 	if (e.type === 'picklist' || e.type === 'reference') {
+				// 		e.isEditableAsPicklist = true;
+				// 		console.log('picklist', e);
+				// 	} else if (e.type === 'boolean') {
+				// 		e.isEditableBool = true;
+				// 	} else if (e.type === 'textarea') {
+				// 		e.isEditableTextArea = true;
+				// 	} else {
+				// 		e.isEditableRegular = true;
+				// 	}
+				// } else {
+				// 	e.isEditable = false;
+				// }
 			}
 		});
 		console.log('ColModel', JSON.parse(JSON.stringify(this.config.listViewConfig[0].colModel)));
@@ -1088,14 +1093,40 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			expandAction.actionTip = this.config._expandTip;
 		}
 		let tmp = JSON.parse(JSON.stringify(this.config.dialog.listViewConfig));
-		for (let key in tmp) {
-			if (key.startsWith('_')) delete tmp[key];
-		}
-		console.log(tmp);
+		tmp = this.deleteKeysStartingWithUnderscore(tmp);
 		let cnfg = [];
 		cnfg.push(tmp);
 		return JSON.stringify(cnfg, null, '\t');
 	}
+	deleteKeysStartingWithUnderscore(obj) {
+		if (Array.isArray(obj)) {
+		  for (let i = 0; i < obj.length; i++) {
+			if (typeof obj[i] === 'object' && obj[i] !== null) {
+				this.deleteKeysStartingWithUnderscore(obj[i]);
+			}
+		  }
+		} else if (typeof obj === 'object' && obj !== null) {
+		  for (let key in obj) {
+			if (key.startsWith('_')) {
+			  delete obj[key];
+			}else if(key === 'options'){
+				delete obj[key];
+			} else {
+			  if (typeof obj[key] === 'object' && obj[key] !== null) {
+				this.deleteKeysStartingWithUnderscore(obj[key]);
+			  }
+			}
+		  }
+	  
+		  // Check if any child object is empty after deletion and remove it
+		  for (let key in obj) {
+			if (obj.hasOwnProperty(key) && typeof obj[key] === 'object' && obj[key] !== null && Object.keys(obj[key]).length === 0) {
+			  delete obj[key];
+			}
+		  }
+		}
+		return obj;
+	  }
 
 	saveListView(nodeName, data) {
 		const event = new ShowToastEvent({

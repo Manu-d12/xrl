@@ -638,10 +638,10 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					callback: ((nodeName, data) => {
 						//console.log('length from Citem', data[nodeName].records);
 						cItem.options = [];
-						cItem.refNodeOptions = [...data[nodeName].records]; 
+						cItem._refNodeOptions = [...data[nodeName].records]; 
 						if(cItem.nillable === true){
 							cItem.options.push({"label":'--None--',"value":'NONE'});
-							cItem.refNodeOptions.push({"label":'--None--',"Id":'NONE'});
+							cItem._refNodeOptions.push({"label":'--None--',"Id":'NONE'});
 						}
 						data[nodeName].records.forEach(e => {
 							cItem.options.push({label: e.Name, value: e.Id});
@@ -1129,7 +1129,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		
 		if (describe.type === 'reference') {
 
-			refNodeValue = this.config._bulkEdit.cItem.refNodeOptions.find( elem =>{
+			refNodeValue = this.config._bulkEdit.cItem._refNodeOptions.find( elem =>{
 				return elem.Id === value.value;
 			});
 
