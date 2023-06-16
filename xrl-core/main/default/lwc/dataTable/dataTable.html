@@ -47,7 +47,7 @@
 										<lightning-icon data-id={hItem.fieldName} if:true={hItem._sortIcon} icon-name={hItem._sortIcon} size="xx-small" title={config._LABELS.title_sortColumn}></lightning-icon>
 									</span>
 								</span>
-								<lightning-icon if:true={hItem.isEditable} data-id={hItem.fieldName} icon-name="utility:edit" size="xx-small" alternative-text={config._LABELS.altTxt_editColumn} title={config._LABELS.title_editColumn}>&nbsp;</lightning-icon>
+								<lightning-icon if:true={hItem._showEditableIcon} data-id={hItem.fieldName} icon-name="utility:edit" size="xx-small" alternative-text={config._LABELS.altTxt_editColumn} title={config._LABELS.title_editColumn}>&nbsp;</lightning-icon>
 
 							</span>
 						</th>

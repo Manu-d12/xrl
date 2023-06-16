@@ -300,6 +300,10 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				//Need to add dynamyc parameters like a field length;
 				item.length = fDescribe.length ? fDescribe.length : fDescribe.precision;
 				item.inlineHelpText = fDescribe.inlineHelpText;
+
+				if(item.isEditable){
+					item._showEditableIcon = item.isEditable && fDescribe.updateable;
+				}
 			}
 			if (item.formatter !== undefined && item.formatter!=="") {
 				try {
@@ -587,7 +591,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		//console.log(rowInd + ' ' + rowId);
 
 		let cItem = this.getColItem(colName);
-		if (!cItem || !cItem.isEditable) {
+		if (!cItem || !cItem._showEditableIcon) {
 			const toast = new ShowToastEvent({
 				title: 'Error',
 				message: this.config._LABELS.msg_rowDblClickError,
@@ -683,7 +687,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				this.config._inlineEdit = calculatedInd;
 		
 				this.config.colModel.forEach(async (el) => {
-					if(el.isEditable && el.type === 'reference' && !el._editOptions){
+					if(el._showEditableIcon && el.type === 'reference' && !el._editOptions){
 						el._editOptions = [];
 						if(cItem.nillable === true){
 							el._editOptions.push({"label":'--None--',"value":'NONE'});

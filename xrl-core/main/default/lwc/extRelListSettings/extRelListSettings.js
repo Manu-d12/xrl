@@ -89,9 +89,11 @@ export default class extRelListSettings extends LightningElement {
 		if (!fieldParams) fieldParams = {}
 
 		let tmp = libs.colModelItem();
+		let desc = this.config.describe;
 
 		for (let item in tmp) {
 			if(this.config.isHistoryGrid && tmp[item].isReadOnly) continue;
+			if(item === 'isEditable' && !desc[fieldParams.fieldName].updateable) continue; //if the user don't have permission skip this field for editing
 			if(item === 'isEditable' && (!this.config.describeObject.updateable || !fieldParams.updateable || fieldParams.fieldName.includes('.'))) continue;
 			let defValue = (item === 'fieldName') 
 				? this.config.dialog.field 
