@@ -378,6 +378,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				let cItem = this.getColItem(rowName);
 				if(cItem.type === 'reference' && cItem._editOptions){
 					this.config._inlineEditRow[cItem.fieldName] = this.newValValidation(value);
+					if(this.config._inlineEditRow[cItem.referenceTo] && this.newValValidation(value) === null){
+						this.config._inlineEditRow[cItem.referenceTo] = null;
+					}
 					if(this.config._inlineEditRow[cItem.fieldName] !== null){
 						let newVal = cItem._editOptions.find((el)=>{
 							return el.value === value;
