@@ -1508,7 +1508,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				return el.actionId == val;
 			});
 			actionCallBack = action.actionCallBack;
-			selectedRecords = this.template.querySelector('c-Data-Table').getSelectedRecords();
+			selectedRecords = this.template.querySelector('c-Data-Table')?.getSelectedRecords();
 			// if(action.actionCallBack != undefined && action.actionCallBack != ''){
 			// 	console.log('Callback defined: ', action.actionCallBack);
 			// 	eval('(' + action.actionCallBack + ')')(this.template.querySelector('c-Data-Table').getSelectedRecords());
