@@ -149,10 +149,12 @@
 				<lightning-helptext if:true={config.dialog.saveAs} content={config._LABELS.tooltip_configSaveAsCancel}></lightning-helptext>
 				<!-- Save As dialog Ends -->
 
-				<!-- Save Button -->
-				<lightning-button if:false={config.dialog.saveAs} variant="neutral" label={config._LABELS.lbl_save} title={config._LABELS.title_saveSelectedFields} icon-name="utility:save" class="slds-m-left_x-small" data-id="dialog:save" onclick={config.dialog.handleEvent}></lightning-button>
-				<lightning-helptext if:false={config.dialog.saveAs} class="placeTop" content={config._LABELS.tooltip_configSave}></lightning-helptext>
-				<!-- Save As Button -->
+				<template if:true={config.listView.id}>
+					<!-- Save Button -->
+					<lightning-button if:false={config.dialog.saveAs} variant="neutral" label={config._LABELS.lbl_save} title={config._LABELS.title_saveSelectedFields} icon-name="utility:save" class="slds-m-left_x-small" data-id="dialog:save" onclick={config.dialog.handleEvent}></lightning-button>
+					<lightning-helptext if:false={config.dialog.saveAs} class="placeTop" content={config._LABELS.tooltip_configSave}></lightning-helptext>
+				</template>
+			<!-- Save As Button -->
 				<lightning-button if:false={config.dialog.saveAs} variant="brand" label={config._LABELS.lbl_saveAs} title={config._LABELS.title_saveSelectedFields} icon-name="utility:save" class="slds-m-left_x-small" data-id="dialog:saveAs" onclick={config.dialog.handleEvent}></lightning-button>
 				<!-- <lightning-helptext if:false={config.dialog.saveAs} class="placeTop" content={config._LABELS.tooltip_configSaveAs}></lightning-helptext> -->
 				<lightning-helptext icon-name="utility:question" if:false={config.dialog.saveAs} 
@@ -162,14 +164,15 @@
 				<!-- Cancel Button -->
 				<lightning-button if:false={config.dialog.saveAs} variant="neutral" label={config._LABELS.lbl_cancel} title={config._LABELS.lbl_cancel} icon-name="utility:error" class="slds-m-left_x-small" data-id="dialog:close" onclick={config.dialog.handleEvent}></lightning-button>
 				<lightning-helptext if:false={config.dialog.saveAs} class="placeTop" content={config._LABELS.tooltip_configCancel}></lightning-helptext>
-				<!-- Share Button -->
-				<lightning-button if:false={config.dialog.saveAs} variant="neutral" label="Share" title={config._LABELS.lbl_cancel} icon-name="utility:internal_share" class="slds-m-left_x-small" data-id="dialog:config_share" onclick={config.dialog.handleEvent}></lightning-button>
-				<lightning-helptext icon-name="utility:question" if:false={config.dialog.saveAs} 
-					onclick={config.dialog.handleHelpEvent} data-id="help:shareView" data-url={config._LABELS.hlpUrl_shareView}
-					class="placeTop" content={config._LABELS.tooltip_configShare} alternative-text={config._LABELS.altTxt_hlpUrl}>
-				</lightning-helptext>
-				<!-- Delete Config Button -->
+				<!-- Only visible when there is a saved config -->
 				<template if:true={config.listView.id}>
+					<!-- Share Button -->
+					<lightning-button if:false={config.dialog.saveAs} variant="neutral" label="Share" title={config._LABELS.lbl_cancel} icon-name="utility:internal_share" class="slds-m-left_x-small" data-id="dialog:config_share" onclick={config.dialog.handleEvent}></lightning-button>
+					<lightning-helptext icon-name="utility:question" if:false={config.dialog.saveAs} 
+						onclick={config.dialog.handleHelpEvent} data-id="help:shareView" data-url={config._LABELS.hlpUrl_shareView}
+						class="placeTop" content={config._LABELS.tooltip_configShare} alternative-text={config._LABELS.altTxt_hlpUrl}>
+					</lightning-helptext>
+					<!-- Delete Config Button -->
 					<lightning-button if:false={config.dialog.saveAs} variant="destructive" label="Delete" title="Delete" icon-name="utility:delete" class="slds-m-left_x-small" data-id="dialog:config_delete" onclick={config.dialog.handleEvent}></lightning-button>
 					<lightning-helptext icon-name="utility:question" if:false={config.dialog.saveAs} 
 						onclick={config.dialog.handleHelpEvent} data-id="help:deleteView" data-url={config._LABELS.hlpUrl_deleteView}
