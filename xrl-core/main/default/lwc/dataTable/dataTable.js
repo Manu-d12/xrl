@@ -310,6 +310,10 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				//Need to add dynamyc parameters like a field length;
 				item.length = fDescribe.length ? fDescribe.length : fDescribe.precision;
 				item.inlineHelpText = fDescribe.inlineHelpText;
+
+				if(item.isEditable){
+					item._showEditableIcon = item.isEditable && fDescribe.updateable;
+				}
 			}
 			if (item.formatter !== undefined && item.formatter!=="") {
 				try {
@@ -388,6 +392,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				let cItem = this.getColItem(rowName);
 				if(cItem.type === 'reference' && cItem._editOptions){
 					this.config._inlineEditRow[cItem.fieldName] = this.newValValidation(value);
+					if(this.config._inlineEditRow[cItem.referenceTo] && this.newValValidation(value) === null){
+						this.config._inlineEditRow[cItem.referenceTo] = null;
+					}
 					if(this.config._inlineEditRow[cItem.fieldName] !== null){
 						let newVal = cItem._editOptions.find((el)=>{
 							return el.value === value;
@@ -594,7 +601,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		//console.log(rowInd + ' ' + rowId);
 
 		let cItem = this.getColItem(colName);
-		if (!cItem || !cItem.isEditable) {
+		if (!cItem || !cItem._showEditableIcon) {
 			const toast = new ShowToastEvent({
 				title: 'Error',
 				message: this.config._LABELS.msg_rowDblClickError,
@@ -648,10 +655,10 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					callback: ((nodeName, data) => {
 						//console.log('length from Citem', data[nodeName].records);
 						cItem.options = [];
-						cItem.refNodeOptions = [...data[nodeName].records]; 
+						cItem._refNodeOptions = [...data[nodeName].records]; 
 						if(cItem.nillable === true){
 							cItem.options.push({"label":'--None--',"value":'NONE'});
-							cItem.refNodeOptions.push({"label":'--None--',"Id":'NONE'});
+							cItem._refNodeOptions.push({"label":'--None--',"Id":'NONE'});
 						}
 						data[nodeName].records.forEach(e => {
 							cItem.options.push({label: e.Name, value: e.Id});
@@ -690,7 +697,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				this.config._inlineEdit = calculatedInd;
 		
 				this.config.colModel.forEach(async (el) => {
-					if(el.isEditable && el.type === 'reference' && !el._editOptions){
+					if(el._showEditableIcon && el.type === 'reference' && !el._editOptions){
 						el._editOptions = [];
 						if(cItem.nillable === true){
 							el._editOptions.push({"label":'--None--',"value":'NONE'});
@@ -1139,7 +1146,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		
 		if (describe.type === 'reference') {
 
-			refNodeValue = this.config._bulkEdit.cItem.refNodeOptions.find( elem =>{
+			refNodeValue = this.config._bulkEdit.cItem._refNodeOptions.find( elem =>{
 				return elem.Id === value.value;
 			});
 
