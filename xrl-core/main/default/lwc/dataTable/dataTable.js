@@ -856,7 +856,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			return;
 		} 
 		if (this.config._isFilterOptions.isShowStr) {
-			this.config._isFilterOptions[fieldName] = event.detail.value;
+			this.config._isFilterOptions[fieldName] = event.detail.value === null && this.config._isFilterOptions.type === 'datetime' ? new Date().toISOString() : event.detail.value;
 		} else {
 			this.config._isFilterOptions[fieldName] = event.detail.payload ? event.detail.payload.values : event.detail;
 		}
