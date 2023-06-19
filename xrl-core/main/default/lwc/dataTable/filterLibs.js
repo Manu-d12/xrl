@@ -177,13 +177,14 @@ export let filterLibs = {
 			day : "2-digit",
 			year: "numeric",
 			hour: "2-digit",
-			timeZone: filter._timezone
+			minute: "2-digit"
 		});
 		recordDate = new Date(value).toLocaleString(filter._locale,{
 			month : "2-digit",
 			day : "2-digit",
 			year: "numeric",
 			hour: "2-digit",
+			minute: "2-digit",
 			timeZone: filter._timezone
 		});
 
@@ -210,7 +211,7 @@ export let filterLibs = {
 					day : "2-digit",
 					year: "numeric",
 					hour: "2-digit",
-					timeZone: filter._timezone
+					minute: "2-digit"
 				});
 				return recordDate >= filterDate && recordDate <= filterTwoDate;
 			
