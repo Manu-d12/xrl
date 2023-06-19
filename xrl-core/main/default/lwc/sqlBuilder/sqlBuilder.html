@@ -227,7 +227,7 @@
                 </div>
                 <div class="slds-col slds-size_3-of-12">
                     <template if:true={config.sqlBuilder.currentOrder}>
-                        <div class="slds-text-heading_small"><b>{config._LABELS.lbl_configure}</b> {config.sqlBuilder.currentOrder.field.fieldName}</div>
+                        <div class="slds-text-heading_small" style="overflow-wrap: break-word;"><b>{config._LABELS.lbl_configure}</b> {config.sqlBuilder.currentOrder.field.fieldName}</div>
                         <div style="height:25rem;">
                                 <lightning-combobox if:true={config.sqlBuilder.currentOrder} data-id="sqlBuilder:ordering:sortOrder" onchange={handleBuilderEvent} options={config.sqlBuilder.sortOrderOptions} value={config.sqlBuilder.currentOrder.sortOrder} label={config._LABELS.lbl_selectSortOrder}></lightning-combobox>
                                 <lightning-combobox if:true={config.sqlBuilder.currentOrder} data-id="sqlBuilder:ordering:emptyFieldPosition" onchange={handleBuilderEvent} options={config.sqlBuilder.emptyFieldOptions} value={config.sqlBuilder.currentOrder.emptyField} label={config._LABELS.lbl_selectEmptyFieldLocation}></lightning-combobox>
