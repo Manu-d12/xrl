@@ -22,8 +22,8 @@ export default class Layout extends LightningElement {
 
     connectedCallback() {
 		console.log('RENDERED');
-		this.name = this.configId.split('::')[1];
-		this.configId = this.configId.split('::')[0];
+		this.name = this.configId.replaceAll(':','');
+		this.configId = this.configId;
 		this.loadCfg(true);
 		window.addEventListener("resize", this.handleResize.bind(this))
 	}
@@ -51,7 +51,7 @@ export default class Layout extends LightningElement {
 		if (this.configuration) {
 			this.setConfig('getConfigResult', this.configuration);
 		} else {
-			libs.remoteAction(this, 'getConfigById', { configId: this.configId, callback: this.getWholeConfig.bind(this) });
+			libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: this.configId, callback: this.getWholeConfig.bind(this) });
 		}
 	}
 	async getWholeConfig(cmd,data){
