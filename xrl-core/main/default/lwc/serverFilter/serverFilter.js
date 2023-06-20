@@ -207,13 +207,31 @@ export default class ServerFilter extends LightningElement {
                         condition += 'AND ' + key + "='" + this.conditionMap[key] + "' ";
                     }
                     else {
-                        condition += 'AND ' + key + " LIKE '%" + this.conditionMap[key] + "%' ";
+                        // condition += 'AND ' + key + " LIKE '%" + this.conditionMap[key] + "%' ";
+                        condition += ' AND ' + this.generateLikeCondition(key,this.conditionMap[key]);
                     }
                 }
             }
         }
         console.log('WHERE CAUSE', condition);
         return condition;
+    }
+    generateLikeCondition(key,str){
+        let retCon = '(';
+        let arr = str.split(" ");
+        arr.forEach(function(element,index) {
+            if(index > 0)
+                retCon += 'OR ' + key + " LIKE '%" + element + "%' ";
+            else{
+                retCon += key + " LIKE '%" + element + "%' ";
+            }
+        });
+        if(arr.length > 1){
+            retCon += 'OR ' + key + " LIKE '%" + str + "%') ";
+        }else{
+            retCon += ' )';
+        }
+        return retCon;
     }
     handleSelectFields(event) {
         const selectedOptionsList = event.detail.value;
