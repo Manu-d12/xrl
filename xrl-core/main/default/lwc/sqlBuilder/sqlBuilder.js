@@ -431,8 +431,9 @@ export default class SqlBuilder extends LightningElement {
         for (let key in describe) {
 
                 let itemCss = this.config.sqlBuilder.selectedFields.find(el => el.fieldName === (objStr ? objStr + describe[key].name : describe[key].name)) ? 'slds-item slds-theme_alt-inverse' : 'slds-item';
-                 fieldMap = { 
-                    label: describe[key].label, 
+                let label = describe[key].type === 'reference' && describe[key].label.toLowerCase().includes('id') ? describe[key].label.replaceAll('ID', '') : describe[key].label;
+                fieldMap = { 
+                    label: label, 
                     fieldName: objStr ? objStr + describe[key].name : describe[key].name, 
                     css: itemCss, 
                     type: describe[key].type,
