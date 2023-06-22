@@ -92,6 +92,10 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		return this.config.enableColumnHeaderWrap ? 'slds-cell-wrap' : 'slds-truncate';
 	}
 
+	get isRecordsExist(){
+		return this.records.length > 0;
+	}
+
 	get tableRecords() {
 		this.records.forEach((el,ind) =>{
 			el.sl = ind + 1;
@@ -139,10 +143,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					if (endIndex < gr.records[gr.records.length - 1].index) {
 						gr.records.splice(endIndex - (gr.records[0].index + 1));
 					}
-					//console.log('gr ',gr.records.length);
 					result.push(gr);
 				}
-				console.log('result size', JSON.parse(JSON.stringify(result)).length);
 				return result;
 			}
 			// Need for pagination;
@@ -228,7 +230,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				groupName = r[this.config.groupingParams.field] !== null && r[this.config.groupingParams.field] !== undefined ? r[this.config.groupingParams.field] : 'empty';
 			}
 			let group = result.has(groupName) ? result.get(groupName) : {
-				title: groupName,
+				title: groupName.toString(),
 				isChecked: false,
 				isOpened: true,
 				records: []
@@ -1080,7 +1082,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				this.config.pager.pageSize = value;
 				
 				this.setNumPages(value);
-				this.config.pager.pageSize = value;
+				// this.config.pager.pageSize = value;
 			}
 			if (fieldName === ':pagerCurPage') {
 				
