@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <applicationVisibilities>
+        <application>XRL</application>
+        <visible>true</visible>
+    </applicationVisibilities>
     <classAccesses>
         <apexClass>getRelListsPicklist</apexClass>
         <enabled>true</enabled>
@@ -47,14 +51,14 @@
         <allowRead>true</allowRead>
         <modifyAllRecords>false</modifyAllRecords>
         <object>extRelListConfig__c</object>
-        <viewAllRecords>false</viewAllRecords>
+        <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <tabSettings>
-        <tab>extRelListConfig__c</tab>
+        <tab>EXRL</tab>
         <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
-        <tab>EXRL</tab>
+        <tab>extRelListConfig__c</tab>
         <visibility>Visible</visibility>
     </tabSettings>
 </PermissionSet>
