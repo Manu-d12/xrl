@@ -1452,7 +1452,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					fieldValue = '';
 				}
 				}else {
-				fieldValue = rec[col.fieldName] || '';
+				fieldValue = (rec[col.fieldName] || rec[col.fieldName]==0) ? rec[col.fieldName] : '';
 				}
 
 				switch (col.type) {
