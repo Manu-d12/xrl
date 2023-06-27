@@ -1444,7 +1444,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				let fieldValue;
 				if (col.fieldName.includes('.')) {
 				const [refFieldName, refChildFieldName] = col.fieldName.split('.');
-				if (rec[refFieldName] && rec[refFieldName][refChildFieldName]) {
+				if (rec[refFieldName] && (rec[refFieldName][refChildFieldName] || rec[refFieldName][refChildFieldName]==0)) {
 					fieldValue = rec[refFieldName][refChildFieldName];
 				} else if (col.referenceTo !== undefined && rec[col.referenceTo] && rec[col.referenceTo][refChildFieldName]) {
 					fieldValue = rec[col.referenceTo][refChildFieldName];
