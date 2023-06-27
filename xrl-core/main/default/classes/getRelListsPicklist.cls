@@ -43,7 +43,7 @@ global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickLi
 						new VisualEditor.DataRow(sObjLabel + ' ('+ sObjField +')', sObjLabel + '::' + sObjApiName + '::' + sObjField)
 					);
 					//only if the history object exists
-					if(gd.containsKey(sObjApiName + 'History') || gd.containsKey(sObjApiName.removeEnd('c') + 'history')){
+					if(gd.containsKey(sObjApiName + 'History') || gd.containsKey(sObjApiName.removeEnd('c') + 'History')){
 						SObjectType objToken = gd.get(sObjApiName);
 						//for standard history objects
 						boolean isCustom = objToken.getDescribe().isCustom(); 
@@ -55,7 +55,7 @@ global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickLi
 						}else if(objToken  != null && isCustom){
 							//for custom history objects
 							picklistValues.addRow(
-								new VisualEditor.DataRow(sObjLabel+': History', sObjLabel + ' History::' + sObjApiName.removeEnd('c') + 'history::' + 'Parent.' + sObjField)
+								new VisualEditor.DataRow(sObjLabel+': History', sObjLabel + ' History::' + sObjApiName.removeEnd('c') + 'History::' + 'Parent.' + sObjField)
 							);
 						}
 					}

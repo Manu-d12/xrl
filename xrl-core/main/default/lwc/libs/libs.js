@@ -664,6 +664,12 @@ export let libs = {
 		  ];
 		  return actions;
 	},
+	getParentHistorySObjName: function(name){
+		let config = globalVars[name];
+		return config.sObjApiName.toLowerCase().endsWith('__history') ? 
+				config.sObjApiName.replace('__History','__c') :
+				config.sObjApiName.replace('History','');
+	},
 	historyGrid: function(apiName){
 		//apiName.split('::')[2].split('.')[1] === false means that it is the current object's history
 		//otherwise it is the history grid for parent child.
