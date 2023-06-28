@@ -4,9 +4,9 @@
       "path": "xrl-core",
       "default": true,
       "package": "Extended Related List",
-      "versionName": "3.2.1 PreRelease",
+      "versionName": "3.5.6 PreRelease",
       "versionDescription": "Initial release",
-      "versionNumber": "3.2.1.NEXT",
+      "versionNumber": "3.5.6.NEXT",
       "definitionFile": "config/scratch-org-def.json",
       "ancestorVersion": "HIGHEST"
     }
@@ -202,6 +202,28 @@
     "Extended Related List@3.1.5-1": "04t8d000000ljNcAAI",
     "Extended Related List@3.1.6-1": "04t8d000000ljNmAAI",
     "Extended Related List@3.2.0-1": "04t8d000000ljjdAAA",
-    "Extended Related List@3.2.1-1": "04t8d000000ljjnAAA"
+    "Extended Related List@3.2.1-1": "04t8d000000ljjnAAA",
+    "Extended Related List@3.3.0-1": "04t8d000000ljkHAAQ",
+    "Extended Related List@3.3.1-1": "04t8d000000ljkMAAQ",
+    "Extended Related List@3.3.1-2": "04t8d000000ljkRAAQ",
+    "Extended Related List@3.3.2-1": "04t8d000000ljp3AAA",
+    "Extended Related List@3.3.3-1": "04t8d000000ljp8AAA",
+    "Extended Related List@3.3.4-1": "04t8d000000ljpDAAQ",
+    "Extended Related List@3.3.5-1": "04t8d000000ljpIAAQ",
+    "Extended Related List@3.4.0-1": "04t8d000000ljpNAAQ",
+    "Extended Related List@3.4.1-1": "04t8d000000ljpSAAQ",
+    "Extended Related List@3.4.1-2": "04t8d000000ljpXAAQ",
+    "Extended Related List@3.4.2-1": "04t8d000000ljpcAAA",
+    "Extended Related List@3.4.3-1": "04t8d000000ljpmAAA",
+    "Extended Related List@3.4.4-1": "04t8d000000ljprAAA",
+    "Extended Related List@3.4.5-1": "04t8d000000lju4AAA",
+    "Extended Related List@3.4.6-2": "04t8d000000ljuEAAQ",
+    "Extended Related List@3.5.0-1": "04t8d000000ljuTAAQ",
+    "Extended Related List@3.5.1-2": "04t8d000000ljyqAAA",
+    "Extended Related List@3.5.2-1": "04t8d000000ljz0AAA",
+    "Extended Related List@3.5.3-1": "04t8d000000lkCRAAY",
+    "Extended Related List@3.5.4-1": "04t8d000000lkD5AAI",
+    "Extended Related List@3.5.5-1": "04t8d000000lkjDAAQ",
+    "Extended Related List@3.5.6-1": "04t8d000000lkjIAAQ"
   }
 }
