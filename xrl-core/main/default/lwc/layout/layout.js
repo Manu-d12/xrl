@@ -1,5 +1,7 @@
 import { LightningElement, api, track } from 'lwc';
 import { libs } from 'c/libs';
+import { NavigationMixin } from "lightning/navigation"
+import { encodeDefaultFieldValues, decodeDefaultFieldValues } from 'lightning/pageReferenceUtils'
 
 export default class Layout extends LightningElement {
 	@api recordId;
@@ -431,7 +433,28 @@ export default class Layout extends LightningElement {
 					variant: 'error'
 				});
 			}
+			return;
 		}
+		if (actionId === 'std:delete') {
+				let defValue = {};
+				defValue[this.config.relField] = this.recordId;
+
+				this[NavigationMixin.Navigate]({
+					type: 'standard__objectPage',
+					attributes: {
+						/*recordId: this.recordId, // pass the record id here.*/
+						objectApiName: this.config.sObjApiName,
+						actionName: 'new',
+					},
+					state: {
+						defaultFieldValues: encodeDefaultFieldValues(defValue),
+				        useRecordTypeCheck: 1
+					}
+				});
+
+			return;
+		}
+
 	}
 
 	handleCustomAction(event, cfg) {
