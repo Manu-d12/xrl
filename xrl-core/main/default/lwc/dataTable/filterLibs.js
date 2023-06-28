@@ -172,21 +172,8 @@ export let filterLibs = {
 		if ((filter._filterOption !== 'em' && filter._filterOption !== 'neq' && !value)) return false;
 		let filterDate;
 		let recordDate;
-		filterDate = new Date(filter._filterStr).toLocaleString(filter._locale,{
-			month : "2-digit",
-			day : "2-digit",
-			year: "numeric",
-			hour: "2-digit",
-			minute: "2-digit"
-		});
-		recordDate = new Date(value).toLocaleString(filter._locale,{
-			month : "2-digit",
-			day : "2-digit",
-			year: "numeric",
-			hour: "2-digit",
-			minute: "2-digit",
-			timeZone: filter._timezone
-		});
+		filterDate = new Date(filter._filterStr).getTime();
+		recordDate = new Date(value).getTime();
 
 		switch (filter._filterOption) {
 			case 'eq':
@@ -206,13 +193,7 @@ export let filterLibs = {
 			case 'lse': 
 				return recordDate <= filterDate;
 			case 'rg': 
-				let filterTwoDate = new Date(filter._filterStrTo).toLocaleString(filter._locale,{
-					month : "2-digit",
-					day : "2-digit",
-					year: "numeric",
-					hour: "2-digit",
-					minute: "2-digit"
-				});
+				let filterTwoDate = new Date(filter._filterStrTo).getTime();
 				return recordDate >= filterDate && recordDate <= filterTwoDate;
 			
 		}
