@@ -257,13 +257,14 @@ export let libs = {
 				"cmd" : "dialog:setPagerParam",
 				"helpArticleUrl": _labels.hlpUrl_pagerTop,
 			},
-			"enableColumnHeaderWrap" : {
-				"defValue": false,
-				"type": "checkbox",
-				"label": _labels.lbl_enableColumnHeaderWrap,
-				"tooltip": _labels.tooltip_enableColumnHeaderWrap,
-				"cmd" : "dialog:setTableParam",
-			},
+			//commented out for v2
+			// "enableColumnHeaderWrap" : {
+			// 	"defValue": false,
+			// 	"type": "checkbox",
+			// 	"label": _labels.lbl_enableColumnHeaderWrap,
+			// 	"tooltip": _labels.tooltip_enableColumnHeaderWrap,
+			// 	"cmd" : "dialog:setTableParam",
+			// },
 			"showStandardEdit" : {
 				"defValue": false,
 				"type": "checkbox",
@@ -280,12 +281,13 @@ export let libs = {
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
 			},
-			"overrideGridHeader" : {
-				"type": "string",
-				"label": _labels.lbl_overrideGridHeader,
-				"tooltip": _labels.tooltip_overrideGridHeader,
-				"cmd" : "dialog:setTableParam",
-			},
+			//commented out for v2
+			// "overrideGridHeader" : {
+			// 	"type": "string",
+			// 	"label": _labels.lbl_overrideGridHeader,
+			// 	"tooltip": _labels.tooltip_overrideGridHeader,
+			// 	"cmd" : "dialog:setTableParam",
+			// },
 			"groupFieldName" : {
 				"defValue": "",
 				"type": "combobox",
@@ -297,14 +299,15 @@ export let libs = {
 				"cmd" : "dialog:setTableParam",
 				"helpArticleUrl": _labels.hlpUrl_groupFieldName,
 			},
-			"groupingFunction": {
-				"type": "function",
-				"label": _labels.lbl_groupingFunction,
-				"tooltip": _labels.tooltip_groupingFunction,
-				"placeHolder": _labels.placeholder_groupingFunction,
-				"cmd" : "dialog:setTableParam",
-				"useExample":true,
-			},
+			//commented out for v2
+			// "groupingFunction": {
+			// 	"type": "function",
+			// 	"label": _labels.lbl_groupingFunction,
+			// 	"tooltip": _labels.tooltip_groupingFunction,
+			// 	"placeHolder": _labels.placeholder_groupingFunction,
+			// 	"cmd" : "dialog:setTableParam",
+			// 	"useExample":true,
+			// },
 			"groupOrder" : {
 				"defValue": "ASC",
 				"type": "combobox",
@@ -330,14 +333,15 @@ export let libs = {
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
 			},
-			"loadChunkSize" : {
-				//"defValue": 200,
-				"type": "string",
-				"label": _labels.lbl_loadChunkSize,
-				"tooltip": _labels.tooltip_loadChunkSize,
-				"isReadOnly": true,
-				"cmd" : "dialog:setTableParam",
-			},
+			//commented out for v2
+			// "loadChunkSize" : {
+			// 	//"defValue": 200,
+			// 	"type": "string",
+			// 	"label": _labels.lbl_loadChunkSize,
+			// 	"tooltip": _labels.tooltip_loadChunkSize,
+			// 	"isReadOnly": true,
+			// 	"cmd" : "dialog:setTableParam",
+			// },
 			"beforeSaveValidation": {
 				"type": "function",
 				"label": _labels.lbl_beforeSaveValidation,
@@ -383,26 +387,27 @@ export let libs = {
 				"placeHolder": _labels.placeHolder_rowCss,
 				"cmd" : "dialog:setTableParam",
 				"useExample":true,
-			},
-			"afterloadTransformation": {
-				"type": "function",
-				"label": _labels.lbl_afterloadTransformation,
-				"tooltip": _labels.tooltip_afterloadTransformation,
-				"placeHolder": _labels.placeHolder_afterloadTransformation,
-				"cmd" : "dialog:setTableParam",
-				"useExample":true,
-			},
-			"rowRecalcApex": {
-				"defValue": "",
-				"type": "combobox",
-				"optionsCallBack" : function(scope){
-					return scope.config.apexInterfaceList;
-				},
-				"label": 'Apex class for row recalculation',
-				"tooltip": 'Apex class for row recalculation',
-				"placeHolder": 'Apex class for row recalculation',
-				"cmd" : "dialog:setTableParam"
 			}
+			//commented out for v2
+			// "afterloadTransformation": {
+			// 	"type": "function",
+			// 	"label": _labels.lbl_afterloadTransformation,
+			// 	"tooltip": _labels.tooltip_afterloadTransformation,
+			// 	"placeHolder": _labels.placeHolder_afterloadTransformation,
+			// 	"cmd" : "dialog:setTableParam",
+			// 	"useExample":true,
+			// },
+			// "rowRecalcApex": {
+			// 	"defValue": "",
+			// 	"type": "combobox",
+			// 	"optionsCallBack" : function(scope){
+			// 		return scope.config.apexInterfaceList;
+			// 	},
+			// 	"label": 'Apex class for row recalculation',
+			// 	"tooltip": 'Apex class for row recalculation',
+			// 	"placeHolder": 'Apex class for row recalculation',
+			// 	"cmd" : "dialog:setTableParam"
+			// }
 			
 			
 		}
