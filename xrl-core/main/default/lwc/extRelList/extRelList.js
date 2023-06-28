@@ -282,8 +282,17 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		this.loadRecords();		
 	}
 
-	loadRecords() {
-		libs.remoteAction(this, 'query', {
+	async loadRecords() {
+		if(this.config.isHistoryGrid){
+			this.config.describeMap = new Map();
+			let parentSObjName = libs.getParentHistorySObjName(this.name);
+			await libs.remoteAction(this, 'objectFieldList', { sObjApiName: parentSObjName, 
+				callback: function(func,result){
+					let objectFields = JSON.parse(result[func].describe);
+					libs.getGlobalVar(this.name).describeMap[parentSObjName] = objectFields;   
+				} });
+		}
+		await libs.remoteAction(this, 'query', {
 			isNeedDescribe: true,
 			sObjApiName: this.config.sObjApiName,
 			relField: this.config.relField,
@@ -309,9 +318,10 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				this.config.listViewConfig[0]._loadCfg = this.loadCfg.bind(this);
 				
 				console.log('loadRecords', libs.getGlobalVar(this.name));
-				this.generateColModel();
 			})
 		});
+
+		this.generateColModel();
 	}
 
 	generateColModel() {

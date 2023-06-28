@@ -42,6 +42,12 @@ export default class dataTableItem extends LightningElement {
 		//this.col.fieldName
 		let row,val;
 		[row,val] = libs.getLookupRow(this.row, this.col.fieldName);
+		let config = libs.getGlobalVar(this.cfg);
+		if(config.isHistoryGrid && this.col.fieldName === 'Field'){
+			let sObjName = libs.getParentHistorySObjName(this.cfg);
+		
+			val = config.describeMap[sObjName][val] !== undefined ? config.describeMap[sObjName][val]?.label : val;
+		}
 		if (typeof(this.col._formatter) === 'function') {
 			try{
 				val = this.col._formatter(row, this.col, val);
