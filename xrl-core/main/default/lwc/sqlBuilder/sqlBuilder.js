@@ -442,7 +442,8 @@ export default class SqlBuilder extends LightningElement {
                     filterable: describe[key].filterable,
                     nillable: describe[key].nillable,
                 };
-                fieldMap.helpText = fieldMap.fieldName +  ' (' + describe[key].type + ')'; // assigning outside to get the fieldname to be populated first
+                let isFormula = describe[key].calculated ? 'f() ' : '';
+                fieldMap.helpText = fieldMap.fieldName +  ' (' + isFormula + describe[key].type + ')'; // assigning outside to get the fieldname to be populated first
                 // the fieldname was previously used as the helptext but 
                 // as we also want the field type to be displayed, I added it to the helptext
                 // changing the fieldname was not an option as it is used in the code for sql queries
