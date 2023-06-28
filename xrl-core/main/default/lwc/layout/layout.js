@@ -435,7 +435,7 @@ export default class Layout extends LightningElement {
 			}
 			return;
 		}
-		if (actionId === 'std:delete') {
+		if (actionId === 'std:new') {
 				let defValue = {};
 				defValue[this.config.relField] = this.recordId;
 
