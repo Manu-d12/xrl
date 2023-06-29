@@ -318,10 +318,10 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				this.config.listViewConfig[0]._loadCfg = this.loadCfg.bind(this);
 				
 				console.log('loadRecords', libs.getGlobalVar(this.name));
+				this.generateColModel();
 			})
 		});
 
-		this.generateColModel();
 	}
 
 	generateColModel() {
@@ -1437,7 +1437,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let ws = {
 			'!cols': []
 		};
-		let columns = this.config.listViewConfig[0].colModel.filter(col => { return !col.isHidden; });
+		let columns = this.config.listViewConfig[0].colModel.filter(col => { return !col.isHidden && !col._skipFieldFromDisplay; });
 		records.forEach(async (rec, i) => {
 			columns.forEach(async (col, j) => {
 				if (i === 0) {
