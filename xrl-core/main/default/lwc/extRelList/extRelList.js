@@ -1464,6 +1464,16 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				}else {
 				fieldValue = (rec[col.fieldName] || rec[col.fieldName]==0) ? rec[col.fieldName] : '';
 				}
+				if (col.formatter !== undefined && col.formatter!=="") {
+					let row,val;
+					[row,val] = libs.getLookupRow(rec, col.fieldName);
+					try{
+						fieldValue = eval('(' + col.formatter + ')')(row, col, val);
+					}catch(e) {
+						fieldValue = fieldValue;
+						console.error(e);
+					}
+				}
 
 				switch (col.type) {
 				case 'reference':
