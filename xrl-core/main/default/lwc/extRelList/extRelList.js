@@ -1261,22 +1261,14 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 			if(!this.isThereUnsavedRecords()){
 				if(this.isFullscreen){
+					window.close();
 					history.back();
 				}else{
-					let stateVars = {
-						c__apiName: btoa(this.apiName),
-						c__name: btoa(this.name),
-					};
+					let url = '/lightning/n/TTNAMESPACE__EXRL?c__apiName='+ btoa(this.apiName) + '&c__name='+ btoa(this.name);
 					if(this.recordId !== undefined && this.recordId !== null){
-						stateVars.c__recordId = btoa(this.recordId);
+						url += '&c__recordId='+btoa(this.recordId);
 					}
-					this[NavigationMixin.Navigate]({
-						type: 'standard__navItemPage',
-						attributes: {
-							apiName: 'XRL__EXRL',
-						},
-						state: stateVars
-					});
+					window.open(url,"_self");
 				}
 				this.handleStandardCallback(val);
 			}else{
