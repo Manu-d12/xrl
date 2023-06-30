@@ -394,17 +394,27 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	resetChangedRecords(validatedRecordSize) {
-		if(this.template.querySelector('c-Data-Table')){
-			this.template.querySelector('c-Data-Table').setUpdateInfo('• ' + validatedRecordSize + ' ' +this.config._LABELS.msg_itemsUpdated);
+		if(this.template.querySelector('c-Data-Table') && (validatedRecordSize - this.config.countOfFailedRecords) > 0){
+			this.template.querySelector('c-Data-Table').setUpdateInfo('• ' + (validatedRecordSize - this.config.countOfFailedRecords) + ' ' +this.config._LABELS.msg_itemsUpdated);
+			const toast = new ShowToastEvent({
+				title: 'Success',
+				message: (validatedRecordSize - this.config.countOfFailedRecords) + ' of ' + validatedRecordSize + ' ' + this.config._LABELS.msg_itemsUpdated,
+				variant: 'success'
+			});
+			this.dispatchEvent(toast);
+			setTimeout((() => { this.template.querySelector('c-Data-Table')?.setUpdateInfo(''); }), 3000);
 		}
-		setTimeout((() => { this.template.querySelector('c-Data-Table')?.setUpdateInfo(''); }), 3000);
-		const toast = new ShowToastEvent({
-			title: 'Success',
-			message: validatedRecordSize + ' ' +this.config._LABELS.msg_itemsUpdated,
-			variant: 'success'
-		});
-		this.dispatchEvent(toast);
-		this.config.listViewConfig[0]._changedRecords = undefined;
+		if(this.config.countOfFailedRecords > 0){
+			const toast = new ShowToastEvent({
+				title: 'Error',
+				message: libs.formatStr('{0} ' + this.config._LABELS.msg_itemsUpdateFailed,[this.config.countOfFailedRecords]) + this.config.errorList.toString(),
+				variant: 'error'
+			});
+			this.dispatchEvent(toast);
+			console.error(JSON.parse(JSON.stringify(this.config.errorList)));
+		}else{
+			this.config.listViewConfig[0]._changedRecords = undefined;
+		}
 		this.template.querySelector('c-Data-Table').updateView();
 	}
 
@@ -709,6 +719,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 
 		this.config.saveStatus = 0;
+		this.config.countOfFailedRecords = 0;
+		this.config.errorList = [];
 		let chunkCount = 0;
 
 		while(changedItems.length > 0 && index < changedItems.length){
@@ -731,6 +743,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				beforeSaveAction: this.config.listViewConfig[0].beforeSaveApexAction ? this.config.listViewConfig[0].beforeSaveApexAction : '',
 				callback: function(nodename,data){
 					this.config.saveStatus += 1;
+					this.config.countOfFailedRecords += parseInt(data[nodename].countOfFailedRecords);
+					this.config.errorList = this.config.errorList.concat(data[nodename].listOfErrors);
 					console.log('From callback ', data[nodename]);
 				}
 			});

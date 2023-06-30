@@ -2223,4 +2223,12 @@ return groups;
 return records;
 }</value>
     </labels>
+    <labels>
+        <fullName>msg_itemsUpdateFailed</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_itemsUpdateFailed</shortDescription>
+        <value> items failed. </value>
+    </labels>
 </CustomLabels>
