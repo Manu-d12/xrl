@@ -486,7 +486,7 @@ export let libs = {
 		return defParams;
 	},
 	remoteAction: async function(scope, cmd, params) {
-		scope.config.isSpinner = true;
+		if (scope.config) scope.config.isSpinner = true;
 		let outParams = {};
 		if (scope.recordId!=undefined) libs.setGlobalVar('recordId', scope.recordId);
 		Object.assign(outParams, params, { recordId: scope.recordId });
@@ -497,7 +497,7 @@ export let libs = {
 		delete outParams.callback;
 		await apexInterface({ cmd: cmd, data: outParams }).then(result => {
 			console.log(result);
-			scope.config.isSpinner = false;
+			if (scope.config) scope.config.isSpinner = false;
 			if ('exception' in result) {
 				scope.config.isExceptionInRemoteAction = true;
 				console.error(result.exception, result.log);

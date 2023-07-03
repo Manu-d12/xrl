@@ -127,7 +127,7 @@ export default class Multiselect extends LightningElement {
     }
 
     showOptions() {
-        if(this.disabled == false && this.options) {
+        if(!this.disabled && this.options) {
             this.mSelectConfig.message = '';
             this.mSelectConfig.searchString = '';
             var options = JSON.parse(JSON.stringify(this.mSelectConfig.optionData));
