@@ -418,6 +418,8 @@ global with sharing class infrastructure {
 		boolean isInsert = (boolean) data.get('isInsert') == true;
 		string beforeSaveValidationClass = (string) data.get('beforeSaveAction');
 		Type T = type.forName('list<' + sObjApiName + '>');
+		map < string, object > result = new map < string, object > ();
+		string[] errorsList = new List<String>();
 		if (T == null) throw new InfrastructureException(null, ('Can\'t find sObject {1}').replace('{1}', sObjApiName), exceptionType.INSTANCE_CLASS_NOT_FOUND);
 
 		/*This part only for security review. Please don't remove
@@ -441,17 +443,22 @@ global with sharing class infrastructure {
 		system.debug('RollBack ' + isRollback);
  
 		Database.UpsertResult[] srs = Database.upsert(records, isRollback);
+		Integer countOfFailedRecords = 0;
         for (Database.UpsertResult sr : srs) {
 			if (!sr.isSuccess()) {
 				String error = '';
 				for (Database.Error err : sr.getErrors()) {
+					countOfFailedRecords = countOfFailedRecords + 1;
+					errorsList.add(String.valueOf(sr.getId() + ': ' +err.getStatusCode()) + ': ' + err.getMessage());
 					// if(isRollback == true)
 					// 	Database.rollback(sp);
-					throw new InfrastructureException(null,String.valueOf(err.getStatusCode()) + ': ' + err.getMessage() , Infrastructure.exceptionType.GENERAL);
+					// throw new InfrastructureException(null,String.valueOf(err.getStatusCode()) + ': ' + err.getMessage() , Infrastructure.exceptionType.GENERAL);
 				}
 			}
 		}
-		return records;
+		result.put('countOfFailedRecords',String.valueOf(countOfFailedRecords));
+		result.put('listOfErrors',errorsList);
+		return result;
 	}
 
 	private static object delRecords(map < string, object > data) {
@@ -716,6 +723,7 @@ global with sharing class infrastructure {
 			'msg_failedValidationCallback'=>label.msg_failedValidationCallback,
 			'msg_yourFileWillStartDownloadingShortly'=>label.msg_yourFileWillStartDownloadingShortly,
 			'msg_entityIsDeleted'=>label.msg_entityIsDeleted,
+			'msg_itemsUpdateFailed'=>label.msg_itemsUpdateFailed,
 			'placeHolder_beforeSaveValidation'=>label.placeHolder_beforeSaveValidation,
 			'placeHolder_beforeDeleteValidation'=>label.placeHolder_beforeDeleteValidation,
 			'placeholder_actionCallback'=> label.placeholder_actionCallback,
