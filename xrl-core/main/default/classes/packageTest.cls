@@ -218,14 +218,14 @@ public class packageTest {
         System.assert(objectList.containsKey('objectListResult'));
     }
     @isTest
-    public static void testInvokeMethod() {
+    public static void testInvokeApex() {
         Map<String, Object> data = new Map<String, Object>();
-        data.put('name', 'testClass.testHandler');
+        data.put('helperType', 'testClass.testHandler');
         data.put('params', '');
-        Object result = infrastructure.dispatcherAura('invokeMethod', data);
+        Object result = infrastructure.dispatcherAura('invokeApex', data);
         
         System.assert(result instanceof Map<String, Object>);
         Map<String, Object> resultMap = (Map<String, Object>)result;
-        System.assert(resultMap.containsKey('invokeMethodResult'));
+        System.assert(resultMap.containsKey('invokeApexResult'));
     }
 }

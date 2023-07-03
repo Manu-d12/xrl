@@ -596,15 +596,9 @@ export default class Layout extends LightningElement {
 		while (index < recordIdList.length) {
 			params.recordIdList = recordIdList.slice(index, index + chunkSize > recordIdList.length ? recordIdList.length : index + chunkSize);
 			index += chunkSize;
-			await libs.remoteAction(this, 'invokeMethod', {
-				name: name,
-				params: JSON.stringify(params),
-				callback: (cmd, res) => {
-					console.log(cmd, res); 
-					result.push(res);
-				}
-			});
+			await libs.remoteAction(this, 'invokeApex', params);
 		}
+		console.log('bulkAction result', result); 
 		callback(result);
 	}
 }
