@@ -217,7 +217,15 @@ public class packageTest {
         map<string, object> objectList = infrastructure.dispatcherAura('objectList',data);
         System.assert(objectList.containsKey('objectListResult'));
     }
-
-
-
+    @isTest
+    public static void testInvokeApex() {
+        Map<String, Object> data = new Map<String, Object>();
+        data.put('helperType', 'testClass.testHandler');
+        data.put('params', '');
+        Object result = infrastructure.dispatcherAura('invokeApex', data);
+        
+        System.assert(result instanceof Map<String, Object>);
+        Map<String, Object> resultMap = (Map<String, Object>)result;
+        System.assert(resultMap.containsKey('invokeApexResult'));
+    }
 }

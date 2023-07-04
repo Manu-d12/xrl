@@ -34,6 +34,7 @@ export default class Layout extends LightningElement {
 		console.log('CustomLabes are loaded', data[cmd]);
 		this.config._LABELS = data[cmd];
 		this.LABELS = data[cmd];
+		libs.setGlobalVar('_LABELS', data[cmd]);
 	}
 
 	loadCfg(isInit) {
@@ -392,48 +393,80 @@ export default class Layout extends LightningElement {
 		}
 	}
 
-	handleStandardAction(event, cfg) {
+	async handleStandardAction(event, cfg) {
 		let actionId = event?.target?.getAttribute('data-id');
 
-		let table = libs.getGlobalVar(cfg._cfgName).listViewConfig[0];
+		let table = libs.getGlobalVar(cfg._cfgName);
 		let action = cfg.actions.find(act => act.actionId === actionId);
 
 		if (actionId === 'std:delete') {
-			let records = table._selectedRecords();
-			if(records.length > 0){
-				this.dialogCfg = {
-					title: this.config._LABELS.lbl_confirmDelete,
-					contents: [
-						{
-							isMessage: true,
-							name: 'deleteConfirm',
-							text: this.config._LABELS.msg_deleteConfirm1 + ' ' + records.length + ' ' + this.config._LABELS.msg_deleteConfirm2
-						}
-					],
-					buttons: [
-						{
-							name: 'cancel',
-							label: this.config._LABELS.lbl_cancel,
-							variant: 'neutral'
-						},
-						{
-							name: 'delete',
-							label: this.config._LABELS.title_delete,
-							variant: 'brand',
-							class: 'slds-m-left_x-small'
-						}
-					],
-					data_id: cfg._cfgName + ':' + cfg._barName + ':' + actionId
-				};
-				this.showDialog = true;
-			} else {
+			if (table.listViewConfig[0]._changedRecords) {
+				libs.showToast(this, {
+					title: 'Error',
+					message: this.config._LABELS.msg_unsaveRecordsCannotPerformOtherAction,
+					variant: 'error'
+				});
+				return;
+			}
+			let records = table.listViewConfig[0]._selectedRecords();
+			if (records.length === 0) {
 				libs.showToast(this, {
 					title: 'Error',
 					message: this.config._LABELS.lbl_deleteNoRecordSelectedError,
 					variant: 'error'
 				});
+				return;
 			}
-			return;
+			let dialogCfg = {
+				title: this.config._LABELS.lbl_confirmDelete,
+				contents: [
+					{
+						isMessage: true,
+						name: 'deleteConfirm',
+						text: this.config._LABELS.msg_deleteConfirm1 + ' ' + records.length + ' ' + this.config._LABELS.msg_deleteConfirm2
+					}
+				],
+				buttons: [
+					{
+						name: 'cancel',
+						label: this.config._LABELS.lbl_cancel,
+						variant: 'neutral'
+					},
+					{
+						name: 'delete',
+						label: this.config._LABELS.title_delete,
+						variant: 'brand',
+						class: 'slds-m-left_x-small'
+					}
+				]
+			};
+			let res = await this.openDialog(dialogCfg, cfg, actionId);
+			this.showDialog = false;
+			this.dialogCfg = null;
+			if (res.action === 'cancel') return;
+
+			let deleteChunk = action.chunkSize ? action.chunkSize : 200;
+			let index = 0;
+
+			try {
+				while (index < records.length) {
+					let chunk = records.slice(index, records[(parseInt(index) + parseInt(deleteChunk))] ? (parseInt(index) + parseInt(deleteChunk)) : (records.length));
+					index += records[(parseInt(index) + parseInt(deleteChunk))] ? parseInt(deleteChunk) : (records.length);
+
+					chunk = this.stripChunk(chunk);
+					await libs.remoteAction(this, 'delRecords', { records: chunk, sObjApiName: table.sObjApiName });
+				}
+				libs.showToast(this, {
+					title: 'Success',
+					message: this.config._LABELS.msg_successfullyDeleted,
+					variant: 'success'
+				});
+				let recIds = records.map(r => r.Id);
+				libs.getGlobalVar(cfg._cfgName).records = table.listViewConfig[0].records.filter(rec => !recIds.includes(rec.Id));
+				table.listViewConfig[0]._updateView();
+			} catch (error) {
+				console.log(error);
+			}
 		}
 		if (actionId === 'std:new') {
 				let defValue = {};
@@ -454,30 +487,118 @@ export default class Layout extends LightningElement {
 
 			return;
 		}
-
 	}
 
-	handleCustomAction(event, cfg) {
+	stripChunk(chunkIn) {
+		let chunk = [];
+		chunkIn.forEach((item) => {
+			chunk.push(JSON.parse(JSON.stringify(item, (key, value) => { return typeof (value) === 'object' && key !== "" ? null : value; })))
+		});
+		return chunk;
+	}
+
+	async handleCustomAction(event, cfg) {
 		let actionId = event?.target?.getAttribute('data-id');
 
 		let table = libs.getGlobalVar(cfg._cfgName).listViewConfig[0];
-		let action = cfg.actions.find(act => act.actionId === actionId);	
+		let action = JSON.parse(JSON.stringify(cfg.actions.find(act => act.actionId === actionId)));
+
+		if (action.confirmationDialog) {
+			let result = await this.openDialog(action.confirmationDialog, cfg, actionId);
+			console.log('dialog res', JSON.parse(JSON.stringify(result)));
+			this.showDialog = false;
+			this.dialogCfg = null;
+			if (result.action === 'cancel') return;
+		}
+
+		let input;
+		if (action.inputDialog) {
+			input = await this.openDialog(action.inputDialog, cfg, actionId);
+			console.log('input', JSON.parse(JSON.stringify(input)));
+			this.showDialog = false;
+			this.dialogCfg = null;
+			if (input.action === 'cancel') return;
+		}
 
 		if (action.validationCallBack) {
-			let valid = eval('(' + action.validationCallBack + ')')(table._selectedRecords(), this, libs);
-			// error dialog
+			let result = await eval('(' + action.validationCallBack + ')')(table._selectedRecords(), input, this, libs);
+			console.log('valid', JSON.parse(JSON.stringify(result)));
+			if (result.errorMessage) {
+				libs.showToast(this, {
+					title: 'Error',
+					message: result.errorMessage,
+					variant: 'error'
+				});
+				return;
+			}
+		}
+
+		let result;
+		if (action.actionCallBack) {
+			result = await eval('(' + action.actionCallBack + ')')({ selected: table._selectedRecords(), input: input, action: action} , this, libs);
+			console.log('result', JSON.parse(JSON.stringify(result)));
+			if (result.successMessage) {
+				libs.showToast(this, {
+					title: 'Success',
+					message: result.successMessage,
+					variant: 'success'
+				});
+			} else if (result.errorMessage) {
+				libs.showToast(this, {
+					title: 'Error',
+					message: result.errorMessage,
+					variant: 'error'
+				});
+			}
+		}
+
+		if (action.completedCallBack) {
+			await eval('(' + action.completedCallBack + ')')({ selected: table._selectedRecords(), input: input, result: result, action: action} , this, libs);
 		}
 	}
 
-		// confirmation dialog
-		// data input dialog
-		// action callback
-		// completed callback	
+	openDialog(dialogCfg, actionCfg, actionId) {
+		return new Promise(resolve => {
+			this.dialogCfg = {
+				data_id: actionCfg._cfgName + ':' + actionCfg._barName + ':' + actionId,
+				callback: ((data) => {
+					resolve(data);
+				})
+			};
+			let cfg = JSON.parse(JSON.stringify(dialogCfg));
+			this.replaceLiterals(cfg, '_LABELS');
+			Object.assign(this.dialogCfg, cfg);
+			this.showDialog = true;
+		});		
+	}
 
-	handleEventDialog(event) {
-		console.log('dialog', this.dialogCfg.data_id, event, JSON.parse(JSON.stringify(event.detail)));		
-		if (event.detail.action === 'cancel') {
-			this.showDialog = false;
+	replaceLiterals(target, globalVar) {
+		let replaceObj = (ob) => {
+            for (let p in ob) {
+                if (typeof ob[p] === 'string' && ob[p].startsWith('%')) {
+					ob[p] = libs.replaceLiteralsInStr(ob[p], globalVar);
+                } else if (typeof ob[p] === 'object') {
+                    replaceObj(ob[p]);
+                }
+            }
+        };
+		if (typeof target === 'string')	libs.replaceLiteralsInStr(target, globalVar);
+		else replaceObj(target);
+	}
+
+	async bulkAction(name, recordIdList, params, chunkSize, callback) {
+		let index = 0;
+		let result = [];
+		params.callback = (cmd, res) => {
+			console.log(cmd, res); 
+			result.push(res);
+		};
+		while (index < recordIdList.length) {
+			params.recordIdList = recordIdList.slice(index, index + chunkSize > recordIdList.length ? recordIdList.length : index + chunkSize);
+			index += chunkSize;
+			await libs.remoteAction(this, 'invokeApex', params);
 		}
+		console.log('bulkAction result', result); 
+		callback(result);
 	}
 }

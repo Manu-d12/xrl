@@ -52,6 +52,9 @@ global with sharing class infrastructure {
 				when 'invokeAction' {
 					resultMethod = invokeAction(data);
 				}
+				when 'invokeApex' {
+					resultMethod = invokeApex((string) data.get('helperType'), data);
+				}
 				when 'getCustomLabels' {
 					resultMethod = getCustomLabels();
 				}
@@ -525,6 +528,7 @@ global with sharing class infrastructure {
 
 		return result;
 	}
+
 	private static map < string, string > getCustomLabels() {
 		return new map < string, string > {
 			'altTxt_collapse' => label.altTxt_collapse,
@@ -938,7 +942,7 @@ global with sharing class infrastructure {
 		return years;
 	}
     
-    private static void invokeApex(string helperType, map<string, object> data) {
+    private static map < string, object > invokeApex(string helperType, map<string, object> data) {
 		string nameSpacePrefix = (string) data.get('nameSpacePrefix');
 		string[] apexHelper = helperType.split('\\.');
 		
@@ -953,7 +957,17 @@ global with sharing class infrastructure {
         if (T == null) throw new InfrastructureException(null, ('Can\'t find method {1} in class ' + helperType).replace('{1}', helperType) + ':' + helperTypeClass, exceptionType.INSTANCE_CLASS_NOT_FOUND);
                 
         handler handlerClass = (handler) JSON.deserialize(JSON.serialize(data), T);
-        handlerClass.execute(data);
+		map < string, object > result = new map < string, object > ();
+		try {
+			object res = handlerClass.execute(data);
+			result.put('success', true);
+			result.put('result', res);
+		} catch (Exception e) {
+			result.put('success', false);
+			result.put('errorMessage', e.getMessage());
+			system.debug(LoggingLevel.Error, e.getMessage());
+		}
+		return result;
     }
 
 	private static string[] getIntrLst() {
