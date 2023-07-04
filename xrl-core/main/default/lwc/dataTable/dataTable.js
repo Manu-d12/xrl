@@ -130,7 +130,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			}
 			else if (isPager) {
 				let startIndex = ((this.config.pager.curPage - 1) * this.config.pager.pageSize) + 1; 
-				let endIndex = ((startIndex + parseInt(this.config.pager.pageSize)) < this.records.length ? (startIndex + parseInt(this.config.pager.pageSize)) : this.records.length) + 1; 
+				let endIndex = ((startIndex + parseInt(this.config.pager.pageSize)) < this.records.length ? (startIndex + parseInt(this.config.pager.pageSize)) : (this.records.length + 1)); 
 				let result = [];
 				for (let group of this.groupedRecords) {
 					if (startIndex > group.records[group.records.length - 1].index) continue;
@@ -140,8 +140,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					if (startIndex >= gr.records[0].index) {
 						gr.records.splice(0, startIndex - (gr.records[0].index));
 					}					
-					if (endIndex < gr.records[gr.records.length - 1].index) {
-						gr.records.splice(endIndex - (gr.records[0].index + 1));
+					if (endIndex <= gr.records[gr.records.length - 1].index) {
+						gr.records.splice(endIndex - (gr.records[0].index));
 					}
 					result.push(gr);
 				}
