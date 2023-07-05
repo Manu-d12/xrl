@@ -401,6 +401,12 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						let newVal = cItem._editOptions.find((el)=>{
 							return el.value === value;
 						});
+						const referenceFieldName = this.getRefFieldNameConsistsValue(cItem.fieldName);
+						// get the reference field name in the __r format
+						if(this.config._inlineEditRow[referenceFieldName]){
+							this.config._inlineEditRow[referenceFieldName].Id = newVal.value;
+							this.config._inlineEditRow[referenceFieldName].Name = newVal.label;
+						}
 						if(this.config._inlineEditRow[cItem.referenceTo]){
 							this.config._inlineEditRow[cItem.referenceTo].Id = newVal.value;
 							this.config._inlineEditRow[cItem.referenceTo].Name = newVal.label;
