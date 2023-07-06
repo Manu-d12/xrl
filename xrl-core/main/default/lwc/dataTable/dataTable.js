@@ -261,6 +261,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			group.records.forEach(rec => {rec.index = ind++;})
 		});
 		this.groupedRecords = this.config.groupingFunction != undefined ? eval('(' + this.config.groupingFunction + ')')(result) : result;
+		libs.getGlobalVar(this.cfg).groupedRecords = this.groupedRecords;
 		//console.log('groupedRecords', JSON.parse(JSON.stringify(this.groupedRecords)));
 	}
 
@@ -379,7 +380,11 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		}
 		this.setNumPages(this.config.pager.pageSize);
 
-		if (this.hasGrouping) this.setGroupRecords();
+		if (this.hasGrouping){
+			this.setGroupRecords();
+		}else{
+			libs.getGlobalVar(this.cfg).groupedRecords = undefined;
+		}
 		this.config._originalURL = window.location.href;
 	}
 	newValValidation(newValue){
