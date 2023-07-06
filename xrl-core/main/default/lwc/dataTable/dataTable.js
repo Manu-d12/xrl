@@ -92,9 +92,6 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		return this.config.enableColumnHeaderWrap ? 'slds-cell-wrap' : 'slds-truncate';
 	}
 
-	get isRecordsExist(){
-		return this.records.length > 0;
-	}
 
 	get tableRecords() {
 		this.records.forEach((el,ind) =>{
@@ -773,7 +770,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					{label:'False',value:'false'}
 				];
 			}
-			let left = ((event.x - 52) + 500) > screen.availWidth ? (screen.availWidth - 500) : (event.x - 52);
+			let left = ((event.x - 52) + 600) > screen.availWidth ? (screen.availWidth - 600) : (event.x - 52);
 			this.config._isFilterOptions = this.config._isFilterOptions && this.config._isFilterOptions.fieldName === colName ?
 				undefined :
 				{
