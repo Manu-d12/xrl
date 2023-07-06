@@ -92,9 +92,6 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		return this.config.enableColumnHeaderWrap ? 'slds-cell-wrap' : 'slds-truncate';
 	}
 
-	get isRecordsExist(){
-		return this.records.length > 0;
-	}
 
 	get tableRecords() {
 		this.records.forEach((el,ind) =>{
