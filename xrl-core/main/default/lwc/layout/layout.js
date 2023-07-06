@@ -3,7 +3,7 @@ import { libs } from 'c/libs';
 import { NavigationMixin } from "lightning/navigation"
 import { encodeDefaultFieldValues, decodeDefaultFieldValues } from 'lightning/pageReferenceUtils'
 
-export default class Layout extends LightningElement {
+export default class Layout extends NavigationMixin(LightningElement) {
 	@api recordId;
 	@api defaultListView;	
 	@api configuration;
