@@ -1425,7 +1425,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let dataTable = this.template.querySelector('c-Data-Table');
 		let records = dataTable.getSelectedRecords().length ? dataTable.getSelectedRecords() : dataTable.getRecords();
 		let locale = libs.getGlobalVar(this.name).userInfo.locale;
-		const groupedRecords = libs.getGlobalVar(this.name).groupedRecords;
+		const groupedRecords = libs.getGlobalVar(this.name)?.groupedRecords;
 		console.log('libs.getGlobalVar(this.name)', libs.getGlobalVar(this.name));
 		const newRecords = []; // to store records with group title, cannot use the old array as serial won't match
 		if (groupedRecords && groupedRecords.length > 0) {
