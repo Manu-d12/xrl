@@ -17,6 +17,10 @@ global with sharing class infrastructure {
 		isDebug = (boolean) data.get('isDebug') == true;
 		if (isDebug == true) data.remove('isDebug');
 		try {
+			Organization orgDetails = [SELECT Id, InstanceName, IsSandbox, Name, OrganizationType FROM Organization];
+			if(orgDetails.OrganizationType != 'Developer Edition' && !isUserLicensed()){
+				throw new InfrastructureException(null,label.msg_packageLicenseExpired, Infrastructure.exceptionType.GENERAL);
+			}
 
 			list < PermissionSetAssignment > permission = [SELECT Id FROM PermissionSetAssignment WHERE AssigneeId =: UserInfo.getUserId() AND PermissionSet.Name = 'XRL_Admin'];
 			if (permission.size() != 0) isAdminAccess = true;
@@ -119,6 +123,15 @@ global with sharing class infrastructure {
 			result.put('DEBUGLOG', debugLog);
 		}
 		//result.put('log', log);
+		return result;
+	}
+	private static boolean isUserLicensed(){
+		boolean result = false;
+		try{
+			result = UserInfo.isCurrentUserLicensed('XRL');
+		}catch(Exception e){
+			result = false;
+		}
 		return result;
 	}
 
