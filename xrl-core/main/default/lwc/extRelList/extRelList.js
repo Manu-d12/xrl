@@ -1425,6 +1425,26 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let dataTable = this.template.querySelector('c-Data-Table');
 		let records = dataTable.getSelectedRecords().length ? dataTable.getSelectedRecords() : dataTable.getRecords();
 		let locale = libs.getGlobalVar(this.name).userInfo.locale;
+		const groupedRecords = libs.getGlobalVar(this.name)?.groupedRecords;
+		console.log('libs.getGlobalVar(this.name)', libs.getGlobalVar(this.name));
+		const newRecords = []; // to store records with group title, cannot use the old array as serial won't match
+		if (groupedRecords && groupedRecords.length > 0) {
+			const isRecordsSelected = dataTable.getSelectedRecords().length > 0;
+			groupedRecords.forEach(group => {
+				if (group && group.records) {
+					const recordsToBeCopied = isRecordsSelected ?
+						group.records.filter(rec => {
+							return records.find(r => r.Id === rec.Id); // filter records which are present in the records array
+						}) :
+						group.records; // if no records are selected, then all records of the group will be exported
+					if (recordsToBeCopied && recordsToBeCopied.length > 0) {
+						recordsToBeCopied[0].groupTitle = group.title;
+						newRecords.push(...recordsToBeCopied);
+					}
+				}
+			});
+		}
+		records = newRecords.length > 0 ? newRecords : records;
 
 		console.log(JSON.parse(JSON.stringify(this.config)));
 		console.log(JSON.parse(JSON.stringify(records)));
@@ -1446,10 +1466,24 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			'!cols': []
 		};
 		let columns = this.config.listViewConfig[0].colModel.filter(col => { return !col.isHidden && !col._skipFieldFromDisplay; });
+		let groupNumber = 0; // to keep track of group title and shift the rows accordingly
+		const merges = [];
 		records.forEach(async (rec, i) => {
+			i+=groupNumber;
+			if(rec.groupTitle){
+				groupNumber++;
+				i++;
+				const cell_ref = XLSX.utils.encode_cell({ c: 0, r: i });
+				ws[cell_ref] = {
+					v: rec.groupTitle, s: { bold: true, fgColor: { rgb: 272822 }, color: { rgb: 16777215 } }
+				}
+				const merge = {s: {c: 0, r: i}, e: {c: columns.length-1, r: i}};
+				merges.push(merge);
+				ws['!cols'].push({ wch: 40 });
+			}
 			columns.forEach(async (col, j) => {
-				if (i === 0) {
-					let cell_ref = XLSX.utils.encode_cell({ c: j, r: i });
+				if (i-groupNumber === 0) {
+					let cell_ref = XLSX.utils.encode_cell({ c: j, r: i-groupNumber }); // -groupNumber to skip the group title row without modyfying the existing logic
 					ws[cell_ref] = {
 						v: col.label, s: { bold: true, fgColor: { rgb: 0 }, color: { rgb: 16777215 } }
 					}
@@ -1517,7 +1551,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 			});
 		});
-		ws['!ref'] = XLSX.utils.encode_range({ s: { c: 0, r: 0 }, e: { c: columns.length, r: records.length } });
+		ws['!merges'] = merges; // merges the group title cells
+		ws['!ref'] = XLSX.utils.encode_range({ s: { c: 0, r: 0 }, e: { c: columns.length, r: records.length + groupNumber } }); // +groupNumber to include the group title row
 		XLSX.utils.book_append_sheet(wb, ws, (this.config.sObjLabel + ' '  + this.config?.listView?.label).length > 30 ? (this.config.sObjLabel + ' '  + this.config?.listView?.label).substring(0,30):(this.config.sObjLabel + ' '  + this.config?.listView?.label));
 		XLSX.writeFile(wb, this.config.sObjLabel + ' ' + this.config?.listView?.label + '.xlsx', { cellStyles: true, WTF: 1 });
 		
