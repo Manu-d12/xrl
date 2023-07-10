@@ -269,7 +269,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if(this.isFullscreen){
 			const expandAction = this.config.listViewConfig[0].actions.find((el) => el.actionId === 'std:expand_view');
 			this.config._expandTip = expandAction.actionTip;
+			this.config._expandIcon = expandAction.actionIconName;
 			expandAction.actionTip = this.config._LABELS.lbl_collapseView;
+			expandAction.actionIconName = 'utility:contract';
 		}
 		this.config.actionsBar = {
 			'actions':this.config.listViewConfig[0].actions,
@@ -318,10 +320,10 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				this.config.listViewConfig[0]._loadCfg = this.loadCfg.bind(this);
 				
 				console.log('loadRecords', libs.getGlobalVar(this.name));
+				this.generateColModel();
 			})
 		});
 
-		this.generateColModel();
 	}
 
 	generateColModel() {
@@ -394,17 +396,27 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	resetChangedRecords(validatedRecordSize) {
-		if(this.template.querySelector('c-Data-Table')){
-			this.template.querySelector('c-Data-Table').setUpdateInfo('• ' + validatedRecordSize + ' ' +this.config._LABELS.msg_itemsUpdated);
+		if(this.template.querySelector('c-Data-Table') && (validatedRecordSize - this.config.countOfFailedRecords) > 0){
+			this.template.querySelector('c-Data-Table').setUpdateInfo('• ' + (validatedRecordSize - this.config.countOfFailedRecords) + ' ' +this.config._LABELS.msg_itemsUpdated);
+			const toast = new ShowToastEvent({
+				title: 'Success',
+				message: (validatedRecordSize - this.config.countOfFailedRecords) + ' of ' + validatedRecordSize + ' ' + this.config._LABELS.msg_itemsUpdated,
+				variant: 'success'
+			});
+			this.dispatchEvent(toast);
+			setTimeout((() => { this.template.querySelector('c-Data-Table')?.setUpdateInfo(''); }), 3000);
 		}
-		setTimeout((() => { this.template.querySelector('c-Data-Table')?.setUpdateInfo(''); }), 3000);
-		const toast = new ShowToastEvent({
-			title: 'Success',
-			message: validatedRecordSize + ' ' +this.config._LABELS.msg_itemsUpdated,
-			variant: 'success'
-		});
-		this.dispatchEvent(toast);
-		this.config.listViewConfig[0]._changedRecords = undefined;
+		if(this.config.countOfFailedRecords > 0){
+			const toast = new ShowToastEvent({
+				title: 'Error',
+				message: libs.formatStr('{0} ' + this.config._LABELS.msg_itemsUpdateFailed,[this.config.countOfFailedRecords]) + this.config.errorList.toString(),
+				variant: 'error'
+			});
+			this.dispatchEvent(toast);
+			console.error(JSON.parse(JSON.stringify(this.config.errorList)));
+		}else{
+			this.config.listViewConfig[0]._changedRecords = undefined;
+		}
 		this.template.querySelector('c-Data-Table').updateView();
 	}
 
@@ -709,6 +721,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 
 		this.config.saveStatus = 0;
+		this.config.countOfFailedRecords = 0;
+		this.config.errorList = [];
 		let chunkCount = 0;
 
 		while(changedItems.length > 0 && index < changedItems.length){
@@ -731,6 +745,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				beforeSaveAction: this.config.listViewConfig[0].beforeSaveApexAction ? this.config.listViewConfig[0].beforeSaveApexAction : '',
 				callback: function(nodename,data){
 					this.config.saveStatus += 1;
+					this.config.countOfFailedRecords += parseInt(data[nodename].countOfFailedRecords);
+					this.config.errorList = this.config.errorList.concat(data[nodename].listOfErrors);
 					console.log('From callback ', data[nodename]);
 				}
 			});
@@ -1261,22 +1277,14 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 			if(!this.isThereUnsavedRecords()){
 				if(this.isFullscreen){
+					window.close();
 					history.back();
 				}else{
-					let stateVars = {
-						c__apiName: btoa(this.apiName),
-						c__name: btoa(this.name),
-					};
+					let url = '/lightning/n/XRL__EXRL?c__apiName='+ btoa(this.apiName) + '&c__name='+ btoa(this.name);
 					if(this.recordId !== undefined && this.recordId !== null){
-						stateVars.c__recordId = btoa(this.recordId);
+						url += '&c__recordId='+btoa(this.recordId);
 					}
-					this[NavigationMixin.Navigate]({
-						type: 'standard__navItemPage',
-						attributes: {
-							apiName: 'XRL__EXRL',
-						},
-						state: stateVars
-					});
+					window.open(url,"_self");
 				}
 				this.handleStandardCallback(val);
 			}else{
@@ -1417,6 +1425,26 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let dataTable = this.template.querySelector('c-Data-Table');
 		let records = dataTable.getSelectedRecords().length ? dataTable.getSelectedRecords() : dataTable.getRecords();
 		let locale = libs.getGlobalVar(this.name).userInfo.locale;
+		const groupedRecords = libs.getGlobalVar(this.name)?.groupedRecords;
+		console.log('libs.getGlobalVar(this.name)', libs.getGlobalVar(this.name));
+		const newRecords = []; // to store records with group title, cannot use the old array as serial won't match
+		if (groupedRecords && groupedRecords.length > 0) {
+			const isRecordsSelected = dataTable.getSelectedRecords().length > 0;
+			groupedRecords.forEach(group => {
+				if (group && group.records) {
+					const recordsToBeCopied = isRecordsSelected ?
+						group.records.filter(rec => {
+							return records.find(r => r.Id === rec.Id); // filter records which are present in the records array
+						}) :
+						group.records; // if no records are selected, then all records of the group will be exported
+					if (recordsToBeCopied && recordsToBeCopied.length > 0) {
+						recordsToBeCopied[0].groupTitle = group.title;
+						newRecords.push(...recordsToBeCopied);
+					}
+				}
+			});
+		}
+		records = newRecords.length > 0 ? newRecords : records;
 
 		console.log(JSON.parse(JSON.stringify(this.config)));
 		console.log(JSON.parse(JSON.stringify(records)));
@@ -1437,11 +1465,25 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let ws = {
 			'!cols': []
 		};
-		let columns = this.config.listViewConfig[0].colModel.filter(col => { return !col.isHidden; });
+		let columns = this.config.listViewConfig[0].colModel.filter(col => { return !col.isHidden && !col._skipFieldFromDisplay; });
+		let groupNumber = 0; // to keep track of group title and shift the rows accordingly
+		const merges = [];
 		records.forEach(async (rec, i) => {
+			i+=groupNumber;
+			if(rec.groupTitle){
+				groupNumber++;
+				i++;
+				const cell_ref = XLSX.utils.encode_cell({ c: 0, r: i });
+				ws[cell_ref] = {
+					v: rec.groupTitle, s: { bold: true, fgColor: { rgb: 272822 }, color: { rgb: 16777215 } }
+				}
+				const merge = {s: {c: 0, r: i}, e: {c: columns.length-1, r: i}};
+				merges.push(merge);
+				ws['!cols'].push({ wch: 40 });
+			}
 			columns.forEach(async (col, j) => {
-				if (i === 0) {
-					let cell_ref = XLSX.utils.encode_cell({ c: j, r: i });
+				if (i-groupNumber === 0) {
+					let cell_ref = XLSX.utils.encode_cell({ c: j, r: i-groupNumber }); // -groupNumber to skip the group title row without modyfying the existing logic
 					ws[cell_ref] = {
 						v: col.label, s: { bold: true, fgColor: { rgb: 0 }, color: { rgb: 16777215 } }
 					}
@@ -1463,6 +1505,16 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				}
 				}else {
 				fieldValue = (rec[col.fieldName] || rec[col.fieldName]==0) ? rec[col.fieldName] : '';
+				}
+				if (col.formatter !== undefined && col.formatter!=="") {
+					let row,val;
+					[row,val] = libs.getLookupRow(rec, col.fieldName);
+					try{
+						fieldValue = eval('(' + col.formatter + ')')(row, col, val);
+					}catch(e) {
+						fieldValue = fieldValue;
+						console.error(e);
+					}
 				}
 
 				switch (col.type) {
@@ -1499,7 +1551,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 			});
 		});
-		ws['!ref'] = XLSX.utils.encode_range({ s: { c: 0, r: 0 }, e: { c: columns.length, r: records.length } });
+		ws['!merges'] = merges; // merges the group title cells
+		ws['!ref'] = XLSX.utils.encode_range({ s: { c: 0, r: 0 }, e: { c: columns.length, r: records.length + groupNumber } }); // +groupNumber to include the group title row
 		XLSX.utils.book_append_sheet(wb, ws, (this.config.sObjLabel + ' '  + this.config?.listView?.label).length > 30 ? (this.config.sObjLabel + ' '  + this.config?.listView?.label).substring(0,30):(this.config.sObjLabel + ' '  + this.config?.listView?.label));
 		XLSX.writeFile(wb, this.config.sObjLabel + ' ' + this.config?.listView?.label + '.xlsx', { cellStyles: true, WTF: 1 });
 		

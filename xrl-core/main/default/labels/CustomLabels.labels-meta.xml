@@ -2223,4 +2223,20 @@ return groups;
 return records;
 }</value>
     </labels>
+    <labels>
+        <fullName>msg_itemsUpdateFailed</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_itemsUpdateFailed</shortDescription>
+        <value> items failed. </value>
+    </labels>
+    <labels>
+        <fullName>msg_packageLicenseExpired</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_packageLicenseExpired</shortDescription>
+        <value>Package License is expired or user does not have license assigned</value>
+    </labels>
 </CustomLabels>
