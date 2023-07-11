@@ -505,7 +505,7 @@ export default class SqlBuilder extends LightningElement {
     }
     get sortableFields(){
         return this.config.sqlBuilder.fields.filter((el) => {
-            if(el.filterable === true) return true;
+            if(el.sortable === true) return true;
             else return false;
         });
     }
