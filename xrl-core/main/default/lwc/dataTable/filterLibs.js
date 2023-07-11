@@ -2,7 +2,7 @@ export let filterLibs = {
 
     string__filter(filter, record) {
 		let value = this.getValue(filter, record);
-        if ((filter._filterOption !== 'em' && filter._filterOption !== 'ncn' && !value) || (filter._filterStr === undefined)) return false;
+        if ((filter._filterOption !== 'em' && filter._filterOption !== 'ncn' && !value)) return false;
 		/*eslint-disable*/
 		switch (filter._filterOption) {
 			case 'cn':
