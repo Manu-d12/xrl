@@ -51,9 +51,12 @@ export let libs = {
 
 		let isReverse = isASCSort ? 1 : -1;
 
+		//in case of number it will sort normally but in case of string it will convert it to lower case
 		records.sort((x, y) => {
-			x = keyValue(x) ? keyValue(x) : ''; // handling null values
-			y = keyValue(y) ? keyValue(y) : '';
+			let xKeyValue = keyValue(x);
+			let yKeyValue = keyValue(y);
+			x = xKeyValue ? (typeof xKeyValue === 'number' ? xKeyValue : xKeyValue.toLowerCase()) : ''; // handling null values
+			y = yKeyValue ? (typeof yKeyValue === 'number' ? yKeyValue : yKeyValue.toLowerCase()) : '';
 			return isReverse * ((x > y) - (y > x));
 		});
 
