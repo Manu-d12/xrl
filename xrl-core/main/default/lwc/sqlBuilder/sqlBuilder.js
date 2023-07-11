@@ -441,6 +441,7 @@ export default class SqlBuilder extends LightningElement {
                     isNameField: describe[key] && describe[key].nameField === true,
                     referenceTo: describe[key].referenceTo[0],
                     filterable: describe[key].filterable,
+                    sortable: describe[key].sortable,
                     nillable: describe[key].nillable,
                 };
                 let isFormula = describe[key].calculated ? 'f() ' : '';
@@ -487,6 +488,7 @@ export default class SqlBuilder extends LightningElement {
                         isNameField: describe[key] && describe[key].nameField === true,
                         referenceTo: describe[key].referenceTo[0],
                         filterable: describe[key].filterable,
+                        sortable: describe[key].sortable,
                     };
                     fieldMap.helpText = describe[key].relationshipName + ' (' + describe[key].referenceTo?.join(', ') + ')';
                     // I noticed that in some reference fields, there are multiple objects in the referenceTo array, so I joined all of them to the helpText
@@ -498,6 +500,12 @@ export default class SqlBuilder extends LightningElement {
     get filterableFields(){
         return this.config.sqlBuilder.fields.filter((el) => {
             if(el.filterable === true) return true;
+            else return false;
+        });
+    }
+    get sortableFields(){
+        return this.config.sqlBuilder.fields.filter((el) => {
+            if(el.sortable === true) return true;
             else return false;
         });
     }
