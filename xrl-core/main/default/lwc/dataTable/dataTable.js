@@ -92,9 +92,6 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		return this.config.enableColumnHeaderWrap ? 'slds-cell-wrap' : 'slds-truncate';
 	}
 
-	get isRecordsExist(){
-		return this.records.length > 0;
-	}
 
 	get tableRecords() {
 		this.records.forEach((el,ind) =>{
@@ -130,7 +127,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			}
 			else if (isPager) {
 				let startIndex = ((this.config.pager.curPage - 1) * this.config.pager.pageSize) + 1; 
-				let endIndex = ((startIndex + parseInt(this.config.pager.pageSize)) < this.records.length ? (startIndex + parseInt(this.config.pager.pageSize)) : this.records.length) + 1; 
+				let endIndex = ((startIndex + parseInt(this.config.pager.pageSize)) < this.records.length ? (startIndex + parseInt(this.config.pager.pageSize)) : (this.records.length + 1)); 
 				let result = [];
 				for (let group of this.groupedRecords) {
 					if (startIndex > group.records[group.records.length - 1].index) continue;
@@ -140,8 +137,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					if (startIndex >= gr.records[0].index) {
 						gr.records.splice(0, startIndex - (gr.records[0].index));
 					}					
-					if (endIndex < gr.records[gr.records.length - 1].index) {
-						gr.records.splice(endIndex - (gr.records[0].index + 1));
+					if (endIndex <= gr.records[gr.records.length - 1].index) {
+						gr.records.splice(endIndex - (gr.records[0].index));
 					}
 					result.push(gr);
 				}
@@ -261,6 +258,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			group.records.forEach(rec => {rec.index = ind++;})
 		});
 		this.groupedRecords = this.config.groupingFunction != undefined ? eval('(' + this.config.groupingFunction + ')')(result) : result;
+		libs.getGlobalVar(this.cfg).groupedRecords = this.groupedRecords;
 		//console.log('groupedRecords', JSON.parse(JSON.stringify(this.groupedRecords)));
 	}
 
@@ -379,7 +377,11 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		}
 		this.setNumPages(this.config.pager.pageSize);
 
-		if (this.hasGrouping) this.setGroupRecords();
+		if (this.hasGrouping){
+			this.setGroupRecords();
+		}else{
+			libs.getGlobalVar(this.cfg).groupedRecords = undefined;
+		}
 		this.config._originalURL = window.location.href;
 	}
 	newValValidation(newValue){
@@ -401,6 +403,12 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						let newVal = cItem._editOptions.find((el)=>{
 							return el.value === value;
 						});
+						const referenceFieldName = this.getRefFieldNameConsistsValue(cItem.fieldName);
+						// get the reference field name in the __r format
+						if(this.config._inlineEditRow[referenceFieldName]){
+							this.config._inlineEditRow[referenceFieldName].Id = newVal.value;
+							this.config._inlineEditRow[referenceFieldName].Name = newVal.label;
+						}
 						if(this.config._inlineEditRow[cItem.referenceTo]){
 							this.config._inlineEditRow[cItem.referenceTo].Id = newVal.value;
 							this.config._inlineEditRow[cItem.referenceTo].Name = newVal.label;
@@ -767,7 +775,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					{label:'False',value:'false'}
 				];
 			}
-			let left = ((event.x - 52) + 500) > screen.availWidth ? (screen.availWidth - 500) : (event.x - 52);
+			let left = ((event.x - 52) + 600) > screen.availWidth ? (screen.availWidth - 600) : (event.x - 52);
 			this.config._isFilterOptions = this.config._isFilterOptions && this.config._isFilterOptions.fieldName === colName ?
 				undefined :
 				{
