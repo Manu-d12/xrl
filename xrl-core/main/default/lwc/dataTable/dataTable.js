@@ -89,7 +89,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	updateInfo = '';
 	
 	get colHeaderClass(){
-		return this.config.enableColumnHeaderWrap ? 'slds-cell-wrap' : 'slds-truncate';
+		return this.config.enableColumnHeaderWrap ? 'slds-cell-wrap slds-hyphenate' : 'slds-truncate';
 	}
 
 	get isRecordsExist(){
@@ -296,6 +296,13 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			this.config.colModel.push(add);
 		});
 		this.config.colModel.forEach(item => {
+			console.log('item', item);
+			if(this.config.enableColumnHeaderWrap){
+				item.label = item.label.replace(/\b\w{6,}\b/g, match => {
+					return match.replace(/(.{5})/g, '$1\u00AD');
+				  });
+				  //the regular expression /(\b\w{6,}\b)/g matches any word in item.label with more than 5 characters. The replace function within the callback function is then used to insert the unicode for hidden soft hyphen character after every 5 characters within those matched words to leverage the css hyphens property			  
+			}
 			item._hideFromDisplay = item._skipFieldFromDisplay || item.isHidden;
 			delete item._filterVariant;
 			delete item._isFilterOptions;
