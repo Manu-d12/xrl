@@ -15,7 +15,11 @@ export default class SqlBuilder extends LightningElement {
         this.config.sqlBuilder = {};
         this.config.sqlBuilder.fields = [];
         this.config.sqlBuilder.selectedFields = this.config.dialog.listViewConfig.colModel;
-        this.config.sqlBuilder.conditions = this.config.dialog.listViewConfig.conditionMap ? this.config.dialog.listViewConfig.conditionMap : [];
+        this.config.sqlBuilder.conditions = this.config.dialog.listViewConfig?.conditionMap ?? [];
+        this.config.sqlBuilder.conditions.forEach((el) => {
+            el._formattedValue = this.formatConditionValue(el.fieldType, el.value);
+            el._formattedValueRange = el.valueRange ? this.formatConditionValue(el.fieldType, el.valueRange) : undefined;
+        });
         this.config.sqlBuilder.orderings = this.config.dialog.listViewConfig.orderMap ? this.config.dialog.listViewConfig.orderMap : [];
         this.config.sqlBuilder.conditionOrdering = this.config.dialog.listViewConfig.conditionOrdering ? this.config.dialog.listViewConfig.conditionOrdering : '';
         this.config.sqlBuilder.sortOrderOptions = [{label: this.config._LABELS.lbl_ascending, value:'ASC'},
@@ -397,9 +401,8 @@ export default class SqlBuilder extends LightningElement {
                 second:"2-digit"
             });
             return formattedDate;
-        }else{
-            return value;
         }
+        return value;
     }
     loadFields(sObjName){
         let objStr = '';
