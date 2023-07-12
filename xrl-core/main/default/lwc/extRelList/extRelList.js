@@ -140,7 +140,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 		
 
-		if (this.config.dataTableConfig === undefined || this.config.dataTableConfig.colModel === undefined){
+		if (this.config.dataTableConfig === undefined){
 			this.config.dataTableConfig = {};
 			this.config.dataTableConfig.cmpName = 'dataTable';
 			this.config.dataTableConfig.colModel = libs.setDefaultColumns();
@@ -172,7 +172,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				];
 			}
 		} 
-		if(this.config.dataTableConfig.colModel.length === 0){
+		if(this.config.dataTableConfig.colModel === undefined){
 			this.config.dataTableConfig.colModel = libs.setDefaultColumns();
 		}
 		console.log('dataTable Config: ', this.config.dataTableConfig.colModel);
