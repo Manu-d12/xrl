@@ -416,6 +416,18 @@ export let libs = {
 		}
 		return defParams;
 	},
+	setDefaultColumns: function(){
+		let columns = [{
+			"fieldName" : "Id",
+			"updateable": false,
+			"isNameField": false,
+			"isEditable": false,
+			"isFilterable": true,
+			"isSortable": true,
+			"helpText": 'Id (id)'
+		}];
+		return columns;
+	},
 	customActions:function(){
 		let _labels = globalVars[Object.keys(globalVars)[0]]._LABELS;
 		let defParams = {

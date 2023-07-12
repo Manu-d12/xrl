@@ -143,15 +143,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if (this.config.dataTableConfig === undefined){
 			this.config.dataTableConfig = {};
 			this.config.dataTableConfig.cmpName = 'dataTable';
-			this.config.dataTableConfig.colModel = [{
-				"fieldName" : "Id",
-				"updateable": false,
-				"isNameField": false,
-				"isEditable": false,
-				"isFilterable": true,
-				"isSortable": true,
-				"helpText": 'Id (id)'
-			}];
+			this.config.dataTableConfig.colModel = libs.setDefaultColumns();
 			if(this.config.sObjApiName.toLowerCase().includes('history')){
 				this.config.dataTableConfig.colModel = libs.historyGrid(this.apiName);
 				let changedField = this.config.dataTableConfig.colModel.find(field => field.fieldName === 'Field');
@@ -180,6 +172,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				];
 			}
 		} 
+		if(this.config.dataTableConfig.colModel === undefined){
+			this.config.dataTableConfig.colModel = libs.setDefaultColumns();
+		}
 		console.log('dataTable Config: ', this.config.dataTableConfig.colModel);
 
 		let mergedConfig = {};
