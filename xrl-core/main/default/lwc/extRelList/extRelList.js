@@ -1524,11 +1524,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					break;
 				case 'date':
 					ws[cell_ref].v = fieldValue ? new Date(fieldValue) : '';
-					ws[cell_ref].t = 'd';
+					ws[cell_ref].t = fieldValue ? 'd' : 's';
 					break;
 				case 'datetime':
 					ws[cell_ref].v = fieldValue ? new Date(fieldValue) : '';
-					ws[cell_ref].t = 'dt';
+					ws[cell_ref].t = fieldValue ? 'dt' : 's';
 					break;
 				case 'number':
 					ws[cell_ref].v = fieldValue ? Number(fieldValue) : '';
