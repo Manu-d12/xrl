@@ -379,10 +379,10 @@ global with sharing class infrastructure {
 			listViewLabel;
 		boolean isAdminConf = listViewName == '_admin' ? isAdminAccess : listViewAdmin;
 
-		if(listViewName.equals('_admin')){
+		if(listViewLabel.equals('_admin')){
 			delete [select Id from extRelListConfig__c where listViewName__c = '_admin'];
 		}
-		if(listViewName.equals('_default')){
+		if(listViewLabel.equals('_default')){
 			delete [select Id from extRelListConfig__c where listViewName__c = '_default'];
 		}
 
@@ -400,7 +400,7 @@ global with sharing class infrastructure {
 		upsert listView uniqKey__c;
 
 		//sharing _admin/_default record with all org users
-		if(listViewName.equals('_admin') || listViewName.equals('_default')){
+		if(listViewLabel.equals('_admin') || listViewLabel.equals('_default')){
 			shareRecord(listView.Id);
 		}
 
