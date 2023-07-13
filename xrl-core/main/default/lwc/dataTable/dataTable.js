@@ -227,7 +227,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				groupName = r[this.config.groupingParams.field] !== null && r[this.config.groupingParams.field] !== undefined ? r[this.config.groupingParams.field] : 'empty';
 			}
 			let group = result.has(groupName) ? result.get(groupName) : {
-				title: groupName.toString(),
+				title: groupName,
 				isChecked: false,
 				isOpened: true,
 				records: []
