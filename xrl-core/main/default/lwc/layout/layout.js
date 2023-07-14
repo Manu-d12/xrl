@@ -419,6 +419,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 			}
 			let dialogCfg = {
 				title: this.config._LABELS.lbl_confirmDelete,
+				headerStyle: 'slds-modal__header slds-theme_error',
 				contents: [
 					{
 						isMessage: true,
