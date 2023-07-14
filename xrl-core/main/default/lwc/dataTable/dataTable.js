@@ -92,6 +92,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		return this.config.enableColumnHeaderWrap ? 'slds-cell-wrap' : 'slds-truncate';
 	}
 
+	get isRecordsAvailableForUI() {
+		return this.config.recordsToShow.length > 0;
+	}
 
 	get tableRecords() {
 		this.records.forEach((el,ind) =>{
@@ -123,6 +126,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				}
 				this.displayedItemCount = this.recordInfo+ ' Showing only '+ endIndex  +' item(s)';
 				//console.log('result', JSON.parse(JSON.stringify(result)));
+				this.config.recordsToShow = result;
 				return result;
 			}
 			else if (isPager) {
@@ -142,6 +146,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					}
 					result.push(gr);
 				}
+				this.config.recordsToShow = result;
 				return result;
 			}
 			// Need for pagination;
@@ -157,6 +162,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				}
 				this.displayedItemCount = this.recordInfo+ ' Showing only '+ endIndex  +' item(s)';
 				//console.log('result', JSON.parse(JSON.stringify(result)));
+				this.config.recordsToShow = result;
 				return result;
 			}
 			else if (isPager) {
@@ -167,9 +173,11 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					result.push(this.records[i]);
 				}
 				//console.log('result', JSON.parse(JSON.stringify(result)));
+				this.config.recordsToShow = result;
 				return result;
 			}
 			// Need for pagination;
+			this.config.recordsToShow = this.records;
 			return this.records;
 		}
 	}
