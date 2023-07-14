@@ -115,23 +115,23 @@ export let filterLibs = {
 			case 'ned': 
 				return value.toString().endsWith(filter._filterStr) === false;	
 			case 'eq': 
-				return value === Number(filter._filterStr);
+				return Number(value) === Number(filter._filterStr);
 			case 'neq': 
-				return value !== Number(filter._filterStr);
+				return Number(value) !== Number(filter._filterStr);
 			case 'em': 
-				return value === null || value == undefined;
+				return Number(value) === null || value == undefined;
 			case 'nem': 
-				return value !== null && value !== undefined;
+				return Number(value) !== null && value !== undefined;
 			case 'gr': 
-				return value > Number(filter._filterStr);
+				return Number(value) > Number(filter._filterStr);
 			case 'gre': 
-				return value >= Number(filter._filterStr);
+				return Number(value) >= Number(filter._filterStr);
 			case 'ls': 
-				return value < Number(filter._filterStr);
+				return Number(value) < Number(filter._filterStr);
 			case 'lse': 
-				return value <= Number(filter._filterStr);
+				return Number(value) <= Number(filter._filterStr);
 			case 'rg': 
-				return value >= Number(filter._filterStr) && value <= Number(filter._filterStrTo);
+				return Number(value) >= Number(filter._filterStr) && Number(value) <= Number(filter._filterStrTo);
 			default :  console.log('Filter action not found', filter._filterOption);
 		}
 	},
