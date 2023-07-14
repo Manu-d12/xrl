@@ -487,6 +487,25 @@ export default class Layout extends NavigationMixin(LightningElement) {
 
 			return;
 		}
+		if (actionId === 'std:edit') {
+				let defValue = {};
+				defValue[this.config.relField] = this.recordId;
+
+				this[NavigationMixin.Navigate]({
+					type: 'standard__objectPage',
+					attributes: {
+						/*recordId: this.recordId, // pass the record id here.*/
+						objectApiName: this.config.tabularConfig.sObjApiName,
+						actionName: 'new',
+					},
+					state: {
+						defaultFieldValues: encodeDefaultFieldValues(defValue),
+				        useRecordTypeCheck: 1
+					}
+				});
+
+			return;
+		}
 	}
 
 	stripChunk(chunkIn) {
@@ -535,6 +554,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 
 		let result;
 		if (action.actionCallBack) {
+			this._tableLink = table;
 			result = await eval('(' + action.actionCallBack + ')')({ selected: table._selectedRecords(), input: input, action: action} , this, libs);
 			console.log('result', JSON.parse(JSON.stringify(result)));
 			if (result.successMessage) {
@@ -543,6 +563,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 					message: result.successMessage,
 					variant: 'success'
 				});
+			table.listViewConfig[0]._updateView();
 			} else if (result.errorMessage) {
 				libs.showToast(this, {
 					title: 'Error',
@@ -555,6 +576,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 		if (action.completedCallBack) {
 			await eval('(' + action.completedCallBack + ')')({ selected: table._selectedRecords(), input: input, result: result, action: action} , this, libs);
 		}
+
 	}
 
 	openDialog(dialogCfg, actionCfg, actionId) {
