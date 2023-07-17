@@ -160,7 +160,7 @@ export let filterLibs = {
 			case 'eq': 
 				return filter._filterStr.find((el =>  el ===  value.toString())) !== undefined;
 			case 'neq': 
-				return filter._filterStr.find((el =>  el ===  value.toString())) === undefined;
+				return filter._filterStr.find((el =>  el !==  value.toString())) !== undefined;
 			case 'em': 
 				return value === null || value == undefined;
 			case 'nem': 
