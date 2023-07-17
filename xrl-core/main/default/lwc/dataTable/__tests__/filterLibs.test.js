@@ -864,6 +864,141 @@ describe('reference__filter', () => {
     });
 });
 
+describe('multipicklist__filter', () => {
+    let filter;
+    let record;
+
+    beforeEach(() => {
+        // Create a new filter and record object before each test case
+        record = {
+            Contact: {
+                Email: 'tjkdypn7@example.com',
+                FirstName: 'Q7O2H',
+                Id: '0035i00002qvJnsAAE'
+            },
+            ContactId: '0035i00002qvJnsAAE',
+            CurrencyIsoCode: 'AUD',
+            Id: '5005i00000Kiy93AAB',
+            Origin: 'Phone',
+            testPercent__c: 5,
+            testText__c: 'Hello',
+            Type: 'Mechanical'
+            };
+        filter = {
+            fieldName: "value",
+            _filterOption: "eq",
+            _filterStr: "Mechanical",
+            _filterStrTo: "",
+            _locale: "en-US",
+        };
+    });
+
+    it('should return true when the filter option is "cn" and the value contains any of the filter values', () => {
+        filter._filterOption = 'cn';
+        filter._filterStr = ['option1', 'option2'];
+        record.value = 'option1;option3';
+
+        const result = filterLibs.multipicklist__filter(filter, record);
+
+        expect(result).toBe('option1');
+    });
+
+    it('should return true when the filter option is "ncn" and the value does not contain any of the filter values', () => {
+        filter._filterOption = 'ncn';
+        filter._filterStr = ['option1', 'option2'];
+        record.value = 'Option3;Option4';
+
+        const result = filterLibs.multipicklist__filter(filter, record);
+
+        expect(result).toBe(true);
+    });
+
+    it('should return true when the filter option is "eq" and the value contains all of the filter values', () => {
+        filter._filterOption = 'eq';
+        filter._filterStr = ['option1', 'option2'];
+        record.value = 'option1;option2';
+
+        const result = filterLibs.multipicklist__filter(filter, record);
+
+        expect(result).toBe(true);
+    });
+
+    it('should return true when the filter option is "neq" and the value does not contain any of the filter values', () => {
+        filter._filterOption = 'neq';
+        filter._filterStr = ['option1', 'option2'];
+        record.value = 'Option3;Option4';
+
+        const result = filterLibs.multipicklist__filter(filter, record);
+
+        expect(result).toBe(true);
+    });
+
+    it('should return true when the filter option is "em" and the value is null or undefined', () => {
+        filter._filterOption = 'em';
+        record.value = null;
+
+        const result1 = filterLibs.multipicklist__filter(filter, record);
+
+        expect(result1).toBe(true);
+
+        record.value = undefined;
+
+        const result2 = filterLibs.multipicklist__filter(filter, record);
+
+        expect(result2).toBe(true);
+    });
+
+    it('should return true when the filter option is "nem" and the value is not null or undefined', () => {
+        filter._filterOption = 'nem';
+        record.value = 'Option1';
+
+        const result = filterLibs.multipicklist__filter(filter, record);
+
+        expect(result).toBe(true);
+    });
+});
+describe('containsAllElements', () => {
+    it('should return true when all elements in the small array are present in the big array', () => {
+        const smallArray = ['a', 'b', 'c'];
+        const bigArray = ['a', 'b', 'c', 'd', 'e'];
+
+        const result = filterLibs.containsAllElements(smallArray, bigArray);
+
+        expect(result).toBe(true);
+    });
+
+    it('should return false when not all elements in the small array are present in the big array', () => {
+        const smallArray = ['a', 'b', 'c'];
+        const bigArray = ['a', 'd', 'e'];
+
+        const result = filterLibs.containsAllElements(smallArray, bigArray);
+
+        expect(result).toBe(false);
+    });
+});
+
+describe('hasNoMatch', () => {
+    it('should return true when none of the elements in the small array are present in the big array', () => {
+        const smallArray = ['x', 'y', 'z'];
+        const bigArray = ['a', 'b', 'c', 'd', 'e'];
+
+        const result = filterLibs.hasNoMatch(smallArray, bigArray);
+
+        expect(result).toBe(true);
+    });
+
+    it('should return false when at least one element in the small array is present in the big array', () => {
+        const smallArray = ['a', 'b', 'c'];
+        const bigArray = ['a', 'd', 'e'];
+
+        const result = filterLibs.hasNoMatch(smallArray, bigArray);
+
+        expect(result).toBe(false);
+    });
+});
+
+
+
 
 
 
