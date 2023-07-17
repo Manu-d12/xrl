@@ -46,7 +46,8 @@ export default class ActionBar extends LightningElement {
             } else if (actionDetails.actionCallBack != undefined){
                 //Callback execution
                 try{
-                    let fn = eval('(' + actionDetails.actionCallBack + ')')(this.config.dataTable?._selectedRecords(), this, libs);               
+                    let fn = eval('(' + actionDetails.actionCallBack + ')')(this.config.dataTable?._selectedRecords(), this, libs); 
+					this.config.dataTable?._updateView();
                 }catch(err){
                     console.log('EXCEPTION', err);
                 }
