@@ -972,9 +972,18 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			let value = (type === 'checkbox') ? event.target.checked : event.target.value;
 			console.log(type, param, value);
 
+			if(param === 'displayOptionListSize' && value !== undefined && value !== null && (value.startsWith('-') || isNaN(value))) {
+				const msgEvent3 = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.msg_onlyAcceptsPositiveNumbers,
+					variant: 'error'
+				});
+				this.dispatchEvent(msgEvent3);
+				event.target.value = this.config.dialog.listViewConfig[param] ?? '20';
+				return;
+			} 
 			this.config.dialog.listViewConfig[param] = value;
 
-			console.log('saving table params', param, this.config.dialog.listViewConfig[param]);
 		}
 		if (val === 'dialog:setPagerParam') {
 			

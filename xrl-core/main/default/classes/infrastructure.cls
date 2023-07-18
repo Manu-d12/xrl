@@ -737,6 +737,7 @@ global with sharing class infrastructure {
 			'msg_yourFileWillStartDownloadingShortly'=>label.msg_yourFileWillStartDownloadingShortly,
 			'msg_entityIsDeleted'=>label.msg_entityIsDeleted,
 			'msg_itemsUpdateFailed'=>label.msg_itemsUpdateFailed,
+			'msg_onlyAcceptsPositiveNumbers'=>label.msg_onlyAcceptsPositiveNumbers,
 			'placeHolder_beforeSaveValidation'=>label.placeHolder_beforeSaveValidation,
 			'placeHolder_beforeDeleteValidation'=>label.placeHolder_beforeDeleteValidation,
 			'placeholder_actionCallback'=> label.placeholder_actionCallback,
