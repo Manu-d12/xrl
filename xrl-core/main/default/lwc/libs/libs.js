@@ -728,7 +728,7 @@ export let libs = {
 				"isSortable": true,
 				"isNameField": false,
 				"isEditable": false,
-				"helpText": 'NewValue (anyType)',
+				"helpText": 'OldValue (anyType)',
 			},
 			{
 				"label": "Created Date",
