@@ -6,21 +6,21 @@ export let filterLibs = {
 		/*eslint-disable*/
 		switch (filter._filterOption) {
 			case 'cn':
-				return value.toLowerCase().includes(filter._filterStr.toLowerCase());
+				return value.toString().toLowerCase().includes(filter._filterStr.toLowerCase());
 			case 'ncn': 
-				return value == undefined || value == '' ||  (value.toLowerCase().indexOf(filter._filterStr.toLowerCase()) === -1);
+				return value == undefined || value == '' ||  (value.toString().toLowerCase().indexOf(filter._filterStr.toLowerCase()) === -1);
 			case 'bn': 
-				return value.toLowerCase().startsWith(filter._filterStr.toLowerCase()) === true;
+				return value.toString().toLowerCase().startsWith(filter._filterStr.toLowerCase()) === true;
 			case 'nbn': 
-				return value.toLowerCase().startsWith(filter._filterStr.toLowerCase()) === false;
+				return value.toString().toLowerCase().startsWith(filter._filterStr.toLowerCase()) === false;
 			case 'ed': 
-				return value.toLowerCase().endsWith(filter._filterStr.toLowerCase()) === true;
+				return value.toString().toLowerCase().endsWith(filter._filterStr.toLowerCase()) === true;
 			case 'ned': 
-				return value.toLowerCase().endsWith(filter._filterStr.toLowerCase()) === false;	
+				return value.toString().toLowerCase().endsWith(filter._filterStr.toLowerCase()) === false;	
 			case 'eq':
-				return value.toLowerCase() === filter._filterStr.toLowerCase();
+				return value.toString().toLowerCase() === filter._filterStr.toLowerCase();
 			case 'neq':
-				return value.toLowerCase() !== filter._filterStr.toLowerCase();
+				return value.toString().toLowerCase() !== filter._filterStr.toLowerCase();
 			case 'em': 
 				return value === null || value == undefined;
 			case 'nem': 

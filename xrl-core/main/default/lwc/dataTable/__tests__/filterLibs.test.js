@@ -1,140 +1,406 @@
 import { filterLibs } from '../filterLibs';
 
 describe('filterLibs', () => {
-    describe('string__filter', () => {
-        let filter;
-        let record;
+    const labels = {
+        lbl_contains: 'Contains',
+        lbl_doesNotContains: 'Does Not Contain',
+        lbl_beginsWith: 'Begins With',
+        lbl_doesNotBeginsWith: 'Does Not Begin With',
+        lbl_endsWith: 'Ends With',
+        lbl_doesNotEndsWith: 'Does Not End With',
+        lbl_isEqual: 'Is Equal',
+        lbl_isNotEqual: 'Is Not Equal',
+        lbl_isEmpty: 'Is Empty',
+        lbl_isNotEmpty: 'Is Not Empty',
+        lbl_greater: 'Greater',
+        lbl_greaterOrEqual: 'Greater or Equal',
+        lbl_less: 'Less',
+        lbl_lessOrEqual: 'Less or Equal',
+        lbl_range: 'Range'
+    };
 
-        beforeEach(() => {
-            // Create a new filter and record object before each test case
-            record = {
-                Contact: {
-                  Email: 'tjkdypn7@example.com',
-                  FirstName: 'Q7O2H',
-                  Id: '0035i00002qvJnsAAE'
-                },
-                ContactId: '0035i00002qvJnsAAE',
-                CurrencyIsoCode: 'AUD',
-                Id: '5005i00000Kiy93AAB',
-                Origin: 'Phone',
-                testPercent__c: 5,
-                testText__c: 'Hello',
-                Type: 'Mechanical'
-              };
-              filter = {
-                fieldName: "Type",
-                _filterOption: "eq",
-                _filterStr: "Mechanical",
-                _filterStrTo: "",
-                _locale: "en-US",
-              };
+    describe('picklistFilterActions', () => {
+        it('should return the action object when a valid key is provided', () => {
+            const key = 'eq';
+
+            const result = filterLibs.picklistFilterActions(labels, key);
+
+            expect(result).toEqual({ label: 'Is Equal', value: 'eq' });
         });
 
-        it('should return true when the filter option is "cn" and the value contains the filter string', () => {
-            filter._filterOption = 'cn';
-            filter._filterStr = 'example';
-            record.Type = 'This is an example string';
+        it('should return all actions when no key is provided', () => {
+            const result = filterLibs.picklistFilterActions(labels);
 
-            const result = filterLibs.string__filter(filter, record);
+            expect(result).toEqual([
+                { label: 'Contains', value: 'cn' },
+                { label: 'Does Not Contain', value: 'ncn' },
+                { label: 'Is Equal', value: 'eq' },
+                { label: 'Is Not Equal', value: 'neq' },
+                { label: 'Is Empty', value: 'em', isUnary: true },
+                { label: 'Is Not Empty', value: 'nem', isUnary: true }
+            ]);
+        });
+    });
 
-            expect(result).toBe(true);
+    describe('booleanFilterActions', () => {
+        it('should return the action object when a valid key is provided', () => {
+            const key = 'eq';
+
+            const result = filterLibs.booleanFilterActions(labels, key);
+
+            expect(result).toEqual({ label: 'Is Equal', value: 'eq' });
         });
 
-        it('should return true when the filter option is "ncn" and the value does not contain the filter string', () => {
-            filter._filterOption = 'ncn';
-            filter._filterStr = 'example';
-            record.Type = 'This is a different string';
+        it('should return all actions when no key is provided', () => {
+            const result = filterLibs.booleanFilterActions(labels);
 
-            const result = filterLibs.string__filter(filter, record);
+            expect(result).toEqual([
+                { label: 'Is Equal', value: 'eq' },
+                { label: 'Is Not Equal', value: 'neq' },
+                { label: 'Is Empty', value: 'em', isUnary: true },
+                { label: 'Is Not Empty', value: 'nem', isUnary: true }
+            ]);
+        });
+    });
 
-            expect(result).toBe(true);
+    describe('dateFilterActions', () => {
+        it('should return the action object when a valid key is provided', () => {
+            const key = 'eq';
+
+            const result = filterLibs.dateFilterActions(labels, key);
+
+            expect(result).toEqual({ label: 'Is Equal', value: 'eq' });
         });
 
-        it('should return true when the filter option is "bn" and the value starts with the filter string', () => {
-            filter._filterOption = 'bn';
-            filter._filterStr = 'example';
-            record.Type = 'example string';
+        it('should return all actions when no key is provided', () => {
+            const result = filterLibs.dateFilterActions(labels);
 
-            const result = filterLibs.string__filter(filter, record);
-
-            expect(result).toBe(true);
+            expect(result).toEqual([
+                { label: 'Is Equal', value: 'eq' },
+                { label: 'Is Not Equal', value: 'neq' },
+                { label: 'Is Empty', value: 'em', isUnary: true },
+                { label: 'Is Not Empty', value: 'nem', isUnary: true },
+                { label: 'Greater', value: 'gr' },
+                { label: 'Greater or Equal', value: 'gre' },
+                { label: 'Less', value: 'ls' },
+                { label: 'Less or Equal', value: 'lse' },
+                { label: 'Range', value: 'rg' }
+            ]);
         });
-
-        it('should return true when the filter option is "nbn" and the value does not start with the filter string', () => {
-            filter._filterOption = 'nbn';
-            filter._filterStr = 'example';
-            record.Type = 'different string';
-
-            const result = filterLibs.string__filter(filter, record);
-
-            expect(result).toBe(true);
+    });
+    describe('stringFilterActions', () => {
+    
+        it('should return the action object when a valid key is provided', () => {
+            const key = 'eq';
+    
+            const result = filterLibs.stringFilterActions(labels, key);
+    
+            expect(result).toEqual({ label: 'Is Equal', value: 'eq' });
         });
-
-        it('should return true when the filter option is "ed" and the value ends with the filter string', () => {
-            filter._filterOption = 'ed';
-            filter._filterStr = 'example';
-            record.Type = 'string example';
-
-            const result = filterLibs.string__filter(filter, record);
-
-            expect(result).toBe(true);
-        });
-
-        it('should return true when the filter option is "ned" and the value does not end with the filter string', () => {
-            filter._filterOption = 'ned';
-            filter._filterStr = 'example';
-            record.Type = 'string different';
-
-            const result = filterLibs.string__filter(filter, record);
-
-            expect(result).toBe(true);
-        });
-
-        it('should return true when the filter option is "eq" and the value is equal to the filter string', () => {
-            filter._filterOption = 'eq';
-            filter._filterStr = 'example';
-            record.Type = 'example';
-
-            const result = filterLibs.string__filter(filter, record);
-
-            expect(result).toBe(true);
-        });
-
-        it('should return true when the filter option is "neq" and the value is not equal to the filter string', () => {
-            filter._filterOption = 'neq';
-            filter._filterStr = 'example';
-            record.Type = 'different';
-
-            const result = filterLibs.string__filter(filter, record);
-
-            expect(result).toBe(true);
-        });
-
-        it('should return true when the filter option is "em" and the value is null or undefined', () => {
-            filter._filterOption = 'em';
-            record.Type = null;
-
-            const result1 = filterLibs.string__filter(filter, record);
-
-            expect(result1).toBe(true);
-
-            record.value = undefined;
-
-            const result2 = filterLibs.string__filter(filter, record);
-
-            expect(result2).toBe(true);
-        });
-
-        it('should return true when the filter option is "nem" and the value is not null or undefined', () => {
-            filter._filterOption = 'nem';
-            record.Type = 'example';
-
-            const result = filterLibs.string__filter(filter, record);
-
-            expect(result).toBe(true);
+    
+        it('should return all actions when no key is provided', () => {
+            const result = filterLibs.stringFilterActions(labels);
+    
+            expect(result).toEqual([
+                { label: 'Contains', value: 'cn' },
+                { label: 'Does Not Contain', value: 'ncn' },
+                { label: 'Begins With', value: 'bn' },
+                { label: 'Does Not Begin With', value: 'nbn' },
+                { label: 'Ends With', value: 'ed' },
+                { label: 'Does Not End With', value: 'ned' },
+                { label: 'Is Equal', value: 'eq' },
+                { label: 'Is Not Equal', value: 'neq' },
+                { label: 'Is Empty', value: 'em', isUnary: true },
+                { label: 'Is Not Empty', value: 'nem', isUnary: true }
+            ]);
         });
     });
     
+    describe('numberFilterActions', () => {
+    
+        it('should return the action object when a valid key is provided', () => {
+            const key = 'eq';
+    
+            const result = filterLibs.numberFilterActions(labels, key);
+    
+            expect(result).toEqual({ label: 'Is Equal', value: 'eq' });
+        });
+    
+        it('should return all actions when no key is provided', () => {
+            const result = filterLibs.numberFilterActions(labels);
+    
+            expect(result).toEqual([
+                { label: 'Contains', value: 'cn' },
+                { label: 'Does Not Contain', value: 'ncn' },
+                { label: 'Begins With', value: 'bn' },
+                { label: 'Does Not Begin With', value: 'nbn' },
+                { label: 'Ends With', value: 'ed' },
+                { label: 'Does Not End With', value: 'ned' },
+                { label: 'Is Equal', value: 'eq' },
+                { label: 'Is Not Equal', value: 'neq' },
+                { label: 'Is Empty', value: 'em', isUnary: true },
+                { label: 'Is Not Empty', value: 'nem', isUnary: true },
+                { label: 'Greater', value: 'gr' },
+                { label: 'Greater or Equal', value: 'gre' },
+                { label: 'Less', value: 'ls' },
+                { label: 'Less or Equal', value: 'lse' },
+                { label: 'Range', value: 'rg' }
+            ]);
+        });
+    });
+});
+
+describe('string__filter', () => {
+    let filter;
+    let record;
+
+    beforeEach(() => {
+        // Create a new filter and record object before each test case
+        record = {
+            Contact: {
+                Email: 'tjkdypn7@example.com',
+                FirstName: 'Q7O2H',
+                Id: '0035i00002qvJnsAAE'
+            },
+            ContactId: '0035i00002qvJnsAAE',
+            CurrencyIsoCode: 'AUD',
+            Id: '5005i00000Kiy93AAB',
+            Origin: 'Phone',
+            testPercent__c: 5,
+            testText__c: 'Hello',
+            Type: 'Mechanical'
+            };
+            filter = {
+            fieldName: "Type",
+            _filterOption: "eq",
+            _filterStr: "Mechanical",
+            _filterStrTo: "",
+            _locale: "en-US",
+            };
+    });
+
+    it('should return true when the filter option is "cn" and the value contains the filter string', () => {
+        filter._filterOption = 'cn';
+        filter._filterStr = 'example';
+        record.Type = 'This is an example string';
+
+        const result = filterLibs.string__filter(filter, record);
+
+        expect(result).toBe(true);
+
+        filter._filterStr = '29';
+        record.Type = 29.33;
+
+        const result2 = filterLibs.string__filter(filter, record);
+
+        expect(result2).toBe(true);
+
+        filter._filterStr = '42';
+        record.Type = 29.33;
+
+        const result3 = filterLibs.string__filter(filter, record);
+
+        expect(result3).toBe(false);
+    });
+
+    it('should return true when the filter option is "ncn" and the value does not contain the filter string', () => {
+        filter._filterOption = 'ncn';
+        filter._filterStr = 'example';
+        record.Type = 'This is a different string';
+
+        const result = filterLibs.string__filter(filter, record);
+
+        expect(result).toBe(true);
+
+        filter._filterStr = '29';
+        record.Type = 29.33;
+
+        const result2 = filterLibs.string__filter(filter, record);
+
+        expect(result2).toBe(false);
+
+        filter._filterStr = '29';
+        record.Type = null;
+
+        const result3 = filterLibs.string__filter(filter, record);
+
+        expect(result3).toBe(true);
+
+        filter._filterStr = '';
+        record.Type = '29';
+
+        const result4 = filterLibs.string__filter(filter, record);
+
+        expect(result4).toBe(false);
+    });
+
+    it('should return true when the filter option is "bn" and the value starts with the filter string', () => {
+        filter._filterOption = 'bn';
+        filter._filterStr = 'example';
+        record.Type = 'example string';
+
+        const result = filterLibs.string__filter(filter, record);
+
+        expect(result).toBe(true);
+        
+        filter._filterStr = '29';
+        record.Type = 29.33;
+
+        const result2 = filterLibs.string__filter(filter, record);
+
+        expect(result2).toBe(true);
+
+        filter._filterStr = '42';
+        record.Type = 29.33;
+
+        const result3 = filterLibs.string__filter(filter, record);
+
+        expect(result3).toBe(false);
+    });
+
+    it('should return true when the filter option is "nbn" and the value does not start with the filter string', () => {
+        filter._filterOption = 'nbn';
+        filter._filterStr = 'example';
+        record.Type = 'different string';
+
+        const result = filterLibs.string__filter(filter, record);
+
+        expect(result).toBe(true);
+
+        filter._filterStr = '29';
+        record.Type = 29.33;
+
+        const result2 = filterLibs.string__filter(filter, record);
+
+        expect(result2).toBe(false);
+
+        filter._filterStr = '42';
+        record.Type = 29.33;
+
+        const result3 = filterLibs.string__filter(filter, record);
+
+        expect(result3).toBe(true);
+    });
+
+    it('should return true when the filter option is "ed" and the value ends with the filter string', () => {
+        filter._filterOption = 'ed';
+        filter._filterStr = 'example';
+        record.Type = 'string example';
+
+        const result = filterLibs.string__filter(filter, record);
+
+        expect(result).toBe(true);
+
+        filter._filterStr = '29';
+        record.Type = 29.33;
+
+        const result2 = filterLibs.string__filter(filter, record);
+
+        expect(result2).toBe(false);
+
+        filter._filterStr = '.33';
+        record.Type = 29.33;
+
+        const result3 = filterLibs.string__filter(filter, record);
+
+        expect(result3).toBe(true);
+    });
+
+    it('should return true when the filter option is "ned" and the value does not end with the filter string', () => {
+        filter._filterOption = 'ned';
+        filter._filterStr = 'example';
+        record.Type = 'string different';
+
+        const result = filterLibs.string__filter(filter, record);
+
+        expect(result).toBe(true);
+
+        filter._filterStr = '29';
+        record.Type = 29.33;
+
+        const result2 = filterLibs.string__filter(filter, record);
+
+        expect(result2).toBe(true);
+
+        filter._filterStr = '42';
+        record.Type = 29.33;
+
+        const result3 = filterLibs.string__filter(filter, record);
+
+        expect(result3).toBe(true);
+    });
+
+    it('should return true when the filter option is "eq" and the value is equal to the filter string', () => {
+        filter._filterOption = 'eq';
+        filter._filterStr = 'example';
+        record.Type = 'example';
+
+        const result = filterLibs.string__filter(filter, record);
+
+        expect(result).toBe(true);
+
+        filter._filterStr = '29.33';
+        record.Type = 29.33;
+
+        const result2 = filterLibs.string__filter(filter, record);
+
+        expect(result2).toBe(true);
+
+        filter._filterStr = '29.3';
+        record.Type = 29.33;
+
+        const result3 = filterLibs.string__filter(filter, record);
+
+        expect(result3).toBe(false);
+    });
+
+    it('should return true when the filter option is "neq" and the value is not equal to the filter string', () => {
+        filter._filterOption = 'neq';
+        filter._filterStr = 'example';
+        record.Type = 'different';
+
+        const result = filterLibs.string__filter(filter, record);
+
+        expect(result).toBe(true);
+
+        filter._filterStr = '29';
+        record.Type = 29.33;
+
+        const result2 = filterLibs.string__filter(filter, record);
+
+        expect(result2).toBe(true);
+
+        filter._filterStr = '29.34';
+        record.Type = 29.33;
+
+        const result3 = filterLibs.string__filter(filter, record);
+
+        expect(result3).toBe(true);
+    });
+
+    it('should return true when the filter option is "em" and the value is null or undefined', () => {
+        filter._filterOption = 'em';
+        record.Type = null;
+
+        const result1 = filterLibs.string__filter(filter, record);
+
+        expect(result1).toBe(true);
+
+        record.value = undefined;
+
+        const result2 = filterLibs.string__filter(filter, record);
+
+        expect(result2).toBe(true);
+    });
+
+    it('should return true when the filter option is "nem" and the value is not null or undefined', () => {
+        filter._filterOption = 'nem';
+        record.Type = 'example';
+
+        const result = filterLibs.string__filter(filter, record);
+
+        expect(result).toBe(true);
+    });
 });
 describe('number__filter', () => {
     let filter;
