@@ -22,8 +22,15 @@ global with sharing class infrastructure {
 				throw new InfrastructureException(null,label.msg_packageLicenseExpired, Infrastructure.exceptionType.GENERAL);
 			}
 
-			list < PermissionSetAssignment > permission = [SELECT Id FROM PermissionSetAssignment WHERE AssigneeId =: UserInfo.getUserId() AND PermissionSet.Name = 'XRL_Admin'];
-			if (permission.size() != 0) isAdminAccess = true;
+			list < PermissionSetAssignment > permission = [SELECT Id,PermissionSet.Name FROM PermissionSetAssignment WHERE AssigneeId =: UserInfo.getUserId() AND (PermissionSet.Name = 'XRL_Admin' OR PermissionSet.Name = 'XRL_StandardUser')];
+			// if (permission.size() != 0) isAdminAccess = true;
+			if (permission.size() == 0){
+				throw new InfrastructureException(null,'No Permission Set assigned', Infrastructure.exceptionType.GENERAL);
+			}else{
+				PermissionSetAssignment userPermission = permission[0];
+				String permissionSetName = userPermission.PermissionSet.Name;
+				if(permissionSetName == 'XRL_Admin') isAdminAccess = true;
+			}
 
 			switch on cmd {
 				when 'getConfig' {
