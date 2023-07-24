@@ -50,6 +50,9 @@ global with sharing class infrastructure {
 				when 'delRecords' {
 					resultMethod = delRecords(data);
 				}
+				when 'cloneRecords' {
+					resultMethod = cloneRecords(data);
+				}
 				when 'requestFeature' {
 					resultMethod = requestFeature(data);
 				}
@@ -502,6 +505,116 @@ global with sharing class infrastructure {
 			throw new InfrastructureException(null,String.valueOf(e.getMessage()) , Infrastructure.exceptionType.GENERAL);
 		}
 		return records;
+	}
+
+	private static object cloneRecords(map < string, object > data) {
+		string transformType = (string) data.get('transformType');
+		string destObjectName = (string) data.get('destObjectName');
+		boolean isRollback = (boolean) data.get('rollback') == true;		
+		id[] recordIdList = (id[]) JSON.deserialize(JSON.serialize(data.get('recordIdList')), id[].class);
+		map < string, string > mapping = (map < string, string >) JSON.deserialize(JSON.serialize(data.get('mapping')),  map < string, string >.class);
+
+		if (recordIdList == null) throw new InfrastructureException(null, 'Provide parameter recordIdList', exceptionType.IMPLEMENTATION);
+		if (mapping == null) throw new InfrastructureException(null, 'Provide parameter mapping', exceptionType.IMPLEMENTATION);
+		if (string.isBlank(destObjectName)) throw new InfrastructureException(null, 'Provide parameter destObjectName', exceptionType.IMPLEMENTATION);
+		
+		handler transformHandler;
+		if (!string.isBlank(transformType)) {
+			Type T = type.forName(transformType);			
+			if (T == null) throw new InfrastructureException(null, ('Can\'t find transformation class {1}').replace('{1}', transformType), exceptionType.CLASS_NOT_FOUND);
+			transformHandler = (handler) T.newInstance();
+		}
+
+		string srcObjectName = recordIdList[0].getSObjectType().getDescribe().getName();
+
+		map < String, Schema.SObjectField > fieldsMap = Schema.getGlobalDescribe().get(destObjectName).getDescribe().fields.getMap();
+		map < string, Schema.SOAPType > fieldsTypes = new map < string, Schema.SOAPType > ();
+
+		set < string > fields = new set < string > ();
+		for (string item: mapping.values()) {
+			if (item.startsWith('const:') || item.startsWith('constGMT:')) continue;
+			fields.add(item);
+		}
+
+		string SOQL = 'SELECT {fields} FROM {sObjectType} WHERE Id IN :recordIdList'.replace('{fields}', string.join(new list<string>(fields), ',')).replace('{sObjectType}', srcObjectName);
+		sObject[] source = database.query(SOQL);
+		sObject[] destinationList = new sObject[] {};
+		Type t = Type.forName(destObjectName);		
+
+		for (sObject sItem: source) {
+			sObject tmp = (sObject) t.newInstance();
+			for (string item: mapping.keySet()) {
+				if (!fieldsMap.containsKey(item)) throw new InfrastructureException(null, ('Missing field {1}').replace('{1}', item), exceptionType.IMPLEMENTATION);
+				if (!fieldsTypes.containsKey(item) || fieldsMap.get(item) != null) fieldsTypes.put(item, fieldsMap.get(item).getDescribe().getSOAPType());
+				tmp.put(item, getValue(mapping.get(item), fieldsTypes.get(item), sItem));
+			}
+			if (transformHandler != null) {
+				map < string, object > transformTmp = new map < string, object > ();
+				transformTmp.put('srcRecord', sItem);
+				transformTmp.put('destRecord', tmp);
+				transformHandler.execute(transformTmp);
+			}
+			destinationList.add(tmp);
+		}
+		
+		string[] errorsList = new List<String>();
+		Database.SaveResult[] srs = Database.insert(destinationList, isRollback);
+        for (Database.SaveResult sr : srs) {
+			if (!sr.isSuccess()) {
+				for (Database.Error err : sr.getErrors()) {
+					errorsList.add(String.valueOf(sr.getId() + ': ' +err.getStatusCode()) + ': ' + err.getMessage());
+				}
+			}
+		}
+		map < string, object > result = new map < string, object > ();
+		result.put('records', destinationList);
+		result.put('errorList', errorsList);
+		return result;
+	}
+
+	private static object getValue(string mapValue, Schema.SOAPType fieldType, sObject sourceRecord) {
+		if (mapValue.startsWith('const:') || mapValue.startsWith('constGMT:')) {
+			return getValueByType(fieldType, mapValue.replace('const:', '').trim());
+		}
+		return getFieldValue(mapValue, fieldType, sourceRecord);
+	}
+
+	private static object getFieldValue(string field, Schema.SOAPType fieldType, sObject record) {
+		string[] fields = field.split('\\.');
+		sObject result = record;
+		for (string fItem: fields) {
+			if (fItem == fields[fields.size() - 1]) return getValueByType(fieldType, record.get(fItem));
+			result = result.getSObject(fItem);
+			if (result == null) break;
+		}
+		return null;
+	}
+
+	private static object getValueByType(Schema.SOAPType fieldType, object value) {
+		switch on fieldType {
+			when Boolean {
+				return boolean.valueof(value);
+			}
+			when Date {
+				return value !=null && string.valueOf(value).startsWith('constGMT:') ? DateTime.valueof(string.valueOf(value).replace('constGMT:','')) : value;
+			}
+			when DateTime {
+				return value !=null && string.valueOf(value).startsWith('constGMT:') ? DateTime.valueof(string.valueOf(value).replace('constGMT:','')) : value;
+			}
+			when Double {
+				return double.valueof(value);
+			}
+			when Integer {
+				return integer.valueof(value);
+			}
+			when String {
+				return string.valueof(value);
+			}
+			when
+			else {
+				return value;
+			}
+		}
 	}
 
 	private static object requestFeature(map < string, object > data) {

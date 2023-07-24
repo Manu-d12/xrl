@@ -507,6 +507,10 @@ export default class Layout extends NavigationMixin(LightningElement) {
 
 			return;
 		}
+		if (actionId === 'std:untie') {
+			table.listViewConfig[0].isShowCheckBoxes = !table.listViewConfig[0].isShowCheckBoxes;
+			table.listViewConfig[0]._updateView();
+		}
 	}
 
 	stripChunk(chunkIn) {
@@ -519,30 +523,30 @@ export default class Layout extends NavigationMixin(LightningElement) {
 
 	async handleCustomAction(event, cfg) {
 		let actionId = event?.target?.getAttribute('data-id');
-
 		let table = libs.getGlobalVar(cfg._cfgName).listViewConfig[0];
 		let action = JSON.parse(JSON.stringify(cfg.actions.find(act => act.actionId === actionId)));
+		this.parseHandlers(action);
+		let tableElement = this.template.querySelector('[data-name="' + cfg._cfgName + '"]');
+		
+		let input = {}, confirmed = false, index = 0;
+		if (action.inputDialogs) {
+			do {
+				input = await this.openDialog(action.inputDialogs[index], cfg, actionId);
+				console.log('input', JSON.parse(JSON.stringify(input)));
+				this.showDialog = false;
+				this.dialogCfg = null;
+				if (input.action === 'cancel') return;
+				else if (input.action.startsWith('switch')) index = input.action.split(':')[1];
+				else confirmed = true;
 
-		if (action.confirmationDialog) {
-			let result = await this.openDialog(action.confirmationDialog, cfg, actionId);
-			console.log('dialog res', JSON.parse(JSON.stringify(result)));
-			this.showDialog = false;
-			this.dialogCfg = null;
-			if (result.action === 'cancel') return;
+			} while (!confirmed);
 		}
+		input.index = index;
 
-		let input;
-		if (action.inputDialog) {
-			input = await this.openDialog(action.inputDialog, cfg, actionId);
-			console.log('input', JSON.parse(JSON.stringify(input)));
-			this.showDialog = false;
-			this.dialogCfg = null;
-			if (input.action === 'cancel') return;
-		}
-
-		if (action.validationCallBack) {
-			let result = await eval('(' + action.validationCallBack + ')')(table._selectedRecords(), input, this, libs);
-			console.log('valid', JSON.parse(JSON.stringify(result)));
+		let validationResult;
+		if (action.validationCallBack && typeof action.validationCallBack === 'function') {
+			let validationResult = action.validationCallBack({ selected: table._selectedRecords(), table: table, tableElement: tableElement, action: action}, this, libs);
+			console.log('validationResult', JSON.parse(JSON.stringify(validationResult)));
 			if (result.errorMessage) {
 				libs.showToast(this, {
 					title: 'Error',
@@ -553,10 +557,17 @@ export default class Layout extends NavigationMixin(LightningElement) {
 			}
 		}
 
+		if (action.confirmationDialog) {
+			let result = await this.openDialog(action.confirmationDialog, cfg, actionId);
+			console.log('dialog res', JSON.parse(JSON.stringify(result)));
+			this.showDialog = false;
+			this.dialogCfg = null;
+			if (result.action === 'cancel') return;
+		}
+
 		let result;
-		if (action.actionCallBack) {
-			this._tableLink = table;
-			result = await eval('(' + action.actionCallBack + ')')({ selected: table._selectedRecords(), input: input, action: action} , this, libs);
+		if (action.actionCallBack && typeof action.actionCallBack === 'function') {
+			result = action.actionCallBack({ selected: table._selectedRecords(), input: input, table: table, tableElement: tableElement, action: action, validationResult: validationResult} , this, libs);
 			console.log('result', JSON.parse(JSON.stringify(result)));
 			if (result.successMessage) {
 				libs.showToast(this, {
@@ -564,7 +575,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 					message: result.successMessage,
 					variant: 'success'
 				});
-			table.listViewConfig[0]._updateView();
+				table.listViewConfig[0]._updateView();
 			} else if (result.errorMessage) {
 				libs.showToast(this, {
 					title: 'Error',
@@ -574,8 +585,8 @@ export default class Layout extends NavigationMixin(LightningElement) {
 			}
 		}
 
-		if (action.completedCallBack) {
-			await eval('(' + action.completedCallBack + ')')({ selected: table._selectedRecords(), input: input, result: result, action: action} , this, libs);
+		if (action.completedCallBack && typeof action.completedCallBack === 'function') {
+			action.completedCallBack({ selected: table._selectedRecords(), input: input, table: table, tableElement: tableElement, action: action, validationResult: validationResult, result: result} , this, libs);
 		}
 
 	}
@@ -588,9 +599,8 @@ export default class Layout extends NavigationMixin(LightningElement) {
 					resolve(data);
 				})
 			};
-			let cfg = JSON.parse(JSON.stringify(dialogCfg));
-			this.replaceLiterals(cfg, '_LABELS');
-			Object.assign(this.dialogCfg, cfg);
+			this.replaceLiterals(dialogCfg, '_LABELS');
+			Object.assign(this.dialogCfg, dialogCfg);
 			this.showDialog = true;
 		});		
 	}
@@ -609,7 +619,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 		else replaceObj(target);
 	}
 
-	async bulkAction(name, recordIdList, params, chunkSize, callback) {
+	async bulkAction(cmd, recordIdList, recordParam, params, chunkSize, callback) {
 		let index = 0;
 		let result = [];
 		params.callback = (cmd, res) => {
@@ -617,11 +627,21 @@ export default class Layout extends NavigationMixin(LightningElement) {
 			result.push(res);
 		};
 		while (index < recordIdList.length) {
-			params.recordIdList = recordIdList.slice(index, index + chunkSize > recordIdList.length ? recordIdList.length : index + chunkSize);
+			params[recordParam] = recordIdList.slice(index, index + chunkSize > recordIdList.length ? recordIdList.length : index + chunkSize);
 			index += chunkSize;
-			await libs.remoteAction(this, 'invokeApex', params);
+			await libs.remoteAction(this, cmd, params);
 		}
 		console.log('bulkAction result', result); 
 		callback(result);
 	}
+	
+    parseHandlers(ob) {
+        for (let p in ob) {
+            if (typeof ob[p] === 'string' && ob[p].includes('function')) {
+                ob[p] = eval('(' + ob[p] + ')');
+            } else if (typeof ob[p] === 'object') {
+                this.parseHandlers(ob[p]);
+            }
+        }
+    }
 }
