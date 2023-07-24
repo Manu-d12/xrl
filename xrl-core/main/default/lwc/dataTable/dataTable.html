@@ -36,6 +36,9 @@
 							<lightning-input type="checkbox" name="selectAll" onchange={selectAll}></lightning-input>
 						</div>
 					</th>
+					<th scope="col" style="width: 2rem;">
+						&nbsp;
+					</th>
 					<template for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="index" key={hItem.label}>
 						<th aria-sort="none" if:false={hItem.isActions} class="slds-is-sortable slds-text-title_caps slds-truncate" style={hItem._style} aria-label={hItem.label} scope="col" key={hItem.label}>
 							<span data-id={hItem.fieldName} class="slds-th__action" style="padding-left:1px;">
@@ -63,6 +66,13 @@
 						<td scope="col" if:true={config.isShowCheckBoxes} style="width: 2rem;" data-rowind={index}>
 							<lightning-input type="checkbox" data-rowind={index} onchange={checkRow} checked={dItem._isChecked}></lightning-input>
 						</td>
+						<td scope="col" style="width: 2rem;" data-rowind={index}>
+							<template if:true={dItem._hasChildRecords}>
+								<lightning-button-icon if:false={dItem._isExpanded} icon-name="utility:chevronright"  variant="bare" alternative-text={config._LABELS.altTxt_expand} title={config._LABELS.title_expand} data-id={dItem.Id} onclick={toggleChildRecords}></lightning-button-icon>
+								<lightning-button-icon if:true={dItem._isExpanded} icon-name="utility:chevrondown"  variant="bare" alternative-text={config._LABELS.altTxt_expand} title={config._LABELS.title_expand} data-id={dItem.Id} onclick={toggleChildRecords}></lightning-button-icon>
+							</template>
+							<lightning-button-icon if:false={dItem._hasChildRecords} icon-name="utility:dash"  variant="bare" alternative-text={config._LABELS.altTxt_expand} title={config._LABELS.title_expand} onclick={toggleGroup}></lightning-button-icon>
+						</td>
 						<td for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="hIndex" key={hItem.fieldName} role="gridcell" data-rowind={index} data-colname={hItem.fieldName} ondblclick={rowDblCallback} class={hItem._cellCss}>
 							<span if:false={hItem.isActions} class="slds-grid slds-grid_align-spread">
 
@@ -81,6 +91,8 @@
 							</span>
 						</td>
 					</tr>
+					<c-data-table-row if:true={dItem._isExpanded} key={dItem.Id}  class={dItem._rowCss} style="display: contents;width: 100%;" 
+					records={dItem.childRecords} config={config} cfg={cfg} indent="2"></c-data-table-row>
 				</template>
 
 
