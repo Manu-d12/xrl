@@ -266,7 +266,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 					//await new Promise(resolve => setTimeout(resolve, 3000)); //this needs to debug, should work without timeout
 				} else if (cmp.isServerFilter) {
 					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, sObjApiName:this.config.sObjApiName || configUniqueName.split(':')[0] , callback: function(cmd, data) {
-						this.config.listViewConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig) : [];
+						this.config.listViewConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
 						this.config.sObjApiName = this.config.sObjApiName || configUniqueName.split(':')[0];
 						this.config.relField = this.config.relField || configUniqueName.split(':')[1];
 						this.config.financial = (data[cmd].Financial) ? data[cmd].Financial : {};
@@ -275,15 +275,15 @@ export default class Layout extends NavigationMixin(LightningElement) {
 					} });
 				} else if (cmp.isChart) {
 					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
-						this.config.chartConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig) : [];
+						this.config.chartConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
 					} });
 				} else if (cmp.isChevron) {
 					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
-						this.config.chevronConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig) : [];
+						this.config.chevronConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
 					} });
 				} else if (cmp.isActionBar) {
 					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
-						this.config.actionsBar = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig) : [];
+						this.config.actionsBar = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
 						cmp.config = {
 							'actions': this.config.actionsBar?.actions || [],
 							'_handleEvent': this.handleEvent.bind(this),
@@ -309,7 +309,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 		libs.getGlobalVar(this.name).userInfo = data.userInfo;
 		libs.getGlobalVar(this.name).financial = data[cmd].Financial;
 		
-		this.config.listViewConfig = data[cmd].userConfig ? JSON.parse(data[cmd].userConfig) : [];
+		this.config.listViewConfig = data[cmd].userConfig ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
 		this.config.currency = data[cmd].currency;
 		this.config.describe = data[cmd].describe ? JSON.parse(data[cmd].describe) : {};
 		this.config.fields = [];

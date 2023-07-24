@@ -112,7 +112,7 @@ export default class Dialog extends LightningElement {
 		const { sObject, referenceSoql, formatter } = element;
 
 		const query = referenceSoql !== undefined
-			? { isNeedDescribe: true, sObjApiName: sObject, SOQL: referenceSoql }
+			? { isNeedDescribe: true, sObjApiName: sObject, SOQL: typeof referenceSoql === 'function' ? referenceSoql(this, libs, element) : referenceSoql }
 			: { isNeedDescribe: true, sObjApiName: sObject, relField: '', fields: ['Id', 'Name'], limit: 'LIMIT 10000' };
 
 		await libs.remoteAction(this, referenceSoql !== undefined ? 'customSoql' : 'query', {
