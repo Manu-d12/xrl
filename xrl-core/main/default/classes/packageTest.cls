@@ -228,4 +228,27 @@ public class packageTest {
         Map<String, Object> resultMap = (Map<String, Object>)result;
         System.assert(resultMap.containsKey('invokeApexResult'));
     }
+    @isTest
+    public static void testCloneRecords() {
+        Case cs = [SELECT Id, AccountId FROM Case LIMIT 1];
+        map < string, object > data = new map < string, object > ();
+        data.put('destObjectName', 'Case');
+        data.put('recordIdList', new list < id > {cs.Id});
+        map < string, string > mapping = new map < string, string > ();
+        mapping.put('Subject', 'const:new subject');
+        mapping.put('AccountId', 'AccountId');
+        data.put('mapping', mapping);
+        
+        test.startTest();
+        map < string, object > res = infrastructure.dispatcherAura('cloneRecords', data);
+        test.stopTest();
+        
+        map < string, object > result = (map < string, object >) res.get('cloneRecordsResult');
+        list <case> recs = (list <case>) result.get('records');
+        System.assertNotEquals(null, recs);
+        Case csNew = [SELECT Id, Subject, AccountId FROM Case WHERE Id =: recs[0].Id];
+        System.assertNotEquals(cs.Id, csNew.Id);
+        System.assertEquals('new subject', csNew.Subject);
+        System.assertEquals(cs.AccountId, csNew.AccountId);
+    }
 }

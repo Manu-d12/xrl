@@ -81,6 +81,54 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			return el._isChecked === true;
 		});
 	}
+	@api
+	getGroups() {
+		return this.groupedRecords;
+	}
+	@api
+	getSelectedGroups() {
+		return this.groupedRecords.filter(gr => gr.isChecked).map(gr => gr.title);
+	}
+	@api	
+	setGroupSelected(name, checked) {
+		let group = this.groupedRecords.find(gr => gr.title === name);
+		group.isChecked = checked;
+		group.records.forEach(rec => {
+			rec._isChecked = group.isChecked;
+			let rowind = this.records.findIndex(row => row.Id === rec.Id);
+			this.records[rowind]._isChecked = group.isChecked;
+		});
+	}
+	@api
+	setRowsSelected(idList, checked) {
+		if (this.hasGrouping) {
+			let groupSet = new Set();
+			idList.forEach(id => {
+				let rowind = this.records.findIndex(row => row.Id === id);
+				this.records[rowind]._isChecked = checked;
+				if (this.config.groupingParams.field.split('.')[1]){
+					groupSet.add(this.records[rowind][this.config.groupingParams.field.split('.')[0]][this.config.groupingParams.field.split('.')[1]] || 'empty');
+				} else {
+					groupSet.add(this.records[rowind][this.config.groupingParams.field] || 'empty');
+				}
+			});		
+			groupSet.forEach(groupName => {
+				let groupInd = this.groupedRecords.findIndex(gr => gr.title === groupName);
+				for (let rec of this.groupedRecords[groupInd].records) {
+					if (!rec._isChecked) {
+						checked = false;
+						break;
+					}
+				}
+				this.groupedRecords[groupInd].isChecked = checked;
+			});
+		} else {
+			idList.forEach(id => {
+				this.records[this.calcRowIndex(id)]._isChecked = checked;
+			});			
+		}
+		this.rowCheckStatus();
+	}
 
 	@api
 	setUpdateInfo(v) {
