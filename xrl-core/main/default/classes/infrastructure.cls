@@ -8,10 +8,6 @@ global with sharing class infrastructure {
         global abstract object execute(map < string, object > data);
     }
 
-    global interface transformRecord {
-        sObject transform(sObject srcRecord, sObject destRecord);
-    }
-
 	@AuraEnabled(Cacheable = false)
 	global static map < string, object > dispatcherAura(string cmd, map < string, object > data) {
 		map < string, object > result = new map < string, object > { 'cmd' => cmd };
@@ -522,11 +518,11 @@ global with sharing class infrastructure {
 		if (mapping == null) throw new InfrastructureException(null, 'Provide parameter mapping', exceptionType.IMPLEMENTATION);
 		if (string.isBlank(destObjectName)) throw new InfrastructureException(null, 'Provide parameter destObjectName', exceptionType.IMPLEMENTATION);
 		
-		transformRecord transformClass;
+		handler transformHandler;
 		if (!string.isBlank(transformType)) {
 			Type T = type.forName(transformType);			
-			if (T == null) throw new InfrastructureException(null, ('Can\'t find transformation class {1}').replace('{1}', transformType), exceptionType.TRANSFORM_CLASS_NOT_FOUND);
-			transformClass = (transformRecord) T.newInstance();
+			if (T == null) throw new InfrastructureException(null, ('Can\'t find transformation class {1}').replace('{1}', transformType), exceptionType.CLASS_NOT_FOUND);
+			transformHandler = (handler) T.newInstance();
 		}
 
 		string srcObjectName = recordIdList[0].getSObjectType().getDescribe().getName();
@@ -552,7 +548,12 @@ global with sharing class infrastructure {
 				if (!fieldsTypes.containsKey(item) || fieldsMap.get(item) != null) fieldsTypes.put(item, fieldsMap.get(item).getDescribe().getSOAPType());
 				tmp.put(item, getValue(mapping.get(item), fieldsTypes.get(item), sItem));
 			}
-			if (transformClass != null) transformClass.transform(sItem, tmp);
+			if (transformHandler != null) {
+				map < string, object > transformTmp = new map < string, object > ();
+				transformTmp.put('srcRecord', sItem);
+				transformTmp.put('destRecord', tmp);
+				transformHandler.execute(transformTmp);
+			}
 			destinationList.add(tmp);
 		}
 		
