@@ -193,10 +193,10 @@ export default class Layout extends NavigationMixin(LightningElement) {
 		if(event.detail.cmd.startsWith('filter:')) {
 			let comp = this.config.tabularConfig.dataModel.find(cmp => cmp.uniqueName === event.detail.source);
 			this.template.querySelectorAll('c-Data-Table')?.forEach(ch => {
-				if (comp.targets.includes(ch.cfg)) ch.handleEventMessage(event);
+				if (comp?.targets?.includes(ch.cfg) || event.detail.targets?.includes(ch.cfg)) ch.handleEventMessage(event);
 			});
 			if (event.detail.cmd.split(':')[1] === 'refresh') this.template.querySelectorAll('c-chartjs')?.forEach(ch => {
-				if (comp.targets.includes(ch.name)) ch.handleEventMessage(event);
+				if (comp?.targets?.includes(ch.name) || event.detail.targets?.includes(ch.cfg)) ch.handleEventMessage(event);
 			});
 		} else if(event.detail.cmd.startsWith('chart:')) {
 			this.template.querySelectorAll('c-Data-Table')?.forEach(ch => {
@@ -545,7 +545,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 
 		let validationResult;
 		if (action.validationCallBack && typeof action.validationCallBack === 'function') {
-			let validationResult = action.validationCallBack({ selected: table._selectedRecords(), table: table, tableElement: tableElement, action: action}, this, libs);
+			let validationResult = await action.validationCallBack({ selected: table._selectedRecords(), table: table, tableElement: tableElement, action: action}, this, libs);
 			console.log('validationResult', JSON.parse(JSON.stringify(validationResult)));
 			if (result.errorMessage) {
 				libs.showToast(this, {
@@ -567,7 +567,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 
 		let result;
 		if (action.actionCallBack && typeof action.actionCallBack === 'function') {
-			result = action.actionCallBack({ selected: table._selectedRecords(), input: input, table: table, tableElement: tableElement, action: action, validationResult: validationResult} , this, libs);
+			result = await action.actionCallBack({ selected: table._selectedRecords(), input: input, table: table, tableElement: tableElement, action: action, validationResult: validationResult} , this, libs);
 			console.log('result', JSON.parse(JSON.stringify(result)));
 			if (result.successMessage) {
 				libs.showToast(this, {
