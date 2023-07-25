@@ -2247,4 +2247,12 @@ return records;
         <shortDescription>msg_onlyAcceptsPositiveNumbers</shortDescription>
         <value>Only accepts positive numbers</value>
     </labels>
+    <labels>
+        <fullName>msg_noPermissionSetAssigned</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_noPermissionSetAssigned</shortDescription>
+        <value>No Permission Set Assigned</value>
+    </labels>
 </CustomLabels>
