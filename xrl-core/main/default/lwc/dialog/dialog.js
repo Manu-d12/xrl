@@ -1,4 +1,5 @@
 import { LightningElement, api } from 'lwc';
+import { libs } from 'c/libs';
 
 export default class Dialog extends LightningElement {
 
