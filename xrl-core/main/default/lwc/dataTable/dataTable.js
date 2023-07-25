@@ -970,7 +970,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					}
 				});
 			}catch(e) {
-				console.log('Filter error');
+				console.log('Filter error',e.toString());
 			}
 		}
 		this.setNumPages(this.config.pager.pageSize);

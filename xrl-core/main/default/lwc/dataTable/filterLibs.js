@@ -98,6 +98,25 @@ export let filterLibs = {
 				return value !== null && value !== undefined;	
 		}
     },
+	multipicklist__filter(filter, record) {
+        let value = this.getValue(filter, record);
+        if ((filter._filterOption !== 'em' && filter._filterOption !== 'ncn' && !value)) return false;
+		let valueArr = value?.split(';');
+		switch (filter._filterOption) {
+			case 'cn':
+				return filter._filterStr.find(v => {return value.toLowerCase().includes(v.toLowerCase());});				
+			case 'ncn': 
+				return value == undefined || !filter._filterStr.find(v => {return value.toLowerCase().includes(v.toLowerCase());});		
+			case 'eq':
+				return this.containsAllElements(valueArr,filter._filterStr);
+			case 'neq':
+				return this.hasNoMatch(valueArr,filter._filterStr);
+			case 'em': 
+				return value === null || value == undefined;
+			case 'nem': 
+				return value !== null && value !== undefined;	
+		}
+    },
     number__filter(filter, record) {
 		let value = this.getValue(filter, record);
         if ((filter._filterOption !== 'em' && filter._filterOption !== 'ncn' && value == undefined)) return false;
@@ -345,6 +364,9 @@ export let filterLibs = {
 			? actions.find( el => { return el.value === key})
 			: actions;
 	},
+	multipicklistFilterActions(labels,key) {
+        return filterLibs.picklistFilterActions(labels,key);
+	},
 	booleanFilterActions(labels,key) {
 		const actions = [
 			{ label: labels.lbl_isEqual, value: 'eq' },
@@ -422,6 +444,24 @@ export let filterLibs = {
 			: getRefField(filter.fieldName);
 		// console.log(value);
 		return formatter && typeof formatter === 'function' ? formatter(record, filter, record[filter.fieldName]) : value ;
-	}
+	},
+	containsAllElements(smallArray, bigArray) {
+		const bigSet = new Set(bigArray);
+		for (let i = 0; i < smallArray.length; i++) {
+		  if (!bigSet.has(smallArray[i])) {
+			return false;
+		  }
+		}
+		return true;
+	},
+	hasNoMatch(smallArray, bigArray) {
+		const bigSet = new Set(bigArray);
+		for (let i = 0; i < smallArray.length; i++) {
+		  if (bigSet.has(smallArray[i])) {
+			return false;
+		  }
+		}
+		return true;
+	  }
 
 }
