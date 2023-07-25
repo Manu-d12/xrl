@@ -547,7 +547,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 		if (action.validationCallBack && typeof action.validationCallBack === 'function') {
 			let validationResult = await action.validationCallBack({ selected: table._selectedRecords(), table: table, tableElement: tableElement, action: action}, this, libs);
 			console.log('validationResult', JSON.parse(JSON.stringify(validationResult)));
-			if (result.errorMessage) {
+			if (validationResult.errorMessage) {
 				libs.showToast(this, {
 					title: 'Error',
 					message: result.errorMessage,
@@ -575,7 +575,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 					message: result.successMessage,
 					variant: 'success'
 				});
-				table.listViewConfig[0]._updateView();
+				if (result.updateView) table._updateView();
 			} else if (result.errorMessage) {
 				libs.showToast(this, {
 					title: 'Error',
