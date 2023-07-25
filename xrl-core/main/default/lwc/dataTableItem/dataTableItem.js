@@ -22,6 +22,9 @@ export default class dataTableItem extends LightningElement {
 				this.config.dataTableCfg = el;
 			}
 		});
+		if(this.config.dataTableCfg.displayOptionListSize === undefined){
+			this.config.dataTableCfg.displayOptionListSize = '20'; //default value is 20
+		}
 		if (this.col._showEditableIcon && this.config.dataTableCfg._inlineEdit != undefined && this.row._isEditable){
 			this.showEdit = true;
 		}
