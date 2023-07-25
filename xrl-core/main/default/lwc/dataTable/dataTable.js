@@ -140,10 +140,17 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		return this.config.enableColumnHeaderWrap ? 'slds-cell-wrap slds-hyphenate' : 'slds-truncate';
 	}
 
+	toggleChildRecords(event){
+        let record = this.records.find(r => r.Id === event.target.getAttribute('data-id'));
+		record._isExpanded = record._isExpanded ===  undefined ? true : !record._isExpanded;
+    }
 
 	get tableRecords() {
 		this.records.forEach((el,ind) =>{
 			el.sl = ind + 1;
+			if(el.childRecords?.length > 0) {
+				el._hasChildRecords = true;
+			}
 			if(this.config.rowCss){
 				el._rowStyle = this.config.rowCallback ? 'cursor : pointer;' : '';
 				try{

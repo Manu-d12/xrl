@@ -30,3 +30,27 @@ function(lst, scope, libs) {
         }
     });
 }
+
+//child records
+function(scope,records) {
+    const recordMap = new Map();
+  
+    records.forEach(record => {
+      const { Id, ReportsToId } = record;
+  
+      if (!recordMap.has(Id)) {
+        recordMap.set(Id, { ...record, childRecords: [] });
+      }
+  
+      if (ReportsToId !== undefined) {
+        if (!recordMap.has(ReportsToId)) {
+            let r = records.find(r1 => r1.Id === ReportsToId);
+          recordMap.set(ReportsToId, { ...r, childRecords: [] });
+        }
+        recordMap.get(ReportsToId).childRecords.push(recordMap.get(Id));
+      }
+    });
+  
+    const topLevelRecords = Array.from(recordMap.values()).filter(record => (record.ReportsToId === undefined && record.Id !== undefined));
+    return topLevelRecords;
+  }
