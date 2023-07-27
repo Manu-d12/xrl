@@ -114,13 +114,14 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			});		
 			groupSet.forEach(groupName => {
 				let groupInd = this.groupedRecords.findIndex(gr => gr.title === groupName);
+				let groupChecked = true;
 				for (let rec of this.groupedRecords[groupInd].records) {
 					if (!rec._isChecked) {
-						checked = false;
+						groupChecked = false;
 						break;
 					}
 				}
-				this.groupedRecords[groupInd].isChecked = checked;
+				this.groupedRecords[groupInd].isChecked = groupChecked;
 			});
 		} else {
 			idList.forEach(id => {

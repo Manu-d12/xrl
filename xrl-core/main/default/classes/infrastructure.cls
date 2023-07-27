@@ -477,6 +477,7 @@ global with sharing class infrastructure {
 		}
 		result.put('countOfFailedRecords',String.valueOf(countOfFailedRecords));
 		result.put('listOfErrors',errorsList);
+		result.put('records', records);
 		return result;
 	}
 
