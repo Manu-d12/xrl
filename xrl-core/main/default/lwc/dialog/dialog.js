@@ -64,9 +64,9 @@ export default class Dialog extends LightningElement {
         } else if (e.target.dataset.type === 'select') {
             let value = e.detail.payload.value || e.detail.payload.values;
             this.values[e.target.dataset.id] = value;
-            let input = this.template.querySelector(`[data-id="${e.target.dataset.id}"]`);
 
             for (let el of this.contents) {
+                let input = this.template.querySelector(`[data-id="${el.name}"]`);
                 if (el.updateOptions && typeof el.updateOptions === 'function') {
                     el.options = el.updateOptions(this, libs, el);
                     input?.setOptions(el.options);
