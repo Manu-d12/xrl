@@ -1273,8 +1273,20 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				fields: Array.from(fields),
 				listViewName: sourceConf.listView?.name,
 				callback: ((nodeName, data) => {  
-					libs.getGlobalVar(this.cfg).records = data[nodeName].records.length > 0 ? data[nodeName].records : [];
-					this.config.records = libs.getGlobalVar(this.cfg).records;
+					
+					// this.config.records = libs.getGlobalVar(this.cfg).records;
+
+					if(this.config.afterLoadTransformation !== undefined && this.config.afterLoadTransformation !== ""){
+						try {
+							this.config.records = eval('(' + this.config.afterLoadTransformation + ')')(this, data[nodeName].records.length > 0 ? data[nodeName].records : []);
+							libs.getGlobalVar(this.cfg).records = this.config.records;
+						} catch(err){
+							console.log('EXCEPTION', err);
+						}
+					} else {
+						libs.getGlobalVar(this.cfg).records = data[nodeName].records.length > 0 ? data[nodeName].records : [];
+						this.config.records = libs.getGlobalVar(this.cfg).records;
+					}
 
 					this.connectedCallback();
 				})
