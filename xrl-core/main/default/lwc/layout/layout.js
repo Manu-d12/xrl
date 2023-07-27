@@ -398,12 +398,13 @@ export default class Layout extends NavigationMixin(LightningElement) {
 
 		let table = libs.getGlobalVar(cfg._cfgName);
 		let action = cfg.actions.find(act => act.actionId === actionId);
+		let _LABELS = libs.getGlobalVar('_LABELS');
 
 		if (actionId === 'std:delete') {
 			if (table.listViewConfig[0]._changedRecords) {
 				libs.showToast(this, {
 					title: 'Error',
-					message: this.config._LABELS.msg_unsaveRecordsCannotPerformOtherAction,
+					message: _LABELS.msg_unsaveRecordsCannotPerformOtherAction,
 					variant: 'error'
 				});
 				return;
@@ -412,30 +413,30 @@ export default class Layout extends NavigationMixin(LightningElement) {
 			if (records.length === 0) {
 				libs.showToast(this, {
 					title: 'Error',
-					message: this.config._LABELS.lbl_deleteNoRecordSelectedError,
+					message: _LABELS.lbl_deleteNoRecordSelectedError,
 					variant: 'error'
 				});
 				return;
 			}
 			let dialogCfg = {
-				title: this.config._LABELS.lbl_confirmDelete,
+				title: _LABELS.lbl_confirmDelete,
 				headerStyle: 'slds-modal__header slds-theme_error',
 				contents: [
 					{
 						isMessage: true,
 						name: 'deleteConfirm',
-						text: this.config._LABELS.msg_deleteConfirm1 + ' ' + records.length + ' ' + this.config._LABELS.msg_deleteConfirm2
+						text: _LABELS.msg_deleteConfirm1 + ' ' + records.length + ' ' + _LABELS.msg_deleteConfirm2
 					}
 				],
 				buttons: [
 					{
 						name: 'cancel',
-						label: this.config._LABELS.lbl_cancel,
+						label: _LABELS.lbl_cancel,
 						variant: 'neutral'
 					},
 					{
 						name: 'delete',
-						label: this.config._LABELS.title_delete,
+						label: _LABELS.title_delete,
 						variant: 'brand',
 						class: 'slds-m-left_x-small'
 					}
@@ -545,12 +546,12 @@ export default class Layout extends NavigationMixin(LightningElement) {
 
 		let validationResult;
 		if (action.validationCallBack && typeof action.validationCallBack === 'function') {
-			let validationResult = await action.validationCallBack({ selected: table._selectedRecords(), table: table, tableElement: tableElement, action: action}, this, libs);
+			validationResult = await action.validationCallBack({ selected: table._selectedRecords(), input: input, table: table, tableElement: tableElement, action: action}, this, libs);
 			console.log('validationResult', JSON.parse(JSON.stringify(validationResult)));
 			if (validationResult.errorMessage) {
 				libs.showToast(this, {
 					title: 'Error',
-					message: result.errorMessage,
+					message: validationResult.errorMessage,
 					variant: 'error'
 				});
 				return;

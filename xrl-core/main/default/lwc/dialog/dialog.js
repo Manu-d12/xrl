@@ -11,7 +11,7 @@ export default class Dialog extends LightningElement {
     }
     set cfg(v) {
         this._cfg = v;
-        this.connectedCallback();
+        this.setDialog();
     }
 
     @api setLoading(v) {
@@ -23,9 +23,11 @@ export default class Dialog extends LightningElement {
     contents;
     isLoading = true;
     values = {};
+    headerStyle;
 
-    async connectedCallback() {
+    async setDialog() {
         this.title = this._cfg?.title;
+        this.headerStyle = this._cfg?.headerStyle;
         if (this._cfg?.contents) this.contents = this._cfg?.contents.map(el => Object.assign({}, el));
         else this.contents = [];
         this.buttons = this._cfg?.buttons || [];
@@ -63,19 +65,20 @@ export default class Dialog extends LightningElement {
             let value = e.detail.payload.value || e.detail.payload.values;
             this.values[e.target.dataset.id] = value;
             let input = this.template.querySelector(`[data-id="${e.target.dataset.id}"]`);
-            input?.setValue(value);
 
             for (let el of this.contents) {
                 if (el.updateOptions && typeof el.updateOptions === 'function') {
                     el.options = el.updateOptions(this, libs, el);
-                }
-                if (el.isDisabled && typeof el.isDisabled === 'function') {
-                    el.disabled = el.isDisabled(this, libs, el);
-                }
-                if (el.isCombobox) {
-                    let input = this.template.querySelector(`[data-id="${el.name}"]`);
                     input?.setOptions(el.options);
                 }
+                if (el.name === e.target.dataset.id) el.value = value;
+                if (el.value && el.options.find(opt => opt.value === el.value)) {
+                    this.values[el.name] = el.value;
+                    input?.setValue(el.value);
+                } else {
+                    this.values[el.name] = undefined;
+                    el.value = undefined;
+                }	
             }
         }
     }
@@ -86,25 +89,31 @@ export default class Dialog extends LightningElement {
 				await this.referenceOperations(el);
 			}
 			if (el.defaultValue) {
-				el.value = typeof el.defaultValue === 'function' ? el.defaultValue(this, libs, el.options) : el.defaultValue;
-                this.values[el.name] = el.value;
-                if (el.isCombobox) {
-                    let input = this.template.querySelector(`[data-id="${el.name}"]`);
-                    input?.setValue(el.value);
-                }
+                el.value = typeof el.defaultValue === 'function' ? el.defaultValue(this, libs, el.options) : el.defaultValue;
 			}			
 		}
         for (let el of this.contents) {
 			if (el.updateOptions && typeof el.updateOptions === 'function') {
                 el.options = el.updateOptions(this, libs, el);
             }
-            if (el.isDisabled && typeof el.isDisabled === 'function') {
-                el.disabled = el.isDisabled(this, libs, el);
-            }
             if (el.isCombobox) {
                 let input = this.template.querySelector(`[data-id="${el.name}"]`);
-                input?.setOptions(el.options);	
-            }            		
+                input?.setOptions(el.options);
+                if (el.value && el.options.find(opt => opt.value === el.value)) {
+                    this.values[el.name] = el.value;
+                    input?.setValue(el.value);
+                } else {
+                    this.values[el.name] = undefined;
+                    el.value = undefined;
+                }               
+            }
+            if (el.isDisabled && typeof el.isDisabled === 'function') {
+                el.disabled = el.isDisabled(this, libs, el);
+                if (el.isCombobox) {
+                    let input = this.template.querySelector(`[data-id="${el.name}"]`);
+                    input?.setDisabled(el.disabled);
+                }
+            }	
 		}
 	}
 
@@ -119,10 +128,10 @@ export default class Dialog extends LightningElement {
 		await libs.remoteAction(this, referenceSoql !== undefined ? 'customSoql' : 'query', {
 			...query,
 			callback: (nodeName, responseData) => {
+                element.data = responseData[nodeName].records;
 				if (formatter) {
-					element.options = formatter(responseData[nodeName]);
+                    element.options = formatter(responseData[nodeName]);
 				} else {
-					element.data = responseData[nodeName].records;
 					element.options = element.data.length > 0 ? element.data.map(e => ({ label: e.Name, value: e.Id })) : undefined;
 				}
 				element._actualType = responseData[nodeName].describe ? JSON.parse(responseData[nodeName].describe)[element.name]?.type : undefined;
