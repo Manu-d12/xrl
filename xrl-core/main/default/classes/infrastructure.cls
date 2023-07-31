@@ -460,20 +460,26 @@ global with sharing class infrastructure {
         sObject[] records = (sObject[]) JSON.deserialize(JSON.serialize(data.get('records')), T);
 		// Savepoint sp = Database.setSavepoint();
 		system.debug('RollBack ' + isRollback);
- 
-		Database.UpsertResult[] srs = Database.upsert(records, isRollback);
+
 		Integer countOfFailedRecords = 0;
-        for (Database.UpsertResult sr : srs) {
-			if (!sr.isSuccess()) {
-				String error = '';
-				for (Database.Error err : sr.getErrors()) {
-					countOfFailedRecords = countOfFailedRecords + 1;
-					errorsList.add(String.valueOf(sr.getId() + ': ' +err.getStatusCode()) + ': ' + err.getMessage());
-					// if(isRollback == true)
-					// 	Database.rollback(sp);
-					// throw new InfrastructureException(null,String.valueOf(err.getStatusCode()) + ': ' + err.getMessage() , Infrastructure.exceptionType.GENERAL);
+		
+		try{
+			Database.UpsertResult[] srs = Database.upsert(records, isRollback);
+			for (Database.UpsertResult sr : srs) {
+				if (!sr.isSuccess()) {
+					String error = '';
+					for (Database.Error err : sr.getErrors()) {
+						countOfFailedRecords = countOfFailedRecords + 1;
+						errorsList.add(String.valueOf(sr.getId() + ': ' +err.getStatusCode()) + ': ' + err.getMessage());
+						// if(isRollback == true)
+						// 	Database.rollback(sp);
+						// throw new InfrastructureException(null,String.valueOf(err.getStatusCode()) + ': ' + err.getMessage() , Infrastructure.exceptionType.GENERAL);
+					}
 				}
 			}
+		}catch(Exception e) {
+			countOfFailedRecords = records.size();
+			errorsList.add(e.getMessage());
 		}
 		result.put('countOfFailedRecords',String.valueOf(countOfFailedRecords));
 		result.put('listOfErrors',errorsList);
