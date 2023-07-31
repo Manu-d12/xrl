@@ -1550,7 +1550,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				}
 
 				switch (col.type) {
-				case 'reference':
+				case 'reference' && !(col.formatter !== undefined && col.formatter!==""):
+					//in case it is a reference and no formatting is defined, otherwise treat it as normal string value
 					const [lookupRow, lookupId] = libs.getLookupRow(rec, col.fieldName);
 					ws[cell_ref].v = lookupRow.Name || '';
 					ws[cell_ref].l = {
