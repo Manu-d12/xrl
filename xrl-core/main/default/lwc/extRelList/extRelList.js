@@ -1502,7 +1502,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		const merges = [];
 		records.forEach(async (rec, i) => {
 			i+=groupNumber;
-			if(rec.groupTitle){
+			if(rec.groupTitle !== undefined){
 				groupNumber++;
 				i++;
 				const cell_ref = XLSX.utils.encode_cell({ c: 0, r: i });
