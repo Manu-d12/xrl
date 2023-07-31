@@ -1240,6 +1240,41 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if (this.hasGrouping) this.setGroupRecords();
 		this.config.isSpinner = false;
 	}
+
+	DragStart(event) {
+        event.target.classList.add('drag')
+    }
+
+    DragOver(event) {
+        event.preventDefault()
+        return false
+    }
+	Drop(event) {
+		event.stopPropagation()
+        const Element = this.template.querySelectorAll('.Items')
+        const DragValName = this.template.querySelector('.drag').getAttribute('data-rowind');
+        const DropValName = event.target.getAttribute('data-rowind');
+		let cal = this.calcRowIndex(DropValName);
+		let draggedRecord = this.records.find(record => record.Id === DragValName);
+		let futureParentRecord = this.records[cal];
+		draggedRecord.ReportsToId = futureParentRecord.Id;
+		// futureParentRecord.childRecords.push(draggedRecord);
+		if(this.config.afterloadTransformation !== undefined && this.config.afterloadTransformation !== ""){
+			try {
+				this.config.records = eval('(' + this.config.afterloadTransformation + ')')(this, this.records);
+				this.records = this.config.records;
+				libs.getGlobalVar(this.cfg).records = this.config.records;
+			} catch(err){
+				console.log('EXCEPTION', err);
+			}
+		}
+		console.log('records', this.records);
+		console.log('DragOver', DragValName,draggedRecord, DropValName, this.records[cal]);
+		Element.forEach(element => {
+            element.classList.remove('drag')
+        });
+		// this.connectedCallback();
+	}
 	@api
 	updateView(){
 		this.connectedCallback();

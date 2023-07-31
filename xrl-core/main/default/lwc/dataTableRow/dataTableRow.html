@@ -1,6 +1,6 @@
 <template>
     <template for:each={showRecords} for:item="dItem" for:index="index">
-        <tr key={dItem.Id} class={dItem._rowCss} style={rowStyle} data-rowind={dItem.Id}>
+        <tr key={dItem.Id} class={dItem._rowCss} style={rowStyle} data-rowind={dItem.Id} draggable="true">
             <td scope="col" if:true={config.isShowNumeration} style="width: 3rem;" data-rowind={index}>{dItem.sl}					
             </td>
             <td scope="col" if:true={config.isShowCheckBoxes} style="width: 2rem;" data-rowind={index}>
