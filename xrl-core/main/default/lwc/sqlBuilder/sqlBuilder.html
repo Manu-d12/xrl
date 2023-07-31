@@ -103,8 +103,12 @@
                                 <br/>
                                 <template if:true={config.sqlBuilder.openConditionInput}>
                                     <template if:false={config.sqlBuilder.currentCondition.operator.isUnary}>
-                                        <lightning-input if:false={config.sqlBuilder.openConditionInput.isPicklist} data-id="sqlBuilder:conditions:conditionText" onchange={handleBuilderEvent} type={config.sqlBuilder.currentCondition.fieldType} label={config._LABELS.lbl_enterValue} value={config.sqlBuilder.currentCondition.value}></lightning-input>
-                                        <lightning-combobox if:true={config.sqlBuilder.openConditionInput.isPicklist} data-id="sqlBuilder:conditions:conditionText" onchange={handleBuilderEvent} options={config.sqlBuilder.currentCondition.fieldOptions} value={config.sqlBuilder.currentCondition.value} label="Select"></lightning-combobox>
+                                        <template if:false={config.sqlBuilder.openConditionInput._isLookUp}>
+                                            <lightning-input if:false={config.sqlBuilder.openConditionInput.isPicklist} data-id="sqlBuilder:conditions:conditionText" onchange={handleBuilderEvent} type={config.sqlBuilder.currentCondition.fieldType} label={config._LABELS.lbl_enterValue} value={config.sqlBuilder.currentCondition.value}></lightning-input>
+                                            <lightning-combobox if:true={config.sqlBuilder.openConditionInput.isPicklist} data-id="sqlBuilder:conditions:conditionText" onchange={handleBuilderEvent} options={config.sqlBuilder.currentCondition.fieldOptions} value={config.sqlBuilder.currentCondition.value} label="Select"></lightning-combobox>
+                                        </template>
+                                        <c-multiselect if:true={config.sqlBuilder.openConditionInput._isLookUp} listsize={config.dataTableConfig.displayOptionListSize} onselect={handleBuilderEvent} data-id="sqlBuilder:conditions:conditionText"
+				                            options={config.sqlBuilder.currentCondition._editOptions} selectedvalue={config.sqlBuilder.currentCondition.value}></c-multiselect>
                                     </template>
                                     <template if:true={config.sqlBuilder.openConditionInput.isRange}>
                                         <lightning-input data-id="sqlBuilder:conditions:conditionTextRange" onchange={handleBuilderEvent} type={config.sqlBuilder.currentCondition.fieldType} label={config._LABELS.lbl_enterValue} value={config.sqlBuilder.currentCondition.valueRange}></lightning-input>

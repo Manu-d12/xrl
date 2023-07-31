@@ -17,8 +17,8 @@ export default class SqlBuilder extends LightningElement {
         this.config.sqlBuilder.selectedFields = this.config.dialog.listViewConfig.colModel;
         this.config.sqlBuilder.conditions = this.config.dialog.listViewConfig?.conditionMap ?? [];
         this.config.sqlBuilder.conditions.forEach((el) => {
-            el._formattedValue = this.formatConditionValue(el.fieldType, el.value);
-            el._formattedValueRange = el.valueRange ? this.formatConditionValue(el.fieldType, el.valueRange) : undefined;
+            el._formattedValue = this.formatConditionValue(el, el.value);
+            el._formattedValueRange = el.valueRange ? this.formatConditionValue(el, el.valueRange) : undefined;
         });
         this.config.sqlBuilder.orderings = this.config.dialog.listViewConfig.orderMap ? this.config.dialog.listViewConfig.orderMap : [];
         this.config.sqlBuilder.conditionOrdering = this.config.dialog.listViewConfig.conditionOrdering ? this.config.dialog.listViewConfig.conditionOrdering : '';
@@ -86,7 +86,7 @@ export default class SqlBuilder extends LightningElement {
             this.config.dialog.listViewConfig.orderBy = '';
         }
     }
-    handleBuilderEvent(event){
+    async handleBuilderEvent(event){
         let val = event.target.getAttribute('data-id');
 
         //For Select Fields Tabs
@@ -167,11 +167,12 @@ export default class SqlBuilder extends LightningElement {
             if( refObj === null){
                 let fieldVal = event.target.getAttribute('data-val');      
                 let selectedField = this.config.sqlBuilder.fields.find((el) => el.fieldName === fieldVal);
-                console.log(selectedField);
+                this.config.sqlBuilder.openConditionInput = false;
                 this.config.sqlBuilder.conditionOperations = [];
                 this.config.sqlBuilder.currentCondition = {};
                 this.config.sqlBuilder.currentCondition.field = fieldVal;
                 this.config.sqlBuilder.currentCondition.fieldType = selectedField.type;
+                this.config.sqlBuilder.currentCondition.referenceTo = selectedField.referenceTo;
                 this.config.sqlBuilder.noOperationError = false;
                 if(selectedField.type === 'picklist'){
                     this.config.sqlBuilder.currentCondition.fieldOptions = selectedField.options;
@@ -181,6 +182,21 @@ export default class SqlBuilder extends LightningElement {
                         {label:"True",value:"True"},
                         {label:"False",value:"False"}
                     ];
+                }
+                if(selectedField.type === 'reference'){
+                    selectedField._editOptions = [];
+                    await libs.remoteAction(this, 'query', {
+                        fields: ['Id','Name'],
+                        relField: '',
+                        sObjApiName: selectedField.referenceTo,
+                        callback: ((nodeName, data) => {
+                            data[nodeName].records.forEach((e)=>{
+                                selectedField._editOptions.push({"label":e.Name,"value":e.Id});
+                            });
+                        })
+                    });
+                    this.config.sqlBuilder.currentCondition._editOptions = selectedField._editOptions;
+                    this.config.sqlBuilder.currentCondition.referenceTo = selectedField.referenceTo;
                 }
                 if(sqlBuilderLibs[selectedField.type + 'FilterActions']){
                     sqlBuilderLibs[selectedField.type + 'FilterActions'](this.config._LABELS).forEach((el)=>{
@@ -208,10 +224,11 @@ export default class SqlBuilder extends LightningElement {
         if(val === "sqlBuilder:conditions:selectOperation"){
             let operator = event.target.getAttribute('data-val');     
             this.config.sqlBuilder.currentCondition.operator = sqlBuilderLibs[this.config.sqlBuilder.currentCondition.fieldType + 'FilterActions'](this.config._LABELS).find((el)=> el.value === operator);
-            console.log(this.config.sqlBuilder.currentCondition.fieldType);
+            console.log(this.config.sqlBuilder.currentCondition._editOptions);
             this.config.sqlBuilder.openConditionInput = {
                 isPicklist: this.config.sqlBuilder.currentCondition.fieldType === 'picklist' || this.config.sqlBuilder.currentCondition.fieldType === 'boolean' ? true : false,
-                isRange: operator === 'rg' ? true : false
+                isRange: operator === 'rg' ? true : false,
+                _isLookUp: this.config.sqlBuilder.currentCondition.fieldType === 'reference'
             };
             this.config.sqlBuilder.currentCondition.valueRange = this.config.sqlBuilder.openConditionInput.isRange ? this.config.sqlBuilder.currentCondition.valueRange : false;
         }
@@ -250,11 +267,24 @@ export default class SqlBuilder extends LightningElement {
             }
         }
         if(val === "sqlBuilder:conditions:conditionText"){
-            this.config.sqlBuilder.currentCondition._formattedValue = this.formatConditionValue(this.config.sqlBuilder.currentCondition.fieldType,event.target.value);
-            this.config.sqlBuilder.currentCondition.value = event.target.value;
+            let value, selectedField, record;
+
+            if (this.config.sqlBuilder.currentCondition.fieldType === 'reference') {
+                // Reference field
+                value = event.detail.payload.value;
+                selectedField = this.config.sqlBuilder.fields.find((el) => el.fieldName === this.config.sqlBuilder.currentCondition.field);
+                record = selectedField._editOptions.find(el => el.value === value);
+                this.config.sqlBuilder.currentCondition.referenceValueLabel = record.label;
+            } else {
+                // Non-reference field
+                value = event.target.value;
+            }
+
+            this.config.sqlBuilder.currentCondition._formattedValue = this.formatConditionValue(this.config.sqlBuilder.currentCondition, value);
+            this.config.sqlBuilder.currentCondition.value = value;
         }
         if(val === "sqlBuilder:conditions:conditionTextRange"){
-            this.config.sqlBuilder.currentCondition._formattedValueRange = this.formatConditionValue(this.config.sqlBuilder.currentCondition.fieldType,event.target.value);
+            this.config.sqlBuilder.currentCondition._formattedValueRange = this.formatConditionValue(this.config.sqlBuilder.currentCondition,event.target.value);
             this.config.sqlBuilder.currentCondition.valueRange = event.target.value;
         }
         if(val === "sqlBuilder:conditions:deleteSelectedCondition"){
@@ -286,9 +316,23 @@ export default class SqlBuilder extends LightningElement {
                 ];
             }
             this.config.sqlBuilder.currentCondition= selectedCondition;
+            if(this.config.sqlBuilder.currentCondition.fieldType === 'reference'){
+                this.config.sqlBuilder.currentCondition._editOptions = [];
+                await libs.remoteAction(this, 'query', {
+                    fields: ['Id','Name'],
+                    relField: '',
+                    sObjApiName: this.config.sqlBuilder.currentCondition.referenceTo,
+                    callback: ((nodeName, data) => {
+                        data[nodeName].records.forEach((e)=>{
+                            this.config.sqlBuilder.currentCondition._editOptions.push({"label":e.Name,"value":e.Id});
+                        });
+                    })
+                });
+            }
             this.config.sqlBuilder.openConditionInput = {
                 isPicklist: this.config.sqlBuilder.currentCondition.fieldType === 'picklist' ? true : false,
-                isRange: this.config.sqlBuilder.currentCondition.operator.value === 'rg' ? true : false
+                isRange: this.config.sqlBuilder.currentCondition.operator.value === 'rg' ? true : false,
+                _isLookUp: this.config.sqlBuilder.currentCondition.fieldType === 'reference'
             };
             this.config.sqlBuilder.currentCondition.valueRange = this.config.sqlBuilder.openConditionInput.isRange ? this.config.sqlBuilder.currentCondition.valueRange : false;
         }
@@ -382,8 +426,8 @@ export default class SqlBuilder extends LightningElement {
             array.push(field); 
         }
     }
-    formatConditionValue(type,value){
-        if(type === 'date'){
+    formatConditionValue(field,value){
+        if(field.fieldType === 'date'){
             let formattedDate = new Date(value).toLocaleString(this.config.userInfo.locale,{
                 month : "2-digit",
                 day : "2-digit",
@@ -391,7 +435,7 @@ export default class SqlBuilder extends LightningElement {
             });
             return formattedDate;
         }
-        else if(type === 'datetime'){
+        else if(field.fieldType === 'datetime'){
             let formattedDate = new Date(value).toLocaleString(this.config.userInfo.locale,{
                 month : "2-digit",
                 day : "2-digit",
@@ -401,6 +445,9 @@ export default class SqlBuilder extends LightningElement {
                 second:"2-digit"
             });
             return formattedDate;
+        }
+        else if(field.fieldType === 'reference'){
+            return field.referenceValueLabel;
         }
         return value;
     }

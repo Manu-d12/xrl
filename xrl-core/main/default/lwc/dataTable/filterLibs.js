@@ -6,21 +6,21 @@ export let filterLibs = {
 		/*eslint-disable*/
 		switch (filter._filterOption) {
 			case 'cn':
-				return value.toLowerCase().includes(filter._filterStr.toLowerCase());
+				return value.toString().toLowerCase().includes(filter._filterStr.toLowerCase());
 			case 'ncn': 
-				return value == undefined || value == '' ||  (value.toLowerCase().indexOf(filter._filterStr.toLowerCase()) === -1);
+				return value == undefined || value == '' ||  (value.toString().toLowerCase().indexOf(filter._filterStr.toLowerCase()) === -1);
 			case 'bn': 
-				return value.toLowerCase().startsWith(filter._filterStr.toLowerCase()) === true;
+				return value.toString().toLowerCase().startsWith(filter._filterStr.toLowerCase()) === true;
 			case 'nbn': 
-				return value.toLowerCase().startsWith(filter._filterStr.toLowerCase()) === false;
+				return value.toString().toLowerCase().startsWith(filter._filterStr.toLowerCase()) === false;
 			case 'ed': 
-				return value.toLowerCase().endsWith(filter._filterStr.toLowerCase()) === true;
+				return value.toString().toLowerCase().endsWith(filter._filterStr.toLowerCase()) === true;
 			case 'ned': 
-				return value.toLowerCase().endsWith(filter._filterStr.toLowerCase()) === false;	
+				return value.toString().toLowerCase().endsWith(filter._filterStr.toLowerCase()) === false;	
 			case 'eq':
-				return value.toLowerCase() === filter._filterStr.toLowerCase();
+				return value.toString().toLowerCase() === filter._filterStr.toLowerCase();
 			case 'neq':
-				return value.toLowerCase() !== filter._filterStr.toLowerCase();
+				return value.toString().toLowerCase() !== filter._filterStr.toLowerCase();
 			case 'em': 
 				return value === null || value == undefined;
 			case 'nem': 
@@ -92,6 +92,25 @@ export let filterLibs = {
 				return filter._filterStr.find(v => {return value.toLowerCase() === v.toLowerCase();});
 			case 'neq':
 				return !filter._filterStr.find(v => {return value.toLowerCase() === v.toLowerCase();});
+			case 'em': 
+				return value === null || value == undefined;
+			case 'nem': 
+				return value !== null && value !== undefined;	
+		}
+    },
+	multipicklist__filter(filter, record) {
+        let value = this.getValue(filter, record);
+        if ((filter._filterOption !== 'em' && filter._filterOption !== 'ncn' && !value)) return false;
+		let valueArr = value?.split(';');
+		switch (filter._filterOption) {
+			case 'cn':
+				return filter._filterStr.find(v => {return value.toLowerCase().includes(v.toLowerCase());});				
+			case 'ncn': 
+				return value == undefined || !filter._filterStr.find(v => {return value.toLowerCase().includes(v.toLowerCase());});		
+			case 'eq':
+				return this.containsAllElements(valueArr,filter._filterStr);
+			case 'neq':
+				return this.hasNoMatch(valueArr,filter._filterStr);
 			case 'em': 
 				return value === null || value == undefined;
 			case 'nem': 
@@ -345,6 +364,9 @@ export let filterLibs = {
 			? actions.find( el => { return el.value === key})
 			: actions;
 	},
+	multipicklistFilterActions(labels,key) {
+        return filterLibs.picklistFilterActions(labels,key);
+	},
 	booleanFilterActions(labels,key) {
 		const actions = [
 			{ label: labels.lbl_isEqual, value: 'eq' },
@@ -422,6 +444,24 @@ export let filterLibs = {
 			: getRefField(filter.fieldName);
 		// console.log(value);
 		return formatter && typeof formatter === 'function' ? formatter(record, filter, record[filter.fieldName]) : value ;
-	}
+	},
+	containsAllElements(smallArray, bigArray) {
+		const bigSet = new Set(bigArray);
+		for (let i = 0; i < smallArray.length; i++) {
+		  if (!bigSet.has(smallArray[i])) {
+			return false;
+		  }
+		}
+		return true;
+	},
+	hasNoMatch(smallArray, bigArray) {
+		const bigSet = new Set(bigArray);
+		for (let i = 0; i < smallArray.length; i++) {
+		  if (bigSet.has(smallArray[i])) {
+			return false;
+		  }
+		}
+		return true;
+	  }
 
 }
