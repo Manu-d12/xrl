@@ -36,7 +36,7 @@
 							<lightning-input type="checkbox" name="selectAll" onchange={selectAll}></lightning-input>
 						</div>
 					</th>
-					<th scope="col" style="width: 2rem;">
+					<th scope="col" if:true={config.isAnyRecordsHaveChildren} style="width: 2rem;">
 						&nbsp;
 					</th>
 					<template for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="index" key={hItem.label}>
@@ -66,12 +66,12 @@
 						<td scope="col" if:true={config.isShowCheckBoxes} style="width: 2rem;" data-rowind={index}>
 							<lightning-input type="checkbox" data-rowind={index} onchange={checkRow} checked={dItem._isChecked}></lightning-input>
 						</td>
-						<td scope="col" style="width: 2rem;" data-rowind={index}>
+						<td scope="col" if:true={config.isAnyRecordsHaveChildren} style="width: 2rem;" data-rowind={index}>
 							<template if:true={dItem._hasChildRecords}>
 								<lightning-button-icon if:false={dItem._isExpanded} icon-name="utility:chevronright"  variant="bare" alternative-text={config._LABELS.altTxt_expand} title={config._LABELS.title_expand} data-id={dItem.Id} onclick={toggleChildRecords}></lightning-button-icon>
 								<lightning-button-icon if:true={dItem._isExpanded} icon-name="utility:chevrondown"  variant="bare" alternative-text={config._LABELS.altTxt_expand} title={config._LABELS.title_expand} data-id={dItem.Id} onclick={toggleChildRecords}></lightning-button-icon>
 							</template>
-							<lightning-button-icon if:false={dItem._hasChildRecords} icon-name="utility:dash"  variant="bare" alternative-text={config._LABELS.altTxt_expand} title={config._LABELS.title_expand} onclick={toggleGroup}></lightning-button-icon>
+							<!-- <lightning-button-icon if:false={dItem._hasChildRecords} icon-name="utility:dash"  variant="bare" alternative-text={config._LABELS.altTxt_expand} title={config._LABELS.title_expand} onclick={toggleGroup}></lightning-button-icon> -->
 						</td>
 						<td for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="hIndex" key={hItem.fieldName} role="gridcell" data-rowind={index} data-colname={hItem.fieldName} ondblclick={rowDblCallback} class={hItem._cellCss}>
 							<span if:false={hItem.isActions} class="slds-grid slds-grid_align-spread">
