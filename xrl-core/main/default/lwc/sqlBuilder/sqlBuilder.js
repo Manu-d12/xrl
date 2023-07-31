@@ -17,8 +17,8 @@ export default class SqlBuilder extends LightningElement {
         this.config.sqlBuilder.selectedFields = this.config.dialog.listViewConfig.colModel;
         this.config.sqlBuilder.conditions = this.config.dialog.listViewConfig?.conditionMap ?? [];
         this.config.sqlBuilder.conditions.forEach((el) => {
-            el._formattedValue = this.formatConditionValue(el.fieldType, el.value);
-            el._formattedValueRange = el.valueRange ? this.formatConditionValue(el.fieldType, el.valueRange) : undefined;
+            el._formattedValue = this.formatConditionValue(el, el.value);
+            el._formattedValueRange = el.valueRange ? this.formatConditionValue(el, el.valueRange) : undefined;
         });
         this.config.sqlBuilder.orderings = this.config.dialog.listViewConfig.orderMap ? this.config.dialog.listViewConfig.orderMap : [];
         this.config.sqlBuilder.conditionOrdering = this.config.dialog.listViewConfig.conditionOrdering ? this.config.dialog.listViewConfig.conditionOrdering : '';
@@ -267,12 +267,24 @@ export default class SqlBuilder extends LightningElement {
             }
         }
         if(val === "sqlBuilder:conditions:conditionText"){
-            let value = this.config.sqlBuilder.currentCondition.fieldType === 'reference' ? event.detail.payload.value : event.target.value;
-            this.config.sqlBuilder.currentCondition._formattedValue = this.formatConditionValue(this.config.sqlBuilder.currentCondition.fieldType,value);
+            let value, selectedField, record;
+
+            if (this.config.sqlBuilder.currentCondition.fieldType === 'reference') {
+                // Reference field
+                value = event.detail.payload.value;
+                selectedField = this.config.sqlBuilder.fields.find((el) => el.fieldName === this.config.sqlBuilder.currentCondition.field);
+                record = selectedField._editOptions.find(el => el.value === value);
+                this.config.sqlBuilder.currentCondition.referenceValueLabel = record.label;
+            } else {
+                // Non-reference field
+                value = event.target.value;
+            }
+
+            this.config.sqlBuilder.currentCondition._formattedValue = this.formatConditionValue(this.config.sqlBuilder.currentCondition, value);
             this.config.sqlBuilder.currentCondition.value = value;
         }
         if(val === "sqlBuilder:conditions:conditionTextRange"){
-            this.config.sqlBuilder.currentCondition._formattedValueRange = this.formatConditionValue(this.config.sqlBuilder.currentCondition.fieldType,event.target.value);
+            this.config.sqlBuilder.currentCondition._formattedValueRange = this.formatConditionValue(this.config.sqlBuilder.currentCondition,event.target.value);
             this.config.sqlBuilder.currentCondition.valueRange = event.target.value;
         }
         if(val === "sqlBuilder:conditions:deleteSelectedCondition"){
@@ -414,8 +426,8 @@ export default class SqlBuilder extends LightningElement {
             array.push(field); 
         }
     }
-    formatConditionValue(type,value){
-        if(type === 'date'){
+    formatConditionValue(field,value){
+        if(field.fieldType === 'date'){
             let formattedDate = new Date(value).toLocaleString(this.config.userInfo.locale,{
                 month : "2-digit",
                 day : "2-digit",
@@ -423,7 +435,7 @@ export default class SqlBuilder extends LightningElement {
             });
             return formattedDate;
         }
-        else if(type === 'datetime'){
+        else if(field.fieldType === 'datetime'){
             let formattedDate = new Date(value).toLocaleString(this.config.userInfo.locale,{
                 month : "2-digit",
                 day : "2-digit",
@@ -433,6 +445,9 @@ export default class SqlBuilder extends LightningElement {
                 second:"2-digit"
             });
             return formattedDate;
+        }
+        else if(field.fieldType === 'reference'){
+            return field.referenceValueLabel;
         }
         return value;
     }
