@@ -540,6 +540,11 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		} else {
 			let rowind = event.target.getAttribute('data-rowind');
 			this.records[this.calcRowIndex(rowind)]._isChecked = event.target.checked;
+			let isAllRecordsSelected = this.template.querySelector('.checkAll').checked;
+			if(isAllRecordsSelected && event.target.checked === false) {
+				this.template.querySelector('.checkAll').checked = false;
+			}
+			console.log('HERE',this.template.querySelector('.checkAll').checked);
 		}
 		this.rowCheckStatus();
 	}
