@@ -528,7 +528,9 @@ export let libs = {
 					message: formattedErrMsg,
 					variant: 'error'
 				});
-				scope.dispatchEvent(event);
+				if (!formattedErrMsg.includes('License is expired')) {
+					scope.dispatchEvent(event);
+				}
 			} else {
 				if (typeof(params.callback) === 'function') {
 					params.callback.bind(scope)(cmd + 'Result', result);
