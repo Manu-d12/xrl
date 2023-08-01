@@ -464,7 +464,8 @@ export default class Layout extends NavigationMixin(LightningElement) {
 					variant: 'success'
 				});
 				let recIds = records.map(r => r.Id);
-				libs.getGlobalVar(cfg._cfgName).records = table.listViewConfig[0].records.filter(rec => !recIds.includes(rec.Id));
+				table.records = table.records.filter(rec => !recIds.includes(rec.Id));
+				table.listViewConfig[0].records = table.records;
 				table.listViewConfig[0]._updateView();
 			} catch (error) {
 				console.log(error);

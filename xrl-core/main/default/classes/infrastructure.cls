@@ -1078,7 +1078,7 @@ global with sharing class infrastructure {
 	}
     
     private static map < string, object > invokeApex(string helperType, map<string, object> data) {
-		string nameSpacePrefix = (string) data.get('nameSpacePrefix');
+		/*string nameSpacePrefix = (string) data.get('nameSpacePrefix');
 		string[] apexHelper = helperType.split('\\.');
 		
         string helperTypeClass = apexHelper[0];// customActions.getPackage, customActions.getPackage, customActions, Stratavar.customActions
@@ -1091,7 +1091,12 @@ global with sharing class infrastructure {
         Type T = string.isEmpty(A[0].namespacePrefix) ? type.forName(helperType) : type.forName(A[0].namespacePrefix, helperType);
         if (T == null) throw new InfrastructureException(null, ('Can\'t find method {1} in class ' + helperType).replace('{1}', helperType) + ':' + helperTypeClass, exceptionType.INSTANCE_CLASS_NOT_FOUND);
                 
-        handler handlerClass = (handler) JSON.deserialize(JSON.serialize(data), T);
+        handler handlerClass = (handler) JSON.deserialize(JSON.serialize(data), T);*/
+
+		Type T = type.forName(helperType);			
+		if (T == null) throw new InfrastructureException(null, ('Can\'t find class {1}').replace('{1}', helperType), exceptionType.CLASS_NOT_FOUND);
+		handler handlerClass = (handler) T.newInstance();
+
 		map < string, object > result = new map < string, object > ();
 		try {
 			object res = handlerClass.execute(data);
