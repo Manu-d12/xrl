@@ -520,6 +520,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			let rowind = this.records.findIndex(row => row.Id === rec.Id);
 			this.records[rowind]._isChecked = group.isChecked;
 		});
+		this.updateSelectAllStatus(group.isChecked);
 	}
 
 	checkRow(event) {
@@ -540,13 +541,20 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		} else {
 			let rowind = event.target.getAttribute('data-rowind');
 			this.records[this.calcRowIndex(rowind)]._isChecked = event.target.checked;
-			let isAllRecordsSelected = this.template.querySelector('.checkAll').checked;
-			if(isAllRecordsSelected && event.target.checked === false) {
-				this.template.querySelector('.checkAll').checked = false;
-			}
-			console.log('HERE',this.template.querySelector('.checkAll').checked);
 		}
+		this.updateSelectAllStatus(event.target.checked);
 		this.rowCheckStatus();
+	}
+	updateSelectAllStatus(checkStatus){
+		let isAllRecordsSelected = this.template.querySelector('.checkAll');
+		// deselecting the salectAll checkbox if one record is deselected
+		if(isAllRecordsSelected.checked && !checkStatus) {
+			isAllRecordsSelected.checked = false;
+		}
+		// selecting the salectAll checkbox if all record is selected
+		if(!isAllRecordsSelected.checked && checkStatus && (this.records.length === this.getSelectedRecords().length)) {
+			isAllRecordsSelected.checked = true;
+		}
 	}
 
 	async rowCheckStatus(){
