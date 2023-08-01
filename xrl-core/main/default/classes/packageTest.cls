@@ -3,7 +3,7 @@ public class packageTest {
 
     @TestSetup
     static void setupData() {
-        extRelListConfig__c extc = new extRelListConfig__c(sObjApiName__c = 'Case', relFieldApiName__c = 'AccountId', isAdminConfig__c = true, JSON__c = '{}', listViewName__c = '_admin', uniqKey__c = 'Case:AccountId:true:_admin');
+        extRelListConfig__c extc = new extRelListConfig__c(sObjApiName__c = 'Case', relFieldApiName__c = 'AccountId', isAdminConfig__c = true, JSON__c = '{}', listViewName__c = '_admin',listViewLabel__c = '_admin', uniqKey__c = 'Case:AccountId:true:_admin');
         insert extc;
         Account acc = new Account(Name = 'test acc');
         insert acc;
@@ -32,6 +32,15 @@ public class packageTest {
         test.stopTest();
         // System.assertNotEquals(null, res.get('getConfigByUniqueNameResult'));
     }
+    @isTest
+    public static void testGetConfigById() {
+        map < string, object > data = new map < string, object > ();
+        data.put('configId', '123sder');
+        test.startTest();
+        map < string, object > res = infrastructure.dispatcherAura('getConfigById', data);
+        test.stopTest();
+        // System.assertEquals(null, null);
+    }
 
     @isTest
     public static void testQuery() {
@@ -58,6 +67,21 @@ public class packageTest {
         data.put('relField', 'AccountId');
         data.put('config', '{}');
         data.put('listViewName', 'users');
+        data.put('listViewLabel', 'users');
+        test.startTest();
+        map < string, object > res = infrastructure.dispatcherAura('saveListView', data);
+        test.stopTest();
+        // System.assertEquals(null, null);
+        // System.assertEquals(1, [SELECT Id FROM extRelListConfig__c].size());
+    }
+    @isTest
+    public static void testSaveListViewAdmin() {
+        map < string, object > data = new map < string, object > ();
+        data.put('sObjApiName', 'Contact');
+        data.put('relField', 'AccountId');
+        data.put('config', '{}');
+        data.put('listViewName', '_admin');
+        data.put('listViewLabel', '_admin');
         test.startTest();
         map < string, object > res = infrastructure.dispatcherAura('saveListView', data);
         test.stopTest();
@@ -162,6 +186,15 @@ public class packageTest {
         data.put('relField', 'AccountId');
         test.startTest();
         map < string, object > res = infrastructure.dispatcherAura('getCustomLabels', data);
+        test.stopTest();
+        // System.assertEquals(true, res.size()>0);
+    }
+    @isTest
+    public static void testObjectFieldList() {
+        map < string, object > data = new map < string, object > ();
+        data.put('sObjApiName', 'Case');
+        test.startTest();
+        map < string, object > res = infrastructure.dispatcherAura('objectFieldList', data);
         test.stopTest();
         // System.assertEquals(true, res.size()>0);
     }
