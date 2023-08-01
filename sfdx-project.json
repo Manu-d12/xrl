@@ -4,10 +4,10 @@
       "path": "xrl-core",
       "default": true,
       "package": "Extended Related List",
-      "versionName": "2.3.2 Security Fix",
-      "versionDescription": "Security Fix",
-      "versionNumber": "2.3.2.NEXT",
-      "ancestorVersion": "2.3.1",
+      "versionName": "2.3.3 PreRelease",
+      "versionDescription": "PreRelease",
+      "versionNumber": "2.3.3.NEXT",
+      "ancestorVersion": "2.3.2",
       "definitionFile": "config/scratch-org-def.json"
     }
   ],
@@ -106,6 +106,9 @@
     "Extended Related List@2.2.0-3": "04t8d000000llZ6AAI",
     "Extended Related List@2.3.0-1": "04t8d000000llZQAAY",
     "Extended Related List@2.3.1-1": "04t8d000000llwZAAQ",
-    "Extended Related List@2.3.2-1": "04t8d000000lmZkAAI"
+    "Extended Related List@2.3.2-1": "04t8d000000lmZkAAI",
+    "Extended Related List@2.3.3-1": "04t8d000000lmi5AAA",
+    "Extended Related List@2.3.3-2": "04t8d000000lmiUAAQ",
+    "Extended Related List@2.3.3-3": "04t8d000000lmiZAAQ"
   }
 }
