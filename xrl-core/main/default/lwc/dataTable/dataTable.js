@@ -1240,6 +1240,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if (this.hasGrouping) this.setGroupRecords();
 		this.config.isSpinner = false;
 	}
+	get isDragDropEnabledForRecords(){
+		return this.config.isRecordsDragDropEnabled;
+	}
 
 	DragStart(event) {
         event.target.classList.add('drag')
@@ -1257,11 +1260,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		let cal = this.calcRowIndex(DropValName);
 		let draggedRecord = this.records.find(record => record.Id === DragValName);
 		let futureParentRecord = this.records[cal];
-		draggedRecord.ReportsToId = futureParentRecord.Id;
-		// futureParentRecord.childRecords.push(draggedRecord);
-		if(this.config.afterloadTransformation !== undefined && this.config.afterloadTransformation !== ""){
+		if(this.config.recordsDragDropCallback !== undefined && this.config.recordsDragDropCallback !== ""){
 			try {
-				this.config.records = eval('(' + this.config.afterloadTransformation + ')')(this, this.records);
+				this.config.records = eval('(' + this.config.recordsDragDropCallback + ')')(this, this.records,draggedRecord,futureParentRecord,libs);
 				this.records = this.config.records;
 				libs.getGlobalVar(this.cfg).records = this.config.records;
 			} catch(err){
@@ -1273,7 +1274,6 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		Element.forEach(element => {
             element.classList.remove('drag')
         });
-		// this.connectedCallback();
 	}
 	@api
 	updateView(){

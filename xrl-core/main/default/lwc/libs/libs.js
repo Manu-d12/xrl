@@ -324,7 +324,7 @@ export let libs = {
 				"type": "function",
 				"label": "Callback for record drag drop",
 				"tooltip": "Callback for record drag drop",
-				"placeHolder": "",
+				"placeHolder": "function(scope,records,draggedRecord,droppedRecord,libs){ return records; }",
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
 				"useExample":true,
