@@ -39,10 +39,10 @@ export default class ActionBar extends LightningElement {
                 this.actionscfg._handleEventFlow({name:actionDetails.actionFlowName,label:actionDetails.actionLabel});
             } else if (actionDetails.isActionStandard){
                 console.log('Standard Event');
-                this.actionscfg._handleEvent(event, this.actionscfg);
+                this.actionscfg._handleEvent(event, this.actionscfg, actionDetails);
             } else if (actionDetails.isActionCustom){
                 console.log('Custom Event');
-                this.actionscfg._handleEvent(event, this.actionscfg);
+                this.actionscfg._handleEvent(event, this.actionscfg, actionDetails);
             } else if (actionDetails.actionCallBack != undefined){
                 //Callback execution
                 try{

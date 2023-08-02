@@ -393,7 +393,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 		}
 	}
 
-	async handleStandardAction(event, cfg) {
+	async handleStandardAction(event, cfg, action) {
 		let actionId = event?.target?.getAttribute('data-id');
 
 		let table = libs.getGlobalVar(cfg._cfgName);
@@ -479,7 +479,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 					type: 'standard__objectPage',
 					attributes: {
 						/*recordId: this.recordId, // pass the record id here.*/
-						objectApiName: this.config.tabularConfig.sObjApiName,
+						objectApiName: action?.sObjApiName ? action?.sObjApiName : this.config.tabularConfig.sObjApiName,
 						actionName: 'new',
 					},
 					state: {
@@ -492,14 +492,15 @@ export default class Layout extends NavigationMixin(LightningElement) {
 		}
 		if (actionId === 'std:edit') {
 				let defValue = {};
-				defValue[this.config.relField] = this.recordId;
+				let hId = location.hash?.replace('#','');
+				defValue[this.config.relField] = hId ? hId : this.recordId;
 
 				this[NavigationMixin.Navigate]({
 					type: 'standard__objectPage',
 					attributes: {
 						/*recordId: this.recordId, // pass the record id here.*/
-						objectApiName: this.config.tabularConfig.sObjApiName,
-						actionName: 'new',
+						objectApiName: action?.sObjApiName ? action?.sObjApiName : this.config.tabularConfig.sObjApiName,
+						actionName: 'edit',
 					},
 					state: {
 						defaultFieldValues: encodeDefaultFieldValues(defValue),
