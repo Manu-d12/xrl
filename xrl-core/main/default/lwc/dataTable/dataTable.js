@@ -147,10 +147,12 @@ export default class dataTable extends NavigationMixin(LightningElement) {
     }
 
 	get tableRecords() {
+		this.config.isAnyRecordsHaveChildren = false;
 		this.records.forEach((el,ind) =>{
 			el.sl = ind + 1;
 			if(el.childRecords?.length > 0) {
 				el._hasChildRecords = true;
+				this.config.isAnyRecordsHaveChildren = true;
 			}
 			if(this.config.rowCss){
 				el._rowStyle = this.config.rowCallback ? 'cursor : pointer;' : '';
