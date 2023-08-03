@@ -393,7 +393,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 		}
 	}
 
-	async handleStandardAction(event, cfg, action) {
+	async handleStandardAction(event, cfg) {
 		let actionId = event?.target?.getAttribute('data-id');
 
 		let table = libs.getGlobalVar(cfg._cfgName);
@@ -496,15 +496,12 @@ export default class Layout extends NavigationMixin(LightningElement) {
 				defValue[this.config.relField] = hId ? hId : this.recordId;
 
 				this[NavigationMixin.Navigate]({
-					type: 'standard__objectPage',
+					type: 'standard__recordPage',
 					attributes: {
 						/*recordId: this.recordId, // pass the record id here.*/
+						recordId: hId ? hId : this.recordId,
 						objectApiName: action?.sObjApiName ? action?.sObjApiName : this.config.tabularConfig.sObjApiName,
-						actionName: 'edit',
-					},
-					state: {
-						defaultFieldValues: encodeDefaultFieldValues(defValue),
-				        useRecordTypeCheck: 1
+						actionName: 'edit'
 					}
 				});
 
