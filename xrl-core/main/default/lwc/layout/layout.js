@@ -25,9 +25,48 @@ export default class Layout extends NavigationMixin(LightningElement) {
     connectedCallback() {
 		console.log('RENDERED');
 		this.name = this.configId.replaceAll(':','');
+		this.tabConfigName = this.name;
 		this.configId = this.configId;
 		this.loadCfg(true);
-		window.addEventListener("resize", this.handleResize.bind(this))
+		window.addEventListener("resize", this.handleResize.bind(this));
+		//postMessage listener to communicate between different Layout components
+		//need to listen improve the security concerns to block messages from unauthorized access
+		window.addEventListener(
+			"message",this.listenEvent.bind(this),
+			false,
+		);
+		console.log('This.name', this.name);
+	}
+	listenEvent(event){
+		// console.log("Message received0", event.data.id,this.configId);
+		if(event.data.id.indexOf(this.configId) !== -1) {
+			console.log("Message received", JSON.parse(JSON.stringify(event.data.message)));
+			this.handlePostMessageEvents(JSON.parse(JSON.stringify(event.data.message)));
+		}
+	}
+	// sendMessage(){
+	// 	const message = {
+	// 		id: ['pqwqa15__MasterItem__c_Bundletable','dataTable'],
+	// 		details: [
+// 		{
+// 			cmd:refresh,
+// 			...
+// 		}
+// ]
+	// 	};
+	// 	libs.broadcastMessage(this,message);
+	// }
+	handlePostMessageEvents(message){
+		for (const key in message) {
+			if(key === 'refresh'){
+				if(message[key].includes('*')){
+					// this.config.isTabular = false;
+					// libs.setGlobalVar(this.tabConfigName, {});
+					window.removeEventListener("message", this.listenEvent.bind(this), false);
+					this.connectedCallback();
+				}
+			}
+		}
 	}
 
 	setCustomLabels(cmd, data) {
