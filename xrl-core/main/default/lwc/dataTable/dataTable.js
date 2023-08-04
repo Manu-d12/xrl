@@ -508,7 +508,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 
 	toggleGroup(event) {
-		let group = this.groupedRecords.find(gr => gr.title === event.target.getAttribute('data-groupind'));
+		let group = this.groupedRecords.find(gr => gr.title.toString() === event.target.getAttribute('data-groupind'));
 		group.isOpened = !group.isOpened;
 	}
 
@@ -643,7 +643,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			let groupInd;
 			let groupRowInd;
 			if (this.hasGrouping) {
-				groupInd = this.groupedRecords.findIndex(gr => gr.title === event.target.parentNode.dataset.groupind);
+				groupInd = this.groupedRecords.findIndex(gr => gr.title.toString() === event.target.parentNode.dataset.groupind);
 				groupRowInd = this.groupedRecords[groupInd].records.findIndex(r => r.Id === rowId);
 			}
 
