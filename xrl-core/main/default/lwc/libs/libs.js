@@ -699,17 +699,17 @@ export let libs = {
 		let fieldName = isChildObjectHistory ? apiName.split('::')[2].split('.')[0] + "Id"
 		: apiName.split('::')[2].split('.')[0].slice(0,-2) + ".Id";
 		let defFields = [
-			{
-				"fieldName" : "Id",
-				"type": "string",
-				"updateable": false,
-				"isFilterable": true,
-				"isSortable": true,
-				"isNameField": false,
-				"isEditable": false,
-				"isHidden": true,
-				"helpText": 'Id (id)',
-			},
+			// {
+			// 	"fieldName" : "Id",
+			// 	"type": "string",
+			// 	"updateable": false,
+			// 	"isFilterable": true,
+			// 	"isSortable": true,
+			// 	"isNameField": false,
+			// 	"isEditable": false,
+			// 	"isHidden": true,
+			// 	"helpText": 'Id (id)',
+			// },
 			{
 				"label": "New Value",
 				"fieldName": "NewValue",
