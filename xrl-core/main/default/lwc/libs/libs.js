@@ -528,7 +528,7 @@ export let libs = {
 					message: formattedErrMsg,
 					variant: 'error'
 				});
-				if (!formattedErrMsg.includes('License is expired')) {
+				if (!formattedErrMsg.includes('License is expired') && !formattedErrMsg.includes('Permission Set')) {
 					scope.dispatchEvent(event);
 				}
 			} else {
