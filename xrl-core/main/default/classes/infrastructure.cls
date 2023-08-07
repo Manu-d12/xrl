@@ -25,7 +25,7 @@ global with sharing class infrastructure {
 			list < PermissionSetAssignment > permission = [SELECT Id,PermissionSet.Name FROM PermissionSetAssignment WHERE AssigneeId =: UserInfo.getUserId() AND (PermissionSet.Name = 'XRL_Admin' OR PermissionSet.Name = 'XRL_StandardUser')];
 			// if (permission.size() != 0) isAdminAccess = true;
 			if (permission.size() == 0){
-				throw new InfrastructureException(null,label.msg_noPermissionSetAssigned, Infrastructure.exceptionType.GENERAL);
+				throw new InfrastructureException(null,'No Permission Set Assigned', Infrastructure.exceptionType.GENERAL);
 			}else{
 				PermissionSetAssignment userPermission = permission[0];
 				String permissionSetName = userPermission.PermissionSet.Name;
