@@ -33,7 +33,7 @@
 					</th>
 					<th scope="col" if:true={config.isShowCheckBoxes} style="width: 2rem;">
 						<div class="">
-							<lightning-input type="checkbox" name="selectAll" onchange={selectAll}></lightning-input>
+							<lightning-input type="checkbox" name="selectAll" class="checkAll" onchange={selectAll}></lightning-input>
 						</div>
 					</th>
 					<template for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="index" key={hItem.label}>
