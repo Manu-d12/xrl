@@ -53,3 +53,13 @@ sfdx scanner:run:dfa --target "./**/*.cls" --projectdir "./" >SCA.log
 
 
 https://login.salesforce.com/packaging/installPackage.apexp?p0=04t8d000000liqlAAA
+
+
+[Auth org]
+sfdx force:auth:web:login 
+
+[Auth org]
+sfdx force:auth:web:login -d -a DevHub
+
+[List of auth orgs]
+sfdx auth:list
