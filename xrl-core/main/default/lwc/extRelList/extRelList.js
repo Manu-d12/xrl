@@ -266,12 +266,14 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 		this.config.listViewConfig[0].rowChecked = false;
 		//HYPER-382
+		const expandAction = this.config.listViewConfig[0].actions.find((el) => el.actionId === 'std:expand_view');
+		this.config._expandIcon = expandAction.actionIconName;
 		if(this.isFullscreen){
-			const expandAction = this.config.listViewConfig[0].actions.find((el) => el.actionId === 'std:expand_view');
 			this.config._expandTip = expandAction.actionTip;
-			this.config._expandIcon = expandAction.actionIconName;
 			expandAction.actionTip = this.config._LABELS.lbl_collapseView;
-			expandAction.actionIconName = 'utility:contract';
+			expandAction.actionIconName = this.config._expandIcon.split('/')[1];
+		}else{
+			expandAction.actionIconName = this.config._expandIcon.split('/')[0];
 		}
 		this.config.actionsBar = {
 			'actions':this.config.listViewConfig[0].actions,
@@ -951,6 +953,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					field[param] = value;
 				}
 			}
+			const expandAction0 = this.config.dialog.listViewConfig.actions.find((el) => el.actionId === 'std:expand_view');
+			this.config._expandIcon = expandAction0.actionIconName;
 		}
 		if (val === 'dialog:setFieldParam') {
 			let param = event.target.getAttribute('data-param');
@@ -1113,11 +1117,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	prepareConfigForSave() {
-		//HYPER-382
-		if(this.isFullscreen){
-			const expandAction = this.config.dialog.listViewConfig.actions.find((el) => el.actionId === 'std:expand_view');
-			expandAction.actionTip = this.config._expandTip;
-		}
+		const expandAction = this.config.listViewConfig[0].actions.find((el) => el.actionId === 'std:expand_view');
+		this.config._expandIcon = expandAction.actionIconName;
 		let tmp = JSON.parse(JSON.stringify(this.config.dialog.listViewConfig));
 		tmp = this.deleteKeysStartingWithUnderscore(tmp);
 		let cnfg = [];
