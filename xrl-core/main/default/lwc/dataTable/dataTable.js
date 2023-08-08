@@ -683,6 +683,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					isNeedDescribe: false,
 					sObjApiName: describe.referenceTo[0],
 					fields: ['Id', 'Name'],
+					addCondition: cItem.whereCondition,
 					callback: ((nodeName, data) => {
 						//console.log('length from Citem', data[nodeName].records);
 						cItem.options = [];
@@ -736,6 +737,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						await libs.remoteAction(this, 'query', {
 							fields: ['Id','Name'],
 							relField: '',
+							addCondition: el.whereCondition,
 							sObjApiName: el.referenceTo,
 							callback: ((nodeName, data) => {
 								//console.log('accountRecords', data[nodeName].records.length);
