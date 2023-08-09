@@ -171,6 +171,9 @@ export default class Multiselect extends LightningElement {
         }
         else{
             this.mSelectConfig.searchString = previousLabel;
+            //if someone presses Enter without selecting anything. 
+            //To prevent NoErrorObjectAvailable Script error
+            if(event.target.value === "") return; 
             this.dispatchEvent(new CustomEvent('select', {
                 detail: {
                     'payloadType' : 'multi-select',
