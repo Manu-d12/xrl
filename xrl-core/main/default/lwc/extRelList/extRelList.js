@@ -143,15 +143,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if (this.config.dataTableConfig === undefined){
 			this.config.dataTableConfig = {};
 			this.config.dataTableConfig.cmpName = 'dataTable';
-			this.config.dataTableConfig.colModel = [{
-				"fieldName" : "Id",
-				"updateable": false,
-				"isNameField": false,
-				"isEditable": false,
-				"isFilterable": true,
-				"isSortable": true,
-				"helpText": 'Id (id)'
-			}];
+			this.config.dataTableConfig.colModel = libs.setDefaultColumns();
 			if(this.config.sObjApiName.toLowerCase().includes('history')){
 				this.config.dataTableConfig.colModel = libs.historyGrid(this.apiName);
 				let changedField = this.config.dataTableConfig.colModel.find(field => field.fieldName === 'Field');
@@ -180,6 +172,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				];
 			}
 		} 
+		if(this.config.dataTableConfig.colModel === undefined){
+			this.config.dataTableConfig.colModel = libs.setDefaultColumns();
+		}
 		console.log('dataTable Config: ', this.config.dataTableConfig.colModel);
 
 		let mergedConfig = {};
@@ -233,17 +228,6 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		this.config.fields = [];
 		this.config.lockedFields = [];
 		
-		this.config.listViewConfig[0]?.colModel?.forEach(e => {
-			let describe = this.config.describe[e.fieldName];
-			if (describe && describe.type === 'reference') {
-				let nameField = describe.relationshipName === 'Case' ? '.CaseNumber' : '.Name';
-				this.config.fields.push(describe.relationshipName ? describe.relationshipName + nameField : e.fieldName);
-				if (e.locked) this.config.lockedFields.push(describe.relationshipName ? describe.relationshipName + '.Name' : e.fieldName);
-			}
-			this.config.fields.push(e.fieldName);
-			if (e.locked) this.config.lockedFields.push(e.fieldName);
-		});
-		
 		this.config.isGlobalSearch=this.config.listViewConfig[0].isGlobalSearch;
 		let notAllowedActions = ['std:delete','std:new'];
 		if(!this.config.listViewConfig[0].actions){
@@ -285,6 +269,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	async loadRecords() {
+		await this.prepareFieldsToFetch();
+
 		if(this.config.isHistoryGrid){
 			this.config.describeMap = new Map();
 			let parentSObjName = libs.getParentHistorySObjName(this.name);
@@ -377,6 +363,43 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			}
 		});
 		console.log('ColModel', JSON.parse(JSON.stringify(this.config.listViewConfig[0].colModel)));
+	}
+
+	async prepareFieldsToFetch(){
+		let refFieldsObject = [];
+		this.config.objectNameFieldsMap = new Map();
+
+		this.config.listViewConfig[0]?.colModel?.forEach(e => {
+			if (e.type === 'reference') {
+				refFieldsObject.push(e.referenceTo);
+			}
+		});
+
+		if(refFieldsObject.length > 0) {
+			const resultString = refFieldsObject.join("','");
+
+			const finalString = "'" + resultString + "'";
+			await libs.remoteAction(this, 'customSoql', {
+				SOQL: "SELECT EntityDefinition.QualifiedApiName,QualifiedApiName FROM FieldDefinition WHERE EntityDefinition.QualifiedApiName IN (" + finalString + ") AND IsNameField = TRUE",
+				callback: ((nodeName, data1) => {
+					data1[nodeName].records.forEach(obj => {
+						this.config.objectNameFieldsMap.set(obj.EntityDefinitionId, obj.QualifiedApiName);
+					});
+				})
+			});
+			console.log('this.config.objectNameFieldsMap: ', this.config.objectNameFieldsMap);
+		}
+		
+		this.config.listViewConfig[0]?.colModel?.forEach(e => {
+			let describe = this.config.describe[e.fieldName];
+			if (e.type === 'reference') {
+				let nameField = this.config.objectNameFieldsMap.get(e.referenceTo) ? '.'+this.config.objectNameFieldsMap.get(e.referenceTo) : '.Name';
+				this.config.fields.push(describe.relationshipName ? describe.relationshipName + nameField : e.fieldName);
+				if (e.locked) this.config.lockedFields.push(describe.relationshipName ? describe.relationshipName + '.Name' : e.fieldName);
+			}
+			this.config.fields.push(e.fieldName);
+			if (e.locked) this.config.lockedFields.push(e.fieldName);
+		});
 	}
 
 	isHistoryGrid(){
@@ -977,9 +1000,18 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			let value = (type === 'checkbox') ? event.target.checked : event.target.value;
 			console.log(type, param, value);
 
+			if(param === 'displayOptionListSize' && value !== undefined && value !== null && (value.startsWith('-') || isNaN(value))) {
+				const msgEvent3 = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.msg_onlyAcceptsPositiveNumbers,
+					variant: 'error'
+				});
+				this.dispatchEvent(msgEvent3);
+				event.target.value = this.config.dialog.listViewConfig[param] ?? '20';
+				return;
+			} 
 			this.config.dialog.listViewConfig[param] = value;
 
-			console.log('saving table params', param, this.config.dialog.listViewConfig[param]);
 		}
 		if (val === 'dialog:setPagerParam') {
 			
@@ -1425,6 +1457,26 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let dataTable = this.template.querySelector('c-Data-Table');
 		let records = dataTable.getSelectedRecords().length ? dataTable.getSelectedRecords() : dataTable.getRecords();
 		let locale = libs.getGlobalVar(this.name).userInfo.locale;
+		const groupedRecords = libs.getGlobalVar(this.name)?.groupedRecords;
+		console.log('libs.getGlobalVar(this.name)', libs.getGlobalVar(this.name));
+		const newRecords = []; // to store records with group title, cannot use the old array as serial won't match
+		if (groupedRecords && groupedRecords.length > 0) {
+			const isRecordsSelected = dataTable.getSelectedRecords().length > 0;
+			groupedRecords.forEach(group => {
+				if (group && group.records) {
+					const recordsToBeCopied = isRecordsSelected ?
+						group.records.filter(rec => {
+							return records.find(r => r.Id === rec.Id); // filter records which are present in the records array
+						}) :
+						group.records; // if no records are selected, then all records of the group will be exported
+					if (recordsToBeCopied && recordsToBeCopied.length > 0) {
+						recordsToBeCopied[0].groupTitle = group.title;
+						newRecords.push(...recordsToBeCopied);
+					}
+				}
+			});
+		}
+		records = newRecords.length > 0 ? newRecords : records;
 
 		console.log(JSON.parse(JSON.stringify(this.config)));
 		console.log(JSON.parse(JSON.stringify(records)));
@@ -1446,10 +1498,24 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			'!cols': []
 		};
 		let columns = this.config.listViewConfig[0].colModel.filter(col => { return !col.isHidden && !col._skipFieldFromDisplay; });
+		let groupNumber = 0; // to keep track of group title and shift the rows accordingly
+		const merges = [];
 		records.forEach(async (rec, i) => {
+			i+=groupNumber;
+			if(rec.groupTitle !== undefined){
+				groupNumber++;
+				i++;
+				const cell_ref = XLSX.utils.encode_cell({ c: 0, r: i });
+				ws[cell_ref] = {
+					v: rec.groupTitle, s: { bold: true, fgColor: { rgb: 272822 }, color: { rgb: 16777215 } }
+				}
+				const merge = {s: {c: 0, r: i}, e: {c: columns.length-1, r: i}};
+				merges.push(merge);
+				ws['!cols'].push({ wch: 40 });
+			}
 			columns.forEach(async (col, j) => {
-				if (i === 0) {
-					let cell_ref = XLSX.utils.encode_cell({ c: j, r: i });
+				if (i-groupNumber === 0) {
+					let cell_ref = XLSX.utils.encode_cell({ c: j, r: i-groupNumber }); // -groupNumber to skip the group title row without modyfying the existing logic
 					ws[cell_ref] = {
 						v: col.label, s: { bold: true, fgColor: { rgb: 0 }, color: { rgb: 16777215 } }
 					}
@@ -1484,7 +1550,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				}
 
 				switch (col.type) {
-				case 'reference':
+				case 'reference' && !(col.formatter !== undefined && col.formatter!==""):
+					//in case it is a reference and no formatting is defined, otherwise treat it as normal string value
 					const [lookupRow, lookupId] = libs.getLookupRow(rec, col.fieldName);
 					ws[cell_ref].v = lookupRow.Name || '';
 					ws[cell_ref].l = {
@@ -1495,11 +1562,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					break;
 				case 'date':
 					ws[cell_ref].v = fieldValue ? new Date(fieldValue) : '';
-					ws[cell_ref].t = 'd';
+					ws[cell_ref].t = fieldValue ? 'd' : 's';
 					break;
 				case 'datetime':
 					ws[cell_ref].v = fieldValue ? new Date(fieldValue) : '';
-					ws[cell_ref].t = 'dt';
+					ws[cell_ref].t = fieldValue ? 'dt' : 's';
 					break;
 				case 'number':
 					ws[cell_ref].v = fieldValue ? Number(fieldValue) : '';
@@ -1517,7 +1584,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 			});
 		});
-		ws['!ref'] = XLSX.utils.encode_range({ s: { c: 0, r: 0 }, e: { c: columns.length, r: records.length } });
+		ws['!merges'] = merges; // merges the group title cells
+		ws['!ref'] = XLSX.utils.encode_range({ s: { c: 0, r: 0 }, e: { c: columns.length, r: records.length + groupNumber } }); // +groupNumber to include the group title row
 		XLSX.utils.book_append_sheet(wb, ws, (this.config.sObjLabel + ' '  + this.config?.listView?.label).length > 30 ? (this.config.sObjLabel + ' '  + this.config?.listView?.label).substring(0,30):(this.config.sObjLabel + ' '  + this.config?.listView?.label));
 		XLSX.writeFile(wb, this.config.sObjLabel + ' ' + this.config?.listView?.label + '.xlsx', { cellStyles: true, WTF: 1 });
 		

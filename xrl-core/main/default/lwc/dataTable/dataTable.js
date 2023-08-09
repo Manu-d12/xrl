@@ -92,6 +92,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		return this.config.enableColumnHeaderWrap ? 'slds-cell-wrap' : 'slds-truncate';
 	}
 
+	get isRecordsAvailableForUI() {
+		return this.config.recordsToShow.length > 0;
+	}
 
 	get tableRecords() {
 		this.records.forEach((el,ind) =>{
@@ -123,6 +126,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				}
 				this.displayedItemCount = this.recordInfo+ ' Showing only '+ endIndex  +' item(s)';
 				//console.log('result', JSON.parse(JSON.stringify(result)));
+				this.config.recordsToShow = result;
 				return result;
 			}
 			else if (isPager) {
@@ -142,6 +146,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					}
 					result.push(gr);
 				}
+				this.config.recordsToShow = result;
 				return result;
 			}
 			// Need for pagination;
@@ -157,6 +162,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				}
 				this.displayedItemCount = this.recordInfo+ ' Showing only '+ endIndex  +' item(s)';
 				//console.log('result', JSON.parse(JSON.stringify(result)));
+				this.config.recordsToShow = result;
 				return result;
 			}
 			else if (isPager) {
@@ -167,9 +173,11 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					result.push(this.records[i]);
 				}
 				//console.log('result', JSON.parse(JSON.stringify(result)));
+				this.config.recordsToShow = result;
 				return result;
 			}
 			// Need for pagination;
+			this.config.recordsToShow = this.records;
 			return this.records;
 		}
 	}
@@ -227,7 +235,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				groupName = r[this.config.groupingParams.field] !== null && r[this.config.groupingParams.field] !== undefined ? r[this.config.groupingParams.field] : 'empty';
 			}
 			let group = result.has(groupName) ? result.get(groupName) : {
-				title: groupName.toString(),
+				title: groupName,
 				isChecked: false,
 				isOpened: true,
 				records: []
@@ -258,6 +266,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			group.records.forEach(rec => {rec.index = ind++;})
 		});
 		this.groupedRecords = this.config.groupingFunction != undefined ? eval('(' + this.config.groupingFunction + ')')(result) : result;
+		libs.getGlobalVar(this.cfg).groupedRecords = this.groupedRecords;
 		//console.log('groupedRecords', JSON.parse(JSON.stringify(this.groupedRecords)));
 	}
 
@@ -376,7 +385,11 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		}
 		this.setNumPages(this.config.pager.pageSize);
 
-		if (this.hasGrouping) this.setGroupRecords();
+		if (this.hasGrouping){
+			this.setGroupRecords();
+		}else{
+			libs.getGlobalVar(this.cfg).groupedRecords = undefined;
+		}
 		this.config._originalURL = window.location.href;
 	}
 	newValValidation(newValue){
@@ -398,6 +411,12 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						let newVal = cItem._editOptions.find((el)=>{
 							return el.value === value;
 						});
+						const referenceFieldName = this.getRefFieldNameConsistsValue(cItem.fieldName);
+						// get the reference field name in the __r format
+						if(this.config._inlineEditRow[referenceFieldName]){
+							this.config._inlineEditRow[referenceFieldName].Id = newVal.value;
+							this.config._inlineEditRow[referenceFieldName].Name = newVal.label;
+						}
 						if(this.config._inlineEditRow[cItem.referenceTo]){
 							this.config._inlineEditRow[cItem.referenceTo].Id = newVal.value;
 							this.config._inlineEditRow[cItem.referenceTo].Name = newVal.label;
@@ -489,7 +508,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 
 	toggleGroup(event) {
-		let group = this.groupedRecords.find(gr => gr.title === event.target.getAttribute('data-groupind'));
+		let group = this.groupedRecords.find(gr => gr.title.toString() === event.target.getAttribute('data-groupind'));
 		group.isOpened = !group.isOpened;
 	}
 
@@ -501,6 +520,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			let rowind = this.records.findIndex(row => row.Id === rec.Id);
 			this.records[rowind]._isChecked = group.isChecked;
 		});
+		this.updateSelectAllStatus(group.isChecked);
 	}
 
 	checkRow(event) {
@@ -522,7 +542,19 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			let rowind = event.target.getAttribute('data-rowind');
 			this.records[this.calcRowIndex(rowind)]._isChecked = event.target.checked;
 		}
+		this.updateSelectAllStatus(event.target.checked);
 		this.rowCheckStatus();
+	}
+	updateSelectAllStatus(checkStatus){
+		let isAllRecordsSelected = this.template.querySelector('.checkAll');
+		// deselecting the salectAll checkbox if one record is deselected
+		if(isAllRecordsSelected.checked && !checkStatus) {
+			isAllRecordsSelected.checked = false;
+		}
+		// selecting the salectAll checkbox if all record is selected
+		if(!isAllRecordsSelected.checked && checkStatus && (this.records.length === this.getSelectedRecords().length)) {
+			isAllRecordsSelected.checked = true;
+		}
 	}
 
 	async rowCheckStatus(){
@@ -624,7 +656,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			let groupInd;
 			let groupRowInd;
 			if (this.hasGrouping) {
-				groupInd = this.groupedRecords.findIndex(gr => gr.title === event.target.parentNode.dataset.groupind);
+				groupInd = this.groupedRecords.findIndex(gr => gr.title.toString() === event.target.parentNode.dataset.groupind);
 				groupRowInd = this.groupedRecords[groupInd].records.findIndex(r => r.Id === rowId);
 			}
 
@@ -951,7 +983,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					}
 				});
 			}catch(e) {
-				console.log('Filter error');
+				console.log('Filter error',e.toString());
 			}
 		}
 		this.setNumPages(this.config.pager.pageSize);
