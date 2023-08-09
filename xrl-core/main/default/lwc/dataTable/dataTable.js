@@ -727,6 +727,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					}
 				}
 				this.config._inlineEdit = calculatedInd;
+				if(libs.getGlobalVar(this.cfg).optionsForMultiselect === undefined){
+					libs.getGlobalVar(this.cfg).optionsForMultiselect = new Map();
+				}
 		
 				this.config.colModel.forEach(async (el) => {
 					if(el._showEditableIcon && el.type === 'reference' && !el._editOptions){
@@ -746,7 +749,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 								});
 							})
 						});
-						libs.getGlobalVar(this.cfg).optionsForMultiselect = el._editOptions;
+						libs.getGlobalVar(this.cfg).optionsForMultiselect.set(el.fieldName,el._editOptions);
 						el._isLookUpEdit = true;
 					}
 				});

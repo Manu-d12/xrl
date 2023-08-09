@@ -26,7 +26,7 @@
 			</span> -->
 			<template if:true={col._isLookUpEdit}>
 				<c-multiselect if:true={col._editOptions} listsize={config.dataTableCfg.displayOptionListSize} onselect={inlineEdit} 
-				options={col._editOptions} selectedvalue={editValue} cfg={cfg} optionsfromglobalvar=true data-id={col.fieldName}></c-multiselect>
+				options={col._editOptions} selectedvalue={editValue} cfg={cfg} col={col} optionsfromglobalvar=true data-id={col.fieldName}></c-multiselect>
 			</template>
 			<span if:true={col.isEditable} title={value}>
 				<lightning-input type="checkbox" if:true={col.isEditableBool} checked={editValue} onchange={inlineEdit} data-id={col.fieldName}> </lightning-input>
