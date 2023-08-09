@@ -10,6 +10,8 @@ export default class Multiselect extends LightningElement {
     @api disabled = false;
     @api multiselect = false;
     @api listsize = 20;
+    @api cfg;
+    @api optionsfromglobalvar;
 
     @track mSelectConfig = {};
 
@@ -32,7 +34,13 @@ export default class Multiselect extends LightningElement {
         this.mSelectConfig.showDropdown = false;
         this.mSelectConfig.showOptionCount = true;
         this.mSelectConfig.minChar = 2;
-        var optionData = this.options ? libs.jsonParse(this.options) : [];
+        var optionData = [];
+        // var optionData = this.options ? libs.jsonParse(this.options) : [];
+        if(this.optionsfromglobalvar){
+            optionData = libs.getGlobalVar(this.cfg).optionsForMultiselect ? libs.jsonParse(libs.getGlobalVar(this.cfg).optionsForMultiselect) : [];
+        }else{
+            optionData = this.options ? libs.jsonParse(this.options) : [];
+        }
         var value = this.selectedvalue && !this.multiselect ? (JSON.parse(JSON.stringify(this.selectedvalue))) : '';
         var values = this.selectedvalues && this.multiselect ? (JSON.parse(JSON.stringify(this.selectedvalues))) : [];
 		if(value || values) {

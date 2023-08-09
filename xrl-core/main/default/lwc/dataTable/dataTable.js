@@ -746,6 +746,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 								});
 							})
 						});
+						libs.getGlobalVar(this.cfg).optionsForMultiselect = el._editOptions;
 						el._isLookUpEdit = true;
 					}
 				});
