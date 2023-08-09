@@ -1397,7 +1397,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>tooltip_actionIconName</shortDescription>
-        <value>If you want to show as a button keep it blank</value>
+        <value>If you want to show as a button keep it blank. For Expand action only, you can use 2 icons seperated by a slash(/)</value>
     </labels>
     <labels>
         <fullName>tooltip_actionIdTooltip</fullName>
@@ -1437,7 +1437,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>tooltip_actionTipTooltip</shortDescription>
-        <value>Example: This is full screen your grid</value>
+        <value>Example: This is full screen your grid. For Expand action only, you can use 2 tips seperated by a slash(/)</value>
     </labels>
     <labels>
         <fullName>tooltip_actionTooltip</fullName>
