@@ -268,11 +268,13 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		//HYPER-382
 		const expandAction = this.config.listViewConfig[0].actions.find((el) => el.actionId === 'std:expand_view');
 		this.config._expandIcon = expandAction.actionIconName;
+		this.config._expandTip = expandAction.actionTip;
 		if(this.isFullscreen){
-			this.config._expandTip = expandAction.actionTip;
-			expandAction.actionTip = this.config._LABELS.lbl_collapseView;
+			// expandAction.actionTip = this.config._LABELS.lbl_collapseView;
+			expandAction.actionTip = this.config._LABELS.title_expandView.split('/')[1];
 			expandAction.actionIconName = this.config._expandIcon.split('/')[1];
 		}else{
+			expandAction.actionTip = this.config._LABELS.title_expandView.split('/')[0];
 			expandAction.actionIconName = this.config._expandIcon.split('/')[0];
 		}
 		this.config.actionsBar = {
@@ -955,6 +957,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			}
 			const expandAction0 = this.config.dialog.listViewConfig.actions.find((el) => el.actionId === 'std:expand_view');
 			this.config._expandIcon = expandAction0.actionIconName;
+			this.config._expandTip = expandAction0.actionTip;
 		}
 		if (val === 'dialog:setFieldParam') {
 			let param = event.target.getAttribute('data-param');
@@ -1117,8 +1120,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	prepareConfigForSave() {
-		const expandAction = this.config.listViewConfig[0].actions.find((el) => el.actionId === 'std:expand_view');
-		this.config._expandIcon = expandAction.actionIconName;
+		let exAction = this.config.dialog.listViewConfig.actions.find((el) => el.actionId === 'std:expand_view');
+		if(this.config._expandIcon !== exAction.actionIconName){
+			exAction.actionIconName = this.config._expandIcon;
+			exAction.actionTip = this.config._expandTip;
+		}
 		let tmp = JSON.parse(JSON.stringify(this.config.dialog.listViewConfig));
 		tmp = this.deleteKeysStartingWithUnderscore(tmp);
 		let cnfg = [];

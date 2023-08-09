@@ -662,7 +662,7 @@ export let libs = {
 			  "actionTip": _labels.title_expandView,
 			  "actionCallBack": "",
 			  "actionIsHidden": false,
-			  "actionIconName": "utility:expand",
+			  "actionIconName": "utility:expand/utility:contract",
 			  "isActionStandard":true,
 			  "actionOrder":60
 			}
