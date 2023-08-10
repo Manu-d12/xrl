@@ -143,15 +143,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if (this.config.dataTableConfig === undefined){
 			this.config.dataTableConfig = {};
 			this.config.dataTableConfig.cmpName = 'dataTable';
-			this.config.dataTableConfig.colModel = [{
-				"fieldName" : "Id",
-				"updateable": false,
-				"isNameField": false,
-				"isEditable": false,
-				"isFilterable": true,
-				"isSortable": true,
-				"helpText": 'Id (id)'
-			}];
+			this.config.dataTableConfig.colModel = libs.setDefaultColumns();
 			if(this.config.sObjApiName.toLowerCase().includes('history')){
 				this.config.dataTableConfig.colModel = libs.historyGrid(this.apiName);
 				let changedField = this.config.dataTableConfig.colModel.find(field => field.fieldName === 'Field');
@@ -180,6 +172,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				];
 			}
 		} 
+		if(this.config.dataTableConfig.colModel === undefined){
+			this.config.dataTableConfig.colModel = libs.setDefaultColumns();
+		}
 		console.log('dataTable Config: ', this.config.dataTableConfig.colModel);
 
 		let mergedConfig = {};
@@ -233,17 +228,6 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		this.config.fields = [];
 		this.config.lockedFields = [];
 		
-		this.config.listViewConfig[0]?.colModel?.forEach(e => {
-			let describe = this.config.describe[e.fieldName];
-			if (describe && describe.type === 'reference') {
-				let nameField = describe.relationshipName === 'Case' ? '.CaseNumber' : '.Name';
-				this.config.fields.push(describe.relationshipName ? describe.relationshipName + nameField : e.fieldName);
-				if (e.locked) this.config.lockedFields.push(describe.relationshipName ? describe.relationshipName + '.Name' : e.fieldName);
-			}
-			this.config.fields.push(e.fieldName);
-			if (e.locked) this.config.lockedFields.push(e.fieldName);
-		});
-		
 		this.config.isGlobalSearch=this.config.listViewConfig[0].isGlobalSearch;
 		let notAllowedActions = ['std:delete','std:new'];
 		if(!this.config.listViewConfig[0].actions){
@@ -266,12 +250,16 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 		this.config.listViewConfig[0].rowChecked = false;
 		//HYPER-382
+		const expandAction = this.config.listViewConfig[0].actions.find((el) => el.actionId === 'std:expand_view');
+		this.config._expandIcon = expandAction.actionIconName;
+		this.config._expandTip = expandAction.actionTip;
 		if(this.isFullscreen){
-			const expandAction = this.config.listViewConfig[0].actions.find((el) => el.actionId === 'std:expand_view');
-			this.config._expandTip = expandAction.actionTip;
-			this.config._expandIcon = expandAction.actionIconName;
-			expandAction.actionTip = this.config._LABELS.lbl_collapseView;
-			expandAction.actionIconName = 'utility:contract';
+			// expandAction.actionTip = this.config._LABELS.lbl_collapseView;
+			expandAction.actionTip = this.config._LABELS.title_expandView.split('/')[1];
+			expandAction.actionIconName = this.config._expandIcon.split('/')[1];
+		}else{
+			expandAction.actionTip = this.config._LABELS.title_expandView.split('/')[0];
+			expandAction.actionIconName = this.config._expandIcon.split('/')[0];
 		}
 		this.config.actionsBar = {
 			'actions':this.config.listViewConfig[0].actions,
@@ -285,6 +273,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	async loadRecords() {
+		await this.prepareFieldsToFetch();
+
 		if(this.config.isHistoryGrid){
 			this.config.describeMap = new Map();
 			let parentSObjName = libs.getParentHistorySObjName(this.name);
@@ -377,6 +367,43 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			}
 		});
 		console.log('ColModel', JSON.parse(JSON.stringify(this.config.listViewConfig[0].colModel)));
+	}
+
+	async prepareFieldsToFetch(){
+		let refFieldsObject = [];
+		this.config.objectNameFieldsMap = new Map();
+
+		this.config.listViewConfig[0]?.colModel?.forEach(e => {
+			if (e.type === 'reference') {
+				refFieldsObject.push(e.referenceTo);
+			}
+		});
+
+		if(refFieldsObject.length > 0) {
+			const resultString = refFieldsObject.join("','");
+
+			const finalString = "'" + resultString + "'";
+			await libs.remoteAction(this, 'customSoql', {
+				SOQL: "SELECT EntityDefinition.QualifiedApiName,QualifiedApiName FROM FieldDefinition WHERE EntityDefinition.QualifiedApiName IN (" + finalString + ") AND IsNameField = TRUE",
+				callback: ((nodeName, data1) => {
+					data1[nodeName].records.forEach(obj => {
+						this.config.objectNameFieldsMap.set(obj.EntityDefinitionId, obj.QualifiedApiName);
+					});
+				})
+			});
+			console.log('this.config.objectNameFieldsMap: ', this.config.objectNameFieldsMap);
+		}
+		
+		this.config.listViewConfig[0]?.colModel?.forEach(e => {
+			let describe = this.config.describe[e.fieldName];
+			if (e.type === 'reference') {
+				let nameField = this.config.objectNameFieldsMap.get(e.referenceTo) ? '.'+this.config.objectNameFieldsMap.get(e.referenceTo) : '.Name';
+				this.config.fields.push(describe.relationshipName ? describe.relationshipName + nameField : e.fieldName);
+				if (e.locked) this.config.lockedFields.push(describe.relationshipName ? describe.relationshipName + '.Name' : e.fieldName);
+			}
+			this.config.fields.push(e.fieldName);
+			if (e.locked) this.config.lockedFields.push(e.fieldName);
+		});
 	}
 
 	isHistoryGrid(){
@@ -951,6 +978,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					field[param] = value;
 				}
 			}
+			const expandAction0 = this.config.dialog.listViewConfig.actions.find((el) => el.actionId === 'std:expand_view');
+			this.config._expandIcon = expandAction0.actionIconName;
+			this.config._expandTip = expandAction0.actionTip;
 		}
 		if (val === 'dialog:setFieldParam') {
 			let param = event.target.getAttribute('data-param');
@@ -963,11 +993,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			})
 			if (field) {
 				field[param] = value;
-			} /*else {
-				field = { 'fieldName': this.config.dialog.field };
-				field[param] = value;
-				this.config.dialog.listViewConfig.colModel.push(field);
-			}*/ //we will return this part in case that we will have a fieldPiecker component
+			}
 		}
 		if (val === 'dialog:setTableParam') {
 			
@@ -977,9 +1003,18 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			let value = (type === 'checkbox') ? event.target.checked : event.target.value;
 			console.log(type, param, value);
 
+			if(param === 'displayOptionListSize' && value !== undefined && value !== null && (value.startsWith('-') || isNaN(value))) {
+				const msgEvent3 = new ShowToastEvent({
+					title: 'Error',
+					message: 'Only accepts positive numbers',
+					variant: 'error'
+				});
+				this.dispatchEvent(msgEvent3);
+				event.target.value = this.config.dialog.listViewConfig[param] ?? '20';
+				return;
+			} 
 			this.config.dialog.listViewConfig[param] = value;
 
-			console.log('saving table params', param, this.config.dialog.listViewConfig[param]);
 		}
 		if (val === 'dialog:setPagerParam') {
 			
@@ -1113,10 +1148,10 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	prepareConfigForSave() {
-		//HYPER-382
-		if(this.isFullscreen){
-			const expandAction = this.config.dialog.listViewConfig.actions.find((el) => el.actionId === 'std:expand_view');
-			expandAction.actionTip = this.config._expandTip;
+		let exAction = this.config.dialog.listViewConfig.actions.find((el) => el.actionId === 'std:expand_view');
+		if(this.config._expandIcon !== exAction.actionIconName){
+			exAction.actionIconName = this.config._expandIcon;
+			exAction.actionTip = this.config._expandTip;
 		}
 		let tmp = JSON.parse(JSON.stringify(this.config.dialog.listViewConfig));
 		tmp = this.deleteKeysStartingWithUnderscore(tmp);
@@ -1470,7 +1505,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		const merges = [];
 		records.forEach(async (rec, i) => {
 			i+=groupNumber;
-			if(rec.groupTitle){
+			if(rec.groupTitle !== undefined){
 				groupNumber++;
 				i++;
 				const cell_ref = XLSX.utils.encode_cell({ c: 0, r: i });
@@ -1519,21 +1554,26 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 				switch (col.type) {
 				case 'reference':
-					const [lookupRow, lookupId] = libs.getLookupRow(rec, col.fieldName);
-					ws[cell_ref].v = lookupRow.Name || '';
-					ws[cell_ref].l = {
-					Target: window.location.origin + '/' + lookupId,
-					Tooltip: window.location.origin + '/' + lookupId
-					};
+					if((col.formatter === undefined || col.formatter==="")){
+						//in case it is a reference and no formatting is defined, otherwise treat it as normal string value
+						const [lookupRow, lookupId] = libs.getLookupRow(rec, col.fieldName);
+						ws[cell_ref].v = lookupRow.Name || '';
+						ws[cell_ref].l = {
+						Target: window.location.origin + '/' + lookupId,
+						Tooltip: window.location.origin + '/' + lookupId
+						};
+					}else{
+						ws[cell_ref].v = fieldValue;
+					}
 					ws[cell_ref].t = 's';
 					break;
 				case 'date':
 					ws[cell_ref].v = fieldValue ? new Date(fieldValue) : '';
-					ws[cell_ref].t = 'd';
+					ws[cell_ref].t = fieldValue ? 'd' : 's';
 					break;
 				case 'datetime':
 					ws[cell_ref].v = fieldValue ? new Date(fieldValue) : '';
-					ws[cell_ref].t = 'dt';
+					ws[cell_ref].t = fieldValue ? 'dt' : 's';
 					break;
 				case 'number':
 					ws[cell_ref].v = fieldValue ? Number(fieldValue) : '';

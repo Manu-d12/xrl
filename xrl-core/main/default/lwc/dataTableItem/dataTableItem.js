@@ -22,6 +22,9 @@ export default class dataTableItem extends LightningElement {
 				this.config.dataTableCfg = el;
 			}
 		});
+		if(this.config.dataTableCfg.displayOptionListSize === undefined){
+			this.config.dataTableCfg.displayOptionListSize = '20'; //default value is 20
+		}
 		if (this.col._showEditableIcon && this.config.dataTableCfg._inlineEdit != undefined && this.row._isEditable){
 			this.showEdit = true;
 		}
@@ -96,15 +99,15 @@ export default class dataTableItem extends LightningElement {
 				return val!=null && val!=undefined ? this.formatNumber(val) : null;
 			}
 			if (this.col.type === 'percent') {
-				return val!=null && val!='' && val!=undefined && !isNaN(val) ?  this.formatNumber(val)+'%' : null;
+				return val!=null && val!=undefined && typeof val === 'number' ?  this.formatNumber(val)+'%' : null;
 			}
 
 			if (this.col.type === 'currency') {
-				return val!=null && val!='' && val!=undefined && !isNaN(val) ? this.formatNumber(val, this.getCurrencySymbol()) : null;
+				return val!=null && val!=undefined && typeof val === 'number' ? this.formatNumber(val, this.getCurrencySymbol()) : null;
 			}
 
 			if (this.col.type === 'reference'){
-				return libs.formatStr(refTmp,[val, row.Name ? row.Name : row.CaseNumber ? row.CaseNumber : '']); // Need to investigate this line. Why sometimes for reference we have 'Invalid Name'
+				return libs.formatStr(refTmp,[val, row.Name ? row.Name : row[config.objectNameFieldsMap.get(this.col.referenceTo)] ? row[config.objectNameFieldsMap.get(this.col.referenceTo)] : '']); // Need to investigate this line. Why sometimes for reference we have 'Invalid Name'
 			}
 			if (this.col.type === 'boolean'){
 				this.isBool = true;
