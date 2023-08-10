@@ -416,6 +416,9 @@ export let libs = {
 		}
 		return defParams;
 	},
+	jsonParse: function(input){
+		return JSON.parse(JSON.stringify(input));
+	},
 	setDefaultColumns: function(){
 		let columns = [{
 			"fieldName" : "Id",

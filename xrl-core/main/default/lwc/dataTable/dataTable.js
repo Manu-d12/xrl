@@ -683,6 +683,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					isNeedDescribe: false,
 					sObjApiName: describe.referenceTo[0],
 					fields: ['Id', 'Name'],
+					addCondition: cItem.whereCondition,
 					callback: ((nodeName, data) => {
 						//console.log('length from Citem', data[nodeName].records);
 						cItem.options = [];
@@ -726,6 +727,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					}
 				}
 				this.config._inlineEdit = calculatedInd;
+				if(libs.getGlobalVar(this.cfg).optionsForMultiselect === undefined){
+					libs.getGlobalVar(this.cfg).optionsForMultiselect = new Map();
+				}
 		
 				this.config.colModel.forEach(async (el) => {
 					if(el._showEditableIcon && el.type === 'reference' && !el._editOptions){
@@ -736,6 +740,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						await libs.remoteAction(this, 'query', {
 							fields: ['Id','Name'],
 							relField: '',
+							addCondition: el.whereCondition,
 							sObjApiName: el.referenceTo,
 							callback: ((nodeName, data) => {
 								//console.log('accountRecords', data[nodeName].records.length);
@@ -744,6 +749,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 								});
 							})
 						});
+						libs.getGlobalVar(this.cfg).optionsForMultiselect.set(el.fieldName,el._editOptions);
 						el._isLookUpEdit = true;
 					}
 				});

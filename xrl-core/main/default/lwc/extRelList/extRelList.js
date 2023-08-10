@@ -1010,7 +1010,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			if(param === 'displayOptionListSize' && value !== undefined && value !== null && (value.startsWith('-') || isNaN(value))) {
 				const msgEvent3 = new ShowToastEvent({
 					title: 'Error',
-					message: this.config._LABELS.msg_onlyAcceptsPositiveNumbers,
+					message: 'Only accepts positive numbers',
 					variant: 'error'
 				});
 				this.dispatchEvent(msgEvent3);
