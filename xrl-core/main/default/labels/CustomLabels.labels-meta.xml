@@ -755,7 +755,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>tooltip_widthExample</shortDescription>
-        <value>You can use % or px for definition. Ex: 20px or 5%. Max width is set to 40% or 500px</value>
+        <value>You can use % or px for definition. Ex: 20px or 5%. Max width is set to 40% or 500px. If no unit(px or %) is specified,then it will be treated as px value</value>
     </labels>
     <labels>
         <fullName>lbl_selectFieldsForServerFilter</fullName>
@@ -1397,7 +1397,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>tooltip_actionIconName</shortDescription>
-        <value>If you want to show as a button keep it blank</value>
+        <value>If you want to show as a button keep it blank. For Expand action only, you can use 2 icons seperated by a slash(/)</value>
     </labels>
     <labels>
         <fullName>tooltip_actionIdTooltip</fullName>
@@ -1437,7 +1437,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>tooltip_actionTipTooltip</shortDescription>
-        <value>Example: This is full screen your grid</value>
+        <value>Example: This is full screen your grid. For Expand action only, you can use 2 tips seperated by a slash(/)</value>
     </labels>
     <labels>
         <fullName>tooltip_actionTooltip</fullName>
@@ -1639,7 +1639,7 @@ return &quot;background-color:#F5F5F5;&quot; //light grey
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>title_expandView</shortDescription>
-        <value>Expand View</value>
+        <value>Expand View / Collapse View</value>
     </labels>
     <labels>
         <fullName>tooltip_conditionFilteringPattern</fullName>
@@ -2238,5 +2238,21 @@ return records;
         <protected>true</protected>
         <shortDescription>msg_packageLicenseExpired</shortDescription>
         <value>Package License is expired or user does not have license assigned</value>
+    </labels>
+    <labels>
+        <fullName>msg_onlyAcceptsPositiveNumbers</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_onlyAcceptsPositiveNumbers</shortDescription>
+        <value>Only accepts positive numbers</value>
+    </labels>
+    <labels>
+        <fullName>msg_noPermissionSetAssigned</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_noPermissionSetAssigned</shortDescription>
+        <value>No Permission Set Assigned</value>
     </labels>
 </CustomLabels>

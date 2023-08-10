@@ -141,6 +141,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		return this.config.enableColumnHeaderWrap ? 'slds-cell-wrap slds-hyphenate' : 'slds-truncate';
 	}
 
+	get isRecordsAvailableForUI() {
+		return this.config.recordsToShow.length > 0;
+	}
 	toggleChildRecords(event){
         let record = this.records.find(r => r.Id === event.target.getAttribute('data-id'));
 		record._isExpanded = record._isExpanded ===  undefined ? true : !record._isExpanded;
@@ -181,6 +184,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				}
 				this.displayedItemCount = this.recordInfo+ ' Showing only '+ endIndex  +' item(s)';
 				//console.log('result', JSON.parse(JSON.stringify(result)));
+				this.config.recordsToShow = result;
 				return result;
 			}
 			else if (isPager) {
@@ -200,6 +204,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					}
 					result.push(gr);
 				}
+				this.config.recordsToShow = result;
 				return result;
 			}
 			// Need for pagination;
@@ -215,6 +220,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				}
 				this.displayedItemCount = this.recordInfo+ ' Showing only '+ endIndex  +' item(s)';
 				//console.log('result', JSON.parse(JSON.stringify(result)));
+				this.config.recordsToShow = result;
 				return result;
 			}
 			else if (isPager) {
@@ -225,9 +231,11 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					result.push(this.records[i]);
 				}
 				//console.log('result', JSON.parse(JSON.stringify(result)));
+				this.config.recordsToShow = result;
 				return result;
 			}
 			// Need for pagination;
+			this.config.recordsToShow = this.records;
 			return this.records;
 		}
 	}
@@ -285,7 +293,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				groupName = r[this.config.groupingParams.field] !== null && r[this.config.groupingParams.field] !== undefined ? r[this.config.groupingParams.field] : 'empty';
 			}
 			let group = result.has(groupName) ? result.get(groupName) : {
-				title: groupName.toString(),
+				title: groupName,
 				isChecked: false,
 				isOpened: true,
 				records: []
@@ -396,7 +404,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			}
 			if (item.width !== undefined) {
 				let maxWidth = item.width.replace(';','').slice(-1) === '%' ? ';max-width: 40%;' : ';max-width: 500px;';
-				item._style = 'width: ' + item.width.replace(';','') + maxWidth + 'padding-left:1px;';
+				let wd = (item.width.endsWith('%') || item.width.endsWith('px')) ? item.width : item.width + 'px';
+				item._style = 'width: ' + wd.replace(';','') + maxWidth + 'padding-left:1px;';
 			}else{
 				item._style = 'padding-left:1px;';
 			}
@@ -565,7 +574,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 
 	toggleGroup(event) {
-		let group = this.groupedRecords.find(gr => gr.title === event.target.getAttribute('data-groupind'));
+		let group = this.groupedRecords.find(gr => gr.title.toString() === event.target.getAttribute('data-groupind'));
 		group.isOpened = !group.isOpened;
 	}
 
@@ -577,6 +586,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			let rowind = this.records.findIndex(row => row.Id === rec.Id);
 			this.records[rowind]._isChecked = group.isChecked;
 		});
+		this.updateSelectAllStatus(group.isChecked);
 	}
 
 	checkRow(event) {
@@ -598,7 +608,19 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			let rowind = event.target.getAttribute('data-rowind');
 			this.records[this.calcRowIndex(rowind)]._isChecked = event.target.checked;
 		}
+		this.updateSelectAllStatus(event.target.checked);
 		this.rowCheckStatus();
+	}
+	updateSelectAllStatus(checkStatus){
+		let isAllRecordsSelected = this.template.querySelector('.checkAll');
+		// deselecting the salectAll checkbox if one record is deselected
+		if(isAllRecordsSelected.checked && !checkStatus) {
+			isAllRecordsSelected.checked = false;
+		}
+		// selecting the salectAll checkbox if all record is selected
+		if(!isAllRecordsSelected.checked && checkStatus && (this.records.length === this.getSelectedRecords().length)) {
+			isAllRecordsSelected.checked = true;
+		}
 	}
 
 	async rowCheckStatus(){
@@ -700,7 +722,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			let groupInd;
 			let groupRowInd;
 			if (this.hasGrouping) {
-				groupInd = this.groupedRecords.findIndex(gr => gr.title === event.target.parentNode.dataset.groupind);
+				groupInd = this.groupedRecords.findIndex(gr => gr.title.toString() === event.target.parentNode.dataset.groupind);
 				groupRowInd = this.groupedRecords[groupInd].records.findIndex(r => r.Id === rowId);
 			}
 
@@ -727,6 +749,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					isNeedDescribe: false,
 					sObjApiName: describe.referenceTo[0],
 					fields: ['Id', 'Name'],
+					addCondition: cItem.whereCondition,
 					callback: ((nodeName, data) => {
 						//console.log('length from Citem', data[nodeName].records);
 						cItem.options = [];
@@ -770,6 +793,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					}
 				}
 				this.config._inlineEdit = calculatedInd;
+				if(libs.getGlobalVar(this.cfg).optionsForMultiselect === undefined){
+					libs.getGlobalVar(this.cfg).optionsForMultiselect = new Map();
+				}
 		
 				this.config.colModel.forEach(async (el) => {
 					if(el._showEditableIcon && el.type === 'reference' && !el._editOptions){
@@ -780,6 +806,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						await libs.remoteAction(this, 'query', {
 							fields: ['Id','Name'],
 							relField: '',
+							addCondition: el.whereCondition,
 							sObjApiName: el.referenceTo,
 							callback: ((nodeName, data) => {
 								//console.log('accountRecords', data[nodeName].records.length);
@@ -788,6 +815,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 								});
 							})
 						});
+						libs.getGlobalVar(this.cfg).optionsForMultiselect.set(el.fieldName,el._editOptions);
 						el._isLookUpEdit = true;
 					}
 				});
@@ -840,7 +868,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					{label:'False',value:'false'}
 				];
 			}
-			let left = ((event.x - 52) + 600) > screen.availWidth ? (screen.availWidth - 600) : (event.x - 52);
+			let left = ((event.x - 52) + 800) > screen.availWidth ? (screen.availWidth - 800) : (event.x - 52);
 			this.config._isFilterOptions = this.config._isFilterOptions && this.config._isFilterOptions.fieldName === colName ?
 				undefined :
 				{
@@ -1027,7 +1055,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					}
 				});
 			}catch(e) {
-				console.log('Filter error');
+				console.log('Filter error',e.toString());
 			}
 		}
 		this.setNumPages(this.config.pager.pageSize);

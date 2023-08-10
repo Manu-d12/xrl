@@ -39,13 +39,21 @@ function(scope,records) {
       const { Id, ReportsToId } = record;
   
       if (!recordMap.has(Id)) {
-        recordMap.set(Id, { ...record, childRecords: [] });
+        if(record.childRecords){
+          recordMap.set(Id, { ...record});
+        }else{
+          recordMap.set(Id, { ...record, childRecords: [] });
+        }
       }
   
       if (ReportsToId !== undefined) {
         if (!recordMap.has(ReportsToId)) {
             let r = records.find(r1 => r1.Id === ReportsToId);
-          recordMap.set(ReportsToId, { ...r, childRecords: [] });
+            if(r.childRecords){
+              recordMap.set(ReportsToId, { ...r});
+            }else{
+              recordMap.set(ReportsToId, { ...r, childRecords: [] });
+            }
         }
         recordMap.get(ReportsToId).childRecords.push(recordMap.get(Id));
       }

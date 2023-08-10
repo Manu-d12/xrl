@@ -22,8 +22,15 @@ global with sharing class infrastructure {
 				throw new InfrastructureException(null,label.msg_packageLicenseExpired, Infrastructure.exceptionType.GENERAL);
 			}
 
-			list < PermissionSetAssignment > permission = [SELECT Id FROM PermissionSetAssignment WHERE AssigneeId =: UserInfo.getUserId() AND PermissionSet.Name = 'XRL_Admin'];
-			if (permission.size() != 0) isAdminAccess = true;
+			list < PermissionSetAssignment > permission = [SELECT Id,PermissionSet.Name FROM PermissionSetAssignment WHERE AssigneeId =: UserInfo.getUserId() AND (PermissionSet.Name = 'XRL_Admin' OR PermissionSet.Name = 'XRL_StandardUser')];
+			// if (permission.size() != 0) isAdminAccess = true;
+			if (permission.size() == 0){
+				throw new InfrastructureException(null,'No Permission Set Assigned', Infrastructure.exceptionType.GENERAL);
+			}else{
+				PermissionSetAssignment userPermission = permission[0];
+				String permissionSetName = userPermission.PermissionSet.Name;
+				if(permissionSetName == 'XRL_Admin') isAdminAccess = true;
+			}
 
 			switch on cmd {
 				when 'getConfig' {
@@ -377,37 +384,43 @@ global with sharing class infrastructure {
 		string config = (string) data.get('config');
 		string configType = (string) data.get('configType');
 
-		listViewName = string.isBlank(listViewName) ?
-			(isAdminAccess ? '_admin' : null) :
-			listViewName;
-		listViewLabel = string.isBlank(listViewLabel) ?
-			(isAdminAccess ? 'Admin' : null) :
-			listViewLabel;
-		boolean isAdminConf = listViewName == '_admin' ? isAdminAccess : listViewAdmin;
+		Savepoint sp = Database.setSavepoint();
+		try{
+			listViewName = string.isBlank(listViewName) ?
+				(isAdminAccess ? '_admin' : null) :
+				listViewName;
+			listViewLabel = string.isBlank(listViewLabel) ?
+				(isAdminAccess ? 'Admin' : null) :
+				listViewLabel;
+			boolean isAdminConf = listViewName == '_admin' ? isAdminAccess : listViewAdmin;
 
-		if(listViewName.equals('_admin')){
-			delete [select Id from extRelListConfig__c where listViewName__c = '_admin'];
-		}
-		if(listViewName.equals('_default')){
-			delete [select Id from extRelListConfig__c where listViewName__c = '_default'];
-		}
+			if(listViewLabel.equals('_admin')){
+				delete [select Id from extRelListConfig__c where listViewLabel__c = '_admin'];
+			}
+			if(listViewLabel.equals('_default')){
+				delete [select Id from extRelListConfig__c where listViewLabel__c = '_default'];
+			}
 
-		extRelListConfig__c listView = new extRelListConfig__c(
-			listViewName__c = listViewName,
-			listViewLabel__c = listViewLabel,
-			sObjApiName__c = sObjApiName,
-			relFieldApiName__c = relField,
-			isAdminConfig__c = isAdminConf,
-			JSON__c = config,
-			ConfigType__c = String.isNotBlank(configType) ? configType : 'XRL',
-			uniqKey__c = sObjApiName + ':' + relField + ':' + isAdminConf + ':' + (string.isBlank(listViewName) ? '' : listViewName)
-		);
+			extRelListConfig__c listView = new extRelListConfig__c(
+				listViewName__c = listViewName,
+				listViewLabel__c = listViewLabel,
+				sObjApiName__c = sObjApiName,
+				relFieldApiName__c = relField,
+				isAdminConfig__c = isAdminConf,
+				JSON__c = config,
+				ConfigType__c = String.isNotBlank(configType) ? configType : 'XRL',
+				uniqKey__c = sObjApiName + ':' + relField + ':' + isAdminConf + ':' + (string.isBlank(listViewName) ? '' : listViewName)
+			);
 
-		upsert listView uniqKey__c;
+			upsert listView uniqKey__c;
 
-		//sharing _admin/_default record with all org users
-		if(listViewName.equals('_admin') || listViewName.equals('_default')){
-			shareRecord(listView.Id);
+			//sharing _admin/_default record with all org users
+			if(listViewLabel.equals('_admin') || listViewLabel.equals('_default')){
+				shareRecord(listView.Id);
+			}
+		}catch (Exception e){
+			Database.rollback(sp);
+			throw new InfrastructureException(null,String.valueOf(e.getMessage()) , Infrastructure.exceptionType.GENERAL);
 		}
 
 		return data;
@@ -415,7 +428,7 @@ global with sharing class infrastructure {
 	private static boolean shareRecord(Id recordId){
 		List<extRelListConfig__Share> shrObj = new List<extRelListConfig__Share>();
 
-		for(User u:  [SELECT Id,name,ProfileId,IsActive,UserType FROM User WHERE Profile.UserLicense.Name != null AND Id != :UserInfo.getUserId() AND UserType NOT IN ('Guest','CsnOnly','AutomatedProcess','CspLitePortal','CloudIntegrationUser')] ){
+		for(User u:  [SELECT Id,name,ProfileId,IsActive,UserType FROM User WHERE IsActive = true AND Profile.UserLicense.Name != null AND Id != :UserInfo.getUserId() AND UserType NOT IN ('Guest','CsnOnly','AutomatedProcess','CspLitePortal','CloudIntegrationUser')] ){
 			extRelListConfig__Share jobShr  = new extRelListConfig__Share();
 
 			jobShr.ParentId = recordId;
@@ -460,20 +473,26 @@ global with sharing class infrastructure {
         sObject[] records = (sObject[]) JSON.deserialize(JSON.serialize(data.get('records')), T);
 		// Savepoint sp = Database.setSavepoint();
 		system.debug('RollBack ' + isRollback);
- 
-		Database.UpsertResult[] srs = Database.upsert(records, isRollback);
+
 		Integer countOfFailedRecords = 0;
-        for (Database.UpsertResult sr : srs) {
-			if (!sr.isSuccess()) {
-				String error = '';
-				for (Database.Error err : sr.getErrors()) {
-					countOfFailedRecords = countOfFailedRecords + 1;
-					errorsList.add(String.valueOf(sr.getId() + ': ' +err.getStatusCode()) + ': ' + err.getMessage());
-					// if(isRollback == true)
-					// 	Database.rollback(sp);
-					// throw new InfrastructureException(null,String.valueOf(err.getStatusCode()) + ': ' + err.getMessage() , Infrastructure.exceptionType.GENERAL);
+		
+		try{
+			Database.UpsertResult[] srs = Database.upsert(records, isRollback);
+			for (Database.UpsertResult sr : srs) {
+				if (!sr.isSuccess()) {
+					String error = '';
+					for (Database.Error err : sr.getErrors()) {
+						countOfFailedRecords = countOfFailedRecords + 1;
+						errorsList.add(String.valueOf(sr.getId() + ': ' +err.getStatusCode()) + ': ' + err.getMessage());
+						// if(isRollback == true)
+						// 	Database.rollback(sp);
+						// throw new InfrastructureException(null,String.valueOf(err.getStatusCode()) + ': ' + err.getMessage() , Infrastructure.exceptionType.GENERAL);
+					}
 				}
 			}
+		}catch(Exception e) {
+			countOfFailedRecords = records.size();
+			errorsList.add(e.getMessage());
 		}
 		result.put('countOfFailedRecords',String.valueOf(countOfFailedRecords));
 		result.put('listOfErrors',errorsList);
@@ -855,6 +874,7 @@ global with sharing class infrastructure {
 			'msg_yourFileWillStartDownloadingShortly'=>label.msg_yourFileWillStartDownloadingShortly,
 			'msg_entityIsDeleted'=>label.msg_entityIsDeleted,
 			'msg_itemsUpdateFailed'=>label.msg_itemsUpdateFailed,
+			'msg_onlyAcceptsPositiveNumbers'=>label.msg_onlyAcceptsPositiveNumbers,
 			'placeHolder_beforeSaveValidation'=>label.placeHolder_beforeSaveValidation,
 			'placeHolder_beforeDeleteValidation'=>label.placeHolder_beforeDeleteValidation,
 			'placeholder_actionCallback'=> label.placeholder_actionCallback,

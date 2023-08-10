@@ -51,9 +51,12 @@ export let libs = {
 
 		let isReverse = isASCSort ? 1 : -1;
 
+		//in case of number it will sort normally but in case of string it will convert it to lower case
 		records.sort((x, y) => {
-			x = keyValue(x) ? keyValue(x) : ''; // handling null values
-			y = keyValue(y) ? keyValue(y) : '';
+			let xKeyValue = keyValue(x);
+			let yKeyValue = keyValue(y);
+			x = xKeyValue ? (typeof xKeyValue === 'number' ? xKeyValue : xKeyValue.toLowerCase()) : ''; // handling null values
+			y = yKeyValue ? (typeof yKeyValue === 'number' ? yKeyValue : yKeyValue.toLowerCase()) : '';
 			return isReverse * ((x > y) - (y > x));
 		});
 
@@ -423,6 +426,21 @@ export let libs = {
 		}
 		return defParams;
 	},
+	jsonParse: function(input){
+		return JSON.parse(JSON.stringify(input));
+	},
+	setDefaultColumns: function(){
+		let columns = [{
+			"fieldName" : "Id",
+			"updateable": false,
+			"isNameField": false,
+			"isEditable": false,
+			"isFilterable": true,
+			"isSortable": true,
+			"helpText": 'Id (id)'
+		}];
+		return columns;
+	},
 	customActions:function(){
 		let _labels = globalVars[Object.keys(globalVars)[0]]._LABELS;
 		let defParams = {
@@ -523,7 +541,9 @@ export let libs = {
 					message: formattedErrMsg,
 					variant: 'error'
 				});
-				scope.dispatchEvent(event);
+				if (!formattedErrMsg.includes('License is expired') && !formattedErrMsg.includes('Permission Set')) {
+					scope.dispatchEvent(event);
+				}
 			} else {
 				if (typeof(params.callback) === 'function') {
 					params.callback.bind(scope)(cmd + 'Result', result);
@@ -672,7 +692,7 @@ export let libs = {
 			  "actionTip": _labels.title_expandView,
 			  "actionCallBack": "",
 			  "actionIsHidden": false,
-			  "actionIconName": "utility:expand",
+			  "actionIconName": "utility:expand/utility:contract",
 			  "isActionStandard":true,
 			  "actionOrder":60
 			}
@@ -692,17 +712,17 @@ export let libs = {
 		let fieldName = isChildObjectHistory ? apiName.split('::')[2].split('.')[0] + "Id"
 		: apiName.split('::')[2].split('.')[0].slice(0,-2) + ".Id";
 		let defFields = [
-			{
-				"fieldName" : "Id",
-				"type": "string",
-				"updateable": false,
-				"isFilterable": true,
-				"isSortable": true,
-				"isNameField": false,
-				"isEditable": false,
-				"isHidden": true,
-				"helpText": 'Id (id)',
-			},
+			// {
+			// 	"fieldName" : "Id",
+			// 	"type": "string",
+			// 	"updateable": false,
+			// 	"isFilterable": true,
+			// 	"isSortable": true,
+			// 	"isNameField": false,
+			// 	"isEditable": false,
+			// 	"isHidden": true,
+			// 	"helpText": 'Id (id)',
+			// },
 			{
 				"label": "New Value",
 				"fieldName": "NewValue",
@@ -723,7 +743,7 @@ export let libs = {
 				"isSortable": true,
 				"isNameField": false,
 				"isEditable": false,
-				"helpText": 'NewValue (anyType)',
+				"helpText": 'OldValue (anyType)',
 			},
 			{
 				"label": "Created Date",
