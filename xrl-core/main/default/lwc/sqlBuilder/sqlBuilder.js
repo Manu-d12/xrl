@@ -410,9 +410,17 @@ export default class SqlBuilder extends LightningElement {
         }
     }
     isConditionExists(obj, arr) {
-        const copyArr = arr.map(item => ({...item})); // create a copy of the array
-        copyArr.forEach(item => delete item.index); // delete 'index' key from each item in the copy array
-        return copyArr.some(item => JSON.stringify(item) === JSON.stringify(obj)); // check if object exists in array
+        const copyArr = arr.map(item => ({
+            field: item.field,
+            value: item.value,
+            operator: item.operator.value
+        }));
+    
+        return copyArr.some(item =>
+            item.field === obj.field &&
+            item.value === obj.value &&
+            item.operator === obj.operator.value
+        );
     }
     upsertArray(array, item) { 
         const i = array.findIndex(_item => _item.field.fieldName === item.field.fieldName);
