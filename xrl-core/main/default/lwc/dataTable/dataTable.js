@@ -339,7 +339,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			}
 			if (item.width !== undefined) {
 				let maxWidth = item.width.replace(';','').slice(-1) === '%' ? ';max-width: 40%;' : ';max-width: 500px;';
-				item._style = 'width: ' + item.width.replace(';','') + maxWidth + 'padding-left:1px;';
+				let wd = (item.width.endsWith('%') || item.width.endsWith('px')) ? item.width : item.width + 'px';
+				item._style = 'width: ' + wd.replace(';','') + maxWidth + 'padding-left:1px;';
 			}else{
 				item._style = 'padding-left:1px;';
 			}

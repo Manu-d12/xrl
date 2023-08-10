@@ -993,11 +993,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			})
 			if (field) {
 				field[param] = value;
-			} /*else {
-				field = { 'fieldName': this.config.dialog.field };
-				field[param] = value;
-				this.config.dialog.listViewConfig.colModel.push(field);
-			}*/ //we will return this part in case that we will have a fieldPiecker component
+			}
 		}
 		if (val === 'dialog:setTableParam') {
 			
