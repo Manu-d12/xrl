@@ -28,6 +28,8 @@ export default class Layout extends NavigationMixin(LightningElement) {
 		this.tabConfigName = this.name;
 		this.configId = this.configId;
 		this.loadCfg(true);
+		libs.getGlobalVar(this.tabConfigName).componentsInLayout = [];
+		libs.getGlobalVar(this.tabConfigName).componentsInLayout.push({uniqueName: this.configId});
 		window.addEventListener("resize", this.handleResize.bind(this));
 		//postMessage listener to communicate between different Layout components
 		//need to listen improve the security concerns to block messages from unauthorized access
@@ -37,12 +39,15 @@ export default class Layout extends NavigationMixin(LightningElement) {
 		);
 		console.log('This.name', this.name);
 	}
-	listenEvent(event){
-		// console.log("Message received0", event.data.id,this.configId);
-		if(event.data.id.indexOf(this.configId) !== -1) {
-			console.log("Message received", JSON.parse(JSON.stringify(event.data.message)));
-			this.handlePostMessageEvents(JSON.parse(JSON.stringify(event.data.message)));
+	findMatchingKey(map, array) {
+		const matchingObjects = [];
+		for (const obj of array) {
+		  const uniqueName = obj.uniqueName;
+		  if (map.has(uniqueName)) {
+			matchingObjects.push(obj);
+		  }
 		}
+		return matchingObjects.length > 0 ? matchingObjects : [];
 	}
 	// sendMessage(){
 	// 	const message = {
@@ -56,17 +61,54 @@ export default class Layout extends NavigationMixin(LightningElement) {
 	// 	};
 	// 	libs.broadcastMessage(this,message);
 	// }
-	handlePostMessageEvents(message){
-		for (const key in message) {
-			if(key === 'refresh'){
-				if(message[key].includes('*')){
-					// this.config.isTabular = false;
-					// libs.setGlobalVar(this.tabConfigName, {});
-					window.removeEventListener("message", this.listenEvent.bind(this), false);
-					this.connectedCallback();
+	// const message = new Map();
+	// message.set('pqwqa15__MasterItem__c_Bundletable',
+	// {
+	// 	'refresh':{
+	// 		'sObjApiName': "pqwqa15__MasterItem__c",
+	// 	}
+	// });
+	listenEvent(event){
+		// console.log("Message received0", event.data,this.configId);
+		// if(event.data.id.indexOf(this.configId) !== -1) {
+		// 	console.log("Message received", JSON.parse(JSON.stringify(event.data.message)));
+		// 	this.handlePostMessageEvents(JSON.parse(JSON.stringify(event.data.message)));
+		// }
+		let isMatchingUniqueName = this.findMatchingKey(event.data,libs.getGlobalVar(this.tabConfigName).componentsInLayout);
+		if(isMatchingUniqueName.length > 0) {
+			console.log("Message received", event.data);
+			this.handlePostMessageEvents(event.data,isMatchingUniqueName);
+		}
+	}
+	handlePostMessageEvents(message,isMatchingUniqueName){
+		isMatchingUniqueName.forEach((element) => {
+			if(element.uniqueName === this.configId){
+				//this operations will be performed on this layout element
+				let operations = JSON.parse(JSON.stringify(message.get(element.uniqueName)));
+				/* eslint-disable */
+				for (const operation in operations) {
+					console.log('operations',operation,operations[operation]);
+					if(operation === 'refresh'){
+						console.log('Refreshing Whole Layout...');
+						this.name = this.configId.replaceAll(':','');
+						// this.tabConfigName = this.name;
+						libs.getGlobalVar(this.tabConfigName).componentsInLayout = [];
+						libs.getGlobalVar(this.tabConfigName).componentsInLayout.push({uniqueName: this.configId});
+						this.loadCfg(true);
+					}
 				}
 			}
-		}
+		});
+		// for (const key in message) {
+		// 	if(key === 'refresh'){
+		// 		if(message[key].includes('*')){
+		// 			console.log('Refreshing Whole Layout...');
+		// 			this.name = this.configId.replaceAll(':','');
+		// 			this.tabConfigName = this.name;
+		// 			this.loadCfg(true);
+		// 		}
+		// 	}
+		// }
 	}
 
 	setCustomLabels(cmd, data) {
@@ -106,11 +148,11 @@ export default class Layout extends NavigationMixin(LightningElement) {
 			this.components = [];
 			this.config.listViewConfig.forEach((el,index)=>{
 				console.log('cmpName',el.cmpName);
-				if(el.cmpName === 'dataTable') this.components.push({isDataTable:true,key:'sFilter'+index});
-				if(el.cmpName === 'serversideFilter') this.components.push({isServerFilter:true,key:'dataTable'+index});
-				if(el.cmpName === 'chart') this.components.push({isChart:true,key:'chart'+index});
-				if(el.cmpName === 'chevron') this.components.push({isChevron:true,key:'chevron'+index});
-				if(el.cmpName === 'actionBar') this.components.push({isActionBar:true,key:'actionBar'+index});
+				if(el.cmpName === 'dataTable') this.components.push({isDataTable:true,key:'sFilter'+index,uniqueName:el.uniqueName});
+				if(el.cmpName === 'serversideFilter') this.components.push({isServerFilter:true,key:'dataTable'+index,uniqueName:el.uniqueName});
+				if(el.cmpName === 'chart') this.components.push({isChart:true,key:'chart'+index,uniqueName:el.uniqueName});
+				if(el.cmpName === 'chevron') this.components.push({isChevron:true,key:'chevron'+index,uniqueName:el.uniqueName});
+				if(el.cmpName === 'actionBar') this.components.push({isActionBar:true,key:'actionBar'+index,uniqueName:el.uniqueName});
 			});
 			// this.config.listViewName = jsonDetails[0].name;
 			// this.config.sObjApiName = jsonDetails[0].sObjApiName;
@@ -287,7 +329,9 @@ export default class Layout extends NavigationMixin(LightningElement) {
 				cmp.isChart = cmp.cmpName === 'chart';
 				cmp.isChevron = cmp.cmpName === 'chevron';
 				cmp.isActionBar = cmp.cmpName === 'actionBar';
-		
+				
+				libs.getGlobalVar(this.tabConfigName).componentsInLayout.push({uniqueName: cmp.uniqueName});
+
 				// Set component configuration
 				this.name = cmp.uniqueName;
 				let configUniqueName = cmp.configUniqueName;

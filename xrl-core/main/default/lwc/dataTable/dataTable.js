@@ -1358,4 +1358,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		}
 	}
 
+	@api
+	handlePostMessageEvents(event){
+		console.log("postMessage", event);
+	}
+
 }
