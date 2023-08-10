@@ -81,6 +81,55 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			return el._isChecked === true;
 		});
 	}
+	@api
+	getGroups() {
+		return this.groupedRecords;
+	}
+	@api
+	getSelectedGroups() {
+		return this.groupedRecords.filter(gr => gr.isChecked).map(gr => gr.title);
+	}
+	@api	
+	setGroupSelected(name, checked) {
+		let group = this.groupedRecords.find(gr => gr.title === name);
+		group.isChecked = checked;
+		group.records.forEach(rec => {
+			rec._isChecked = group.isChecked;
+			let rowind = this.records.findIndex(row => row.Id === rec.Id);
+			this.records[rowind]._isChecked = group.isChecked;
+		});
+	}
+	@api
+	setRowsSelected(idList, checked) {
+		if (this.hasGrouping) {
+			let groupSet = new Set();
+			idList.forEach(id => {
+				let rowind = this.records.findIndex(row => row.Id === id);
+				this.records[rowind]._isChecked = checked;
+				if (this.config.groupingParams.field.split('.')[1]){
+					groupSet.add(this.records[rowind][this.config.groupingParams.field.split('.')[0]][this.config.groupingParams.field.split('.')[1]] || 'empty');
+				} else {
+					groupSet.add(this.records[rowind][this.config.groupingParams.field] || 'empty');
+				}
+			});		
+			groupSet.forEach(groupName => {
+				let groupInd = this.groupedRecords.findIndex(gr => gr.title === groupName);
+				let groupChecked = true;
+				for (let rec of this.groupedRecords[groupInd].records) {
+					if (!rec._isChecked) {
+						groupChecked = false;
+						break;
+					}
+				}
+				this.groupedRecords[groupInd].isChecked = groupChecked;
+			});
+		} else {
+			idList.forEach(id => {
+				this.records[this.calcRowIndex(id)]._isChecked = checked;
+			});			
+		}
+		this.rowCheckStatus();
+	}
 
 	@api
 	setUpdateInfo(v) {
@@ -89,16 +138,25 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	updateInfo = '';
 	
 	get colHeaderClass(){
-		return this.config.enableColumnHeaderWrap ? 'slds-cell-wrap' : 'slds-truncate';
+		return this.config.enableColumnHeaderWrap ? 'slds-cell-wrap slds-hyphenate' : 'slds-truncate';
 	}
 
 	get isRecordsAvailableForUI() {
 		return this.config.recordsToShow.length > 0;
 	}
+	toggleChildRecords(event){
+        let record = this.records.find(r => r.Id === event.target.getAttribute('data-id'));
+		record._isExpanded = record._isExpanded ===  undefined ? true : !record._isExpanded;
+    }
 
 	get tableRecords() {
+		this.config.isAnyRecordsHaveChildren = false;
 		this.records.forEach((el,ind) =>{
 			el.sl = ind + 1;
+			if(el.childRecords?.length > 0) {
+				el._hasChildRecords = true;
+				this.config.isAnyRecordsHaveChildren = true;
+			}
 			if(this.config.rowCss){
 				el._rowStyle = this.config.rowCallback ? 'cursor : pointer;' : '';
 				try{
@@ -302,6 +360,13 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			this.config.colModel.push(add);
 		});
 		this.config.colModel.forEach(item => {
+			console.log('item', item);
+			if(this.config.enableColumnHeaderWrap){
+				item.label = item.label.replace(/\b\w{6,}\b/g, match => {
+					return match.replace(/(.{5})/g, '$1\u00AD');
+				  });
+				  //the regular expression /(\b\w{6,}\b)/g matches any word in item.label with more than 5 characters. The replace function within the callback function is then used to insert the unicode for hidden soft hyphen character after every 5 characters within those matched words to leverage the css hyphens property			  
+			}
 			item._hideFromDisplay = item._skipFieldFromDisplay || item.isHidden;
 			delete item._filterVariant;
 			delete item._isFilterOptions;
@@ -1205,6 +1270,41 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if (this.hasGrouping) this.setGroupRecords();
 		this.config.isSpinner = false;
 	}
+	get isDragDropEnabledForRecords(){
+		return this.config.isRecordsDragDropEnabled;
+	}
+
+	DragStart(event) {
+        event.target.classList.add('drag')
+    }
+
+    DragOver(event) {
+        event.preventDefault()
+        return false
+    }
+	Drop(event) {
+		event.stopPropagation()
+        const Element = this.template.querySelectorAll('.Items')
+        const DragValName = this.template.querySelector('.drag').getAttribute('data-rowind');
+        const DropValName = event.target.getAttribute('data-rowind');
+		let cal = this.calcRowIndex(DropValName);
+		let draggedRecord = this.records.find(record => record.Id === DragValName);
+		let futureParentRecord = this.records[cal];
+		if(this.config.recordsDragDropCallback !== undefined && this.config.recordsDragDropCallback !== ""){
+			try {
+				this.config.records = eval('(' + this.config.recordsDragDropCallback + ')')(this, this.records,draggedRecord,futureParentRecord,libs);
+				this.records = this.config.records;
+				libs.getGlobalVar(this.cfg).records = this.config.records;
+			} catch(err){
+				console.log('EXCEPTION', err);
+			}
+		}
+		console.log('records', this.records);
+		console.log('DragOver', DragValName,draggedRecord, DropValName, this.records[cal]);
+		Element.forEach(element => {
+            element.classList.remove('drag')
+        });
+	}
 	@api
 	updateView(){
 		this.connectedCallback();
@@ -1239,8 +1339,20 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				fields: Array.from(fields),
 				listViewName: sourceConf.listView?.name,
 				callback: ((nodeName, data) => {  
-					libs.getGlobalVar(this.cfg).records = data[nodeName].records.length > 0 ? data[nodeName].records : [];
-					this.config.records = libs.getGlobalVar(this.cfg).records;
+					
+					// this.config.records = libs.getGlobalVar(this.cfg).records;
+
+					if(this.config.afterLoadTransformation !== undefined && this.config.afterLoadTransformation !== ""){
+						try {
+							this.config.records = eval('(' + this.config.afterLoadTransformation + ')')(this, data[nodeName].records.length > 0 ? data[nodeName].records : []);
+							libs.getGlobalVar(this.cfg).records = this.config.records;
+						} catch(err){
+							console.log('EXCEPTION', err);
+						}
+					} else {
+						libs.getGlobalVar(this.cfg).records = data[nodeName].records.length > 0 ? data[nodeName].records : [];
+						this.config.records = libs.getGlobalVar(this.cfg).records;
+					}
 
 					this.connectedCallback();
 				})

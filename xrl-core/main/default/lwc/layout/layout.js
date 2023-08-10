@@ -193,10 +193,10 @@ export default class Layout extends NavigationMixin(LightningElement) {
 		if(event.detail.cmd.startsWith('filter:')) {
 			let comp = this.config.tabularConfig.dataModel.find(cmp => cmp.uniqueName === event.detail.source);
 			this.template.querySelectorAll('c-Data-Table')?.forEach(ch => {
-				if (comp.targets.includes(ch.cfg)) ch.handleEventMessage(event);
+				if (comp?.targets?.includes(ch.cfg) || event.detail.targets?.includes(ch.cfg)) ch.handleEventMessage(event);
 			});
 			if (event.detail.cmd.split(':')[1] === 'refresh') this.template.querySelectorAll('c-chartjs')?.forEach(ch => {
-				if (comp.targets.includes(ch.name)) ch.handleEventMessage(event);
+				if (comp?.targets?.includes(ch.name) || event.detail.targets?.includes(ch.cfg)) ch.handleEventMessage(event);
 			});
 		} else if(event.detail.cmd.startsWith('chart:')) {
 			this.template.querySelectorAll('c-Data-Table')?.forEach(ch => {
@@ -266,7 +266,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 					//await new Promise(resolve => setTimeout(resolve, 3000)); //this needs to debug, should work without timeout
 				} else if (cmp.isServerFilter) {
 					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, sObjApiName:this.config.sObjApiName || configUniqueName.split(':')[0] , callback: function(cmd, data) {
-						this.config.listViewConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig) : [];
+						this.config.listViewConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
 						this.config.sObjApiName = this.config.sObjApiName || configUniqueName.split(':')[0];
 						this.config.relField = this.config.relField || configUniqueName.split(':')[1];
 						this.config.financial = (data[cmd].Financial) ? data[cmd].Financial : {};
@@ -275,15 +275,15 @@ export default class Layout extends NavigationMixin(LightningElement) {
 					} });
 				} else if (cmp.isChart) {
 					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
-						this.config.chartConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig) : [];
+						this.config.chartConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
 					} });
 				} else if (cmp.isChevron) {
 					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
-						this.config.chevronConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig) : [];
+						this.config.chevronConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
 					} });
 				} else if (cmp.isActionBar) {
 					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
-						this.config.actionsBar = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig) : [];
+						this.config.actionsBar = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
 						cmp.config = {
 							'actions': this.config.actionsBar?.actions || [],
 							'_handleEvent': this.handleEvent.bind(this),
@@ -309,7 +309,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 		libs.getGlobalVar(this.name).userInfo = data.userInfo;
 		libs.getGlobalVar(this.name).financial = data[cmd].Financial;
 		
-		this.config.listViewConfig = data[cmd].userConfig ? JSON.parse(data[cmd].userConfig) : [];
+		this.config.listViewConfig = data[cmd].userConfig ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
 		this.config.currency = data[cmd].currency;
 		this.config.describe = data[cmd].describe ? JSON.parse(data[cmd].describe) : {};
 		this.config.fields = [];
@@ -398,12 +398,13 @@ export default class Layout extends NavigationMixin(LightningElement) {
 
 		let table = libs.getGlobalVar(cfg._cfgName);
 		let action = cfg.actions.find(act => act.actionId === actionId);
+		let _LABELS = libs.getGlobalVar('_LABELS');
 
 		if (actionId === 'std:delete') {
 			if (table.listViewConfig[0]._changedRecords) {
 				libs.showToast(this, {
 					title: 'Error',
-					message: this.config._LABELS.msg_unsaveRecordsCannotPerformOtherAction,
+					message: _LABELS.msg_unsaveRecordsCannotPerformOtherAction,
 					variant: 'error'
 				});
 				return;
@@ -412,29 +413,30 @@ export default class Layout extends NavigationMixin(LightningElement) {
 			if (records.length === 0) {
 				libs.showToast(this, {
 					title: 'Error',
-					message: this.config._LABELS.lbl_deleteNoRecordSelectedError,
+					message: _LABELS.lbl_deleteNoRecordSelectedError,
 					variant: 'error'
 				});
 				return;
 			}
 			let dialogCfg = {
-				title: this.config._LABELS.lbl_confirmDelete,
+				title: _LABELS.lbl_confirmDelete,
+				headerStyle: 'slds-modal__header slds-theme_error',
 				contents: [
 					{
 						isMessage: true,
 						name: 'deleteConfirm',
-						text: this.config._LABELS.msg_deleteConfirm1 + ' ' + records.length + ' ' + this.config._LABELS.msg_deleteConfirm2
+						text: _LABELS.msg_deleteConfirm1 + ' ' + records.length + ' ' + _LABELS.msg_deleteConfirm2
 					}
 				],
 				buttons: [
 					{
 						name: 'cancel',
-						label: this.config._LABELS.lbl_cancel,
+						label: _LABELS.lbl_cancel,
 						variant: 'neutral'
 					},
 					{
 						name: 'delete',
-						label: this.config._LABELS.title_delete,
+						label: _LABELS.title_delete,
 						variant: 'brand',
 						class: 'slds-m-left_x-small'
 					}
@@ -462,7 +464,8 @@ export default class Layout extends NavigationMixin(LightningElement) {
 					variant: 'success'
 				});
 				let recIds = records.map(r => r.Id);
-				libs.getGlobalVar(cfg._cfgName).records = table.listViewConfig[0].records.filter(rec => !recIds.includes(rec.Id));
+				table.records = table.records.filter(rec => !recIds.includes(rec.Id));
+				table.listViewConfig[0].records = table.records;
 				table.listViewConfig[0]._updateView();
 			} catch (error) {
 				console.log(error);
@@ -471,12 +474,14 @@ export default class Layout extends NavigationMixin(LightningElement) {
 		if (actionId === 'std:new') {
 				let defValue = {};
 				defValue[this.config.relField] = this.recordId;
-
+				if (action?.defValues) {
+					Object.assign(defValue, action.defValues);
+				}
 				this[NavigationMixin.Navigate]({
 					type: 'standard__objectPage',
 					attributes: {
 						/*recordId: this.recordId, // pass the record id here.*/
-						objectApiName: this.config.sObjApiName,
+						objectApiName: action?.sObjApiName ? action?.sObjApiName : this.config.tabularConfig.sObjApiName,
 						actionName: 'new',
 					},
 					state: {
@@ -486,6 +491,27 @@ export default class Layout extends NavigationMixin(LightningElement) {
 				});
 
 			return;
+		}
+		if (actionId === 'std:edit') {
+				let defValue = {};
+				let hId = location.hash?.replace('#','');
+				defValue[this.config.relField] = hId ? hId : this.recordId;
+
+				this[NavigationMixin.Navigate]({
+					type: 'standard__recordPage',
+					attributes: {
+						/*recordId: this.recordId, // pass the record id here.*/
+						recordId: hId ? hId : this.recordId,
+						objectApiName: action?.sObjApiName ? action?.sObjApiName : this.config.tabularConfig.sObjApiName,
+						actionName: 'edit'
+					}
+				});
+
+			return;
+		}
+		if (actionId === 'std:untie') {
+			table.listViewConfig[0].isShowCheckBoxes = !table.listViewConfig[0].isShowCheckBoxes;
+			table.listViewConfig[0]._updateView();
 		}
 	}
 
@@ -499,9 +525,39 @@ export default class Layout extends NavigationMixin(LightningElement) {
 
 	async handleCustomAction(event, cfg) {
 		let actionId = event?.target?.getAttribute('data-id');
-
 		let table = libs.getGlobalVar(cfg._cfgName).listViewConfig[0];
 		let action = JSON.parse(JSON.stringify(cfg.actions.find(act => act.actionId === actionId)));
+		this.parseHandlers(action);
+		let tableElement = this.template.querySelector('[data-name="' + cfg._cfgName + '"]');
+		
+		let input = {}, confirmed = false, index = 0;
+		if (action.inputDialogs) {
+			do {
+				input = await this.openDialog(action.inputDialogs[index], cfg, actionId);
+				console.log('input', JSON.parse(JSON.stringify(input)));
+				this.showDialog = false;
+				this.dialogCfg = null;
+				if (input.action === 'cancel') return;
+				else if (input.action.startsWith('switch')) index = input.action.split(':')[1];
+				else confirmed = true;
+
+			} while (!confirmed);
+		}
+		input.index = index;
+
+		let validationResult;
+		if (action.validationCallBack && typeof action.validationCallBack === 'function') {
+			validationResult = await action.validationCallBack({ selected: table._selectedRecords(), input: input, table: table, tableElement: tableElement, action: action}, this, libs);
+			console.log('validationResult', JSON.parse(JSON.stringify(validationResult)));
+			if (validationResult.errorMessage) {
+				libs.showToast(this, {
+					title: 'Error',
+					message: validationResult.errorMessage,
+					variant: 'error'
+				});
+				return;
+			}
+		}
 
 		if (action.confirmationDialog) {
 			let result = await this.openDialog(action.confirmationDialog, cfg, actionId);
@@ -511,31 +567,9 @@ export default class Layout extends NavigationMixin(LightningElement) {
 			if (result.action === 'cancel') return;
 		}
 
-		let input;
-		if (action.inputDialog) {
-			input = await this.openDialog(action.inputDialog, cfg, actionId);
-			console.log('input', JSON.parse(JSON.stringify(input)));
-			this.showDialog = false;
-			this.dialogCfg = null;
-			if (input.action === 'cancel') return;
-		}
-
-		if (action.validationCallBack) {
-			let result = await eval('(' + action.validationCallBack + ')')(table._selectedRecords(), input, this, libs);
-			console.log('valid', JSON.parse(JSON.stringify(result)));
-			if (result.errorMessage) {
-				libs.showToast(this, {
-					title: 'Error',
-					message: result.errorMessage,
-					variant: 'error'
-				});
-				return;
-			}
-		}
-
 		let result;
-		if (action.actionCallBack) {
-			result = await eval('(' + action.actionCallBack + ')')({ selected: table._selectedRecords(), input: input, action: action} , this, libs);
+		if (action.actionCallBack && typeof action.actionCallBack === 'function') {
+			result = await action.actionCallBack({ selected: table._selectedRecords(), input: input, table: table, tableElement: tableElement, action: action, validationResult: validationResult} , this, libs);
 			console.log('result', JSON.parse(JSON.stringify(result)));
 			if (result.successMessage) {
 				libs.showToast(this, {
@@ -543,6 +577,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 					message: result.successMessage,
 					variant: 'success'
 				});
+				if (result.updateView) table._updateView();
 			} else if (result.errorMessage) {
 				libs.showToast(this, {
 					title: 'Error',
@@ -552,9 +587,10 @@ export default class Layout extends NavigationMixin(LightningElement) {
 			}
 		}
 
-		if (action.completedCallBack) {
-			await eval('(' + action.completedCallBack + ')')({ selected: table._selectedRecords(), input: input, result: result, action: action} , this, libs);
+		if (action.completedCallBack && typeof action.completedCallBack === 'function') {
+			action.completedCallBack({ selected: table._selectedRecords(), input: input, table: table, tableElement: tableElement, action: action, validationResult: validationResult, result: result} , this, libs);
 		}
+
 	}
 
 	openDialog(dialogCfg, actionCfg, actionId) {
@@ -565,9 +601,8 @@ export default class Layout extends NavigationMixin(LightningElement) {
 					resolve(data);
 				})
 			};
-			let cfg = JSON.parse(JSON.stringify(dialogCfg));
-			this.replaceLiterals(cfg, '_LABELS');
-			Object.assign(this.dialogCfg, cfg);
+			this.replaceLiterals(dialogCfg, '_LABELS');
+			Object.assign(this.dialogCfg, dialogCfg);
 			this.showDialog = true;
 		});		
 	}
@@ -586,7 +621,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 		else replaceObj(target);
 	}
 
-	async bulkAction(name, recordIdList, params, chunkSize, callback) {
+	async bulkAction(cmd, recordIdList, recordParam, params, chunkSize, callback) {
 		let index = 0;
 		let result = [];
 		params.callback = (cmd, res) => {
@@ -594,11 +629,21 @@ export default class Layout extends NavigationMixin(LightningElement) {
 			result.push(res);
 		};
 		while (index < recordIdList.length) {
-			params.recordIdList = recordIdList.slice(index, index + chunkSize > recordIdList.length ? recordIdList.length : index + chunkSize);
+			params[recordParam] = recordIdList.slice(index, index + chunkSize > recordIdList.length ? recordIdList.length : index + chunkSize);
 			index += chunkSize;
-			await libs.remoteAction(this, 'invokeApex', params);
+			await libs.remoteAction(this, cmd, params);
 		}
 		console.log('bulkAction result', result); 
 		callback(result);
 	}
+	
+    parseHandlers(ob) {
+        for (let p in ob) {
+            if (typeof ob[p] === 'string' && ob[p].includes('function')) {
+                ob[p] = eval('(' + ob[p] + ')');
+            } else if (typeof ob[p] === 'object') {
+                this.parseHandlers(ob[p]);
+            }
+        }
+    }
 }

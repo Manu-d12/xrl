@@ -1,4 +1,5 @@
 import { LightningElement, api } from 'lwc';
+import { libs } from 'c/libs';
 
 export default class Dialog extends LightningElement {
 
@@ -10,7 +11,7 @@ export default class Dialog extends LightningElement {
     }
     set cfg(v) {
         this._cfg = v;
-        this.connectedCallback();
+        this.setDialog();
     }
 
     @api setLoading(v) {
@@ -22,11 +23,15 @@ export default class Dialog extends LightningElement {
     contents;
     isLoading = true;
     values = {};
+    headerStyle;
 
-    async connectedCallback() {
+    async setDialog() {
         this.title = this._cfg?.title;
-        this.contents = this._cfg?.contents? JSON.parse(JSON.stringify(this._cfg.contents)) : null;
+        this.headerStyle = this._cfg?.headerStyle;
+        if (this._cfg?.contents) this.contents = this._cfg?.contents.map(el => Object.assign({}, el));
+        else this.contents = [];
         this.buttons = this._cfg?.buttons || [];
+        this.values = {};
         if (this._cfg) await this.setInputFields();
         this.isLoading = this._cfg ? false : true;
     }
@@ -34,10 +39,17 @@ export default class Dialog extends LightningElement {
     handleClick(e) {
         let inputs = this.template.querySelectorAll('.inputs');
         let inputValues = {};
-        inputs.forEach(e => {
-            inputValues[e.dataset.id] = e.value || e.selectedvalue || e.selectedvalues;
-        });
-        console.log(inputValues);
+        if (e.target.dataset.id !== 'cancel' && !e.target.dataset.id.startsWith('switch')) {
+            for (let input of inputs) {
+                inputValues[input.dataset.id] = input.value || input.selectedvalue || input.selectedvalues;
+
+                let valid = input.checkValidity();
+                if (!valid) {
+                    input.reportValidity();
+                    return;
+                }
+            }
+        }        
         if (this._cfg.callback && typeof this._cfg.callback === 'function') {
             this._cfg.callback({ action: e.target.dataset.id, data: inputValues });
         } else {
@@ -46,23 +58,27 @@ export default class Dialog extends LightningElement {
     } 
     
     handleChange(e) {
-        this.values[e.target.dataset.id] = e.target.value;
+        this.values[e.target.dataset.id] = e.target.value || e.target.checked;
         if (e.target.type === 'checkbox') {
             e.target.value = e.target.checked ? 'true' : 'false';
         } else if (e.target.dataset.type === 'select') {
             let value = e.detail.payload.value || e.detail.payload.values;
             this.values[e.target.dataset.id] = value;
-            let input = this.template.querySelector(`[data-id="${e.target.dataset.id}"]`);
-            input?.setValue(value);
 
             for (let el of this.contents) {
-                if (el.updateOptions) {
-                    el.options = eval('(' + el.updateOptions + ')')(this, libs, el);
+                let input = this.template.querySelector(`[data-id="${el.name}"]`);
+                if (el.updateOptions && typeof el.updateOptions === 'function') {
+                    el.options = el.updateOptions(this, libs, el);
+                    input?.setOptions(el.options);
                 }
-                if (el.isCombobox) {
-                    let input = this.template.querySelector(`[data-id="${el.name}"]`);
-                    input?.setOptions(el.options);	
-                }		
+                if (el.name === e.target.dataset.id) el.value = value;
+                if (el.value && el.options.find(opt => opt.value === el.value)) {
+                    this.values[el.name] = el.value;
+                    input?.setValue(el.value);
+                } else {
+                    this.values[el.name] = undefined;
+                    el.value = undefined;
+                }	
             }
         }
     }
@@ -73,22 +89,31 @@ export default class Dialog extends LightningElement {
 				await this.referenceOperations(el);
 			}
 			if (el.defaultValue) {
-				el.value = el.defaultValue.startsWith('function') ? eval('(' + el.defaultValue + ')')(this, libs, el.options) : el.defaultValue;
-                this.values[el.name] = el.value;
-                if (el.isCombobox) {
-                    let input = this.template.querySelector(`[data-id="${el.name}"]`);
-                    input?.setValue(el.value);
-                }
+                el.value = typeof el.defaultValue === 'function' ? el.defaultValue(this, libs, el.options) : el.defaultValue;
 			}			
 		}
         for (let el of this.contents) {
-			if (el.updateOptions) {
-                el.options = eval('(' + el.updateOptions + ')')(this, libs, el);
+			if (el.updateOptions && typeof el.updateOptions === 'function') {
+                el.options = el.updateOptions(this, libs, el);
             }
             if (el.isCombobox) {
                 let input = this.template.querySelector(`[data-id="${el.name}"]`);
-                input?.setOptions(el.options);	
-            }            		
+                input?.setOptions(el.options);
+                if (el.value && el.options.find(opt => opt.value === el.value)) {
+                    this.values[el.name] = el.value;
+                    input?.setValue(el.value);
+                } else {
+                    this.values[el.name] = undefined;
+                    el.value = undefined;
+                }               
+            }
+            if (el.isDisabled && typeof el.isDisabled === 'function') {
+                el.disabled = el.isDisabled(this, libs, el);
+                if (el.isCombobox) {
+                    let input = this.template.querySelector(`[data-id="${el.name}"]`);
+                    input?.setDisabled(el.disabled);
+                }
+            }	
 		}
 	}
 
@@ -97,16 +122,16 @@ export default class Dialog extends LightningElement {
 		const { sObject, referenceSoql, formatter } = element;
 
 		const query = referenceSoql !== undefined
-			? { isNeedDescribe: true, sObjApiName: sObject, SOQL: referenceSoql }
+			? { isNeedDescribe: true, sObjApiName: sObject, SOQL: typeof referenceSoql === 'function' ? referenceSoql(this, libs, element) : referenceSoql }
 			: { isNeedDescribe: true, sObjApiName: sObject, relField: '', fields: ['Id', 'Name'], limit: 'LIMIT 10000' };
 
 		await libs.remoteAction(this, referenceSoql !== undefined ? 'customSoql' : 'query', {
 			...query,
 			callback: (nodeName, responseData) => {
+                element.data = responseData[nodeName].records;
 				if (formatter) {
-					element.options = eval('(' + formatter + ')')(responseData[nodeName]);
+                    element.options = formatter(responseData[nodeName]);
 				} else {
-					element.data = responseData[nodeName].records;
 					element.options = element.data.length > 0 ? element.data.map(e => ({ label: e.Name, value: e.Id })) : undefined;
 				}
 				element._actualType = responseData[nodeName].describe ? JSON.parse(responseData[nodeName].describe)[element.name]?.type : undefined;

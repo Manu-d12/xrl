@@ -316,7 +316,22 @@ export let libs = {
 				"options": [{label:'ASC',value:'ASC'},{label:'DESC',value:'DESC'}],
 				"cmd" : "dialog:setTableParam",
 			},
-			
+			"isRecordsDragDropEnabled": {
+				"defValue": false,
+				"type": "checkbox",
+				"label": "Enable drag & drop on records?",
+				"tooltip": "If you enable this, you will be create hierarchy with records just by drag and drop",
+				"cmd" : "dialog:setTableParam",
+			},
+			"recordsDragDropCallback": {
+				"type": "function",
+				"label": "Callback for record drag drop",
+				"tooltip": "Callback for record drag drop",
+				"placeHolder": "function(scope,records,draggedRecord,droppedRecord,libs){ return records; }",
+				"isReadOnly": true,
+				"cmd" : "dialog:setTableParam",
+				"useExample":true,
+			},
 			"saveChunkSize" : {
 				"defValue": 200,
 				"type": "string",
@@ -508,7 +523,7 @@ export let libs = {
 		let outParams = {};
 		if (scope.recordId!=undefined) libs.setGlobalVar('recordId', scope.recordId);
 		Object.assign(outParams, params, { recordId: scope.recordId });
-		if (cmd === 'query' && scope.config.dataTableConfig && scope.config.dataTableConfig.loadChunkSize) {
+		if (cmd === 'query' && scope.config?.dataTableConfig && scope.config?.dataTableConfig.loadChunkSize) {
 			console.log('query', scope.config.dataTableConfig.loadChunkSize);
 			outParams.loadChunkSize = scope.config.dataTableConfig.loadChunkSize;
 		}

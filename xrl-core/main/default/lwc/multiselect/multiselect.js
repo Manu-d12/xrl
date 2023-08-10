@@ -8,6 +8,7 @@ export default class Multiselect extends LightningElement {
     @api selectedvalues = [];
     @api label;
     @api disabled = false;
+    @api required = false;
     @api multiselect = false;
     @api listsize = 20;
     @api cfg;
@@ -25,6 +26,21 @@ export default class Multiselect extends LightningElement {
     @api setOptions(v) {
         this.options = v;
         this.setSelect();
+    }
+
+    @api setDisabled(v) {
+        this.disabled = v;
+    }
+
+    @api checkValidity() {
+        let input = this.template.querySelector('.inputBox');
+        let valid = input?.checkValidity();
+        return !this.required || (this.required && (this.mSelectConfig.value || this.mSelectConfig.values.length > 0));
+    }
+
+    @api reportValidity() {
+        let input = this.template.querySelector('.inputBox');
+        input?.reportValidity();
     }
 
     connectedCallback() {
