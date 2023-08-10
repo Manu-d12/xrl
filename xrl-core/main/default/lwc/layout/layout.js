@@ -330,8 +330,10 @@ export default class Layout extends NavigationMixin(LightningElement) {
 				cmp.isChevron = cmp.cmpName === 'chevron';
 				cmp.isActionBar = cmp.cmpName === 'actionBar';
 				
+				if(libs.getGlobalVar(this.tabConfigName).componentsInLayout === undefined) {
+					libs.getGlobalVar(this.tabConfigName).componentsInLayout = [{uniqueName: this.tabConfigName}];
+				}
 				libs.getGlobalVar(this.tabConfigName).componentsInLayout.push({uniqueName: cmp.uniqueName});
-
 				// Set component configuration
 				this.name = cmp.uniqueName;
 				let configUniqueName = cmp.configUniqueName;
