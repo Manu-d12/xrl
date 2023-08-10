@@ -197,6 +197,11 @@ export default class extRelListSettings extends LightningElement {
 
 		if (!fieldParams) fieldParams = {}
 
+		if(fieldParams.actionId === 'std:expand_view'){
+			fieldParams.actionIconName = this.config._expandIcon;
+			fieldParams.actionTip = this.config._expandTip;
+		}
+		console.log('here01',fieldParams.actionIconName);
 		let tmp = libs.customActions();
 
 		/* eslint-disable */
