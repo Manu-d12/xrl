@@ -1553,14 +1553,18 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				}
 
 				switch (col.type) {
-				case 'reference' && !(col.formatter !== undefined && col.formatter!==""):
-					//in case it is a reference and no formatting is defined, otherwise treat it as normal string value
-					const [lookupRow, lookupId] = libs.getLookupRow(rec, col.fieldName);
-					ws[cell_ref].v = lookupRow.Name || '';
-					ws[cell_ref].l = {
-					Target: window.location.origin + '/' + lookupId,
-					Tooltip: window.location.origin + '/' + lookupId
-					};
+				case 'reference':
+					if((col.formatter === undefined || col.formatter==="")){
+						//in case it is a reference and no formatting is defined, otherwise treat it as normal string value
+						const [lookupRow, lookupId] = libs.getLookupRow(rec, col.fieldName);
+						ws[cell_ref].v = lookupRow.Name || '';
+						ws[cell_ref].l = {
+						Target: window.location.origin + '/' + lookupId,
+						Tooltip: window.location.origin + '/' + lookupId
+						};
+					}else{
+						ws[cell_ref].v = fieldValue;
+					}
 					ws[cell_ref].t = 's';
 					break;
 				case 'date':
