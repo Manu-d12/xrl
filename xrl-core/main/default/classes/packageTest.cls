@@ -277,7 +277,7 @@ public class packageTest {
         test.stopTest();
         
         map < string, object > result = (map < string, object >) res.get('cloneRecordsResult');
-        list <case> recs = (list <case>) result.get('records');
+        list <Case> recs = (list <Case>) result.get('records');
         System.assertNotEquals(null, recs);
         Case csNew = [SELECT Id, Subject, AccountId FROM Case WHERE Id =: recs[0].Id];
         System.assertNotEquals(cs.Id, csNew.Id);
