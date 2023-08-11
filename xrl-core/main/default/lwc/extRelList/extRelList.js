@@ -99,7 +99,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		console.log(JSON.parse(JSON.stringify(this.config)));
 
 		// let listViewName = isInit && this.defaultListView !== undefined ? this.defaultListView : (!isInit && this.name !== undefined ? this.name : undefined);
-		let listViewName = libs.loadUserPreferredView(this.name) != undefined ? libs.loadUserPreferredView(this.name) : '';
+		let listViewName = apiNames.length>3 && apiNames[3] ? apiNames[3] : (libs.loadUserPreferredView(this.name) != undefined ? libs.loadUserPreferredView(this.name) : '');
 		console.log(this.defaultListView);
 		console.log('listViewName ',listViewName);
 		if (this.configuration) {
@@ -1406,6 +1406,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			if (val === 'flow:close') {
 				delete this.config.flowApiName;
 				delete this.config.flowInputVariables;
+				return;
 			}
 		}
 
