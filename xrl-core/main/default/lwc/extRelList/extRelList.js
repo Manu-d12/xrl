@@ -100,6 +100,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 		// let listViewName = isInit && this.defaultListView !== undefined ? this.defaultListView : (!isInit && this.name !== undefined ? this.name : undefined);
 		let listViewName = apiNames.length>3 && apiNames[3] ? apiNames[3] : (libs.loadUserPreferredView(this.name) != undefined ? libs.loadUserPreferredView(this.name) : '');
+		if (apiNames.length>3) this.config.isDisabledListView = true;
 		console.log(this.defaultListView);
 		console.log('listViewName ',listViewName);
 		if (this.configuration) {
@@ -1413,7 +1414,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
 
 		let recordIdList;
-		if (records.length !== 0) {
+		//if (records.length !== 0) {
 			recordIdList = records.map(rec => rec.Id);
 			if (action.name.startsWith('AutoLaunchedFlow')) {
 				libs.remoteAction(this, 'invokeAction', { name: action.name.split(/::/)[1], recordIdList: recordIdList, callback: (cmd, data) => {
@@ -1447,14 +1448,14 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				];
 				//Need to run screen flow
 			}
-		}else{
+		/*}else{
 			const event = new ShowToastEvent({
 				title: 'Error',
 				message: this.config._LABELS.lbl_deleteNoRecordSelectedError,
 				variant: 'error'
 			});
 			this.dispatchEvent(event);
-		}
+		}*/
 	}
 
 	async handleEventExport(event) {

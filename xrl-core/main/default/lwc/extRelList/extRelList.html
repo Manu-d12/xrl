@@ -18,9 +18,12 @@
 							</div>
 							
 						</div>
-						<div class="slds-m-left_xx-small" if:true={config.listView} style="max-width:230px;">
-							<lightning-combobox if:true={config.listView.name} value={config.listView.name} data-id=":change_view" onchange={handleEvent} options={listViews} class="slds-p-horizontal_xx-small" variant="label-hidden" title={config.listView.title}></lightning-combobox>
-						</div>
+
+						<span if:false={config.isDisabledListView}>
+							<div class="slds-m-left_xx-small" if:true={config.listView} style="max-width:230px;">
+								<lightning-combobox if:true={config.listView.name} value={config.listView.name} data-id=":change_view" onchange={handleEvent} options={listViews} class="slds-p-horizontal_xx-small" variant="label-hidden" title={config.listView.title}></lightning-combobox>
+							</div>
+						</span>
 						<div class="slds-m-left_xx-small">					
 							<span style="max-width:150px;">
 								<c-action-Bar if:true={config.actionsBar} actionscfg={config.actionsBar}></c-action-Bar>
@@ -61,8 +64,8 @@
 
 	<template if:true={config.flowApiName}>
 		<section role="alertdialog" tabindex="0" class="slds-modal slds-fade-in-open slds-modal_prompt slds-modal_small" aria-modal="true">
-			<div class="slds-modal__container slds-scrollable_y" >
-				<header class="slds-modal__header slds-theme_shade">
+			<div class="slds-modal__container slds-scrollable_y" style="max-width:80rem !important">
+				<!--<header class="slds-modal__header slds-theme_shade">
 					<button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title={config._LABELS.title_close} style="display:block" data-id="flow:close" onclick={handleEventFlow}>
 						<svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
 							<use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#close"></use>
@@ -72,6 +75,14 @@
 					<h2 class="slds-text-heading_medium">
 						{config.flowApiName}
 					</h2>
+				</header>-->
+				<header class="">
+					<button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title={config._LABELS.title_close} style="display:block" data-id="flow:close" onclick={handleEventFlow}>
+						<svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+							<use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#close"></use>
+						</svg>
+						<span class="slds-assistive-text">{config._LABELS.title_close}</span>
+					</button>
 				</header>
 				<div class="slds-modal__content slds-p-around_medium" style="min-height:300px !important;min-width:800px !important;">
 					<lightning-flow  flow-api-name={config.flowApiName} onstatuschange={handleFlowStatusChange} flow-input-variables={config.flowInputVariables}> <!--flow-input-variables={inputVariables} -->

@@ -4,9 +4,9 @@
       "path": "xrl-core",
       "default": true,
       "package": "Extended Related List",
-      "versionName": "3.93.0 PreRelease",
+      "versionName": "3.96.2 PreRelease",
       "versionDescription": "Initial release",
-      "versionNumber": "3.93.0.NEXT",
+      "versionNumber": "3.96.2.NEXT",
       "definitionFile": "config/scratch-org-def.json",
       "ancestorVersion": "HIGHEST"
     }
@@ -245,6 +245,27 @@
     "Extended Related List@3.9.4-2": "04t8d000000lmoJAAQ",
     "Extended Related List@3.9.5-1": "04t8d000000ln11AAA",
     "Extended Related List@3.9.5-2": "04t8d000000ln1GAAQ",
-    "Extended Related List@3.90.0-1": "04t8d000000lnJOAAY"
+    "Extended Related List@3.90.0-1": "04t8d000000lnJOAAY",
+    "Extended Related List@3.92.0-1": "04t8d000000lnSIAAY",
+    "Extended Related List@3.92.0-2": "04t8d000000lnSNAAY",
+    "Extended Related List@3.92.0-3": "04t8d000000lnSSAAY",
+    "Extended Related List@3.92.0-4": "04t8d000000lnSXAAY",
+    "Extended Related List@3.92.0-5": "04t8d000000lnScAAI",
+    "Extended Related List@3.92.0-6": "04t8d000000lnShAAI",
+    "Extended Related List@3.92.0-7": "04t8d000000lnSmAAI",
+    "Extended Related List@3.93.0-1": "04t8d000000lnSrAAI",
+    "Extended Related List@3.93.0-2": "04t8d000000lnSwAAI",
+    "Extended Related List@3.93.0-3": "04t8d000000lnT1AAI",
+    "Extended Related List@3.93.0-4": "04t8d000000lnT6AAI",
+    "Extended Related List@3.93.0-5": "04t8d000000lnTBAAY",
+    "Extended Related List@3.93.0-6": "04t8d000000lnTGAAY",
+    "Extended Related List@3.93.0-7": "04t8d000000lnTLAAY",
+    "Extended Related List@3.93.0-8": "04t8d000000lnTQAAY",
+    "Extended Related List@3.93.0-9": "04t8d000000lnTVAAY",
+    "Extended Related List@3.94.0-1": "04t8d000000lnTaAAI",
+    "Extended Related List@3.95.0-1": "04t8d000000lnTkAAI",
+    "Extended Related List@3.96.0-1": "04t8d000000lnTpAAI",
+    "Extended Related List@3.96.1-1": "04t8d000000lnTuAAI",
+    "Extended Related List@3.96.2-1": "04t8d000000lnYHAAY"
   }
 }
