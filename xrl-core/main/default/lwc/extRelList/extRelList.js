@@ -3,6 +3,7 @@ import { libs } from 'c/libs';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { NavigationMixin } from "lightning/navigation"
 import { encodeDefaultFieldValues, decodeDefaultFieldValues } from 'lightning/pageReferenceUtils'
+import { FlowNavigationFinishEvent } from 'lightning/flowSupport'
 
 import resource from '@salesforce/resourceUrl/extRelList';
 import { loadScript, loadStyle } from 'lightning/platformResourceLoader';
@@ -63,6 +64,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	connectedCallback() {
 		this.name = libs.getGlobalVarsCount().toString();
 		console.log('RENDERED');
+		this._flowSupport =  FlowNavigationFinishEvent;
 		this.loadCfg(true);
 	}
 	listenEvent(event){
@@ -1413,11 +1415,15 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 	handleFlowStatusChange(event) {
 		console.log('FLOW', event.detail.status);
+		if(event.detail.status === 'STARTED') {
+			this.config.flowApiClass = "slds-modal__container slds-scrollable_y";
+		}
 		if(event.detail.status === 'FINISHED') {
 			delete this.config.flowApiName;
 			delete this.config.flowInputVariables;
             const outputVariables = event.detail.outputVariables;
 			console.log('FLOW OUTPUT PARAMS',outputVariables)
+			this.loadCfg();
 		}
 	}
 
@@ -1460,6 +1466,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				}});
 			} else {
 				this.config.flowApiName = action.name.split(/::/)[1];
+				this.config.flowApiClass = "slds-modal__container slds-scrollable_y slds-hidden"
 				this.config.flowInputVariables = [
 					{
 						name : "records",

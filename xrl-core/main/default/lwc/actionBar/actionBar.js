@@ -1,6 +1,7 @@
 import { LightningElement,api,track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { libs } from 'c/libs';
+import { FlowNavigationFinishEvent } from 'lightning/flowSupport'
 
 export default class ActionBar extends LightningElement {
     @api actionscfg;
@@ -10,6 +11,7 @@ export default class ActionBar extends LightningElement {
         this.config.actions = [...this.actionscfg.actions];
         let cmpWidth = libs.getGlobalVar(this.actionscfg._cfgName).componentWidth;
         this.config.showActionDropdown = this.visibleActions.length > 2 && (cmpWidth === 'MEDIUM' || cmpWidth === 'SMALL');
+		this._flowSupport =  FlowNavigationFinishEvent;
     }
     get visibleActions(){
         this.config.visibleActions = this.config.actions.filter((el) => {
