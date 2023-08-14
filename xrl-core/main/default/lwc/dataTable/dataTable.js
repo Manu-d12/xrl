@@ -677,7 +677,11 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		let cItem = this.getColItem(colName);
 
 		if (cItem && cItem.cellCallback) {
-			cItem.cellCallback(this.calcRowIndex(rowId), colName);
+			try{
+				let fn = eval('(' + cItem.cellCallback + ')')(this,libs,this.calcRowIndex(rowId), colName);
+			}catch(e){
+				console.error('Exception in cell callback', e);
+			}
 		}
 		//console.log('row click', event, colName, rowId);
 	}
