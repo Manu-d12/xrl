@@ -107,7 +107,7 @@ export default class dataTableItem extends LightningElement {
 			}
 
 			if (this.col.type === 'reference'){
-				return libs.formatStr(refTmp,[val, row.Name ? row.Name : row[config.objectNameFieldsMap.get(this.col.referenceTo)] ? row[config.objectNameFieldsMap.get(this.col.referenceTo)] : '']); // Need to investigate this line. Why sometimes for reference we have 'Invalid Name'
+				return libs.formatStr(refTmp,[val, row.Name ? row.Name : row[config.objectNameFieldsMap?.get(this.col.referenceTo)] ? row[config.objectNameFieldsMap?.get(this.col.referenceTo)] : '']); // Need to investigate this line. Why sometimes for reference we have 'Invalid Name'
 			}
 			if (this.col.type === 'boolean'){
 				this.isBool = true;

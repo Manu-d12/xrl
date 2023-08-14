@@ -26,65 +26,53 @@ export default class Layout extends NavigationMixin(LightningElement) {
 		console.log('RENDERED');
 		this.name = this.configId.replaceAll(':','');
 		this.tabConfigName = this.name;
-		this.configId = this.configId;
+		// this.configId = this.configId;
 		this.loadCfg(true);
 		libs.getGlobalVar(this.tabConfigName).componentsInLayout = [];
 		libs.getGlobalVar(this.tabConfigName).componentsInLayout.push({uniqueName: this.configId});
 		window.addEventListener("resize", this.handleResize.bind(this));
 		//postMessage listener to communicate between different Layout components
 		//need to listen improve the security concerns to block messages from unauthorized access
-		window.addEventListener(
-			"message",this.listenEvent.bind(this),
-			false,
-		);
-		console.log('This.name', this.name);
-	}
-	findMatchingKey(map, array) {
-		const matchingObjects = [];
-		for (const obj of array) {
-		  const uniqueName = obj.uniqueName;
-		  if (map.has(uniqueName)) {
-			matchingObjects.push(obj);
-		  }
+		if(!window.location.href.includes('flexipageEditor')){
+			window.addEventListener(
+				"message",this.listenEvent.bind(this),
+				false,
+			);
 		}
-		return matchingObjects.length > 0 ? matchingObjects : [];
 	}
-	// sendMessage(){
-	// 	const message = {
-	// 		id: ['pqwqa15__MasterItem__c_Bundletable','dataTable'],
-	// 		details: [
-// 		{
-// 			cmd:refresh,
-// 			...
-// 		}
-// ]
-	// 	};
+	// function(selectedRecords,scope,libs){
+	// 	const message = new Map();
+	// 		message.set('master_Item_table',
+	// 		{
+	// 			'refresh':{
+	// 			  'sendAcknowledgementTo': 'StrataVAR__MasterItem__c:Id:true:StrataVAR__MasterItem__c_Bundletab',
+	// 				'sObjApiName': "pqwqa15__Master_Item__c",
+	// 				fields: ['Id', 'Name', 'pqwqa15__Part_Number__c', 'pqwqa15__Description__c', 'pqwqa15__Source__c', 'pqwqa15__Vendor__c', 'pqwqa15__Manufacturer__c'],
+	// 			}
+	// 		});
+	// 		message.set('0',
+	// 		{
+	// 			'refresh':{ }
+	// 		});
 	// 	libs.broadcastMessage(this,message);
 	// }
-	// const message = new Map();
-	// message.set('pqwqa15__MasterItem__c_Bundletable',
-	// {
-	// 	'refresh':{
-	// 		'sObjApiName': "pqwqa15__MasterItem__c",
-	// 	}
-	// });
 	listenEvent(event){
-		// console.log("Message received0", event.data,this.configId);
-		// if(event.data.id.indexOf(this.configId) !== -1) {
-		// 	console.log("Message received", JSON.parse(JSON.stringify(event.data.message)));
-		// 	this.handlePostMessageEvents(JSON.parse(JSON.stringify(event.data.message)));
-		// }
-		let isMatchingUniqueName = this.findMatchingKey(event.data,libs.getGlobalVar(this.tabConfigName).componentsInLayout);
+		if(event.data.size === 0) return;
+		let isMatchingUniqueName = libs.findMatchingKey(event.data,libs.getGlobalVar(this.tabConfigName).componentsInLayout);
 		if(isMatchingUniqueName.length > 0) {
 			console.log("Message received", event.data);
+			if(event.data.get(this.configId)){
+				console.log('Acknowledgement',event.data.get(this.configId)['status']);
+				return;
+			}
 			this.handlePostMessageEvents(event.data,isMatchingUniqueName);
 		}
 	}
 	handlePostMessageEvents(message,isMatchingUniqueName){
 		isMatchingUniqueName.forEach((element) => {
+			let operations = JSON.parse(JSON.stringify(message.get(element.uniqueName)));
 			if(element.uniqueName === this.configId){
 				//this operations will be performed on this layout element
-				let operations = JSON.parse(JSON.stringify(message.get(element.uniqueName)));
 				/* eslint-disable */
 				for (const operation in operations) {
 					console.log('operations',operation,operations[operation]);
@@ -97,6 +85,10 @@ export default class Layout extends NavigationMixin(LightningElement) {
 						this.loadCfg(true);
 					}
 				}
+			}else{
+				this.template.querySelectorAll('c-Data-Table')?.forEach(ch => {
+					if (element.uniqueName === ch.cfg) ch.handlePostMessageEvents(operations);
+				});
 			}
 		});
 		// for (const key in message) {
@@ -331,7 +323,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 				cmp.isActionBar = cmp.cmpName === 'actionBar';
 				
 				if(libs.getGlobalVar(this.tabConfigName).componentsInLayout === undefined) {
-					libs.getGlobalVar(this.tabConfigName).componentsInLayout = [{uniqueName: this.tabConfigName}];
+					libs.getGlobalVar(this.tabConfigName).componentsInLayout = [{uniqueName: this.configId}];
 				}
 				libs.getGlobalVar(this.tabConfigName).componentsInLayout.push({uniqueName: cmp.uniqueName});
 				// Set component configuration

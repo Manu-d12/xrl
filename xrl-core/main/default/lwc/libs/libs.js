@@ -584,6 +584,17 @@ export let libs = {
 			console.error("Error in postMessage", e);
 		}
 	},
+	findMatchingKey: function(map, array) {
+		if(map.size === 0) return [];
+		const matchingObjects = [];
+		for (const obj of array) {
+			const uniqueName = obj.uniqueName;
+			if (map?.has(uniqueName)) {
+				matchingObjects.push(obj);
+			}
+		}
+		return matchingObjects.length > 0 ? matchingObjects : [];
+	},
 	isFunction: function (param) {
         return param && (typeof (param) === 'function' || typeof param === "string" && param.trim().startsWith('function'))
     },
