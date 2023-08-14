@@ -571,6 +571,30 @@ export let libs = {
 		const event = new ShowToastEvent(params);
 		scope.dispatchEvent(event);
 	},
+	broadcastMessage: function(scope, messageObject, target) {
+		// every broadcast message should have a Id which will be used to identify if the message is for any specific
+		// component when receiving
+		try{
+			if(target === undefined) {
+				target = "*";
+			}
+			console.log('Sending Message: ', messageObject, " to ", target);
+			window.postMessage(messageObject, target);
+		}catch(e){
+			console.error("Error in postMessage", e);
+		}
+	},
+	findMatchingKey: function(map, array) {
+		if(map.size === 0) return [];
+		const matchingObjects = [];
+		for (const obj of array) {
+			const uniqueName = obj.uniqueName;
+			if (map?.has(uniqueName)) {
+				matchingObjects.push(obj);
+			}
+		}
+		return matchingObjects.length > 0 ? matchingObjects : [];
+	},
 	isFunction: function (param) {
         return param && (typeof (param) === 'function' || typeof param === "string" && param.trim().startsWith('function'))
     },

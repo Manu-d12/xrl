@@ -45,6 +45,14 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				event.returnValue = '';
 			}
 		});
+		//postMessage listener to communicate between different Layout components
+		//need to listen improve the security concerns to block messages from unauthorized access
+		if(!window.location.href.includes('flexipageEditor')){
+			window.addEventListener(
+				"message",this.listenEvent.bind(this),
+				false,
+			);
+		}
 	}
 	@api 
 	updateGridView(newApiName){
@@ -56,6 +64,19 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		this.name = libs.getGlobalVarsCount().toString();
 		console.log('RENDERED');
 		this.loadCfg(true);
+	}
+	listenEvent(event){
+		console.log("Message received0 XRL", [...event.data.keys()],this.name);
+		let isMatchingUniqueName = libs.findMatchingKey(event.data,[{uniqueName:this.name}]);
+		if(isMatchingUniqueName.length > 0) {
+			console.log("Message received", event.data);
+			this.loadCfg(true);
+			// if(event.data.get(this.configId)){
+			// 	console.log('Acknowledgement',event.data.get(this.configId)['status']);
+			// 	return;
+			// }
+			// this.handlePostMessageEvents(event.data,isMatchingUniqueName);
+		}
 	}
 
 	setCustomLabels(cmd, data) {

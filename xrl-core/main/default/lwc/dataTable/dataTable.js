@@ -360,7 +360,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			this.config.colModel.push(add);
 		});
 		this.config.colModel.forEach(item => {
-			console.log('item', item);
+			// console.log('item', item);
 			if(this.config.enableColumnHeaderWrap){
 				item.label = item.label.replace(/\b\w{6,}\b/g, match => {
 					return match.replace(/(.{5})/g, '$1\u00AD');
@@ -1383,6 +1383,50 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				this.additionalFields.push(field);
 			});
 			this.connectedCallback();
+		}
+	}
+
+	@api
+	handlePostMessageEvents(operations){
+		/* eslint-disable */
+		for (const operation in operations) {
+			if(operation === 'refresh'){
+				console.log('Refreshing DataTable Layout...');
+				let configData = JSON.parse(JSON.stringify(operations[operation]));
+				let fields = configData.fields;
+				this.additionalFields.forEach(f => fields.add(f.fieldName));
+				libs.remoteAction(this, 'query', {
+					isNeedDescribe: true,
+					sObjApiName: configData.sObjApiName,
+					relField: configData.relField === 'Id' ? '' : configData.relField,
+					addCondition: configData.condition,
+					fields: Array.from(fields),
+					listViewName: configData.listView?.name,
+					callback: ((nodeName, data) => {  
+						
+						// this.config.records = libs.getGlobalVar(this.cfg).records;
+	
+						if(this.config.afterLoadTransformation !== undefined && this.config.afterLoadTransformation !== ""){
+							try {
+								this.config.records = eval('(' + this.config.afterLoadTransformation + ')')(this, data[nodeName].records.length > 0 ? data[nodeName].records : []);
+								libs.getGlobalVar(this.cfg).records = this.config.records;
+							} catch(err){
+								console.log('EXCEPTION', err);
+							}
+						} else {
+							libs.getGlobalVar(this.cfg).records = data[nodeName].records.length > 0 ? data[nodeName].records : [];
+							this.config.records = libs.getGlobalVar(this.cfg).records;
+						}
+						const message = new Map();
+						message.set(configData.sendAcknowledgementTo,
+						{
+							'status':'success',
+						});
+						libs.broadcastMessage(this,message);
+						this.connectedCallback();
+					})
+				});
+			}
 		}
 	}
 

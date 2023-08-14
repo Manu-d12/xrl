@@ -25,9 +25,82 @@ export default class Layout extends NavigationMixin(LightningElement) {
     connectedCallback() {
 		console.log('RENDERED');
 		this.name = this.configId.replaceAll(':','');
-		this.configId = this.configId;
+		this.tabConfigName = this.name;
+		// this.configId = this.configId;
 		this.loadCfg(true);
-		window.addEventListener("resize", this.handleResize.bind(this))
+		libs.getGlobalVar(this.tabConfigName).componentsInLayout = [];
+		libs.getGlobalVar(this.tabConfigName).componentsInLayout.push({uniqueName: this.configId});
+		window.addEventListener("resize", this.handleResize.bind(this));
+		//postMessage listener to communicate between different Layout components
+		//need to listen improve the security concerns to block messages from unauthorized access
+		if(!window.location.href.includes('flexipageEditor')){
+			window.addEventListener(
+				"message",this.listenEvent.bind(this),
+				false,
+			);
+		}
+	}
+	// function(selectedRecords,scope,libs){
+	// 	const message = new Map();
+	// 		message.set('master_Item_table',
+	// 		{
+	// 			'refresh':{
+	// 			  'sendAcknowledgementTo': 'StrataVAR__MasterItem__c:Id:true:StrataVAR__MasterItem__c_Bundletab',
+	// 				'sObjApiName': "pqwqa15__Master_Item__c",
+	// 				fields: ['Id', 'Name', 'pqwqa15__Part_Number__c', 'pqwqa15__Description__c', 'pqwqa15__Source__c', 'pqwqa15__Vendor__c', 'pqwqa15__Manufacturer__c'],
+	// 			}
+	// 		});
+	// 		message.set('0',
+	// 		{
+	// 			'refresh':{ }
+	// 		});
+	// 	libs.broadcastMessage(this,message);
+	// }
+	listenEvent(event){
+		if(event.data.size === 0) return;
+		let isMatchingUniqueName = libs.findMatchingKey(event.data,libs.getGlobalVar(this.tabConfigName).componentsInLayout);
+		if(isMatchingUniqueName.length > 0) {
+			console.log("Message received", event.data);
+			if(event.data.get(this.configId)){
+				console.log('Acknowledgement',event.data.get(this.configId)['status']);
+				return;
+			}
+			this.handlePostMessageEvents(event.data,isMatchingUniqueName);
+		}
+	}
+	handlePostMessageEvents(message,isMatchingUniqueName){
+		isMatchingUniqueName.forEach((element) => {
+			let operations = JSON.parse(JSON.stringify(message.get(element.uniqueName)));
+			if(element.uniqueName === this.configId){
+				//this operations will be performed on this layout element
+				/* eslint-disable */
+				for (const operation in operations) {
+					console.log('operations',operation,operations[operation]);
+					if(operation === 'refresh'){
+						console.log('Refreshing Whole Layout...');
+						this.name = this.configId.replaceAll(':','');
+						// this.tabConfigName = this.name;
+						libs.getGlobalVar(this.tabConfigName).componentsInLayout = [];
+						libs.getGlobalVar(this.tabConfigName).componentsInLayout.push({uniqueName: this.configId});
+						this.loadCfg(true);
+					}
+				}
+			}else{
+				this.template.querySelectorAll('c-Data-Table')?.forEach(ch => {
+					if (element.uniqueName === ch.cfg) ch.handlePostMessageEvents(operations);
+				});
+			}
+		});
+		// for (const key in message) {
+		// 	if(key === 'refresh'){
+		// 		if(message[key].includes('*')){
+		// 			console.log('Refreshing Whole Layout...');
+		// 			this.name = this.configId.replaceAll(':','');
+		// 			this.tabConfigName = this.name;
+		// 			this.loadCfg(true);
+		// 		}
+		// 	}
+		// }
 	}
 
 	setCustomLabels(cmd, data) {
@@ -67,11 +140,11 @@ export default class Layout extends NavigationMixin(LightningElement) {
 			this.components = [];
 			this.config.listViewConfig.forEach((el,index)=>{
 				console.log('cmpName',el.cmpName);
-				if(el.cmpName === 'dataTable') this.components.push({isDataTable:true,key:'sFilter'+index});
-				if(el.cmpName === 'serversideFilter') this.components.push({isServerFilter:true,key:'dataTable'+index});
-				if(el.cmpName === 'chart') this.components.push({isChart:true,key:'chart'+index});
-				if(el.cmpName === 'chevron') this.components.push({isChevron:true,key:'chevron'+index});
-				if(el.cmpName === 'actionBar') this.components.push({isActionBar:true,key:'actionBar'+index});
+				if(el.cmpName === 'dataTable') this.components.push({isDataTable:true,key:'sFilter'+index,uniqueName:el.uniqueName});
+				if(el.cmpName === 'serversideFilter') this.components.push({isServerFilter:true,key:'dataTable'+index,uniqueName:el.uniqueName});
+				if(el.cmpName === 'chart') this.components.push({isChart:true,key:'chart'+index,uniqueName:el.uniqueName});
+				if(el.cmpName === 'chevron') this.components.push({isChevron:true,key:'chevron'+index,uniqueName:el.uniqueName});
+				if(el.cmpName === 'actionBar') this.components.push({isActionBar:true,key:'actionBar'+index,uniqueName:el.uniqueName});
 			});
 			// this.config.listViewName = jsonDetails[0].name;
 			// this.config.sObjApiName = jsonDetails[0].sObjApiName;
@@ -248,7 +321,11 @@ export default class Layout extends NavigationMixin(LightningElement) {
 				cmp.isChart = cmp.cmpName === 'chart';
 				cmp.isChevron = cmp.cmpName === 'chevron';
 				cmp.isActionBar = cmp.cmpName === 'actionBar';
-		
+				
+				if(libs.getGlobalVar(this.tabConfigName).componentsInLayout === undefined) {
+					libs.getGlobalVar(this.tabConfigName).componentsInLayout = [{uniqueName: this.configId}];
+				}
+				libs.getGlobalVar(this.tabConfigName).componentsInLayout.push({uniqueName: cmp.uniqueName});
 				// Set component configuration
 				this.name = cmp.uniqueName;
 				let configUniqueName = cmp.configUniqueName;
