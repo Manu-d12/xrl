@@ -73,13 +73,32 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		console.log('length from datatable getrecords', this.cfg, this.records.length);
 		return this.records;
 	}
+	filterRecordsWithChecked(records) {
+		const filteredRecords = [];
+	
+		function traverseAndFilter(record) {
+			if (record._isChecked === true) {
+				filteredRecords.push(record);
+			}
+	
+			if (record.childRecords) {
+				for (const childRecord of record.childRecords) {
+					traverseAndFilter(childRecord);
+				}
+			}
+		}
+	
+		for (const record of records) {
+			traverseAndFilter(record);
+		}
+	
+		return filteredRecords;
+	}
 	@api
 	getSelectedRecords() {
 		// this methood need to get data from paren component
 		console.log('length from datatable getrecords', this.cfg, this.records.length);
-		return this.records.filter(el => {
-			return el._isChecked === true;
-		});
+		return this.filterRecordsWithChecked(this.records);
 	}
 	@api
 	getGroups() {
@@ -145,9 +164,26 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		return this.config.recordsToShow.length > 0;
 	}
 	toggleChildRecords(event){
-        let record = this.records.find(r => r.Id === event.target.getAttribute('data-id'));
+        // let record = this.records.find(r => r.Id === event.target.getAttribute('data-id'));
+		const record = this.findRecordWithChild(this.records, event.target.getAttribute('data-id'));
 		record._isExpanded = record._isExpanded ===  undefined ? true : !record._isExpanded;
     }
+	findRecordWithChild(records, targetId) {
+		for (const record of records) {
+			if (record.Id === targetId) {
+				return record;
+			}
+	
+			if (record.childRecords) {
+				const foundInChild = this.findRecordWithChild(record.childRecords, targetId);
+				if (foundInChild) {
+					return foundInChild;
+				}
+			}
+		}
+	
+		return null;
+	}
 
 	get tableRecords() {
 		this.config.isAnyRecordsHaveChildren = false;
@@ -359,13 +395,16 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			if (this.config.colModel.find(f => f.fieldName === add.fieldName)) return;
 			this.config.colModel.push(add);
 		});
-		this.config.colModel.forEach(item => {
+		this.config.colModel.forEach((item,index) => {
 			// console.log('item', item);
 			if(this.config.enableColumnHeaderWrap){
 				item.label = item.label.replace(/\b\w{6,}\b/g, match => {
 					return match.replace(/(.{5})/g, '$1\u00AD');
 				  });
 				  //the regular expression /(\b\w{6,}\b)/g matches any word in item.label with more than 5 characters. The replace function within the callback function is then used to insert the unicode for hidden soft hyphen character after every 5 characters within those matched words to leverage the css hyphens property			  
+			}
+			if(index === 0){
+				item.addSpace = true;
 			}
 			item._hideFromDisplay = item._skipFieldFromDisplay || item.isHidden;
 			delete item._filterVariant;
@@ -605,11 +644,25 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			}
 			this.groupedRecords[groupInd].isChecked = checked;
 		} else {
-			let rowind = event.target.getAttribute('data-rowind');
-			this.records[this.calcRowIndex(rowind)]._isChecked = event.target.checked;
+			// let rowind = event.target.getAttribute('data-rowid');
+			// // this.records[this.calcRowIndex(rowind)]._isChecked = event.target.checked;
+			const record = this.findRecordWithChild(this.records, event.target.getAttribute('data-rowid'));
+			// record._isChecked = event.target.checked;
+			const isChecked = event.target.checked;
+    		this.setCheckedForRecordAndChildren(record, isChecked);
+
 		}
 		this.updateSelectAllStatus(event.target.checked);
 		this.rowCheckStatus();
+	}
+	setCheckedForRecordAndChildren(record, isChecked) {
+		record._isChecked = isChecked;
+	
+		if (record.childRecords) {
+			for (const childRecord of record.childRecords) {
+				this.setCheckedForRecordAndChildren(childRecord, isChecked);
+			}
+		}
 	}
 	updateSelectAllStatus(checkStatus){
 		let isAllRecordsSelected = this.template.querySelector('.checkAll');
