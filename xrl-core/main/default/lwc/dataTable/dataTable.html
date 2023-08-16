@@ -36,7 +36,7 @@
 							<lightning-input type="checkbox" name="selectAll" class="checkAll" onchange={selectAll}></lightning-input>
 						</div>
 					</th>
-					<th scope="col" if:true={config.isAnyRecordsHaveChildren} style="width: 2rem;">
+					<th scope="col" if:true={config.isAnyRecordsHaveChildren} style="width: 3rem;">
 						&nbsp;
 					</th>
 					<template for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="index" key={hItem.label}>
@@ -64,9 +64,9 @@
 						<td scope="col" if:true={config.isShowNumeration} style="width: 3rem;" data-rowind={index}>{dItem.sl}					
 						</td>
 						<td scope="col" if:true={config.isShowCheckBoxes} style="width: 2rem;" data-rowind={index}>
-							<lightning-input type="checkbox" data-rowind={index} onchange={checkRow} checked={dItem._isChecked}></lightning-input>
+							<lightning-input type="checkbox" data-rowind={index} data-rowid={dItem.Id} onchange={checkRow} checked={dItem._isChecked}></lightning-input>
 						</td>
-						<td scope="col" if:true={config.isAnyRecordsHaveChildren} style="width: 2rem;" data-rowind={index}>
+						<td scope="col" if:true={config.isAnyRecordsHaveChildren} style="width: 3rem;" data-rowind={index}>
 							<template if:true={dItem._hasChildRecords}>
 								<lightning-button-icon if:false={dItem._isExpanded} icon-name="utility:chevronright"  variant="bare" alternative-text={config._LABELS.altTxt_expand} title={config._LABELS.title_expand} data-id={dItem.Id} onclick={toggleChildRecords}></lightning-button-icon>
 								<lightning-button-icon if:true={dItem._isExpanded} icon-name="utility:chevrondown"  variant="bare" alternative-text={config._LABELS.altTxt_expand} title={config._LABELS.title_expand} data-id={dItem.Id} onclick={toggleChildRecords}></lightning-button-icon>
@@ -91,8 +91,96 @@
 							</span>
 						</td>
 					</tr>
-					<c-data-table-row if:true={dItem._isExpanded} key={dItem.Id}  class={dItem._rowCss} style="display: contents;width: 100%;" 
-					records={dItem.childRecords} config={config} cfg={cfg} indent="2"></c-data-table-row>
+					<!--Start 1st Level -->
+					<template if:true={dItem._hasChildRecords}>
+						<template if:true={dItem._isExpanded} for:each={dItem.childRecords} for:item="dItem1" for:index="index">
+							<tr key={dItem1.Id} class="Items" data-rowind={dItem1.Id} draggable={isDragDropEnabledForRecords} ondrop={Drop} ondragstart={DragStart} ondragover={DragOver}>
+								<td scope="col" if:true={config.isShowNumeration} style="width: 3rem;" data-rowind={index}>{dItem1.sl}					
+								</td>
+								<td scope="col" if:true={config.isShowCheckBoxes} style="width: 4rem;" data-rowind={index}>
+									<lightning-input type="checkbox" data-rowind={index} data-rowid={dItem1.Id} onchange={checkRow} checked={dItem1._isChecked}></lightning-input>
+								</td>
+								<td scope="col" data-rowind={index} style="width: 3rem;padding-left: 20px;">
+									<template if:true={dItem1._hasChildRecords}>
+										<lightning-button-icon if:false={dItem1._isExpanded} icon-name="utility:chevronright"  variant="bare" alternative-text={config._LABELS.altTxt_expand} title={config._LABELS.title_expand} data-id={dItem1.Id} onclick={toggleChildRecords}></lightning-button-icon>
+										<lightning-button-icon if:true={dItem1._isExpanded} icon-name="utility:chevrondown"  variant="bare" alternative-text={config._LABELS.altTxt_expand} title={config._LABELS.title_expand} data-id={dItem1.Id} onclick={toggleChildRecords}></lightning-button-icon>
+									</template>
+									<!-- <lightning-button-icon if:false={dItem1._hasChildRecords} icon-name="utility:dash"  variant="bare" alternative-text={config._LABELS.altTxt_expand} title={config._LABELS.title_expand} onclick={toggleGroup}></lightning-button-icon> -->
+								</td>
+								<td for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="hIndex" key={hItem.fieldName} role="gridcell" data-rowind={index} data-colname={hItem.fieldName} onclick={rowCallback} ondblclick={rowDblCallback} class={hItem._cellCss}>
+									<template if:true={hItem.addSpace}>
+										<span if:false={hItem.isActions} class="slds-grid slds-grid_align-spread" style="padding-left:13px">
+											<template if:true={hItem.isNameField}>
+												<c-data-Table-Item if:false={dItem1._isEditable} row={dItem1} col={hItem} data-rowind={index} data-colname={hItem.fieldName} data-recordind={dItem1.Id} cfg={cfg} class={hItem.wrapClass} style="width:100%" onmouseover={showPop} onmouseout={hidePop}></c-data-Table-Item>
+												<c-data-Table-Item if:true={dItem1._isEditable} iseditmode="true" row={dItem1} col={hItem} data-rowind={index} data-colname={hItem.fieldName} class="slds-cell-wrap" data-recordind={dItem1.Id} cfg={cfg} style="width:100%"></c-data-Table-Item>
+											</template>
+											<template if:false={hItem.isNameField}>
+												<c-data-Table-Item if:false={dItem1._isEditable} row={dItem1} col={hItem} data-rowind={index} data-colname={hItem.fieldName} data-recordind={dItem1.Id} cfg={cfg} class={hItem.wrapClass} style="width:100%"></c-data-Table-Item>
+												<c-data-Table-Item if:true={dItem1._isEditable} iseditmode="true" row={dItem1} col={hItem} data-rowind={index} data-colname={hItem.fieldName} class="slds-cell-wrap" data-recordind={dItem1.Id} cfg={cfg} style="width:100%"></c-data-Table-Item>
+											</template>
+										</span>
+									</template>
+									<template if:false={hItem.addSpace}>
+										<span if:false={hItem.isActions} class="slds-grid slds-grid_align-spread">
+											<template if:true={hItem.isNameField}>
+												<c-data-Table-Item if:false={dItem1._isEditable} row={dItem1} col={hItem} data-rowind={index} data-colname={hItem.fieldName} data-recordind={dItem1.Id} cfg={cfg} class={hItem.wrapClass} style="width:100%" onmouseover={showPop} onmouseout={hidePop}></c-data-Table-Item>
+												<c-data-Table-Item if:true={dItem1._isEditable} iseditmode="true" row={dItem1} col={hItem} data-rowind={index} data-colname={hItem.fieldName} class="slds-cell-wrap" data-recordind={dItem1.Id} cfg={cfg} style="width:100%"></c-data-Table-Item>
+											</template>
+											<template if:false={hItem.isNameField}>
+												<c-data-Table-Item if:false={dItem1._isEditable} row={dItem1} col={hItem} data-rowind={index} data-colname={hItem.fieldName} data-recordind={dItem1.Id} cfg={cfg} class={hItem.wrapClass} style="width:100%"></c-data-Table-Item>
+												<c-data-Table-Item if:true={dItem1._isEditable} iseditmode="true" row={dItem1} col={hItem} data-rowind={index} data-colname={hItem.fieldName} class="slds-cell-wrap" data-recordind={dItem1.Id} cfg={cfg} style="width:100%"></c-data-Table-Item>
+											</template>
+										</span>
+									</template>
+								</td>
+							</tr>
+							<!-- Start 2nd Level -->
+							<template if:true={dItem1._hasChildRecords}>
+								<template if:true={dItem1._isExpanded} for:each={dItem1.childRecords} for:item="dItem2" for:index="index">
+									<tr key={dItem2.Id} class="Items" data-rowind={dItem2.Id} draggable={isDragDropEnabledForRecords} ondrop={Drop} ondragstart={DragStart} ondragover={DragOver}>
+										<td scope="col" if:true={config.isShowNumeration} style="width: 3rem;" data-rowind={index}>{dItem2.sl}					
+										</td>
+										<td scope="col" if:true={config.isShowCheckBoxes} style="width: 4rem;" data-rowind={index}>
+											<lightning-input type="checkbox" data-rowind={index} data-rowid={dItem2.Id} onchange={checkRow} checked={dItem2._isChecked}></lightning-input>
+										</td>
+										<td scope="col" style="width: 3rem;">
+											
+										</td>
+										<td for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="hIndex" key={hItem.fieldName} role="gridcell" data-rowind={index} data-colname={hItem.fieldName} onclick={rowCallback} ondblclick={rowDblCallback} class={hItem._cellCss}>
+											<template if:true={hItem.addSpace}>
+												<span if:false={hItem.isActions} class="slds-grid slds-grid_align-spread" style="padding-left:25px;">
+													<template if:true={hItem.isNameField}>
+														<c-data-Table-Item if:false={dItem2._isEditable} row={dItem2} col={hItem} data-rowind={index} data-colname={hItem.fieldName} data-recordind={dItem2.Id} cfg={cfg} class={hItem.wrapClass} style="width:100%" onmouseover={showPop} onmouseout={hidePop}></c-data-Table-Item>
+														<c-data-Table-Item if:true={dItem2._isEditable} iseditmode="true" row={dItem2} col={hItem} data-rowind={index} data-colname={hItem.fieldName} class="slds-cell-wrap" data-recordind={dItem2.Id} cfg={cfg} style="width:100%"></c-data-Table-Item>
+													</template>
+													<template if:false={hItem.isNameField}>
+														<c-data-Table-Item if:false={dItem2._isEditable} row={dItem2} col={hItem} data-rowind={index} data-colname={hItem.fieldName} data-recordind={dItem2.Id} cfg={cfg} class={hItem.wrapClass} style="width:100%"></c-data-Table-Item>
+														<c-data-Table-Item if:true={dItem2._isEditable} iseditmode="true" row={dItem2} col={hItem} data-rowind={index} data-colname={hItem.fieldName} class="slds-cell-wrap" data-recordind={dItem2.Id} cfg={cfg} style="width:100%"></c-data-Table-Item>
+													</template>
+												</span>
+											</template>
+											<template if:false={hItem.addSpace}>
+												<span if:false={hItem.isActions} class="slds-grid slds-grid_align-spread">
+													<template if:true={hItem.isNameField}>
+														<c-data-Table-Item if:false={dItem2._isEditable} row={dItem2} col={hItem} data-rowind={index} data-colname={hItem.fieldName} data-recordind={dItem2.Id} cfg={cfg} class={hItem.wrapClass} style="width:100%" onmouseover={showPop} onmouseout={hidePop}></c-data-Table-Item>
+														<c-data-Table-Item if:true={dItem2._isEditable} iseditmode="true" row={dItem2} col={hItem} data-rowind={index} data-colname={hItem.fieldName} class="slds-cell-wrap" data-recordind={dItem2.Id} cfg={cfg} style="width:100%"></c-data-Table-Item>
+													</template>
+													<template if:false={hItem.isNameField}>
+														<c-data-Table-Item if:false={dItem2._isEditable} row={dItem2} col={hItem} data-rowind={index} data-colname={hItem.fieldName} data-recordind={dItem2.Id} cfg={cfg} class={hItem.wrapClass} style="width:100%"></c-data-Table-Item>
+														<c-data-Table-Item if:true={dItem2._isEditable} iseditmode="true" row={dItem2} col={hItem} data-rowind={index} data-colname={hItem.fieldName} class="slds-cell-wrap" data-recordind={dItem2.Id} cfg={cfg} style="width:100%"></c-data-Table-Item>
+													</template>
+												</span>
+											</template>
+										</td>
+									</tr>
+								</template>
+							</template>
+							<!-- End 2nd Level -->
+						</template>
+					</template>
+					<!--End 1st Level -->
+					<!-- <c-data-table-row if:true={dItem._isExpanded} key={dItem.Id}  class={dItem._rowCss} style="display: contents;width: 100%;" 
+					records={dItem.childRecords} config={config} cfg={cfg} indent="2"></c-data-table-row> -->
 				</template>
 
 
