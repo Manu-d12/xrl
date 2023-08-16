@@ -1352,9 +1352,10 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				this.config.records = eval('(' + this.config.recordsDragDropCallback + ')')(this, libs, this.records,draggedRecord,futureParentRecord);
 				this.records = this.config.records;
 				libs.getGlobalVar(this.cfg).records = this.config.records;
-				this.config.records.forEach(item => {
-					this.changeRecord(item.Id);	
-				})
+				// this.config.records.forEach(item => {
+				// 	this.changeRecord(item.Id);	
+				// })
+				this.changeRecord(draggedRecord.Id);
 				
 			} catch(err){
 				console.log('EXCEPTION', err);
