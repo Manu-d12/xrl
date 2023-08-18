@@ -161,7 +161,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 
 	get isRecordsAvailableForUI() {
-		return this.config.recordsToShow.length > 0;
+		return this.config._recordsToShow.length > 0;
 	}
 	toggleChildRecords(event){
         // let record = this.records.find(r => r.Id === event.target.getAttribute('data-id'));
@@ -184,29 +184,57 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	
 		return null;
 	}
-
-	get tableRecords() {
-		this.config.isAnyRecordsHaveChildren = false;
-		this.records.forEach((el,ind) =>{
-			el.sl = ind + 1;
-			if(el.childRecords?.length > 0) {
+	addSerialNumbers(records, parentIndex = '') {
+		records.forEach((el, ind) => {
+			const currentSerial = parentIndex ? parentIndex + '.' + (ind + 1) : (ind + 1).toString();
+			el.sl = currentSerial;
+	
+			if (el.childRecords?.length > 0) {
 				el._hasChildRecords = true;
 				this.config.isAnyRecordsHaveChildren = true;
+				this.addSerialNumbers(el.childRecords, currentSerial);
 			}
-			if(this.config.rowCss){
-				el._rowStyle = this.config.rowCallback ? 'cursor : pointer;' : '';
-				try{
+	
+			if (this.config.rowCss) {
+				el._rowStyle = this.config.rowCallback ? 'cursor: pointer;' : '';
+				try {
 					el._rowStyle += eval('(' + this.config.rowCss + ')')(el);
-				}catch(e){
-					libs.showToast(this,{
+				} catch (e) {
+					libs.showToast(this, {
 						title: 'Error',
 						message: e.toString(),
-						variant: 'error'
+						variant: 'error',
 					});
-					console.error('Error',e);
+					console.error('Error', e);
 				}
 			}
 		});
+	}
+	
+	
+	get tableRecords() {
+		this.config.isAnyRecordsHaveChildren = false;
+		// this.records.forEach((el,ind) =>{
+		// 	el.sl = ind + 1;
+		// 	if(el.childRecords?.length > 0) {
+		// 		el._hasChildRecords = true;
+		// 		this.config.isAnyRecordsHaveChildren = true;
+		// 	}
+		// 	if(this.config.rowCss){
+		// 		el._rowStyle = this.config.rowCallback ? 'cursor : pointer;' : '';
+		// 		try{
+		// 			el._rowStyle += eval('(' + this.config.rowCss + ')')(el);
+		// 		}catch(e){
+		// 			libs.showToast(this,{
+		// 				title: 'Error',
+		// 				message: e.toString(),
+		// 				variant: 'error'
+		// 			});
+		// 			console.error('Error',e);
+		// 		}
+		// 	}
+		// });
+		this.addSerialNumbers(this.records);
 
 		if (this.hasGrouping) {
 
@@ -220,7 +248,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				}
 				this.displayedItemCount = this.recordInfo+ ' Showing only '+ endIndex  +' item(s)';
 				//console.log('result', JSON.parse(JSON.stringify(result)));
-				this.config.recordsToShow = result;
+				this.config._recordsToShow = result;
 				return result;
 			}
 			else if (isPager) {
@@ -240,7 +268,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					}
 					result.push(gr);
 				}
-				this.config.recordsToShow = result;
+				this.config._recordsToShow = result;
 				return result;
 			}
 			// Need for pagination;
@@ -256,7 +284,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				}
 				this.displayedItemCount = this.recordInfo+ ' Showing only '+ endIndex  +' item(s)';
 				//console.log('result', JSON.parse(JSON.stringify(result)));
-				this.config.recordsToShow = result;
+				this.config._recordsToShow = result;
 				return result;
 			}
 			else if (isPager) {
@@ -267,11 +295,11 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					result.push(this.records[i]);
 				}
 				//console.log('result', JSON.parse(JSON.stringify(result)));
-				this.config.recordsToShow = result;
+				this.config._recordsToShow = result;
 				return result;
 			}
 			// Need for pagination;
-			this.config.recordsToShow = this.records;
+			this.config._recordsToShow = this.records;
 			return this.records;
 		}
 	}
@@ -404,7 +432,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				  //the regular expression /(\b\w{6,}\b)/g matches any word in item.label with more than 5 characters. The replace function within the callback function is then used to insert the unicode for hidden soft hyphen character after every 5 characters within those matched words to leverage the css hyphens property			  
 			}
 			if(index === 0){
-				item.addSpace = true;
+				item._addSpace = true;
 			}
 			item._hideFromDisplay = item._skipFieldFromDisplay || item.isHidden;
 			delete item._filterVariant;
