@@ -1371,10 +1371,12 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		event.stopPropagation()
         const Element = this.template.querySelectorAll('.Items')
         const DragValName = this.template.querySelector('.drag').getAttribute('data-rowind');
-        const DropValName = event.target.getAttribute('data-rowind');
+        const DropValName = event.target.getAttribute('data-recid');
+		console.log('dropped', DropValName);
 		let cal = this.calcRowIndex(DropValName);
-		let draggedRecord = this.records.find(record => record.Id === DragValName);
-		let futureParentRecord = this.records[cal];
+		let draggedRecord = this.findRecordWithChild(this.records, DragValName);
+		// let futureParentRecord = this.records[cal];
+		const futureParentRecord = this.findRecordWithChild(this.records, DropValName);
 		if(this.config.recordsDragDropCallback !== undefined && this.config.recordsDragDropCallback !== ""){
 			try {
 				this.config.records = eval('(' + this.config.recordsDragDropCallback + ')')(this, libs, this.records,draggedRecord,futureParentRecord);
@@ -1389,8 +1391,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				console.log('EXCEPTION', err);
 			}
 		}
-		console.log('records', this.records);
-		console.log('DragOver', DragValName,draggedRecord, DropValName, this.records[cal]);
+		console.log('records',this.records);
+		console.log('DragOver', DragValName,draggedRecord, DropValName, futureParentRecord);
 		Element.forEach(element => {
             element.classList.remove('drag')
         });
