@@ -533,7 +533,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if (isNeedSave === true) {
 			if (rowName !== undefined) {
 				this.config._inlineEditRow = this.config._inlineEditRow !== undefined ? 
-				this.config._inlineEditRow : JSON.parse(JSON.stringify(this.records[this.config._inlineEdit]));
+				this.config._inlineEditRow : JSON.parse(JSON.stringify(this.findRecordWithChild(this.records,this.config._inlineEdit)));
 				let cItem = this.getColItem(rowName);
 				if(cItem.type === 'reference' && cItem._editOptions){
 					this.config._inlineEditRow[cItem.fieldName] = this.newValValidation(value);
@@ -565,16 +565,19 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					this.config._inlineEditRow[rowName] = this.newValValidation(value);
 				}
 			} else {
-				let isNeedSaveData = this.config._inlineEditRow !== undefined && JSON.stringify(this.records[this.config._inlineEdit]) !== JSON.stringify(this.config._inlineEditRow);
+				let isNeedSaveData = this.config._inlineEditRow !== undefined && JSON.stringify(this.findRecordWithChild(this.records,this.config._inlineEdit)) !== JSON.stringify(this.config._inlineEditRow);
 				//console.log('isNeedSaveData', isNeedSaveData);
 				if (isNeedSaveData)	{
-					this.records[this.config._inlineEdit] = JSON.parse(JSON.stringify(this.config._inlineEditRow));
+					let r = this.findRecordWithChild(this.records,this.config._inlineEdit);
+					r = JSON.parse(JSON.stringify(this.config._inlineEditRow));
 					//Need also Update a global array
-					let globalItem = libs.getGlobalVar(this.cfg).records.find(el=>{
-						return el.Id === this.config._inlineEditRow.Id;
-					})
-					this.records[this.config._inlineEdit]._isEditable = false;
-					Object.assign(globalItem, this.records[this.config._inlineEdit]);
+					let globalItem = this.findRecordWithChild(this.records,this.config._inlineEditRow.Id);
+					// let globalItem = libs.getGlobalVar(this.cfg).records.find(el=>{
+					// 	return el.Id === this.config._inlineEditRow.Id;
+					// })
+					r._isEditable = false;
+					Object.assign(globalItem, r);
+					libs.getGlobalVar(this.cfg).records = this.records;
 					this.changeRecord(this.config._inlineEditRow.Id);
 				}
 				//delete this.records[this.config._inlineEdit];
@@ -582,7 +585,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				
 				
 				if(this.config._inlineEdit != undefined){
-					this.records[this.config._inlineEdit]._isEditable = false;
+					let r1 = this.findRecordWithChild(this.records,this.config._inlineEdit);
+					r1._isEditable = false;
 					if (this.hasGrouping) {
 						let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
 						this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
@@ -593,7 +597,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			}
 		} else {
 			if(this.config._inlineEdit != undefined){
-				this.records[this.config._inlineEdit]._isEditable = false;
+				let r = this.findRecordWithChild(this.records,this.config._inlineEdit);
+				r._isEditable = false;
 				if (this.hasGrouping) {
 					let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
 					this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
@@ -779,6 +784,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		let rowId = event.srcElement.getAttribute('data-rowid') != null ?
 			event.srcElement.getAttribute('data-rowid') :
 			event.srcElement.parentNode.getAttribute('data-rowid');
+
+		let recId = event.target.getAttribute('data-recid');
+		console.log('recId: ', recId);
 		
 		//console.log(rowInd + ' ' + rowId);
 
@@ -867,17 +875,17 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			}
 			//this.config._isBulkEdit = true;
 		} else {
-				let record = this.records[calculatedInd];
+				let record = this.findRecordWithChild(this.records, recId);
 				record._isEditable = true;
 				record._focus = colName;
 				if (this.config._inlineEdit !== undefined) {
-					this.records[this.config._inlineEdit]._isEditable = false;
+					record._isEditable = false;
 					if (this.hasGrouping) {
 						let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
 						this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
 					}
 				}
-				this.config._inlineEdit = calculatedInd;
+				this.config._inlineEdit = record.Id;
 				if(libs.getGlobalVar(this.cfg).optionsForMultiselect === undefined){
 					libs.getGlobalVar(this.cfg).optionsForMultiselect = new Map();
 				}
