@@ -571,6 +571,43 @@ export let libs = {
 		const event = new ShowToastEvent(params);
 		scope.dispatchEvent(event);
 	},
+	findRecordWithChild:function(records, targetId) {
+		for (const record of records) {
+			if (record.Id === targetId) {
+				return record;
+			}
+	
+			if (record.childRecords) {
+				const foundInChild = libs.findRecordWithChild(record.childRecords, targetId);
+				if (foundInChild) {
+					return foundInChild;
+				}
+			}
+		}
+	
+		return null;
+	},
+	flattenRecordsWithChildren:function(records) {
+		const singleLevelRecords = [];
+	
+		function flatten(record) {
+			const { Id, childRecords } = record;
+	
+			if (!singleLevelRecords.some(r => r.Id === Id)) {
+				singleLevelRecords.push({ ...record, childRecords: [] });
+	
+				if (childRecords) {
+					childRecords.forEach(childRecord => flatten(childRecord));
+				}
+			}
+		}
+	
+		records.forEach(record => {
+			flatten(record);
+		});
+	
+		return singleLevelRecords;
+	},
 	broadcastMessage: function(scope, messageObject, target) {
 		// every broadcast message should have a Id which will be used to identify if the message is for any specific
 		// component when receiving

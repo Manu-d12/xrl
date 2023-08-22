@@ -1,7 +1,7 @@
 <template>
     <div class="slds-grid slds-wrap" style="padding: 5px;">
         <template if:true={sFilterfields} for:each={sFilterfields} for:item="field" for:index="index">
-            <div class="slds-col slds-size_2-of-12" key={field.fieldName} style="padding: 2px;">
+            <div if:false={field.isHidden} class="slds-col slds-size_2-of-12" key={field.fieldName} style="padding: 2px;">
                 <lightning-input if:true={field.inputTypeStr} type="text" label={field.label} id={field.fieldName}
                     data-id={field.fieldName} onfocusout={handleChange}></lightning-input>
                 <c-multiselect if:true={field.inputTypeComboBox} multiselect={field.multiselect} listsize=10000 onselect={handleSelect} id={field.fieldName} 
