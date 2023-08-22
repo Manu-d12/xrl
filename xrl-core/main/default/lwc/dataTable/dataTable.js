@@ -161,7 +161,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 
 	get isRecordsAvailableForUI() {
-		return this.config.recordsToShow.length > 0;
+		return this.config._recordsToShow.length > 0;
 	}
 	toggleChildRecords(event){
         // let record = this.records.find(r => r.Id === event.target.getAttribute('data-id'));
@@ -184,29 +184,57 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	
 		return null;
 	}
-
-	get tableRecords() {
-		this.config.isAnyRecordsHaveChildren = false;
-		this.records.forEach((el,ind) =>{
-			el.sl = ind + 1;
-			if(el.childRecords?.length > 0) {
+	addSerialNumbers(records, parentIndex = '') {
+		records.forEach((el, ind) => {
+			const currentSerial = parentIndex ? parentIndex + '.' + (ind + 1) : (ind + 1).toString();
+			el.sl = currentSerial;
+	
+			if (el.childRecords?.length > 0) {
 				el._hasChildRecords = true;
 				this.config.isAnyRecordsHaveChildren = true;
+				this.addSerialNumbers(el.childRecords, currentSerial);
 			}
-			if(this.config.rowCss){
-				el._rowStyle = this.config.rowCallback ? 'cursor : pointer;' : '';
-				try{
+	
+			if (this.config.rowCss) {
+				el._rowStyle = this.config.rowCallback ? 'cursor: pointer;' : '';
+				try {
 					el._rowStyle += eval('(' + this.config.rowCss + ')')(el);
-				}catch(e){
-					libs.showToast(this,{
+				} catch (e) {
+					libs.showToast(this, {
 						title: 'Error',
 						message: e.toString(),
-						variant: 'error'
+						variant: 'error',
 					});
-					console.error('Error',e);
+					console.error('Error', e);
 				}
 			}
 		});
+	}
+	
+	
+	get tableRecords() {
+		this.config.isAnyRecordsHaveChildren = false;
+		// this.records.forEach((el,ind) =>{
+		// 	el.sl = ind + 1;
+		// 	if(el.childRecords?.length > 0) {
+		// 		el._hasChildRecords = true;
+		// 		this.config.isAnyRecordsHaveChildren = true;
+		// 	}
+		// 	if(this.config.rowCss){
+		// 		el._rowStyle = this.config.rowCallback ? 'cursor : pointer;' : '';
+		// 		try{
+		// 			el._rowStyle += eval('(' + this.config.rowCss + ')')(el);
+		// 		}catch(e){
+		// 			libs.showToast(this,{
+		// 				title: 'Error',
+		// 				message: e.toString(),
+		// 				variant: 'error'
+		// 			});
+		// 			console.error('Error',e);
+		// 		}
+		// 	}
+		// });
+		this.addSerialNumbers(this.records);
 
 		if (this.hasGrouping) {
 
@@ -220,7 +248,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				}
 				this.displayedItemCount = this.recordInfo+ ' Showing only '+ endIndex  +' item(s)';
 				//console.log('result', JSON.parse(JSON.stringify(result)));
-				this.config.recordsToShow = result;
+				this.config._recordsToShow = result;
 				return result;
 			}
 			else if (isPager) {
@@ -240,7 +268,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					}
 					result.push(gr);
 				}
-				this.config.recordsToShow = result;
+				this.config._recordsToShow = result;
 				return result;
 			}
 			// Need for pagination;
@@ -256,7 +284,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				}
 				this.displayedItemCount = this.recordInfo+ ' Showing only '+ endIndex  +' item(s)';
 				//console.log('result', JSON.parse(JSON.stringify(result)));
-				this.config.recordsToShow = result;
+				this.config._recordsToShow = result;
 				return result;
 			}
 			else if (isPager) {
@@ -267,11 +295,11 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					result.push(this.records[i]);
 				}
 				//console.log('result', JSON.parse(JSON.stringify(result)));
-				this.config.recordsToShow = result;
+				this.config._recordsToShow = result;
 				return result;
 			}
 			// Need for pagination;
-			this.config.recordsToShow = this.records;
+			this.config._recordsToShow = this.records;
 			return this.records;
 		}
 	}
@@ -404,7 +432,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				  //the regular expression /(\b\w{6,}\b)/g matches any word in item.label with more than 5 characters. The replace function within the callback function is then used to insert the unicode for hidden soft hyphen character after every 5 characters within those matched words to leverage the css hyphens property			  
 			}
 			if(index === 0){
-				item.addSpace = true;
+				item._addSpace = true;
 			}
 			item._hideFromDisplay = item._skipFieldFromDisplay || item.isHidden;
 			delete item._filterVariant;
@@ -505,7 +533,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if (isNeedSave === true) {
 			if (rowName !== undefined) {
 				this.config._inlineEditRow = this.config._inlineEditRow !== undefined ? 
-				this.config._inlineEditRow : JSON.parse(JSON.stringify(this.records[this.config._inlineEdit]));
+				this.config._inlineEditRow : JSON.parse(JSON.stringify(this.findRecordWithChild(this.records,this.config._inlineEdit)));
 				let cItem = this.getColItem(rowName);
 				if(cItem.type === 'reference' && cItem._editOptions){
 					this.config._inlineEditRow[cItem.fieldName] = this.newValValidation(value);
@@ -537,16 +565,19 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					this.config._inlineEditRow[rowName] = this.newValValidation(value);
 				}
 			} else {
-				let isNeedSaveData = this.config._inlineEditRow !== undefined && JSON.stringify(this.records[this.config._inlineEdit]) !== JSON.stringify(this.config._inlineEditRow);
+				let isNeedSaveData = this.config._inlineEditRow !== undefined && JSON.stringify(this.findRecordWithChild(this.records,this.config._inlineEdit)) !== JSON.stringify(this.config._inlineEditRow);
 				//console.log('isNeedSaveData', isNeedSaveData);
 				if (isNeedSaveData)	{
-					this.records[this.config._inlineEdit] = JSON.parse(JSON.stringify(this.config._inlineEditRow));
+					let r = this.findRecordWithChild(this.records,this.config._inlineEdit);
+					r = JSON.parse(JSON.stringify(this.config._inlineEditRow));
 					//Need also Update a global array
-					let globalItem = libs.getGlobalVar(this.cfg).records.find(el=>{
-						return el.Id === this.config._inlineEditRow.Id;
-					})
-					this.records[this.config._inlineEdit]._isEditable = false;
-					Object.assign(globalItem, this.records[this.config._inlineEdit]);
+					let globalItem = this.findRecordWithChild(this.records,this.config._inlineEditRow.Id);
+					// let globalItem = libs.getGlobalVar(this.cfg).records.find(el=>{
+					// 	return el.Id === this.config._inlineEditRow.Id;
+					// })
+					r._isEditable = false;
+					Object.assign(globalItem, r);
+					libs.getGlobalVar(this.cfg).records = this.records;
 					this.changeRecord(this.config._inlineEditRow.Id);
 				}
 				//delete this.records[this.config._inlineEdit];
@@ -554,7 +585,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				
 				
 				if(this.config._inlineEdit != undefined){
-					this.records[this.config._inlineEdit]._isEditable = false;
+					let r1 = this.findRecordWithChild(this.records,this.config._inlineEdit);
+					r1._isEditable = false;
 					if (this.hasGrouping) {
 						let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
 						this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
@@ -565,7 +597,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			}
 		} else {
 			if(this.config._inlineEdit != undefined){
-				this.records[this.config._inlineEdit]._isEditable = false;
+				let r = this.findRecordWithChild(this.records,this.config._inlineEdit);
+				r._isEditable = false;
 				if (this.hasGrouping) {
 					let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
 					this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
@@ -751,6 +784,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		let rowId = event.srcElement.getAttribute('data-rowid') != null ?
 			event.srcElement.getAttribute('data-rowid') :
 			event.srcElement.parentNode.getAttribute('data-rowid');
+
+		let recId = event.target.getAttribute('data-recid');
+		console.log('recId: ', recId);
 		
 		//console.log(rowInd + ' ' + rowId);
 
@@ -839,17 +875,17 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			}
 			//this.config._isBulkEdit = true;
 		} else {
-				let record = this.records[calculatedInd];
+				let record = this.findRecordWithChild(this.records, recId);
 				record._isEditable = true;
 				record._focus = colName;
 				if (this.config._inlineEdit !== undefined) {
-					this.records[this.config._inlineEdit]._isEditable = false;
+					record._isEditable = false;
 					if (this.hasGrouping) {
 						let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
 						this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
 					}
 				}
-				this.config._inlineEdit = calculatedInd;
+				this.config._inlineEdit = record.Id;
 				if(libs.getGlobalVar(this.cfg).optionsForMultiselect === undefined){
 					libs.getGlobalVar(this.cfg).optionsForMultiselect = new Map();
 				}
@@ -1343,10 +1379,12 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		event.stopPropagation()
         const Element = this.template.querySelectorAll('.Items')
         const DragValName = this.template.querySelector('.drag').getAttribute('data-rowind');
-        const DropValName = event.target.getAttribute('data-rowind');
+        const DropValName = event.target.getAttribute('data-recid');
+		console.log('dropped', DropValName);
 		let cal = this.calcRowIndex(DropValName);
-		let draggedRecord = this.records.find(record => record.Id === DragValName);
-		let futureParentRecord = this.records[cal];
+		let draggedRecord = this.findRecordWithChild(this.records, DragValName);
+		// let futureParentRecord = this.records[cal];
+		const futureParentRecord = this.findRecordWithChild(this.records, DropValName);
 		if(this.config.recordsDragDropCallback !== undefined && this.config.recordsDragDropCallback !== ""){
 			try {
 				this.config.records = eval('(' + this.config.recordsDragDropCallback + ')')(this, libs, this.records,draggedRecord,futureParentRecord);
@@ -1361,8 +1399,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				console.log('EXCEPTION', err);
 			}
 		}
-		console.log('records', this.records);
-		console.log('DragOver', DragValName,draggedRecord, DropValName, this.records[cal]);
+		console.log('records',this.records);
+		console.log('DragOver', DragValName,draggedRecord, DropValName, futureParentRecord);
 		Element.forEach(element => {
             element.classList.remove('drag')
         });
