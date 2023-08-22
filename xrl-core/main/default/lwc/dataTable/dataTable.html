@@ -59,8 +59,7 @@
 			<tbody class="extRelListTable">
 				<template if:false={hasGrouping} for:each={tableRecords} for:item="dItem" for:index="index">
 					<tr key={dItem.Id} class="Items" style={dItem._rowStyle} data-rowind={dItem.Id} data-recid={dItem.Id} draggable={isDragDropEnabledForRecords} ondrop={Drop} ondragstart={DragStart} ondragover={DragOver}>
-						<td scope="col" if:true={config.isShowNumeration} style="width: 3rem;" data-rowind={index} data-recid={dItem.Id}>{dItem.sl}					
-						</td>
+						<td scope="col" if:true={config.isShowNumeration} style="width: 3rem; text-lign:right" data-rowind={index} data-recid={dItem.Id}>{dItem.sl}</td>
 						<td scope="col" if:true={config.isShowCheckBoxes} style="width: 2rem;" data-rowind={index} data-recid={dItem.Id}>
 							<lightning-input type="checkbox" data-rowind={index} data-rowid={dItem.Id} data-recid={dItem.Id} onchange={checkRow} checked={dItem._isChecked}></lightning-input>
 						</td>
@@ -93,7 +92,7 @@
 					<template if:true={dItem._hasChildRecords}>
 						<template if:true={dItem._isExpanded} for:each={dItem.childRecords} for:item="dItem1" for:index="index">
 							<tr key={dItem1.Id} class="Items" data-rowind={dItem1.Id} data-recid={dItem1.Id} draggable={isDragDropEnabledForRecords} ondrop={Drop} ondragstart={DragStart} ondragover={DragOver}>
-								<td scope="col" if:true={config.isShowNumeration} style="width: 3rem;" data-rowind={index} data-recid={dItem1.Id}>{dItem1.sl}					
+								<td scope="col" if:true={config.isShowNumeration} style="width: 3rem;text-lign:right" data-rowind={index} data-recid={dItem1.Id}>{dItem1.sl}					
 								</td>
 								<td scope="col" if:true={config.isShowCheckBoxes} style="width: 4rem;" data-rowind={index} data-recid={dItem1.Id}>
 									<lightning-input type="checkbox" data-rowind={index} data-rowid={dItem1.Id} data-recid={dItem1.Id} onchange={checkRow} checked={dItem1._isChecked}></lightning-input>
@@ -123,7 +122,7 @@
 							<template if:true={dItem1._hasChildRecords}>
 								<template if:true={dItem1._isExpanded} for:each={dItem1.childRecords} for:item="dItem2" for:index="index">
 									<tr key={dItem2.Id} class="Items" data-rowind={dItem2.Id} data-recid={dItem2.Id} draggable={isDragDropEnabledForRecords} ondrop={Drop} ondragstart={DragStart} ondragover={DragOver}>
-										<td scope="col" if:true={config.isShowNumeration} style="width: 3rem;" data-rowind={index} data-recid={dItem2.Id}>{dItem2.sl}					
+										<td scope="col" if:true={config.isShowNumeration} style="width: 3rem;text-lign:right" data-rowind={index} data-recid={dItem2.Id}>{dItem2.sl}					
 										</td>
 										<td scope="col" if:true={config.isShowCheckBoxes} style="width: 4rem;" data-rowind={index} data-recid={dItem2.Id}>
 											<lightning-input type="checkbox" data-rowind={index} data-rowid={dItem2.Id} data-recid={dItem2.Id} onchange={checkRow} checked={dItem2._isChecked}></lightning-input>
@@ -152,7 +151,7 @@
 									<template if:true={dItem2._hasChildRecords}>
 										<template if:true={dItem2._isExpanded} for:each={dItem2.childRecords} for:item="dItem3" for:index="index">
 											<tr key={dItem3.Id} class="Items" data-rowind={dItem3.Id} data-recid={dItem3.Id} draggable={isDragDropEnabledForRecords} ondrop={Drop} ondragstart={DragStart} ondragover={DragOver}>
-												<td scope="col" if:true={config.isShowNumeration} style="width: 3rem;" data-rowind={index} data-recid={dItem3.Id}>{dItem3.sl}					
+												<td scope="col" if:true={config.isShowNumeration} style="width: 3rem;text-lign:right" data-rowind={index} data-recid={dItem3.Id}>{dItem3.sl}					
 												</td>
 												<td scope="col" if:true={config.isShowCheckBoxes} style="width: 4rem;" data-rowind={index} data-recid={dItem3.Id}>
 													<lightning-input type="checkbox" data-rowind={index} data-rowid={dItem3.Id} data-recid={dItem3.Id} onchange={checkRow} checked={dItem3._isChecked}></lightning-input>
@@ -181,7 +180,7 @@
 											<template if:true={dItem3._hasChildRecords}>
 												<template if:true={dItem3._isExpanded} for:each={dItem3.childRecords} for:item="dItem4" for:index="index">
 													<tr key={dItem4.Id} class="Items" data-rowind={dItem4.Id} data-recid={dItem4.Id} draggable={isDragDropEnabledForRecords} ondrop={Drop} ondragstart={DragStart} ondragover={DragOver}>
-														<td scope="col" if:true={config.isShowNumeration} style="width: 3rem;" data-rowind={index} data-recid={dItem4.Id}>{dItem4.sl}					
+														<td scope="col" if:true={config.isShowNumeration} style="width: 3rem;text-lign:right" data-rowind={index} data-recid={dItem4.Id}>{dItem4.sl}					
 														</td>
 														<td scope="col" if:true={config.isShowCheckBoxes} style="width: 4rem;" data-rowind={index} data-recid={dItem4.Id}>
 															<lightning-input type="checkbox" data-rowind={index} data-rowid={dItem4.Id} data-recid={dItem4.Id} onchange={checkRow} checked={dItem4._isChecked}></lightning-input>
@@ -210,7 +209,7 @@
 													<template if:true={dItem4._hasChildRecords}>
 														<template if:true={dItem4._isExpanded} for:each={dItem4.childRecords} for:item="dItem5" for:index="index">
 															<tr key={dItem5.Id} class="Items" data-rowind={dItem5.Id} data-recid={dItem5.Id} draggable={isDragDropEnabledForRecords} ondrop={Drop} ondragstart={DragStart} ondragover={DragOver}>
-																<td scope="col" if:true={config.isShowNumeration} style="width: 3rem;" data-rowind={index} data-recid={dItem5.Id}>{dItem5.sl}					
+																<td scope="col" if:true={config.isShowNumeration} style="width: 3rem;text-lign:right" data-rowind={index} data-recid={dItem5.Id}>{dItem5.sl}					
 																</td>
 																<td scope="col" if:true={config.isShowCheckBoxes} style="width: 4rem;" data-rowind={index} data-recid={dItem5.Id}>
 																	<lightning-input type="checkbox" data-rowind={index} data-rowid={dItem5.Id} data-recid={dItem5.Id} onchange={checkRow} checked={dItem5._isChecked}></lightning-input>
@@ -271,7 +270,7 @@
 							<td scope="col" style="width: 2rem;" data-rowind={index} class="numeration">
 								&nbsp;
 							</td>
-							<td scope="col" if:true={config.isShowNumeration} style="width: 2rem;" data-rowind={index} class="numeration">
+							<td scope="col" if:true={config.isShowNumeration} style="width: 2rem;text-lign:right" data-rowind={index} class="numeration">
 								{dItem.index}
 							</td>
 							<td scope="col" if:true={config.isShowCheckBoxes} style="width: 2rem;" data-rowind={index} data-rowid={dItem.Id} data-groupind={group.title}>
