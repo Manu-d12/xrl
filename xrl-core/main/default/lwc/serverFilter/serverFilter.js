@@ -164,6 +164,12 @@ export default class ServerFilter extends LightningElement {
     generateCondition(){
         let condition = '';
         /*eslint-disable*/
+        this.sFilterfields.forEach((field) => {
+            //Need to add this to trigger the conditionMap, otherwise if it is hidden then the searchCallback will not work
+            if(field.isHidden){
+                this.conditionMap[field.fieldName] = '';
+            }
+        });
         for (let key in this.conditionMap) {
             let colItem = this.getColItem(key);
             
