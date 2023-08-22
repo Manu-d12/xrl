@@ -863,7 +863,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						await libs.remoteAction(this, 'query', {
 							fields: ['Id','Name'],
 							relField: '',
-							addCondition: libs.replaceLiteralsInStr(cItem.whereCondition,this.cfg),
+							addCondition: libs.replaceLiteralsInStr(el.whereCondition,this.cfg),
 							sObjApiName: el.referenceTo,
 							callback: ((nodeName, data) => {
 								//console.log('accountRecords', data[nodeName].records.length);
