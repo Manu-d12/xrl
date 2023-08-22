@@ -64,7 +64,7 @@
 
 	<template if:true={config.flowApiName}>
 		<section role="alertdialog" tabindex="0" class="slds-modal slds-fade-in-open slds-modal_prompt slds-modal_small" aria-modal="true">
-			<div class={config.flowApiClass} style="max-width:80rem !important;">
+			<div class={config.flowApiClass} style="max-width:100% !important;width:80%"> <!--"max-width:80rem !important;"-->
 				<!--<header class="slds-modal__header slds-theme_shade">
 					<button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title={config._LABELS.title_close} style="display:block" data-id="flow:close" onclick={handleEventFlow}>
 						<svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
