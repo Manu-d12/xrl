@@ -323,7 +323,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				libs.getGlobalVar(this.name).records = data[nodeName].records.length > 0 ? data[nodeName].records : undefined;
 				if(this.config.listViewConfig[0].afterloadTransformation !== undefined && this.config.listViewConfig[0].afterloadTransformation !== ""){
 					try {
-    	                this.config.records = eval('(' + this.config.listViewConfig[0].afterloadTransformation + ')')(this, libs.getGlobalVar(this.name).records);
+    	                this.config.records = eval('(' + this.config.listViewConfig[0].afterloadTransformation + ')')(this,libs, libs.getGlobalVar(this.name).records);
         	        } catch(err){
             	        console.log('EXCEPTION', err);
                 	}
@@ -338,6 +338,16 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			})
 		});
 
+	}
+	afterLoadTransformation(records){
+		if(this.config.listViewConfig[0].afterloadTransformation !== undefined && this.config.listViewConfig[0].afterloadTransformation !== ""){
+			try {
+				records = eval('(' + this.config.listViewConfig[0].afterloadTransformation + ')')(this,libs, records);
+			} catch(err){
+				console.log('EXCEPTION', err);
+			}
+		} 
+		return records;
 	}
 
 	generateColModel() {
@@ -710,9 +720,13 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 		this.showDialog = false;
 		if(records.length < 1000){
+			this.config.records = libs.flattenRecordsWithChildren(this.config.records);
 			this.config.records = this.config.records.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
+			this.config.records = this.afterLoadTransformation(this.config.records);
 			// //HYPER-243
+			this.allRecords = libs.flattenRecordsWithChildren(this.allRecords);
 			this.allRecords = this.allRecords.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
+			this.allRecords = this.afterLoadTransformation(this.allRecords);
 			this.template.querySelector('c-Data-Table').updateView();
 			this.config.listViewConfig[0].rowChecked = false;
 		}else{
