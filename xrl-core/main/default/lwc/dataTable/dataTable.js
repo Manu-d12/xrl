@@ -165,25 +165,25 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 	toggleChildRecords(event){
         // let record = this.records.find(r => r.Id === event.target.getAttribute('data-id'));
-		const record = this.findRecordWithChild(this.records, event.target.getAttribute('data-id'));
+		const record = libs.findRecordWithChild(this.records, event.target.getAttribute('data-id'));
 		record._isExpanded = record._isExpanded ===  undefined ? true : !record._isExpanded;
     }
-	findRecordWithChild(records, targetId) {
-		for (const record of records) {
-			if (record.Id === targetId) {
-				return record;
-			}
+	// findRecordWithChild(records, targetId) {
+	// 	for (const record of records) {
+	// 		if (record.Id === targetId) {
+	// 			return record;
+	// 		}
 	
-			if (record.childRecords) {
-				const foundInChild = this.findRecordWithChild(record.childRecords, targetId);
-				if (foundInChild) {
-					return foundInChild;
-				}
-			}
-		}
+	// 		if (record.childRecords) {
+	// 			const foundInChild = this.findRecordWithChild(record.childRecords, targetId);
+	// 			if (foundInChild) {
+	// 				return foundInChild;
+	// 			}
+	// 		}
+	// 	}
 	
-		return null;
-	}
+	// 	return null;
+	// }
 	addSerialNumbers(records, parentIndex = '') {
 		records.forEach((el, ind) => {
 			const currentSerial = parentIndex ? parentIndex + '.' + (ind + 1) : (ind + 1).toString();
@@ -533,7 +533,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if (isNeedSave === true) {
 			if (rowName !== undefined) {
 				this.config._inlineEditRow = this.config._inlineEditRow !== undefined ? 
-				this.config._inlineEditRow : JSON.parse(JSON.stringify(this.findRecordWithChild(this.records,this.config._inlineEdit)));
+				this.config._inlineEditRow : JSON.parse(JSON.stringify(libs.findRecordWithChild(this.records,this.config._inlineEdit)));
 				let cItem = this.getColItem(rowName);
 				if(cItem.type === 'reference' && cItem._editOptions){
 					this.config._inlineEditRow[cItem.fieldName] = this.newValValidation(value);
@@ -565,13 +565,13 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					this.config._inlineEditRow[rowName] = this.newValValidation(value);
 				}
 			} else {
-				let isNeedSaveData = this.config._inlineEditRow !== undefined && JSON.stringify(this.findRecordWithChild(this.records,this.config._inlineEdit)) !== JSON.stringify(this.config._inlineEditRow);
+				let isNeedSaveData = this.config._inlineEditRow !== undefined && JSON.stringify(libs.findRecordWithChild(this.records,this.config._inlineEdit)) !== JSON.stringify(this.config._inlineEditRow);
 				//console.log('isNeedSaveData', isNeedSaveData);
 				if (isNeedSaveData)	{
-					let r = this.findRecordWithChild(this.records,this.config._inlineEdit);
+					let r = libs.findRecordWithChild(this.records,this.config._inlineEdit);
 					r = JSON.parse(JSON.stringify(this.config._inlineEditRow));
 					//Need also Update a global array
-					let globalItem = this.findRecordWithChild(this.records,this.config._inlineEditRow.Id);
+					let globalItem = libs.findRecordWithChild(this.records,this.config._inlineEditRow.Id);
 					// let globalItem = libs.getGlobalVar(this.cfg).records.find(el=>{
 					// 	return el.Id === this.config._inlineEditRow.Id;
 					// })
@@ -585,7 +585,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				
 				
 				if(this.config._inlineEdit != undefined){
-					let r1 = this.findRecordWithChild(this.records,this.config._inlineEdit);
+					let r1 = libs.findRecordWithChild(this.records,this.config._inlineEdit);
 					r1._isEditable = false;
 					if (this.hasGrouping) {
 						let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
@@ -597,7 +597,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			}
 		} else {
 			if(this.config._inlineEdit != undefined){
-				let r = this.findRecordWithChild(this.records,this.config._inlineEdit);
+				let r = libs.findRecordWithChild(this.records,this.config._inlineEdit);
 				r._isEditable = false;
 				if (this.hasGrouping) {
 					let indexes = this.getGroupRecIndexes(this.config._inlineEdit);
@@ -679,7 +679,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		} else {
 			// let rowind = event.target.getAttribute('data-rowid');
 			// // this.records[this.calcRowIndex(rowind)]._isChecked = event.target.checked;
-			const record = this.findRecordWithChild(this.records, event.target.getAttribute('data-rowid'));
+			const record = libs.findRecordWithChild(this.records, event.target.getAttribute('data-rowid'));
 			// record._isChecked = event.target.checked;
 			const isChecked = event.target.checked;
     		this.setCheckedForRecordAndChildren(record, isChecked);
@@ -875,7 +875,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			}
 			//this.config._isBulkEdit = true;
 		} else {
-				let record = this.findRecordWithChild(this.records, recId);
+				let record = libs.findRecordWithChild(this.records, recId);
 				record._isEditable = true;
 				record._focus = colName;
 				if (this.config._inlineEdit !== undefined) {
@@ -1382,9 +1382,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
         const DropValName = event.target.getAttribute('data-recid');
 		console.log('dropped', DropValName);
 		let cal = this.calcRowIndex(DropValName);
-		let draggedRecord = this.findRecordWithChild(this.records, DragValName);
+		let draggedRecord = libs.findRecordWithChild(this.records, DragValName);
 		// let futureParentRecord = this.records[cal];
-		const futureParentRecord = this.findRecordWithChild(this.records, DropValName);
+		const futureParentRecord = libs.findRecordWithChild(this.records, DropValName);
 		if(this.config.recordsDragDropCallback !== undefined && this.config.recordsDragDropCallback !== ""){
 			try {
 				this.config.records = eval('(' + this.config.recordsDragDropCallback + ')')(this, libs, this.records,draggedRecord,futureParentRecord);

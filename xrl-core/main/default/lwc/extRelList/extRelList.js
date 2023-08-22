@@ -730,30 +730,30 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			console.log(error);
 		}
 	}
-	flattenRecordsWithChildren(records) {
-		const singleLevelRecords = [];
+	// flattenRecordsWithChildren(records) {
+	// 	const singleLevelRecords = [];
 	
-		function flatten(record) {
-			const { Id, childRecords } = record;
+	// 	function flatten(record) {
+	// 		const { Id, childRecords } = record;
 	
-			if (!singleLevelRecords.some(r => r.Id === Id)) {
-				singleLevelRecords.push({ ...record, childRecords: [] });
+	// 		if (!singleLevelRecords.some(r => r.Id === Id)) {
+	// 			singleLevelRecords.push({ ...record, childRecords: [] });
 	
-				if (childRecords) {
-					childRecords.forEach(childRecord => flatten(childRecord));
-				}
-			}
-		}
+	// 			if (childRecords) {
+	// 				childRecords.forEach(childRecord => flatten(childRecord));
+	// 			}
+	// 		}
+	// 	}
 	
-		records.forEach(record => {
-			flatten(record);
-		});
+	// 	records.forEach(record => {
+	// 		flatten(record);
+	// 	});
 	
-		return singleLevelRecords;
-	}
+	// 	return singleLevelRecords;
+	// }
 
 	async prepareRecordsForSave(){
-		let records = this.flattenRecordsWithChildren(this.template.querySelector('c-Data-Table').getRecords());
+		let records = libs.flattenRecordsWithChildren(this.template.querySelector('c-Data-Table').getRecords());
 		let changedItems = records.filter(el => {
 			return this.config.listViewConfig[0]._changedRecords.has(el.Id)
 		});
