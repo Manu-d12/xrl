@@ -59,7 +59,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 	listenEvent(event){
 		if(event.data.size === 0) return;
 		let isMatchingUniqueName = libs.findMatchingKey(event.data,libs.getGlobalVar(this.tabConfigName).componentsInLayout);
-		if(isMatchingUniqueName.length > 0) {
+		if(isMatchingUniqueName !== undefined && isMatchingUniqueName.length > 0) {
 			console.log("Message received", event.data);
 			if(event.data.get(this.configId)){
 				console.log('Acknowledgement',event.data.get(this.configId)['status']);
