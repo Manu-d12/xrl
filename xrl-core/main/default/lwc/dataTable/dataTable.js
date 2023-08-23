@@ -755,12 +755,12 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			this.records[this.cmpConfig.inlineEdit]._isEditable = false;
 			this.cmpConfig.inlineEdit = undefined
 		}*/
-
+		let record = libs.findRecordWithChild(this.config.records,event.target.getAttribute('data-recid'));
 		if (this.config.rowCallback !== undefined) {
 			//console.log('this.config.rowCallback', this.config.rowCallback);
 			// this.config.rowCallback(rowId, colName);
 			try{
-				let fn = eval('(' + this.config.rowCallback + ')')(this,libs,event.target.getAttribute('data-recid'), colName);
+				let fn = eval('(' + this.config.rowCallback + ')')(this,libs,record, colName);
 			}catch(e){
 				console.error('Exception in row callback', e);
 			}
@@ -769,7 +769,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 		if (cItem && cItem.cellCallback) {
 			try{
-				let fn = eval('(' + cItem.cellCallback + ')')(this,libs,this.calcRowIndex(rowId), colName,event.target.getAttribute('data-recid'));
+				let fn = eval('(' + cItem.cellCallback + ')')(this,libs,this.calcRowIndex(rowId), colName,record);
 			}catch(e){
 				console.error('Exception in cell callback', e);
 			}
