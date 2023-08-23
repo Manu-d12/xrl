@@ -867,13 +867,14 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				cItem.isEditableRegular = false;
 			}
 			let left = ((event.x - 60) + 320) > screen.availWidth ? (screen.availWidth - 380) : (event.x - 60);
+			let rec = libs.findRecordWithChild(this.records,event.target.getAttribute('data-recid'));
 			this.config._bulkEdit = {
 				rowId : calculatedInd,
 				cItem : cItem,
 				type : cItem.type,
 				length : cItem.length,
 				picklist: cItem.isEditableAsPicklist || cItem.type === 'reference', 
-				value : this.records[calculatedInd][cItem.fieldName],
+				value : rec[cItem.fieldName],
 				chBoxLabel : libs.formatStr('Update {0} items', [this.getSelectedRecords().length]),
 				chBoxValue : false,
 				style: libs.formatStr("position:absolute;top:{0}px;left:{1}px", [(-table.offsetHeight + event.srcElement.parentElement.parentElement.offsetTop - (this.config.pager.pagerTop === true ? 110 : 40)), left]),
@@ -1339,7 +1340,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		let value = this.template.querySelector('[data-id="origValue"]');
 		let chBox = this.template.querySelector('[data-id="isAll"]');
 		// let origRecords = libs.getGlobalVar(this.cfg).records;
-		this.origRecords = new Map(libs.getGlobalVar(this.cfg).records.map(record => [record.Id, record]));
+		let flattenRecords = libs.flattenRecordsWithChildren(libs.getGlobalVar(this.cfg).records);
+		this.origRecords = new Map(flattenRecords.map(record => [record.Id, record]));
 		let refNode = describe.relationshipName;
 		let refNodeValue;
 
@@ -1390,6 +1392,10 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		let draggedRecord = libs.findRecordWithChild(this.records, DragValName);
 		// let futureParentRecord = this.records[cal];
 		const futureParentRecord = libs.findRecordWithChild(this.records, DropValName);
+		//will do nothing if dropped on same record
+		if(draggedRecord.Id === futureParentRecord.Id){
+			return;
+		}
 		if(this.config.recordsDragDropCallback !== undefined && this.config.recordsDragDropCallback !== ""){
 			try {
 				this.config.records = eval('(' + this.config.recordsDragDropCallback + ')')(this, libs, this.records,draggedRecord,futureParentRecord);
