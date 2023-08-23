@@ -1474,10 +1474,10 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			}
 		}
 
-		let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
+		let records = this.template.querySelector('c-Data-Table')?.getSelectedRecords();
 
 		let recordIdList;
-		//if (records.length !== 0) {
+		if (records && records.length !== 0) {
 			recordIdList = records.map(rec => rec.Id);
 			if (action.name.startsWith('AutoLaunchedFlow')) {
 				libs.remoteAction(this, 'invokeAction', { name: action.name.split(/::/)[1], recordIdList: recordIdList, callback: (cmd, data) => {
@@ -1512,14 +1512,20 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				];
 				//Need to run screen flow
 			}
-		/*}else{
-			const event = new ShowToastEvent({
-				title: 'Error',
-				message: this.config._LABELS.lbl_deleteNoRecordSelectedError,
-				variant: 'error'
-			});
-			this.dispatchEvent(event);
-		}*/
+		}else{
+			if (!action.name.startsWith('AutoLaunchedFlow')) {
+				this.config.flowApiName = action.name.split(/::/)[1];
+				this.config.flowApiClass = "slds-modal__container slds-scrollable_y slds-hidden"
+				this.config.flowInputVariables = [
+					{
+						name : "records",
+     					type : "SObject",
+     					value : records ? JSON.parse(JSON.stringify(records)) : []
+					}
+				];
+			}
+			
+		}
 	}
 
 	async handleEventExport(event) {
