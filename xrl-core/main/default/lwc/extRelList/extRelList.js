@@ -68,9 +68,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		this.loadCfg(true);
 	}
 	listenEvent(event){
-		console.log("Message received0 XRL", [...event.data.keys()],this.name);
+		// console.log("Message received0 XRL", [...event.data.keys()],this.name);
 		let isMatchingUniqueName = libs.findMatchingKey(event.data,[{uniqueName:this.name}]);
-		if(isMatchingUniqueName.length > 0) {
+		if(isMatchingUniqueName !== undefined && isMatchingUniqueName.length > 0) {
 			console.log("Message received", event.data);
 			this.loadCfg(true);
 			// if(event.data.get(this.configId)){
