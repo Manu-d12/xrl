@@ -537,24 +537,25 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				let cItem = this.getColItem(rowName);
 				if(cItem.type === 'reference' && cItem._editOptions){
 					this.config._inlineEditRow[cItem.fieldName] = this.newValValidation(value);
-					if(this.config._inlineEditRow[cItem.referenceTo] && this.newValValidation(value) === null){
-						this.config._inlineEditRow[cItem.referenceTo] = null;
+					const referenceFieldName = this.getRefFieldNameConsistsValue(cItem.fieldName);
+					if(this.config._inlineEditRow[referenceFieldName] && this.newValValidation(value) === null){
+						this.config._inlineEditRow[referenceFieldName] = null;
 					}
 					if(this.config._inlineEditRow[cItem.fieldName] !== null){
 						let newVal = cItem._editOptions.find((el)=>{
 							return el.value === value;
 						});
-						const referenceFieldName = this.getRefFieldNameConsistsValue(cItem.fieldName);
 						// get the reference field name in the __r format
 						if(this.config._inlineEditRow[referenceFieldName]){
 							this.config._inlineEditRow[referenceFieldName].Id = newVal.value;
 							this.config._inlineEditRow[referenceFieldName].Name = newVal.label;
 						}
-						if(this.config._inlineEditRow[cItem.referenceTo]){
-							this.config._inlineEditRow[cItem.referenceTo].Id = newVal.value;
-							this.config._inlineEditRow[cItem.referenceTo].Name = newVal.label;
-						}else{
-							this.config._inlineEditRow[cItem.referenceTo] ={
+						// if(this.config._inlineEditRow[cItem.referenceTo]){
+						// 	this.config._inlineEditRow[cItem.referenceTo].Id = newVal.value;
+						// 	this.config._inlineEditRow[cItem.referenceTo].Name = newVal.label;
+						// }
+						else{
+							this.config._inlineEditRow[referenceFieldName] ={
 								Id: newVal.value,
 								Name: newVal.label
 							};
@@ -755,20 +756,20 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			this.records[this.cmpConfig.inlineEdit]._isEditable = false;
 			this.cmpConfig.inlineEdit = undefined
 		}*/
-		let record = libs.findRecordWithChild(this.config.records,event.target.getAttribute('data-recid'));
+		let cItem = this.getColItem(colName);
+		let record;
 		if (this.config.rowCallback !== undefined) {
-			//console.log('this.config.rowCallback', this.config.rowCallback);
-			// this.config.rowCallback(rowId, colName);
 			try{
+				record = libs.findRecordWithChild(this.records,event.target.getAttribute('data-recid'));
 				let fn = eval('(' + this.config.rowCallback + ')')(this,libs,record, colName);
 			}catch(e){
 				console.error('Exception in row callback', e);
 			}
-		}
-		let cItem = this.getColItem(colName);
+		}	
 
 		if (cItem && cItem.cellCallback) {
 			try{
+				if(record === undefined) record = libs.findRecordWithChild(this.records,event.target.getAttribute('data-recid'));
 				let fn = eval('(' + cItem.cellCallback + ')')(this,libs,this.calcRowIndex(rowId), colName,record);
 			}catch(e){
 				console.error('Exception in cell callback', e);
