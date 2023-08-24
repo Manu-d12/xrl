@@ -474,7 +474,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				let wd = (item.width.endsWith('%') || item.width.endsWith('px')) ? item.width : item.width + 'px';
 				item._style = 'width: ' + wd.replace(';','') + maxWidth + 'padding-left:1px;';
 			}else{
-				item._style = 'padding-left:1px;';
+				item._style = 'padding-left:1px;padding-right:1px;';
 			}
 			if (item.isHidden!==true || item._skipFieldFromDisplay !== true) this.config._countFields ++;
 			item.wrapClass = item.isWrapable

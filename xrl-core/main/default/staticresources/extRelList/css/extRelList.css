@@ -48,3 +48,14 @@
 .slds-th__action, .slds-cell-wrap{
 	height: fit-content !important;
 }
+.slds-th__action{
+	justify-content: space-between;
+}
+.editIconDataTable{
+	position:absolute;
+	right:0px;
+}
+.spanDataTableHeader{
+	padding-left:1px;
+	max-width: 90%;
+}
