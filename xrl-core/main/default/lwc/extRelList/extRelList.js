@@ -435,7 +435,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				this.config.fields.push(describe.relationshipName ? describe.relationshipName + nameField : e.fieldName);
 				if (e.locked) this.config.lockedFields.push(describe.relationshipName ? describe.relationshipName + '.Name' : e.fieldName);
 			}
-			this.config.fields.push(e.fieldName);
+			if(e.type==="picklist"){
+				this.config.fields.push('toLabel(' +e.fieldName + ')');
+			}else{
+				this.config.fields.push(e.fieldName);
+			}
 			if (e.locked) this.config.lockedFields.push(e.fieldName);
 		});
 	}
