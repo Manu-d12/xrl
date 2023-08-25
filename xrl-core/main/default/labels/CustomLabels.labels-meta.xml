@@ -2255,4 +2255,20 @@ return records;
         <shortDescription>msg_noPermissionSetAssigned</shortDescription>
         <value>No Permission Set Assigned</value>
     </labels>
+    <labels>
+        <fullName>lbl_fieldToMapToIndex</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_fieldToMapToIndex</shortDescription>
+        <value>Enter the field name which will be mapped to the index</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_fieldToMapToIndex</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_fieldToMapToIndex</shortDescription>
+        <value>Field name which will be mapped to the index</value>
+    </labels>
 </CustomLabels>

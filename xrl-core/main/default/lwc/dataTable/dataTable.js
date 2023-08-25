@@ -184,10 +184,14 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	
 	// 	return null;
 	// }
-	addSerialNumbers(records, parentIndex = '') {
+	addSerialNumbers(records, parentIndex = '9') {
 		records.forEach((el, ind) => {
-			const currentSerial = parentIndex ? parentIndex + '.' + (ind + 1) : (ind + 1).toString();
-			el.sl = currentSerial;
+			const currentSerial = parentIndex === '9' ? (ind + 10).toString() : parentIndex + '.' + (ind + 1); // Start from 10 for the first level
+			
+			// Pad the serial number with zeros for child levels
+			const paddedSerial = currentSerial.split('.').map((part, index) => index === 0 ? part : part.padStart(2, '0')).join('.');
+			
+			el.sl = paddedSerial;
 	
 			if (el.childRecords?.length > 0) {
 				el._hasChildRecords = true;
