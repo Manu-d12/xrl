@@ -487,6 +487,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			// item._isReference = (item.isNameField) ? true : false;
 			item._filterCondition = item._filterCondition ? item._filterCondition : this.config._LABELS.lbl_columnFilter;
 			delete item.isASCSort;
+			if(item.advanced !== undefined){
+				item._advanced = JSON.parse(item.advanced);
+			}
 		});
 		//Showing server side sorting
 		this.config.orderMap?.forEach((el) =>{
@@ -908,9 +911,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 							el._editOptions.push({"label":'--None--',"value":'NONE'});
 						}
 						await libs.remoteAction(this, 'query', {
-							fields: ['Id','Name'],
+							fields: el._advanced?.referencedObject?.fields ? el._advanced.referencedObject.fields : ['Id','Name'],
 							relField: '',
-							addCondition: libs.replaceLiteralsInStr(el.whereCondition,this.cfg),
+							addCondition: el._advanced?.referencedObject?.fields ? libs.replaceLiteralsInStr(el._advanced.referencedObject.whereCondition,this.cfg) : '',
 							sObjApiName: el.referenceTo,
 							callback: ((nodeName, data) => {
 								//console.log('accountRecords', data[nodeName].records.length);

@@ -854,6 +854,7 @@ global with sharing class infrastructure {
 			'lbl_enableColumnHeaderWrap'=>label.lbl_enableColumnHeaderWrap,
 			'lbl_afterloadTransformation'=>label.lbl_afterloadTransformation,
 			'lbl_fieldToMapToIndex'=>label.lbl_fieldToMapToIndex,
+			'lbl_advancedFieldSettings' => label.lbl_advancedFieldSettings,
 			'msg_enterUniqueActionId'=>label.msg_enterUniqueActionId,
 			'msg_lisViewWasUpdated' => label.msg_lisViewWasUpdated,
 			'msg_requestWasSent' => label.msg_requestWasSent,
@@ -959,6 +960,7 @@ global with sharing class infrastructure {
 			'tooltip_enableColumnHeaderWrap'=>label.tooltip_enableColumnHeaderWrap,
 			'tooltip_afterloadTransformation'=>label.tooltip_afterloadTransformation,
 			'tooltip_fieldToMapToIndex'=>label.tooltip_fieldToMapToIndex,
+			'tooltip_advancedFieldSettings'=>label.tooltip_advancedFieldSettings,
 			'srcLbl_available' => label.srcLbl_available,
 			'srcLbl_optional' => label.srcLbl_optional,
 			'url_reqFeature'=>label.url_reqFeature

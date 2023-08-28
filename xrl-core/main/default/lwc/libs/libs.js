@@ -203,7 +203,13 @@ export let libs = {
 				"type": "string",
 				"label" : _labels.lbl_width,
 				"tooltip": _labels.tooltip_widthExample
-			}
+			},
+			"advanced": {
+				"type": "function",
+				"params": "(row, col, val)",
+				"label": _labels.lbl_advancedFieldSettings,
+				"tooltip" : _labels.tooltip_advancedFieldSettings
+			},
 		};
 		if (colModelItem !== undefined) {
 			let result = {}
