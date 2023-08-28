@@ -91,7 +91,7 @@
 					<!--Start 1st Level -->
 					<template if:true={dItem._hasChildRecords}>
 						<template if:true={dItem._isExpanded} for:each={dItem.childRecords} for:item="dItem1" for:index="index">
-							<tr key={dItem1.Id} class="Items" data-rowind={dItem1.Id} data-recid={dItem1.Id} draggable={isDragDropEnabledForRecords} ondrop={Drop} ondragstart={DragStart} ondragover={DragOver}>
+							<tr key={dItem1.Id} class="Items" style={dItem1._rowStyle} data-rowind={dItem1.Id} data-recid={dItem1.Id} draggable={isDragDropEnabledForRecords} ondrop={Drop} ondragstart={DragStart} ondragover={DragOver}>
 								<td scope="col" if:true={config.isShowNumeration} style="width: 3rem;text-lign:right" data-rowind={index} data-recid={dItem1.Id}>{dItem1.sl}					
 								</td>
 								<td scope="col" if:true={config.isShowCheckBoxes} style="width: 4rem;" data-rowind={index} data-recid={dItem1.Id}>

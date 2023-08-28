@@ -199,10 +199,10 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				this.addSerialNumbers(el.childRecords, currentSerial);
 			}
 	
-			if (this.config.rowCss) {
+			if (this.config._advanced?.rowCss) {
 				el._rowStyle = this.config.rowCallback ? 'cursor: pointer;' : '';
 				try {
-					el._rowStyle += eval('(' + this.config.rowCss + ')')(el);
+					el._rowStyle += eval('(' + this.config._advanced?.rowCss + ')')(el);
 				} catch (e) {
 					libs.showToast(this, {
 						title: 'Error',
@@ -391,7 +391,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		result.forEach(group => {
 			group.records.forEach(rec => {rec.index = ind++;})
 		});
-		this.groupedRecords = this.config.groupingFunction != undefined ? eval('(' + this.config.groupingFunction + ')')(result) : result;
+		this.groupedRecords = this.config?._advanced?.groupingFunction !== undefined && this.config?._advanced?.groupingFunction !== '' ? eval('(' + this.config._advanced.groupingFunction + ')')(this,libs,result) : result;
 		libs.getGlobalVar(this.cfg).groupedRecords = this.groupedRecords;
 		//console.log('groupedRecords', JSON.parse(JSON.stringify(this.groupedRecords)));
 	}
@@ -421,6 +421,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		this.config._selectedRecords = this.getSelectedRecords.bind(this);
 		this.config._updateView = this.updateView.bind(this);
 		this.config._countFields = this.config.isShowCheckBoxes === true ? 1 : 0;
+		if(this.config.advanced !== undefined && this.config.advanced !== ''){
+			this.config._advanced = eval('['+this.config.advanced + ']')[0];
+		}
 		this.defaultFields = this.defaultFields.length === 0 ? this.config.colModel.map(f => f.fieldName) : this.defaultFields;
 		this.config.colModel = this.config.colModel.filter(f => this.defaultFields.includes(f.fieldName));
 		this.additionalFields.forEach(add => {
@@ -428,6 +431,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			this.config.colModel.push(add);
 		});
 		this.config.colModel.forEach((item,index) => {
+			if(item.advanced !== undefined && item.advanced !== ''){
+				item._advanced =  eval('['+item.advanced+ ']')[0];
+			}
 			// console.log('item', item);
 			if(this.config.enableColumnHeaderWrap){
 				item.label = item.label.replace(/\b\w{6,}\b/g, match => {
@@ -459,16 +465,16 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					item._showEditableIcon = item.isEditable && fDescribe.updateable;
 				}
 			}
-			if (item.formatter !== undefined && item.formatter!=="") {
+			if (item?._advanced?.formatter !== undefined && item?._advanced?.formatter!=="") {
 				try {
-					item._formatter = eval('(' + item.formatter + ')');
+					item._formatter = eval('(' + item?._advanced?.formatter + ')');
 				} catch (e) {
 					console.log('EXCEPTION', e);
 				}
 			}
-			if (item.uStyle !== undefined && item.uStyle!== "") {
+			if (item?._advanced?.customStyle !== undefined && item?._advanced?.customStyle!== "") {
 				try {
-					item._uStyle = eval('(' + item.uStyle + ')');
+					item._uStyle = eval('(' + item?._advanced?.customStyle + ')');
 				} catch (e) {
 					console.log('EXCEPTION', e);
 				}
@@ -908,9 +914,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 							el._editOptions.push({"label":'--None--',"value":'NONE'});
 						}
 						await libs.remoteAction(this, 'query', {
-							fields: ['Id','Name'],
+							fields: el._advanced?.referencedObject?.fields ? el._advanced.referencedObject.fields : ['Id','Name'],
 							relField: '',
-							addCondition: libs.replaceLiteralsInStr(el.whereCondition,this.cfg),
+							addCondition: el._advanced?.referencedObject?.fields ? libs.replaceLiteralsInStr(el._advanced.referencedObject.whereCondition,this.cfg) : '',
 							sObjApiName: el.referenceTo,
 							callback: ((nodeName, data) => {
 								//console.log('accountRecords', data[nodeName].records.length);
@@ -1401,9 +1407,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if(draggedRecord.Id === futureParentRecord.Id){
 			return;
 		}
-		if(this.config.recordsDragDropCallback !== undefined && this.config.recordsDragDropCallback !== ""){
+		if(this.config?._advanced?.recordsDragDropCallback !== undefined && this.config?._advanced?.recordsDragDropCallback !== ""){
 			try {
-				this.config.records = eval('(' + this.config.recordsDragDropCallback + ')')(this, libs, this.records,draggedRecord,futureParentRecord);
+				this.config.records = eval('(' + this.config._advanced.recordsDragDropCallback + ')')(this, libs, this.records,draggedRecord,futureParentRecord);
 				this.records = this.config.records;
 				libs.getGlobalVar(this.cfg).records = this.config.records;
 				// this.config.records.forEach(item => {

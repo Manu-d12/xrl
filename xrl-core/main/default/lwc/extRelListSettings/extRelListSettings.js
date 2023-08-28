@@ -118,7 +118,8 @@ export default class extRelListSettings extends LightningElement {
 				"helpLabel": tmp[item].label,
 				"helpTooltip" : (item === 'fieldName') ? tmp[item].tooltip + '\n' + '.Field Type:' + fieldParams.type : tmp[item].tooltip,
 				"helpArticleUrl": tmp[item].helpArticleUrl !== undefined ? tmp[item].helpArticleUrl : false,
-				"helpStyle": this.generateStyleForHelp(tmp[item].type)
+				"helpStyle": this.generateStyleForHelp(tmp[item].type),
+				"isAdvanced" : tmp[item].isAdvanced,
 			})
 		}
 		// console.log(result, describe[this.config.dialog.field]);
@@ -168,7 +169,8 @@ export default class extRelListSettings extends LightningElement {
 				"helpLabel": tmp[item].label,
 				"helpTooltip" : tmp[item].tooltip,
 				"helpArticleUrl": tmp[item].helpArticleUrl !== undefined ? tmp[item].helpArticleUrl : false,
-				"helpStyle": this.generateStyleForHelp(tmp[item].type)
+				"helpStyle": this.generateStyleForHelp(tmp[item].type),
+				"isAdvanced" : tmp[item].isAdvanced,
 			})
 		}
 		// console.log(result);
@@ -201,7 +203,6 @@ export default class extRelListSettings extends LightningElement {
 			fieldParams.actionIconName = this.config._expandIcon;
 			fieldParams.actionTip = this.config._expandTip;
 		}
-		console.log('here01',fieldParams.actionIconName);
 		let tmp = libs.customActions();
 
 		/* eslint-disable */
@@ -229,7 +230,8 @@ export default class extRelListSettings extends LightningElement {
 				"isChecked" : (tmp[item].type === 'checkbox') ? defValue : undefined,
 				"placeHolder" : tmp[item].placeHolder,
 				"useExample": tmp[item].useExample,
-				"isCombo" : (tmp[item].type === 'combobox' && options != undefined)
+				"isCombo" : (tmp[item].type === 'combobox' && options != undefined),
+				"isAdvanced" : tmp[item].isAdvanced,
 			})
 		}
 		return result;
