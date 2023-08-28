@@ -2287,4 +2287,20 @@ return records;
         <shortDescription>tooltip_advancedFieldSettings</shortDescription>
         <value>Advanced JSON for field settings</value>
     </labels>
+    <labels>
+        <fullName>lbl_advancedTableSettings</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_advancedTableSettings</shortDescription>
+        <value>Advanced JSON for Table settings</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_advancedTableSettings</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_advancedTableSettings</shortDescription>
+        <value>Advanced JSON for Table settings</value>
+    </labels>
 </CustomLabels>

@@ -291,7 +291,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			'_handleEventFlow': this.handleEventFlow.bind(this),
 			'_cfgName': this.name
 		};
-
+		if(this.config.listViewConfig[0].advanced !== undefined && this.config.listViewConfig[0].advanced !== ''){
+			this.config._advanced = JSON.parse(this.config.listViewConfig[0].advanced);
+		}
 		console.log('this.config', this.config);
 		this.loadRecords();		
 	}
@@ -321,9 +323,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				this.config.inaccessibleFields= data[nodeName].removedFields;
 				
 				libs.getGlobalVar(this.name).records = data[nodeName].records.length > 0 ? data[nodeName].records : undefined;
-				if(this.config.listViewConfig[0].afterloadTransformation !== undefined && this.config.listViewConfig[0].afterloadTransformation !== ""){
+				if(this.config?._advanced?.afterloadTransformation !== undefined && this.config?._advanced?.afterloadTransformation !== ""){
 					try {
-    	                this.config.records = eval('(' + this.config.listViewConfig[0].afterloadTransformation + ')')(this,libs, libs.getGlobalVar(this.name).records);
+    	                this.config.records = eval('(' + this.config?._advanced?.afterloadTransformation + ')')(this,libs, libs.getGlobalVar(this.name).records);
         	        } catch(err){
             	        console.log('EXCEPTION', err);
                 	}
@@ -340,9 +342,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 	}
 	afterLoadTransformation(records){
-		if(this.config.listViewConfig[0].afterloadTransformation !== undefined && this.config.listViewConfig[0].afterloadTransformation !== ""){
+		if(this.config?._advanced?.afterloadTransformation !== undefined && this.config?._advanced?.afterloadTransformation !== ""){
 			try {
-				records = eval('(' + this.config.listViewConfig[0].afterloadTransformation + ')')(this,libs, records);
+				records = eval('(' + this.config?._advanced?.afterloadTransformation + ')')(this,libs, records);
 			} catch(err){
 				console.log('EXCEPTION', err);
 			}
@@ -512,39 +514,6 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 		if (val.startsWith(':save')) {
 			this.prepareRecordsForSave();
-			//libs.getGlobalVar(this.name).records = undefined;
-
-			// let changedItems = this.template.querySelector('c-Data-Table').getRecords().filter(el => {
-			// 	// In thiscase need merge to libs.getGlobalVar(this.name).records;
-			// 	return this.config.listViewConfig[0]._changedRecords.indexOf(el.Id) > -1
-			// })
-			
-			// if(this.config.listViewConfig[0].beforeSaveValidation !== undefined && 
-			// 	this.config.listViewConfig[0].beforeSaveValidation !== ""){
-			// 	changedItems.forEach((el)=>{
-			// 		let rec = eval('('+this.config.listViewConfig[0].beforeSaveValidation+')')(el);
-			// 		if(rec){
-			// 			el = rec;
-			// 		}
-			// 	});
-			// }
-
-			// this.config.loopIndex = 0;
-			// this.config.resetIndex = 0;
-			// let saveChunk = this.config.listViewConfig[0].saveChunkSize ? this.config.listViewConfig[0].saveChunkSize : 200; //200 is the default value for saveChunk
-			// let index = 0;
-			// // console.log("rollback",this.config.listViewConfig[0].rollBack);
-			// while(index <= changedItems.length){
-			// 	let lIndex = changedItems[(parseInt(index)+parseInt(saveChunk))] ? (parseInt(index)+parseInt(saveChunk)) : (changedItems.length);
-			// 	let chunk = changedItems.slice(index,lIndex);
-			// 	index += changedItems[(parseInt(index)+parseInt(saveChunk))] ? parseInt(saveChunk) : (changedItems.length);
-			// 	// index += chunk.length;
-			// 	this.config.loopIndex += 1;
-			// 	libs.remoteAction(this, 'saveRecords', { records: chunk, 
-			// 		sObjApiName: this.config.sObjApiName,
-			// 		rollback:this.config.listViewConfig[0].rollBack ? this.config.listViewConfig[0].rollBack : true,
-			// 		callback: this.resetChangedRecords });
-			// }
 		}
 
 		if (val.startsWith(':change_view')) {
@@ -666,11 +635,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let allRecordsValidation = true;
 
 		//user validation callback
-		if(this.config.listViewConfig[0].beforeDeleteValidation !== undefined && 
-			this.config.listViewConfig[0].beforeDeleteValidation !== ""){
+		if(this.config?._advanced?.beforeDeleteValidation !== undefined && 
+			this.config?._advanced?.beforeDeleteValidation !== ""){
 			records.forEach((el)=>{
 				try{
-					let rec = eval('('+this.config.listViewConfig[0].beforeDeleteValidation+')')(this,libs,el);
+					let rec = eval('('+this.config._advanced.beforeDeleteValidation+')')(this,libs,el);
 					if(!rec){
 						console.error('Failed Validation for ',JSON.parse(JSON.stringify(el)));
 						allRecordsValidation = false;
@@ -789,11 +758,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		
 		let allRecordsValidation = true;
 
-		if(this.config.listViewConfig[0].beforeSaveValidation !== undefined && 
-			this.config.listViewConfig[0].beforeSaveValidation !== ""){
+		if(this.config?._advanced?.beforeSaveValidation !== undefined && 
+			this.config?._advanced?.beforeSaveValidation !== ""){
 			changedItems.forEach((el)=>{
 				try{
-					let rec = eval('('+this.config.listViewConfig[0].beforeSaveValidation+')')(this,libs,el);
+					let rec = eval('('+this.config._advanced.beforeSaveValidation+')')(this,libs,el);
 					if(!rec){
 						console.error('Failed Validation for ',JSON.parse(JSON.stringify(el)));
 						allRecordsValidation = false;

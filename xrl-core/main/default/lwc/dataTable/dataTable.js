@@ -199,10 +199,10 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				this.addSerialNumbers(el.childRecords, currentSerial);
 			}
 	
-			if (this.config.rowCss) {
+			if (this.config._advanced?.rowCss) {
 				el._rowStyle = this.config.rowCallback ? 'cursor: pointer;' : '';
 				try {
-					el._rowStyle += eval('(' + this.config.rowCss + ')')(el);
+					el._rowStyle += eval('(' + this.config._advanced?.rowCss + ')')(el);
 				} catch (e) {
 					libs.showToast(this, {
 						title: 'Error',
@@ -391,7 +391,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		result.forEach(group => {
 			group.records.forEach(rec => {rec.index = ind++;})
 		});
-		this.groupedRecords = this.config.groupingFunction != undefined ? eval('(' + this.config.groupingFunction + ')')(result) : result;
+		this.groupedRecords = this.config?._advanced?.groupingFunction !== undefined && this.config?._advanced?.groupingFunction !== '' ? eval('(' + this.config._advanced.groupingFunction + ')')(this,libs,result) : result;
 		libs.getGlobalVar(this.cfg).groupedRecords = this.groupedRecords;
 		//console.log('groupedRecords', JSON.parse(JSON.stringify(this.groupedRecords)));
 	}
@@ -421,6 +421,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		this.config._selectedRecords = this.getSelectedRecords.bind(this);
 		this.config._updateView = this.updateView.bind(this);
 		this.config._countFields = this.config.isShowCheckBoxes === true ? 1 : 0;
+		if(this.config.advanced !== undefined && this.config.advanced !== ''){
+			this.config._advanced = JSON.parse(this.config.advanced);
+		}
 		this.defaultFields = this.defaultFields.length === 0 ? this.config.colModel.map(f => f.fieldName) : this.defaultFields;
 		this.config.colModel = this.config.colModel.filter(f => this.defaultFields.includes(f.fieldName));
 		this.additionalFields.forEach(add => {
@@ -1404,9 +1407,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if(draggedRecord.Id === futureParentRecord.Id){
 			return;
 		}
-		if(this.config.recordsDragDropCallback !== undefined && this.config.recordsDragDropCallback !== ""){
+		if(this.config?._advanced?.recordsDragDropCallback !== undefined && this.config?._advanced?.recordsDragDropCallback !== ""){
 			try {
-				this.config.records = eval('(' + this.config.recordsDragDropCallback + ')')(this, libs, this.records,draggedRecord,futureParentRecord);
+				this.config.records = eval('(' + this.config._advanced.recordsDragDropCallback + ')')(this, libs, this.records,draggedRecord,futureParentRecord);
 				this.records = this.config.records;
 				libs.getGlobalVar(this.cfg).records = this.config.records;
 				// this.config.records.forEach(item => {
