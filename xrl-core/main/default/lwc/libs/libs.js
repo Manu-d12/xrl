@@ -323,6 +323,13 @@ export let libs = {
 				"tooltip": "If you enable this, you will be create hierarchy with records just by drag and drop",
 				"cmd" : "dialog:setTableParam",
 			},
+			"fieldToMapToIndex" : {
+				"type": "string",
+				"label": _labels.lbl_fieldToMapToIndex,
+				"tooltip": _labels.tooltip_fieldToMapToIndex,
+				"isReadOnly": true,
+				"cmd" : "dialog:setTableParam",
+			},
 			"recordsDragDropCallback": {
 				"type": "function",
 				"label": "Callback for record drag drop",

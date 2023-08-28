@@ -766,8 +766,23 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	// 	return singleLevelRecords;
 	// }
 
+	mapSerialNumberField(records, field){
+		records.forEach(rec => {
+			if(rec[field] === undefined){
+				rec[field] = "";
+			}
+			rec[field] = rec.sl.trim();
+			this.config.listViewConfig[0]._changedRecords.add(rec.Id);
+
+		});
+		return records;
+	}
+
 	async prepareRecordsForSave(){
 		let records = libs.flattenRecordsWithChildren(this.template.querySelector('c-Data-Table').getRecords());
+		if(this.config.listViewConfig[0].isRecordsDragDropEnabled && this.config.listViewConfig[0].fieldToMapToIndex !== undefined && this.config.listViewConfig[0].fieldToMapToIndex !== ""){
+			records = this.mapSerialNumberField(records, this.config.listViewConfig[0].fieldToMapToIndex);
+		}
 		let changedItems = records.filter(el => {
 			return this.config.listViewConfig[0]._changedRecords.has(el.Id)
 		});
