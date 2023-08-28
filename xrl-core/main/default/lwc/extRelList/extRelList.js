@@ -292,7 +292,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			'_cfgName': this.name
 		};
 		if(this.config.listViewConfig[0].advanced !== undefined && this.config.listViewConfig[0].advanced !== ''){
-			this.config._advanced = JSON.parse(this.config.listViewConfig[0].advanced);
+			this.config._advanced = eval('['+ this.config.listViewConfig[0].advanced + ']')[0];
 		}
 		console.log('this.config', this.config);
 		this.loadRecords();		

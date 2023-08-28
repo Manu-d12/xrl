@@ -534,6 +534,11 @@ export let libs = {
 					return scope.config.flowList;
 				},
 				"label": _labels.lbl_actionFlowName
+			},
+			"advanced": {
+				"type": "function",
+				"label": _labels.lbl_advancedActionSettings,
+				"tooltip" : _labels.tooltip_advancedActionSettings
 			}
 		}
 		return defParams;

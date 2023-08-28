@@ -422,7 +422,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		this.config._updateView = this.updateView.bind(this);
 		this.config._countFields = this.config.isShowCheckBoxes === true ? 1 : 0;
 		if(this.config.advanced !== undefined && this.config.advanced !== ''){
-			this.config._advanced = JSON.parse(this.config.advanced);
+			this.config._advanced = eval('['+this.config.advanced + ']')[0];
 		}
 		this.defaultFields = this.defaultFields.length === 0 ? this.config.colModel.map(f => f.fieldName) : this.defaultFields;
 		this.config.colModel = this.config.colModel.filter(f => this.defaultFields.includes(f.fieldName));
