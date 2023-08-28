@@ -1229,6 +1229,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			exAction.actionTip = this.config._expandTip;
 		}
 		let tmp = JSON.parse(JSON.stringify(this.config.dialog.listViewConfig));
+		//to delete the recordsToShow mistakenly added to config
+		if(tmp.recordsToShow !== undefined || tmp.isAnyRecordsHaveChildren !== undefined){
+			delete tmp.isAnyRecordsHaveChildren;
+			delete tmp.recordsToShow;
+		}
 		tmp = this.deleteKeysStartingWithUnderscore(tmp);
 		let cnfg = [];
 		cnfg.push(tmp);
