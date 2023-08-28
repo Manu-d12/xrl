@@ -443,6 +443,9 @@ export let filterLibs = {
 			:record[filter.fieldName]
 			: getRefField(filter.fieldName);
 		// console.log(value);
+		if(filter.type==='currency'){
+			value = Number(value.toFixed(2));
+		}
 		return formatter && typeof formatter === 'function' ? formatter(record, filter, record[filter.fieldName]) : value ;
 	},
 	containsAllElements(smallArray, bigArray) {
