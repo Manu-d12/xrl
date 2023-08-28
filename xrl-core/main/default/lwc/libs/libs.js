@@ -145,20 +145,21 @@ export let libs = {
 				"label": _labels.lbl_fieldLabel,
 				"tooltip": _labels.tooltip_fieldLabel
 			},
-			"formatter": {
-				"type": "function",
-				"params": "(row, col, val)",
-				"label": _labels.lbl_customFunctionForFormatting,
-				"placeHolder" : _labels.lbl_customFunctionExample,
-				"useExample":true
-			},
-			"uStyle": {
-				"type": "function",
-				"params": "(row, col, val)",
-				"label": _labels.lbl_customFunctionForStyle,
-				"placeHolder" : _labels.lbl_customFunctionStyleExample,
-				"useExample":true
-			},
+			// "formatter": {
+			// 	"type": "function",
+			// 	"params": "(row, col, val)",
+			// 	"label": _labels.lbl_customFunctionForFormatting,
+			// 	"placeHolder" : _labels.lbl_customFunctionExample,
+			// 	"useExample":true
+			// },
+			//in advanced JSON the key for this uStyle should be customStyle
+			// "uStyle": {
+			// 	"type": "function",
+			// 	"params": "(row, col, val)",
+			// 	"label": _labels.lbl_customFunctionForStyle,
+			// 	"placeHolder" : _labels.lbl_customFunctionStyleExample,
+			// 	"useExample":true
+			// },
 			"isHidden": {
 				"defValue": false,
 				"type": "checkbox",

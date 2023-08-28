@@ -428,6 +428,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			this.config.colModel.push(add);
 		});
 		this.config.colModel.forEach((item,index) => {
+			if(item.advanced !== undefined && item.advanced !== ''){
+				item._advanced = JSON.parse(item.advanced);
+			}
 			// console.log('item', item);
 			if(this.config.enableColumnHeaderWrap){
 				item.label = item.label.replace(/\b\w{6,}\b/g, match => {
@@ -459,16 +462,16 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					item._showEditableIcon = item.isEditable && fDescribe.updateable;
 				}
 			}
-			if (item.formatter !== undefined && item.formatter!=="") {
+			if (item?._advanced?.formatter !== undefined && item?._advanced?.formatter!=="") {
 				try {
-					item._formatter = eval('(' + item.formatter + ')');
+					item._formatter = eval('(' + item?._advanced?.formatter + ')');
 				} catch (e) {
 					console.log('EXCEPTION', e);
 				}
 			}
-			if (item.uStyle !== undefined && item.uStyle!== "") {
+			if (item?._advanced?.customStyle !== undefined && item?._advanced?.customStyle!== "") {
 				try {
-					item._uStyle = eval('(' + item.uStyle + ')');
+					item._uStyle = eval('(' + item?._advanced?.customStyle + ')');
 				} catch (e) {
 					console.log('EXCEPTION', e);
 				}
@@ -487,9 +490,6 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			// item._isReference = (item.isNameField) ? true : false;
 			item._filterCondition = item._filterCondition ? item._filterCondition : this.config._LABELS.lbl_columnFilter;
 			delete item.isASCSort;
-			if(item.advanced !== undefined){
-				item._advanced = JSON.parse(item.advanced);
-			}
 		});
 		//Showing server side sorting
 		this.config.orderMap?.forEach((el) =>{
