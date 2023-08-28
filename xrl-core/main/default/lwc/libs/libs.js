@@ -208,7 +208,8 @@ export let libs = {
 			"advanced": {
 				"type": "function",
 				"label": _labels.lbl_advancedFieldSettings,
-				"tooltip" : _labels.tooltip_advancedFieldSettings
+				"tooltip" : _labels.tooltip_advancedFieldSettings,
+				"isAdvanced" : true
 			}
 		};
 		if (colModelItem !== undefined) {
@@ -439,7 +440,8 @@ export let libs = {
 				"type": "function",
 				"label": _labels.lbl_advancedTableSettings,
 				"tooltip" : _labels.tooltip_advancedTableSettings,
-				"cmd" : "dialog:setTableParam"
+				"cmd" : "dialog:setTableParam",
+				"isAdvanced" : true
 			}
 			
 			
@@ -538,7 +540,8 @@ export let libs = {
 			"advanced": {
 				"type": "function",
 				"label": _labels.lbl_advancedActionSettings,
-				"tooltip" : _labels.tooltip_advancedActionSettings
+				"tooltip" : _labels.tooltip_advancedActionSettings,
+				"isAdvanced" : true
 			}
 		}
 		return defParams;

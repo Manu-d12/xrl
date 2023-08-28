@@ -2303,4 +2303,20 @@ return records;
         <shortDescription>tooltip_advancedTableSettings</shortDescription>
         <value>Advanced JSON for Table settings</value>
     </labels>
+    <labels>
+        <fullName>lbl_advancedActionSettings</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_advancedActionSettings</shortDescription>
+        <value>Advanced JSON for Action settings</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_advancedActionSettings</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_advancedActionSettings</shortDescription>
+        <value>Advanced JSON for Action settings</value>
+    </labels>
 </CustomLabels>

@@ -432,7 +432,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		});
 		this.config.colModel.forEach((item,index) => {
 			if(item.advanced !== undefined && item.advanced !== ''){
-				item._advanced = JSON.parse(item.advanced);
+				item._advanced =  eval('['+item.advanced+ ']')[0];
 			}
 			// console.log('item', item);
 			if(this.config.enableColumnHeaderWrap){

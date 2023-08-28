@@ -1669,14 +1669,15 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			let action = this.config.listViewConfig[0].actions.find((el)=>{
 				return el.actionId == val;
 			});
-			actionCallBack = action.actionCallBack;
+			let _advanced = eval('['+action?.advanced + ']')[0];
+			actionCallBack = _advanced?.actionCallBack;
 			selectedRecords = this.template.querySelector('c-Data-Table')?.getSelectedRecords();
 			// if(action.actionCallBack != undefined && action.actionCallBack != ''){
 			// 	console.log('Callback defined: ', action.actionCallBack);
 			// 	eval('(' + action.actionCallBack + ')')(this.template.querySelector('c-Data-Table').getSelectedRecords());
 			// }
 		}else{
-			actionCallBack = listViewAction?.action?.actionCallBack;
+			actionCallBack = eval('['+listViewAction?.action?.advanced?.actionCallBack+ ']')[0];
 			selectedRecords = listViewAction?.selectedRecords; // the selected records are coming from the caller function
 			// The loadCfg method and the c/dataTable component are still not ready to be used
 			// at the time of this function call, so we have to handle the refresh action differently
