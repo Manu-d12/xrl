@@ -2319,4 +2319,12 @@ return records;
         <shortDescription>tooltip_advancedActionSettings</shortDescription>
         <value>Advanced JSON for Action settings</value>
     </labels>
+    <labels>
+        <fullName>altTxt_cancelRecordSave</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>altTxt_cancelRecordSave</shortDescription>
+        <value>Discard the record changes</value>
+    </labels>
 </CustomLabels>
