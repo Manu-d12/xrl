@@ -321,6 +321,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			callback: ((nodeName, data) => {
 				console.log('length', data[nodeName].records);
 				this.config.inaccessibleFields= data[nodeName].removedFields;
+				this.config.query = data[nodeName].SOQL;
 				
 				libs.getGlobalVar(this.name).records = data[nodeName].records.length > 0 ? data[nodeName].records : undefined;
 				if(this.config?._advanced?.afterloadTransformation !== undefined && this.config?._advanced?.afterloadTransformation !== ""){
@@ -1520,6 +1521,22 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			
 		}
 	}
+	handleDownloadJSONFile(records,fileName) {
+        let data = JSON.stringify({
+			"sObjApiName" : this.config.sObjApiName,
+			"SOQL" : this.config.query,
+			"records" : records
+		  });
+        // Creating anchor element to download
+        let downloadElement = document.createElement('a');
+        // This  encodeURI encodes special characters, except: , / ? : @ & = + $ # (Use encodeURIComponent() to encode these characters).
+        downloadElement.href = 'data:text/json;charset=utf-8,' + encodeURI(data);
+        downloadElement.target = '_self';
+        downloadElement.download = fileName+'.JSON';
+        // below statement is required if you are using firefox browser
+        document.body.appendChild(downloadElement);
+        downloadElement.click();
+    }
 
 	async handleEventExport(event) {
 		let dataTable = this.template.querySelector('c-Data-Table');
@@ -1545,122 +1562,127 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			});
 		}
 		records = newRecords.length > 0 ? newRecords : records;
-
+		let fileName = this.config.sObjLabel + ' ' + this.config?.listView?.label;
 		console.log(JSON.parse(JSON.stringify(this.config)));
 		console.log(JSON.parse(JSON.stringify(records)));
+		let exportActionData = this.config.listViewConfig[0].actions.find((el) => el.actionId === 'std:export');
+		let _advanced = eval('[' + exportActionData.advanced + ']')[0];
+		if(_advanced.outputFormat === 'JSON'){
+			this.handleDownloadJSONFile(records,fileName);
+		}else{
 
-		let wb = XLSX.utils.book_new();
-		wb.cellStyles = true;
-		wb.Props = {
-			Title: this.config.sObjLabel + ' ' + this.config?.listView?.label,
-			Subject: this.config.sObjLabel + " Export",
-			Author: "Extended Related List",
-			CreatedDate: new Date(),
+			let wb = XLSX.utils.book_new();
+			wb.cellStyles = true;
+			wb.Props = {
+				Title: fileName,
+				Subject: this.config.sObjLabel + " Export",
+				Author: "Extended Related List",
+				CreatedDate: new Date(),
 
-		};
-		let wrapText = { wrapText: '0' };
-		let evenStyle = { alignment: wrapText, bold: false, color: { rgb: 0 }, fgColor: { rgb: 15658734 } };
-		let oddStyle = { alignment: wrapText, bold: false, color: { rgb: 0 } };
+			};
+			let wrapText = { wrapText: '0' };
+			let evenStyle = { alignment: wrapText, bold: false, color: { rgb: 0 }, fgColor: { rgb: 15658734 } };
+			let oddStyle = { alignment: wrapText, bold: false, color: { rgb: 0 } };
 
-		let ws = {
-			'!cols': []
-		};
-		let columns = this.config.listViewConfig[0].colModel.filter(col => { return !col.isHidden && !col._skipFieldFromDisplay; });
-		let groupNumber = 0; // to keep track of group title and shift the rows accordingly
-		const merges = [];
-		records.forEach(async (rec, i) => {
-			i+=groupNumber;
-			if(rec.groupTitle !== undefined){
-				groupNumber++;
-				i++;
-				const cell_ref = XLSX.utils.encode_cell({ c: 0, r: i });
-				ws[cell_ref] = {
-					v: rec.groupTitle, s: { bold: true, fgColor: { rgb: 272822 }, color: { rgb: 16777215 } }
-				}
-				const merge = {s: {c: 0, r: i}, e: {c: columns.length-1, r: i}};
-				merges.push(merge);
-				ws['!cols'].push({ wch: 40 });
-			}
-			columns.forEach(async (col, j) => {
-				if (i-groupNumber === 0) {
-					let cell_ref = XLSX.utils.encode_cell({ c: j, r: i-groupNumber }); // -groupNumber to skip the group title row without modyfying the existing logic
+			let ws = {
+				'!cols': []
+			};
+			let columns = this.config.listViewConfig[0].colModel.filter(col => { return !col.isHidden && !col._skipFieldFromDisplay; });
+			let groupNumber = 0; // to keep track of group title and shift the rows accordingly
+			const merges = [];
+			records.forEach(async (rec, i) => {
+				i+=groupNumber;
+				if(rec.groupTitle !== undefined){
+					groupNumber++;
+					i++;
+					const cell_ref = XLSX.utils.encode_cell({ c: 0, r: i });
 					ws[cell_ref] = {
-						v: col.label, s: { bold: true, fgColor: { rgb: 0 }, color: { rgb: 16777215 } }
+						v: rec.groupTitle, s: { bold: true, fgColor: { rgb: 272822 }, color: { rgb: 16777215 } }
 					}
+					const merge = {s: {c: 0, r: i}, e: {c: columns.length-1, r: i}};
+					merges.push(merge);
 					ws['!cols'].push({ wch: 40 });
 				}
-				let cell_ref = XLSX.utils.encode_cell({ c: j, r: i + 1 });
-				ws[cell_ref] = {
-					s: i % 2 ? evenStyle : oddStyle
-				};
-				let fieldValue;
-				if (col.fieldName.includes('.')) {
-				const [refFieldName, refChildFieldName] = col.fieldName.split('.');
-				if (rec[refFieldName] && (rec[refFieldName][refChildFieldName] || rec[refFieldName][refChildFieldName]==0)) {
-					fieldValue = rec[refFieldName][refChildFieldName];
-				} else if (col.referenceTo !== undefined && rec[col.referenceTo] && rec[col.referenceTo][refChildFieldName]) {
-					fieldValue = rec[col.referenceTo][refChildFieldName];
-				} else {
-					fieldValue = '';
-				}
-				}else {
-				fieldValue = (rec[col.fieldName] || rec[col.fieldName]==0) ? rec[col.fieldName] : '';
-				}
-				if (col.formatter !== undefined && col.formatter!=="") {
-					let row,val;
-					[row,val] = libs.getLookupRow(rec, col.fieldName);
-					try{
-						fieldValue = eval('(' + col.formatter + ')')(row, col, val);
-					}catch(e) {
-						fieldValue = fieldValue;
-						console.error(e);
+				columns.forEach(async (col, j) => {
+					if (i-groupNumber === 0) {
+						let cell_ref = XLSX.utils.encode_cell({ c: j, r: i-groupNumber }); // -groupNumber to skip the group title row without modyfying the existing logic
+						ws[cell_ref] = {
+							v: col.label, s: { bold: true, fgColor: { rgb: 0 }, color: { rgb: 16777215 } }
+						}
+						ws['!cols'].push({ wch: 40 });
 					}
-				}
+					let cell_ref = XLSX.utils.encode_cell({ c: j, r: i + 1 });
+					ws[cell_ref] = {
+						s: i % 2 ? evenStyle : oddStyle
+					};
+					let fieldValue;
+					if (col.fieldName.includes('.')) {
+					const [refFieldName, refChildFieldName] = col.fieldName.split('.');
+					if (rec[refFieldName] && (rec[refFieldName][refChildFieldName] || rec[refFieldName][refChildFieldName]==0)) {
+						fieldValue = rec[refFieldName][refChildFieldName];
+					} else if (col.referenceTo !== undefined && rec[col.referenceTo] && rec[col.referenceTo][refChildFieldName]) {
+						fieldValue = rec[col.referenceTo][refChildFieldName];
+					} else {
+						fieldValue = '';
+					}
+					}else {
+					fieldValue = (rec[col.fieldName] || rec[col.fieldName]==0) ? rec[col.fieldName] : '';
+					}
+					if (col.formatter !== undefined && col.formatter!=="") {
+						let row,val;
+						[row,val] = libs.getLookupRow(rec, col.fieldName);
+						try{
+							fieldValue = eval('(' + col.formatter + ')')(row, col, val);
+						}catch(e) {
+							fieldValue = fieldValue;
+							console.error(e);
+						}
+					}
 
-				switch (col.type) {
-				case 'reference':
-					if((col.formatter === undefined || col.formatter==="")){
-						//in case it is a reference and no formatting is defined, otherwise treat it as normal string value
-						const [lookupRow, lookupId] = libs.getLookupRow(rec, col.fieldName);
-						ws[cell_ref].v = lookupRow.Name || '';
-						ws[cell_ref].l = {
-						Target: window.location.origin + '/' + lookupId,
-						Tooltip: window.location.origin + '/' + lookupId
-						};
-					}else{
+					switch (col.type) {
+					case 'reference':
+						if((col.formatter === undefined || col.formatter==="")){
+							//in case it is a reference and no formatting is defined, otherwise treat it as normal string value
+							const [lookupRow, lookupId] = libs.getLookupRow(rec, col.fieldName);
+							ws[cell_ref].v = lookupRow.Name || '';
+							ws[cell_ref].l = {
+							Target: window.location.origin + '/' + lookupId,
+							Tooltip: window.location.origin + '/' + lookupId
+							};
+						}else{
+							ws[cell_ref].v = fieldValue;
+						}
+						ws[cell_ref].t = 's';
+						break;
+					case 'date':
+						ws[cell_ref].v = fieldValue ? new Date(fieldValue) : '';
+						ws[cell_ref].t = fieldValue ? 'd' : 's';
+						break;
+					case 'datetime':
+						ws[cell_ref].v = fieldValue ? new Date(fieldValue) : '';
+						ws[cell_ref].t = fieldValue ? 'dt' : 's';
+						break;
+					case 'number':
+						ws[cell_ref].v = fieldValue ? Number(fieldValue) : '';
+						ws[cell_ref].t = 'n';
+						break;
+					case 'boolean':
+						ws[cell_ref].v = Boolean(fieldValue);
+						ws[cell_ref].t = 'b';
+						break;
+					default:
 						ws[cell_ref].v = fieldValue;
+						ws[cell_ref].t = 's';
+						break;
 					}
-					ws[cell_ref].t = 's';
-					break;
-				case 'date':
-					ws[cell_ref].v = fieldValue ? new Date(fieldValue) : '';
-					ws[cell_ref].t = fieldValue ? 'd' : 's';
-					break;
-				case 'datetime':
-					ws[cell_ref].v = fieldValue ? new Date(fieldValue) : '';
-					ws[cell_ref].t = fieldValue ? 'dt' : 's';
-					break;
-				case 'number':
-					ws[cell_ref].v = fieldValue ? Number(fieldValue) : '';
-					ws[cell_ref].t = 'n';
-					break;
-				case 'boolean':
-					ws[cell_ref].v = Boolean(fieldValue);
-					ws[cell_ref].t = 'b';
-					break;
-				default:
-					ws[cell_ref].v = fieldValue;
-					ws[cell_ref].t = 's';
-					break;
-				}
 
+				});
 			});
-		});
-		ws['!merges'] = merges; // merges the group title cells
-		ws['!ref'] = XLSX.utils.encode_range({ s: { c: 0, r: 0 }, e: { c: columns.length, r: records.length + groupNumber } }); // +groupNumber to include the group title row
-		XLSX.utils.book_append_sheet(wb, ws, (this.config.sObjLabel + ' '  + this.config?.listView?.label).length > 30 ? (this.config.sObjLabel + ' '  + this.config?.listView?.label).substring(0,30):(this.config.sObjLabel + ' '  + this.config?.listView?.label));
-		XLSX.writeFile(wb, this.config.sObjLabel + ' ' + this.config?.listView?.label + '.xlsx', { cellStyles: true, WTF: 1 });
-		
+			ws['!merges'] = merges; // merges the group title cells
+			ws['!ref'] = XLSX.utils.encode_range({ s: { c: 0, r: 0 }, e: { c: columns.length, r: records.length + groupNumber } }); // +groupNumber to include the group title row
+			XLSX.utils.book_append_sheet(wb, ws, (this.config.sObjLabel + ' '  + this.config?.listView?.label).length > 30 ? (this.config.sObjLabel + ' '  + this.config?.listView?.label).substring(0,30):(this.config.sObjLabel + ' '  + this.config?.listView?.label));
+			XLSX.writeFile(wb, this.config.sObjLabel + ' ' + this.config?.listView?.label + '.xlsx', { cellStyles: true, WTF: 1 });
+		}
 		this.config.isSpinner = false;
 	}
 
