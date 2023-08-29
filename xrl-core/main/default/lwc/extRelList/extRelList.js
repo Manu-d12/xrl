@@ -1530,7 +1530,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
         // Creating anchor element to download
         let downloadElement = document.createElement('a');
         // This  encodeURI encodes special characters, except: , / ? : @ & = + $ # (Use encodeURIComponent() to encode these characters).
-        downloadElement.href = 'data:text/json;charset=utf-8,' + encodeURI(data);
+        downloadElement.href = 'data:text/json;charset=utf-8,' + encodeURIComponent(data);
         downloadElement.target = '_self';
         downloadElement.download = fileName+'.JSON';
         // below statement is required if you are using firefox browser
@@ -1567,7 +1567,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		console.log(JSON.parse(JSON.stringify(records)));
 		let exportActionData = this.config.listViewConfig[0].actions.find((el) => el.actionId === 'std:export');
 		let _advanced = eval('[' + exportActionData.advanced + ']')[0];
-		if(_advanced.outputFormat === 'JSON'){
+		if(_advanced?.outputFormat === 'JSON'){
 			this.handleDownloadJSONFile(records,fileName);
 		}else{
 
