@@ -86,6 +86,9 @@ global with sharing class infrastructure {
 				}
 				when 'getIntrLst' {
 					resultMethod = getIntrLst();
+				}
+				when 'getStaticResource' {
+					resultMethod = getStaticResource();
 				}				
 				
 				when
@@ -1159,6 +1162,17 @@ global with sharing class infrastructure {
                 }
                 
          }
+		return lst;
+    }
+
+	private static string[] getStaticResource() {
+        StaticResource[] static_resource = [SELECT Name,Id, SystemModStamp FROM StaticResource WHERE ContentType IN ('text/javascript')];
+        
+        string[] lst = new string[]{};
+        for (StaticResource item : static_resource) {
+			String url_file_ref = '/resource/' + String.valueOf(((DateTime)item.get('SystemModStamp')).getTime())+ '/' + item.get('Name');
+			lst.add(url_file_ref );    
+        }
 		return lst;
     }
 
