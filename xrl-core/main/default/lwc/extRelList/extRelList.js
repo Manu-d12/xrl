@@ -253,6 +253,15 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		this.config.lockedFields = [];
 		
 		this.config.isGlobalSearch=this.config.listViewConfig[0].isGlobalSearch;
+		// if(this.config.listViewConfig[0].externalJS !== undefined && this.config.listViewConfig[0].externalJS !== ''){
+			// Promise.all([
+			// 	loadScript(this, this.config.listViewConfig[0].externalJS),
+			// ]).then(() => {
+			// 	console.log('External Resources are loaded');
+			// });
+			this.loadExternalScript();
+			
+		// }
 		let notAllowedActions = ['std:delete','std:new'];
 		if(!this.config.listViewConfig[0].actions){
 			this.config.listViewConfig[0].actions = libs.standardActions();
@@ -296,6 +305,32 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 		console.log('this.config', this.config);
 		this.loadRecords();		
+	}
+
+	async loadExternalScript(){
+		//need to fetch this static resource list here because, every time the external JS file is uploaded the url(url gets updated with latest timestamp) changes but the name remains the same, 
+		// so to make sure it loads correctly needs to get the list beforehand
+		await libs.remoteAction(this, 'getStaticResource', {
+			callback: ((nodeName, data11) => {
+				let options =  [{label : "None", value : ""}];
+				if (data11[nodeName]) {
+					data11[nodeName].forEach(e=>{
+						options.push({label : e.split('/')[3], value: e})	
+					});
+				}
+				this.config._staticResourceList = options;
+			})
+		});
+		if(this.config.listViewConfig[0].externalJS !== undefined && this.config.listViewConfig[0].externalJS !== ''){
+			try{
+				this.config.listViewConfig[0].externalJS = libs.getCurrentStaticResourceURLWithSameName(this.config._staticResourceList,this.config.listViewConfig[0].externalJS);
+				const response = await fetch(this.config.listViewConfig[0].externalJS+'?'+Date.now());
+				const code = await response.text();
+				libs.getGlobalVar(this.name)._externalJS = eval('['+ code + ']')[0];
+			}catch(e){
+				console.error('Error in loading external JS', e);
+			}
+		}
 	}
 
 	async loadRecords() {

@@ -86,6 +86,9 @@ global with sharing class infrastructure {
 				}
 				when 'getIntrLst' {
 					resultMethod = getIntrLst();
+				}
+				when 'getStaticResource' {
+					resultMethod = getStaticResource();
 				}				
 				
 				when
@@ -858,6 +861,7 @@ global with sharing class infrastructure {
 			'lbl_advancedFieldSettings' => label.lbl_advancedFieldSettings,
 			'lbl_advancedTableSettings'=>label.lbl_advancedTableSettings,
 			'lbl_advancedActionSettings'=>label.lbl_advancedActionSettings,
+			'lbl_externalJS' => label.lbl_externalJS,
 			'msg_enterUniqueActionId'=>label.msg_enterUniqueActionId,
 			'msg_lisViewWasUpdated' => label.msg_lisViewWasUpdated,
 			'msg_requestWasSent' => label.msg_requestWasSent,
@@ -966,6 +970,7 @@ global with sharing class infrastructure {
 			'tooltip_advancedFieldSettings'=>label.tooltip_advancedFieldSettings,
 			'tooltip_advancedTableSettings'=>label.tooltip_advancedTableSettings,
 			'tooltip_advancedActionSettings'=>label.tooltip_advancedActionSettings,
+			'tooltip_externalJS'=>label.tooltip_externalJS,
 			'srcLbl_available' => label.srcLbl_available,
 			'srcLbl_optional' => label.srcLbl_optional,
 			'url_reqFeature'=>label.url_reqFeature
@@ -1160,6 +1165,17 @@ global with sharing class infrastructure {
                 }
                 
          }
+		return lst;
+    }
+
+	private static string[] getStaticResource() {
+        StaticResource[] static_resource = [SELECT Name,Id, SystemModStamp FROM StaticResource WHERE ContentType IN ('text/javascript')];
+        
+        string[] lst = new string[]{};
+        for (StaticResource item : static_resource) {
+			String url_file_ref = '/resource/' + String.valueOf(((DateTime)item.get('SystemModStamp')).getTime())+ '/' + item.get('Name');
+			lst.add(url_file_ref );    
+        }
 		return lst;
     }
 

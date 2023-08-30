@@ -436,6 +436,17 @@ export let libs = {
 				"placeHolder": 'Apex class for row recalculation',
 				"cmd" : "dialog:setTableParam"
 			},
+			"externalJS": {
+				"defValue": "",
+				"type": "combobox",
+				"optionsCallBack" : function(scope){
+					return scope.config._staticResourceList;
+				},
+				"label": _labels.lbl_externalJS,
+				"tooltip": _labels.tooltip_externalJS,
+				"placeHolder": _labels.lbl_externalJS,
+				"cmd" : "dialog:setTableParam"
+			},
 			"advanced": {
 				"type": "function",
 				"label": _labels.lbl_advancedTableSettings,
@@ -896,6 +907,15 @@ export let libs = {
 			address = addressObject?.street + " " + addressObject?.city + " " + addressObject?.state + " " + addressObject?.country;
 		}
 		return address;
+	},
+	getCurrentStaticResourceURLWithSameName: function(staticURLLists, currentURL){
+		let updatedURL = currentURL;
+		staticURLLists.forEach((url) => { 
+			if(url.value.split('/')[3] !== undefined && url.value.split('/')[3] === currentURL.split('/')[3]) {
+				updatedURL = url.value;
+			}
+		});
+		return updatedURL;
 	},
 	currencyMap: function(cur) {
 		let map = {
