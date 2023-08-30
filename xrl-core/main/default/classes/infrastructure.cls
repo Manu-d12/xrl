@@ -708,6 +708,7 @@ global with sharing class infrastructure {
 			'altTxt_locked'=>label.altTxt_locked,
 			'altTxt_resetFilters'=>label.altTxt_resetFilters,
 			'altTxt_hlpUrl'=>label.altTxt_hlpUrl,
+			'altTxt_cancelRecordSave'=>label.altTxt_cancelRecordSave,
 			'errMsg_recordsNotFound' => label.errMsg_recordsNotFound,
 			'errMsg_wrapableAndClipableCanNotBeSelectedTogether' => label.errMsg_wrapableAndClipableCanNotBeSelectedTogether,
 			'errMsg_anEmptyMsgCannotBeSent' => label.errMsg_anEmptyMsgCannotBeSent,

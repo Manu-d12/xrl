@@ -555,6 +555,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if (val.startsWith(':save')) {
 			this.prepareRecordsForSave();
 		}
+		if (val.startsWith(':cancelRecordSave')) {
+			this.config.listViewConfig[0]._changedRecords = undefined;
+			this.config.records = undefined;
+			this.loadRecords();
+		}
 
 		if (val.startsWith(':change_view')) {
 			if(!this.isThereUnsavedRecords()){

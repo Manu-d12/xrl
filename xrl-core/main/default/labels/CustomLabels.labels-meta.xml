@@ -2335,4 +2335,12 @@ return records;
         <shortDescription>tooltip_externalJS</shortDescription>
         <value>External JS file to extend functionality. You can refer to this file in callbacks </value>
     </labels>
+    <labels>
+        <fullName>altTxt_cancelRecordSave</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>altTxt_cancelRecordSave</shortDescription>
+        <value>Discard the record changes</value>
+    </labels>
 </CustomLabels>
