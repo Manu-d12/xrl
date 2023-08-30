@@ -2319,4 +2319,20 @@ return records;
         <shortDescription>tooltip_advancedActionSettings</shortDescription>
         <value>Advanced JSON for Action settings</value>
     </labels>
+    <labels>
+        <fullName>lbl_externalJS</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_externalJS</shortDescription>
+        <value>Select the External JS file</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_externalJS</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_externalJS</shortDescription>
+        <value>External JS file to extend functionality. You can refer to this file in callbacks </value>
+    </labels>
 </CustomLabels>

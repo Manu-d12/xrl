@@ -442,9 +442,9 @@ export let libs = {
 				"optionsCallBack" : function(scope){
 					return scope.config._staticResourceList;
 				},
-				"label": 'Select the External JS file',
-				"tooltip": 'Select the External JS file',
-				"placeHolder": 'Select the External JS file',
+				"label": _labels.lbl_externalJS,
+				"tooltip": _labels.tooltip_externalJS,
+				"placeHolder": _labels.lbl_externalJS,
 				"cmd" : "dialog:setTableParam"
 			},
 			"advanced": {

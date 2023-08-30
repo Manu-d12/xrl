@@ -35,7 +35,6 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		Promise.all([
 			loadStyle(this, resource + '/css/extRelList.css'),
 			loadScript(this, resource + '/js/xlsx.full.min.js'),
-			// loadScript(this, 'Export_externalJS.js'),
 			//loadScript(this, leaflet + '/leaflet.js')
 		]).then(() => {
 			console.log('Resources are loaded');

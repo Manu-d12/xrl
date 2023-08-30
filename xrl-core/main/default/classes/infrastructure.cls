@@ -860,6 +860,7 @@ global with sharing class infrastructure {
 			'lbl_advancedFieldSettings' => label.lbl_advancedFieldSettings,
 			'lbl_advancedTableSettings'=>label.lbl_advancedTableSettings,
 			'lbl_advancedActionSettings'=>label.lbl_advancedActionSettings,
+			'lbl_externalJS' => label.lbl_externalJS,
 			'msg_enterUniqueActionId'=>label.msg_enterUniqueActionId,
 			'msg_lisViewWasUpdated' => label.msg_lisViewWasUpdated,
 			'msg_requestWasSent' => label.msg_requestWasSent,
@@ -968,6 +969,7 @@ global with sharing class infrastructure {
 			'tooltip_advancedFieldSettings'=>label.tooltip_advancedFieldSettings,
 			'tooltip_advancedTableSettings'=>label.tooltip_advancedTableSettings,
 			'tooltip_advancedActionSettings'=>label.tooltip_advancedActionSettings,
+			'tooltip_externalJS'=>label.tooltip_externalJS,
 			'srcLbl_available' => label.srcLbl_available,
 			'srcLbl_optional' => label.srcLbl_optional,
 			'url_reqFeature'=>label.url_reqFeature
