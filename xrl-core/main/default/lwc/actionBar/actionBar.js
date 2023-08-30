@@ -35,8 +35,9 @@ export default class ActionBar extends LightningElement {
                 actionDetails = el;
             }
         });
-        this.config._advanced = eval('['+actionDetails?.advanced + ']')[0];
+
         if(actionDetails !== undefined){
+	        actionDetails._advanced = eval('['+actionDetails?.advanced + ']')[0];
             if(actionDetails.actionFlowName) {
                 console.log("Flow Execution");
                 this.actionscfg._handleEventFlow({name:actionDetails.actionFlowName,label:actionDetails.actionLabel});
@@ -46,10 +47,10 @@ export default class ActionBar extends LightningElement {
             } else if (actionDetails.isActionCustom){
                 console.log('Custom Event');
                 this.actionscfg._handleEvent(event, this.actionscfg);
-            } else if (this.config._advanced?.actionCallBack !== undefined && this.config._advanced?.actionCallBack !== ''){
+            } else if (actionDetails._advanced?.actionCallBack !== undefined && actionDetails._advanced?.actionCallBack !== ''){
                 //Callback execution
                 try{
-                    let fn = eval('(' + this.config._advanced.actionCallBack + ')')(this.config.dataTable?._selectedRecords(), this, libs); 
+                    let fn = actionDetails._advanced.actionCallBack(this, libs, this.config.dataTable?._selectedRecords()); 
 					this.config.dataTable?._updateView();
                 }catch(err){
                     console.log('EXCEPTION', err);
