@@ -144,6 +144,13 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		libs.getGlobalVar(this.name).iconName = data[cmd].iconMap.iconURL === undefined ? "/img/icon/t4v35/standard/custom_120.png" : data[cmd].iconMap.iconURL;
 		libs.getGlobalVar(this.name).iconStyle = libs.getGlobalVar(this.name).iconName?.includes('custom_120.png') ? 'width:32px;height:32px;margin: 5px;background-color:#d8c760;' : 'width:32px;height:32px;margin: 5px;';
 		this.config.isIconUrl = data[cmd].iconMap.iconURL?.includes('https') || libs.getGlobalVar(this.name).iconName?.includes('custom_120.png');
+		let options =  [{label : "None", value : ""}];
+		if (data[cmd].staticResourceList) {
+			data[cmd].staticResourceList.forEach(e=>{
+				options.push({label : e.split('/')[3], value: e})	
+			});
+		}	
+		this.config._staticResourceList = options;
 		this.config.actionsBar = {};
 
 		let adminConfig = (data[cmd].baseConfig) ? JSON.parse(data[cmd].baseConfig) : [];
@@ -310,17 +317,17 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	async loadExternalScript(){
 		//need to fetch this static resource list here because, every time the external JS file is uploaded the url(url gets updated with latest timestamp) changes but the name remains the same, 
 		// so to make sure it loads correctly needs to get the list beforehand
-		await libs.remoteAction(this, 'getStaticResource', {
-			callback: ((nodeName, data11) => {
-				let options =  [{label : "None", value : ""}];
-				if (data11[nodeName]) {
-					data11[nodeName].forEach(e=>{
-						options.push({label : e.split('/')[3], value: e})	
-					});
-				}
-				this.config._staticResourceList = options;
-			})
-		});
+		// await libs.remoteAction(this, 'getStaticResource', {
+		// 	callback: ((nodeName, data11) => {
+		// 		let options =  [{label : "None", value : ""}];
+		// 		if (data11[nodeName]) {
+		// 			data11[nodeName].forEach(e=>{
+		// 				options.push({label : e.split('/')[3], value: e})	
+		// 			});
+		// 		}
+		// 		this.config._staticResourceList = options;
+		// 	})
+		// });
 		if(this.config.listViewConfig[0].externalJS !== undefined && this.config.listViewConfig[0].externalJS !== ''){
 			try{
 				this.config.listViewConfig[0].externalJS = libs.getCurrentStaticResourceURLWithSameName(this.config._staticResourceList,this.config.listViewConfig[0].externalJS);

@@ -266,7 +266,7 @@
 						</td>
 					</tr>
 					<template if:true={group.isOpened} for:each={group.records} for:item="dItem" for:index="index">			
-						<tr key={dItem.Id} style={dItem._rowStyle} data-rowind={index} data-groupind={group.title}>
+						<tr key={dItem.Id} style={dItem._rowStyle} data-rowind={index} data-recid={dItem.Id} data-groupind={group.title}>
 							<td scope="col" style="width: 2rem;" data-rowind={index} class="numeration">
 								&nbsp;
 							</td>
@@ -276,10 +276,10 @@
 							<td scope="col" if:true={config.isShowCheckBoxes} style="width: 2rem;" data-rowind={index} data-rowid={dItem.Id} data-groupind={group.title}>
 								<lightning-input type="checkbox" data-rowind={index} data-rowid={dItem.Id} data-groupind={group.title} onchange={checkRow} checked={dItem._isChecked}></lightning-input>
 							</td>
-							<td scope="col" style="width: 2rem;" data-rowind={index}>
+							<!-- <td scope="col" style="width: 2rem;" data-rowind={index}>
 								&nbsp;
-							</td>
-							<td for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="hIndex" key={hItem.Id} role="gridcell" data-rowind={index} data-rowid={dItem.Id} data-colname={hItem.fieldName} ondblclick={rowDblCallback} class={hItem._cellCss}>
+							</td> -->
+							<td for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="hIndex" key={hItem.Id} data-recid={dItem.Id} role="gridcell" data-rowind={index} data-rowid={dItem.Id} data-colname={hItem.fieldName} ondblclick={rowDblCallback} class={hItem._cellCss}>
 								<span if:false={hItem.isActions} data-groupind={group.title} data-rowid={dItem.Id} class="slds-grid slds-grid_align-spread">
 									<template if:true={hItem.isNameField}>
 										<c-data-Table-Item if:false={dItem._isEditable} row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} data-recordind={dItem.Id} cfg={cfg} class={hItem.wrapClass} style="width:100%" onmouseenter={showPop} onmouseleave={hidePop}></c-data-Table-Item>

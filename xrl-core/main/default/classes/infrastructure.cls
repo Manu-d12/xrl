@@ -280,6 +280,7 @@ global with sharing class infrastructure {
 		}
 		result.put('listViews', listViews);
 		result.put('iconMap', getIconName(sObjApiName));
+		result.put('staticResourceList',getStaticResource());
 
 		return result;
 	}
