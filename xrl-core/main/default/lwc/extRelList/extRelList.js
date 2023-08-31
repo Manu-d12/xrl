@@ -516,9 +516,22 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				variant: 'error'
 			});
 			this.dispatchEvent(toast);
+			const errorIds = [];
+			this.config.errorList.forEach((el) => {
+				errorIds.push(el.split(':')[0]); //getting the IDs of the records that caused the error
+			});
+			for (let key of this.config.listViewConfig[0]._changedRecords.keys()) {
+				if (!errorIds.includes(key)) {
+					this.config.listViewConfig[0]._changedRecords.delete(key);
+				}
+			}
 			console.error(JSON.parse(JSON.stringify(this.config.errorList)));
 		}else{
 			this.config.listViewConfig[0]._changedRecords = undefined;
+			this.config.records.forEach((record) => {
+				delete record._cellCss;
+			});
+			libs.getGlobalVar(this.name).records = this.config.records;
 		}
 		this.template.querySelector('c-Data-Table').updateView();
 	}
