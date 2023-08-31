@@ -70,7 +70,7 @@
 							</template>
 							<!-- <lightning-button-icon if:false={dItem._hasChildRecords} icon-name="utility:dash"  variant="bare" alternative-text={config._LABELS.altTxt_expand} title={config._LABELS.title_expand} onclick={toggleGroup}></lightning-button-icon> -->
 						</td>
-						<td for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="hIndex" data-recid={dItem.Id} key={hItem.fieldName} role="gridcell" data-rowind={index} data-colname={hItem.fieldName} onclick={rowCallback} ondblclick={rowDblCallback} class={hItem._cellCss}>
+						<td for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="hIndex" data-recid={dItem.Id} key={hItem.fieldName} role="gridcell" data-rowind={index} data-colname={hItem.fieldName} onclick={rowCallback} ondblclick={rowDblCallback} style={dItem._cellCss}>
 							<span if:false={hItem.isActions} class="slds-grid slds-grid_align-spread">
 
 								<!--<lightning-input if:true={hItem.isEditable} type={hItem.type} field-level-help={hItem.inlineHelpText} data-rowind={index} data-colname={hItem.fieldName} onchange={inlineEdit}></lightning-input>-->
@@ -104,7 +104,7 @@
 									</template>
 									<!-- <lightning-button-icon if:false={dItem1._hasChildRecords} icon-name="utility:dash"  variant="bare" alternative-text={config._LABELS.altTxt_expand} title={config._LABELS.title_expand} onclick={toggleGroup}></lightning-button-icon> -->
 								</td>
-								<td for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="hIndex" key={hItem.fieldName} role="gridcell" data-recid={dItem1.Id} data-rowind={index} data-colname={hItem.fieldName} onclick={rowCallback} ondblclick={rowDblCallback} class={hItem._cellCss}>
+								<td for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="hIndex" key={hItem.fieldName} role="gridcell" data-recid={dItem1.Id} data-rowind={index} data-colname={hItem.fieldName} onclick={rowCallback} ondblclick={rowDblCallback} class={dItem1._cellCss}>
 									<span if:false={hItem.isActions} class="slds-grid slds-grid_align-spread">
 										<p if:true={hItem._addSpace} style="padding-left:7px">&nbsp;</p>
 										<template if:true={hItem.isNameField}>
@@ -133,7 +133,7 @@
 												<lightning-button-icon if:true={dItem2._isExpanded} icon-name="utility:chevrondown"  variant="bare" alternative-text={config._LABELS.altTxt_expand} title={config._LABELS.title_expand} data-id={dItem2.Id} onclick={toggleChildRecords}></lightning-button-icon>
 											</template>
 										</td>
-										<td for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="hIndex" key={hItem.fieldName} role="gridcell" data-rowind={index} data-recid={dItem2.Id} data-colname={hItem.fieldName} onclick={rowCallback} ondblclick={rowDblCallback} class={hItem._cellCss}>
+										<td for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="hIndex" key={hItem.fieldName} role="gridcell" data-rowind={index} data-recid={dItem2.Id} data-colname={hItem.fieldName} onclick={rowCallback} ondblclick={rowDblCallback} class={dItem2._cellCss}>
 											<span if:false={hItem.isActions} class="slds-grid slds-grid_align-spread">
 												<p if:true={hItem._addSpace} style="padding-left:13px">&nbsp;</p>
 												<template if:true={hItem.isNameField}>
@@ -162,7 +162,7 @@
 														<lightning-button-icon if:true={dItem3._isExpanded} icon-name="utility:chevrondown"  variant="bare" alternative-text={config._LABELS.altTxt_expand} title={config._LABELS.title_expand} data-id={dItem3.Id} onclick={toggleChildRecords}></lightning-button-icon>
 													</template>
 												</td>
-												<td for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="hIndex" key={hItem.fieldName} role="gridcell" data-recid={dItem3.Id} data-rowind={index} data-colname={hItem.fieldName} onclick={rowCallback} ondblclick={rowDblCallback} class={hItem._cellCss}>
+												<td for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="hIndex" key={hItem.fieldName} role="gridcell" data-recid={dItem3.Id} data-rowind={index} data-colname={hItem.fieldName} onclick={rowCallback} ondblclick={rowDblCallback} class={dItem3._cellCss}>
 													<span if:false={hItem.isActions} class="slds-grid slds-grid_align-spread">
 														<p if:true={hItem._addSpace} style="padding-left:25px">&nbsp;</p>
 														<template if:true={hItem.isNameField}>
@@ -191,7 +191,7 @@
 																<lightning-button-icon if:true={dItem4._isExpanded} icon-name="utility:chevrondown"  variant="bare" alternative-text={config._LABELS.altTxt_expand} title={config._LABELS.title_expand} data-id={dItem4.Id} onclick={toggleChildRecords}></lightning-button-icon>
 															</template>
 														</td>
-														<td for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="hIndex" key={hItem.fieldName} role="gridcell" data-recid={dItem4.Id} data-rowind={index} data-colname={hItem.fieldName} onclick={rowCallback} ondblclick={rowDblCallback} class={hItem._cellCss}>
+														<td for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="hIndex" key={hItem.fieldName} role="gridcell" data-recid={dItem4.Id} data-rowind={index} data-colname={hItem.fieldName} onclick={rowCallback} ondblclick={rowDblCallback} class={dItem4._cellCss}>
 															<span if:false={hItem.isActions} class="slds-grid slds-grid_align-spread">
 																<p if:true={hItem._addSpace} style="padding-left:33px">&nbsp;</p>
 																<template if:true={hItem.isNameField}>
@@ -217,7 +217,7 @@
 																<td scope="col" style="width: 2rem;">
 																	
 																</td>
-																<td for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="hIndex" key={hItem.fieldName} role="gridcell" data-recid={dItem5.Id} data-rowind={index} data-colname={hItem.fieldName} onclick={rowCallback} ondblclick={rowDblCallback} class={hItem._cellCss}>
+																<td for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="hIndex" key={hItem.fieldName} role="gridcell" data-recid={dItem5.Id} data-rowind={index} data-colname={hItem.fieldName} onclick={rowCallback} ondblclick={rowDblCallback} class={dItem5._cellCss}>
 																	<span if:false={hItem.isActions} class="slds-grid slds-grid_align-spread">
 																		<p if:true={hItem._addSpace} style="padding-left:38px">&nbsp;</p>
 																		<template if:true={hItem.isNameField}>

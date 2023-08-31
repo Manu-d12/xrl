@@ -586,6 +586,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					// let globalItem = libs.getGlobalVar(this.cfg).records.find(el=>{
 					// 	return el.Id === this.config._inlineEditRow.Id;
 					// })
+					r._cellCss = 'background-color:rgb(255,255,189);color:black;';
 					r._isEditable = false;
 					Object.assign(globalItem, r);
 					libs.getGlobalVar(this.cfg).records = this.records;
