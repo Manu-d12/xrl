@@ -399,7 +399,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	getGroupRecIndexes(index) {
 		for (let i = 0; i < this.groupedRecords.length; i++) {
 			for (let j = 0; j < this.groupedRecords[i].records.length; j++) {
-				if (this.groupedRecords[i].records[j].Id === this.records[index].Id) return [i, j];
+				if (this.groupedRecords[i].records[j].Id === index) return [i, j];
 			}
 		}
 	}
@@ -878,7 +878,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				cItem.isEditableRegular = false;
 			}
 			let left = ((event.x - 60) + 320) > screen.availWidth ? (screen.availWidth - 380) : (event.x - 60);
-			let rec = libs.findRecordWithChild(this.records,event.target.getAttribute('data-recid'));
+			let rec = recId ===  null ? this.records[calculatedInd] : libs.findRecordWithChild(this.records, recId);
 			this.config._bulkEdit = {
 				rowId : calculatedInd,
 				cItem : cItem,
@@ -892,7 +892,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			}
 			//this.config._isBulkEdit = true;
 		} else {
-				let record = libs.findRecordWithChild(this.records, recId);
+				let record = recId ===  null ? this.records[calculatedInd] : libs.findRecordWithChild(this.records, recId);
 				record._isEditable = true;
 				record._focus = colName;
 				if (this.config._inlineEdit !== undefined) {
