@@ -32,12 +32,16 @@ export default class ActionBar extends LightningElement {
         let actionDetails;
         this.actionscfg.actions.forEach((el)=>{
             if(el.actionId === actionId){
-                actionDetails = el;
+                actionDetails = Object.assign({}, el);
             }
         });
 
         if(actionDetails !== undefined){
-	        actionDetails._advanced = eval('['+actionDetails?.advanced + ']')[0];
+            try{
+	            actionDetails._advanced = eval('['+actionDetails?.advanced + ']')[0];
+            }catch(e){
+                console.error('Error', e);
+            }
             if(actionDetails.actionFlowName) {
                 console.log("Flow Execution");
                 this.actionscfg._handleEventFlow({name:actionDetails.actionFlowName,label:actionDetails.actionLabel});

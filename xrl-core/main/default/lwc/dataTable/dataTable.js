@@ -414,7 +414,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			}
 		});
 		// this.config = libs.getGlobalVar(this.cfg).listViewConfig;
-		console.log('Config', JSON.parse(JSON.stringify(this.config)));
+		// console.log('Config', JSON.parse(JSON.stringify(this.config)));
 		this.config._LABELS = libs.getGlobalVar(this.cfg)._LABELS;
 		
 		this.config._saveEdit = this.saveEditCallback.bind(this);
