@@ -1464,9 +1464,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					
 					// this.config.records = libs.getGlobalVar(this.cfg).records;
 
-					if(this.config.afterLoadTransformation !== undefined && this.config.afterLoadTransformation !== ""){
+					if(this.config._advanced?.afterloadTransformation !== undefined && this.config._advanced?.afterloadTransformation !== ""){
 						try {
-							this.config.records = eval('(' + this.config.afterLoadTransformation + ')')(this, data[nodeName].records.length > 0 ? data[nodeName].records : []);
+							this.config.records = this.config._advanced?.afterloadTransformation(this, data[nodeName].records.length > 0 ? data[nodeName].records : []);
 							libs.getGlobalVar(this.cfg).records = this.config.records;
 						} catch(err){
 							console.log('EXCEPTION', err);
@@ -1528,9 +1528,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						
 						// this.config.records = libs.getGlobalVar(this.cfg).records;
 	
-						if(this.config.afterLoadTransformation !== undefined && this.config.afterLoadTransformation !== ""){
+						if(this.config._advanced?.afterloadTransformation !== undefined && this.config._advanced?.afterloadTransformation !== ""){
 							try {
-								this.config.records = eval('(' + this.config.afterLoadTransformation + ')')(this, data[nodeName].records.length > 0 ? data[nodeName].records : []);
+								this.config.records = this.config._advanced?.afterloadTransformation(this, data[nodeName].records.length > 0 ? data[nodeName].records : []);
 								libs.getGlobalVar(this.cfg).records = this.config.records;
 							} catch(err){
 								console.log('EXCEPTION', err);
