@@ -218,27 +218,30 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	
 	get tableRecords() {
 		this.config.isAnyRecordsHaveChildren = false;
-		// this.records.forEach((el,ind) =>{
-		// 	el.sl = ind + 1;
-		// 	if(el.childRecords?.length > 0) {
-		// 		el._hasChildRecords = true;
-		// 		this.config.isAnyRecordsHaveChildren = true;
-		// 	}
-		// 	if(this.config.rowCss){
-		// 		el._rowStyle = this.config.rowCallback ? 'cursor : pointer;' : '';
-		// 		try{
-		// 			el._rowStyle += eval('(' + this.config.rowCss + ')')(el);
-		// 		}catch(e){
-		// 			libs.showToast(this,{
-		// 				title: 'Error',
-		// 				message: e.toString(),
-		// 				variant: 'error'
-		// 			});
-		// 			console.error('Error',e);
-		// 		}
-		// 	}
-		// });
-		this.addSerialNumbers(this.records);
+		if((this.config.isRecordsDragDropEnabled === undefined || this.config.isRecordsDragDropEnabled === false) && (this.config.fieldToMapToIndex === undefined || this.config.fieldToMapToIndex === "")){
+			this.records.forEach((el,ind) =>{
+				el.sl = ind + 1;
+				if(el.childRecords?.length > 0) {
+					el._hasChildRecords = true;
+					this.config.isAnyRecordsHaveChildren = true;
+				}
+				if (this.config._advanced?.rowCss) {
+					el._rowStyle = this.config.rowCallback ? 'cursor: pointer;' : '';
+					try {
+						el._rowStyle += eval('(' + this.config._advanced?.rowCss + ')')(el);
+					} catch (e) {
+						libs.showToast(this, {
+							title: 'Error',
+							message: e.toString(),
+							variant: 'error',
+						});
+						console.error('Error', e);
+					}
+				}
+			});
+		}else{
+			this.addSerialNumbers(this.records);
+		}
 
 		if (this.hasGrouping) {
 
@@ -588,6 +591,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					// })
 					r._cellCss = 'background-color:rgb(255,255,189);color:black;';
 					r._isEditable = false;
+					if(this.config._advanced.afterEditCallback !== undefined && this.config._advanced.afterEditCallback !== ""){
+						this.config._advanced.afterEditCallback(this,libs,[r]);
+					}
 					Object.assign(globalItem, r);
 					libs.getGlobalVar(this.cfg).records = this.records;
 					this.changeRecord(this.config._inlineEditRow.Id);
@@ -858,8 +864,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				libs.remoteAction(this, 'query', {
 					isNeedDescribe: false,
 					sObjApiName: describe.referenceTo[0],
-					fields: ['Id', 'Name'],
-					addCondition: libs.replaceLiteralsInStr(cItem.whereCondition,this.cfg),
+					fields: cItem._advanced?.referencedObject?.fields ? cItem._advanced.referencedObject.fields : ['Id','Name'],
+					addCondition: cItem._advanced?.referencedObject?.fields ? libs.replaceLiteralsInStr(cItem._advanced.referencedObject.whereCondition,this.cfg) : '',
 					callback: ((nodeName, data) => {
 						//console.log('length from Citem', data[nodeName].records);
 						cItem.options = [];
@@ -1341,7 +1347,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				item[refNode] = refNodeValue;
 				origItem[refNode] = refNodeValue;
 			}
-			
+			item._cellCss = 'background-color:rgb(255,255,189);color:black;';
+			origItem._cellCss = 'background-color:rgb(255,255,189);color:black;';
 			that.changeRecord(item.Id);
 		}
 		function getValue(cItem, v) {
@@ -1352,8 +1359,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		let value = this.template.querySelector('[data-id="origValue"]');
 		let chBox = this.template.querySelector('[data-id="isAll"]');
 		// let origRecords = libs.getGlobalVar(this.cfg).records;
-		let flattenRecords = libs.flattenRecordsWithChildren(libs.getGlobalVar(this.cfg).records);
-		this.origRecords = new Map(flattenRecords.map(record => [record.Id, record]));
+		// let flattenRecords = libs.flattenRecordsWithChildren(libs.getGlobalVar(this.cfg).records);
+		this.origRecords = new Map(libs.getGlobalVar(this.cfg).records.map(record => [record.Id, record]));
 		let refNode = describe.relationshipName;
 		let refNodeValue;
 
@@ -1370,11 +1377,17 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if (chBox.checked === false) {
 			//console.log('One item');
 			changeItem(this, this.records[this.config._bulkEdit.rowId], this.config._bulkEdit.cItem.fieldName, getValue(this.config._bulkEdit.cItem, value), refNode, refNodeValue);
+			if(this.config._advanced.afterEditCallback !== undefined && this.config._advanced.afterEditCallback !== ""){
+				this.config._advanced.afterEditCallback(this,libs,[this.records[this.config._bulkEdit.rowId]]);
+			}
 		} else {
 			//console.log('More then One item');
 			this.getSelectedRecords().forEach((item) => {
 				changeItem(this, item, this.config._bulkEdit.cItem.fieldName, getValue(this.config._bulkEdit.cItem, value),refNode, refNodeValue);
 			});
+			if(this.config._advanced.afterEditCallback !== undefined && this.config._advanced.afterEditCallback !== ""){
+				this.config._advanced.afterEditCallback(this,libs,this.getSelectedRecords());
+			}
 		}
 		//console.log('Bulk Edit', getValue(this.config._bulkEdit.cItem, value), chBox.checked);
 		this.config._bulkEdit = undefined;
