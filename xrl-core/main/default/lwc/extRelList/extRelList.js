@@ -320,7 +320,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				} });
 		}
 		if(this.config.listViewConfig[0].loadChunkSize !== undefined && this.config.listViewConfig[0].loadChunkSize !== ''){
-			await this.loadBulkData();
+			try{
+				await this.loadBulkData();
+			}catch(e){
+				console.error('Error in bulk loading', e);
+			}
 		}else{
 			await libs.remoteAction(this, 'query', {
 				isNeedDescribe: true,
@@ -368,7 +372,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	async loadBulkData(){
 		let soqlRel = '';
 		if(this.config.relField !== undefined && this.config.relField !== ''){
-			soqlRel = " WHERE " + this.config.relField + "='" + this.recordId + "'";
+			soqlRel = " WHERE " + this.config.relField + "='" + this.recordId + "' " + libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name);
 		}
 		await libs.remoteAction(this, 'customSoql', {
 			isNeedDescribe: true,
@@ -384,9 +388,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		this.config.listOfRecordIds = [];
 		this.config.fetchIdLimit = 49950;
 		for (let i = 1; i < ((parseInt(this.config.totalRecordsCount) / parseInt(this.config.fetchIdLimit)) + 1);i++) {
-			if(i === 1) await this.getBulkRecordsId('',this.config.fetchIdLimit);
+			if(i === 1) await this.getBulkRecordsId(libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name),this.config.fetchIdLimit);
 			else{
-				await this.getBulkRecordsId(" AND Id > '" + this.config.listOfRecordIds[parseInt(this.config.listOfRecordIds.length)-1].Id+"'",this.config.fetchIdLimit);
+				await this.getBulkRecordsId(" AND Id > '" + this.config.listOfRecordIds[parseInt(this.config.listOfRecordIds.length)-1].Id+"' " + libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name),this.config.fetchIdLimit);
 			}
 			console.log('Verifying loop', i);
 		}
