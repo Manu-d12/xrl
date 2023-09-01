@@ -573,7 +573,7 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_showStandardEdit</shortDescription>
-        <value>Enable standard edit(it will replace inline editing)?</value>
+        <value>Enable standard edit(it will replace inline editing when single record is selected)?</value>
     </labels>
     <labels>
         <fullName>tooltip_replaceInlineEditWithStandardEdit</fullName>
@@ -581,7 +581,7 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>tooltip_replaceInlineEditWithStandardEdit</shortDescription>
-        <value>Replace inline edit with standard edit?</value>
+        <value>Replace inline edit with standard edit for single record?</value>
     </labels>
     <labels>
         <fullName>lbl_chunkSizeForSave</fullName>
@@ -755,7 +755,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>tooltip_widthExample</shortDescription>
-        <value>You can use % or px for definition. Ex: 20px or 5%. Max width is set to 40% or 500px</value>
+        <value>You can use % or px for definition. Ex: 20px or 5%. Max width is set to 40% or 500px. If no unit(px or %) is specified,then it will be treated as px value</value>
     </labels>
     <labels>
         <fullName>lbl_selectFieldsForServerFilter</fullName>
@@ -1397,7 +1397,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>tooltip_actionIconName</shortDescription>
-        <value>If you want to show as a button keep it blank</value>
+        <value>If you want to show as a button keep it blank. For Expand action only, you can use 2 icons seperated by a slash(/)</value>
     </labels>
     <labels>
         <fullName>tooltip_actionIdTooltip</fullName>
@@ -1437,7 +1437,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>tooltip_actionTipTooltip</shortDescription>
-        <value>Example: This is full screen your grid</value>
+        <value>Example: This is full screen your grid. For Expand action only, you can use 2 tips seperated by a slash(/)</value>
     </labels>
     <labels>
         <fullName>tooltip_actionTooltip</fullName>
@@ -1482,8 +1482,7 @@ function(row,col,val){
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>placeHolder_beforeDeleteValidation</shortDescription>
-        <value>#This function will accept 3 values as parameters
-#If a record fails the validation the no records will be deleted
+        <value>//Example- If a record fails the validation the no records will be deleted
 function(scope,libs,record){
   if(record.Type==&apos;Electrical&apos;)
     return false; 
@@ -1553,8 +1552,8 @@ function(scope,libs,record){
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>placeHolder_rowCss</shortDescription>
-        <value>function(row){
-//This is the logic of striped row if you want to change row colors please modify according to your needs
+        <value>//Example - This is the logic of striped row if you want to change row colors please modify according to your needs
+function(row){
 if(row.sl % 2 === 0){
 return &quot;background-color:#ffffff;&quot; //white
 }else {
@@ -1584,7 +1583,7 @@ return &quot;background-color:#F5F5F5;&quot; //light grey
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>tooltip_configSaveAsSave</shortDescription>
-        <value>Save this listview with this list view name and label</value>
+        <value>Save this listview with this list view label</value>
     </labels>
     <labels>
         <fullName>tooltip_configSaveAsCancel</fullName>
@@ -1640,7 +1639,7 @@ return &quot;background-color:#F5F5F5;&quot; //light grey
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>title_expandView</shortDescription>
-        <value>Expand View</value>
+        <value>Expand View / Collapse View</value>
     </labels>
     <labels>
         <fullName>tooltip_conditionFilteringPattern</fullName>
@@ -1904,8 +1903,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>placeholder_groupingFunction</shortDescription>
-        <value>//this function receives the array of groups done on the selected fields
-//it must return the array of groups in same format
+        <value>//Example- this receives the array of groups done on the selected fields and it must return the array of groups in same format
 function(groups){
 console.log('From Group Function',groups);
 return groups;
@@ -2190,5 +2188,159 @@ return groups;
         <protected>true</protected>
         <shortDescription>tooltip_enableColumnHeaderWrap</shortDescription>
         <value>This will wrap the texts in the column header</value>
+    </labels>
+    <labels>
+        <fullName>msg_entityIsDeleted</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_entityIsDeleted</shortDescription>
+        <value>Error: Changes are not saved because one or more Item is deleted</value>
+    </labels>
+    <labels>
+        <fullName>lbl_afterloadTransformation</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_afterloadTransformation</shortDescription>
+        <value>After Load Transformation</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_afterloadTransformation</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_afterloadTransformation</shortDescription>
+        <value>this function must return a records as input also must get records</value>
+    </labels>
+    <labels>
+        <fullName>placeHolder_afterloadTransformation</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>placeHolder_afterloadTransformation</shortDescription>
+        <value>function(scope,records){
+return records;
+}</value>
+    </labels>
+    <labels>
+        <fullName>msg_itemsUpdateFailed</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_itemsUpdateFailed</shortDescription>
+        <value> items failed. </value>
+    </labels>
+    <labels>
+        <fullName>msg_packageLicenseExpired</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_packageLicenseExpired</shortDescription>
+        <value>Package License is expired or user does not have license assigned</value>
+    </labels>
+    <labels>
+        <fullName>msg_onlyAcceptsPositiveNumbers</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_onlyAcceptsPositiveNumbers</shortDescription>
+        <value>Only accepts positive numbers</value>
+    </labels>
+    <labels>
+        <fullName>msg_noPermissionSetAssigned</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_noPermissionSetAssigned</shortDescription>
+        <value>No Permission Set Assigned</value>
+    </labels>
+    <labels>
+        <fullName>lbl_fieldToMapToIndex</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_fieldToMapToIndex</shortDescription>
+        <value>Enter the field name which will be mapped to the index</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_fieldToMapToIndex</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_fieldToMapToIndex</shortDescription>
+        <value>Field name which will be mapped to the index</value>
+    </labels>
+    <labels>
+        <fullName>lbl_advancedFieldSettings</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_advancedFieldSettings</shortDescription>
+        <value>Advanced JSON for field settings</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_advancedFieldSettings</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_advancedFieldSettings</shortDescription>
+        <value>Advanced JSON for field settings</value>
+    </labels>
+    <labels>
+        <fullName>lbl_advancedTableSettings</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_advancedTableSettings</shortDescription>
+        <value>Advanced JSON for Table settings</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_advancedTableSettings</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_advancedTableSettings</shortDescription>
+        <value>Advanced JSON for Table settings</value>
+    </labels>
+    <labels>
+        <fullName>lbl_advancedActionSettings</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_advancedActionSettings</shortDescription>
+        <value>Advanced JSON for Action settings</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_advancedActionSettings</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_advancedActionSettings</shortDescription>
+        <value>Advanced JSON for Action settings</value>
+    </labels>
+    <labels>
+        <fullName>lbl_externalJS</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_externalJS</shortDescription>
+        <value>Select the External JS file</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_externalJS</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_externalJS</shortDescription>
+        <value>External JS file to extend functionality. You can refer to this file in callbacks </value>
+    </labels>
+    <labels>
+        <fullName>altTxt_cancelRecordSave</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>altTxt_cancelRecordSave</shortDescription>
+        <value>Discard the record changes</value>
     </labels>
 </CustomLabels>

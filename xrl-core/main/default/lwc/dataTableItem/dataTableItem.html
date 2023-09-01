@@ -13,10 +13,10 @@
 				options={col.options} selectedvalue={editValue} data-id={col.fieldName}></c-multiselect>
 			</template>
 			<template if:false={col._isLookUpEdit}>
-				<lightning-input if:true={col.isEditableRegular} type={col.type} field-level-help={col.inlineHelpText} value={editValue} onchange={inlineEdit} data-id={col.fieldName} tabindex="0"></lightning-input>
+				<lightning-input if:true={col.isEditableRegular} maxlength={col.length} type={col.type} field-level-help1={col.inlineHelpText} value={editValue} onchange={inlineEdit} data-id={col.fieldName} tabindex="0"></lightning-input>
 			</template>
 			<template if:true={col.isEditableTextArea}>
-				<lightning-textarea field-level-help={col.inlineHelpText} value={editValue} onchange={inlineEdit} data-id={col.fieldName} tabindex="0"></lightning-textarea>
+				<lightning-textarea field-level-help1={col.inlineHelpText} maxlength={col.length} value={editValue} onchange={inlineEdit} data-id={col.fieldName} tabindex="0"></lightning-textarea>
 			</template>
 			<!-- <span if:false={col.isEditable} title={value} style={uStyle}>
 				<lightning-input type="checkbox" if:true={col.isEditableBool} checked={editValue} disabled="true"> </lightning-input>
@@ -26,7 +26,7 @@
 			</span> -->
 			<template if:true={col._isLookUpEdit}>
 				<c-multiselect if:true={col._editOptions} listsize={config.dataTableCfg.displayOptionListSize} onselect={inlineEdit} 
-				options={col._editOptions} selectedvalue={editValue} data-id={col.fieldName}></c-multiselect>
+				options={col._editOptions} selectedvalue={editValue} cfg={cfg} col={col} optionsfromglobalvar=true data-id={col.fieldName}></c-multiselect>
 			</template>
 			<span if:true={col.isEditable} title={value}>
 				<lightning-input type="checkbox" if:true={col.isEditableBool} checked={editValue} onchange={inlineEdit} data-id={col.fieldName}> </lightning-input>

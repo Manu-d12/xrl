@@ -1,7 +1,9 @@
 import { LightningElement, api, track } from 'lwc';
 import { libs } from 'c/libs';
+import { NavigationMixin } from "lightning/navigation"
+import { encodeDefaultFieldValues, decodeDefaultFieldValues } from 'lightning/pageReferenceUtils'
 
-export default class Layout extends LightningElement {
+export default class Layout extends NavigationMixin(LightningElement) {
 	@api recordId;
 	@api defaultListView;	
 	@api configuration;
@@ -22,16 +24,90 @@ export default class Layout extends LightningElement {
 
     connectedCallback() {
 		console.log('RENDERED');
-		this.name = this.configId.split('::')[1];
-		this.configId = this.configId.split('::')[0];
+		this.name = this.configId.replaceAll(':','');
+		this.tabConfigName = this.name;
+		// this.configId = this.configId;
 		this.loadCfg(true);
-		window.addEventListener("resize", this.handleResize.bind(this))
+		libs.getGlobalVar(this.tabConfigName).componentsInLayout = [];
+		libs.getGlobalVar(this.tabConfigName).componentsInLayout.push({uniqueName: this.configId});
+		window.addEventListener("resize", this.handleResize.bind(this));
+		//postMessage listener to communicate between different Layout components
+		//need to listen improve the security concerns to block messages from unauthorized access
+		if(!window.location.href.includes('flexipageEditor')){
+			window.addEventListener(
+				"message",this.listenEvent.bind(this),
+				false,
+			);
+		}
+	}
+	// function(selectedRecords,scope,libs){
+	// 	const message = new Map();
+	// 		message.set('master_Item_table',
+	// 		{
+	// 			'refresh':{
+	// 			  'sendAcknowledgementTo': 'StrataVAR__MasterItem__c:Id:true:StrataVAR__MasterItem__c_Bundletab',
+	// 				'sObjApiName': "pqwqa15__Master_Item__c",
+	// 				fields: ['Id', 'Name', 'pqwqa15__Part_Number__c', 'pqwqa15__Description__c', 'pqwqa15__Source__c', 'pqwqa15__Vendor__c', 'pqwqa15__Manufacturer__c'],
+	// 			}
+	// 		});
+	// 		message.set('0',
+	// 		{
+	// 			'refresh':{ }
+	// 		});
+	// 	libs.broadcastMessage(this,message);
+	// }
+	listenEvent(event){
+		if(event.data.size === 0) return;
+		let isMatchingUniqueName = libs.findMatchingKey(event.data,libs.getGlobalVar(this.tabConfigName).componentsInLayout);
+		if(isMatchingUniqueName !== undefined && isMatchingUniqueName.length > 0) {
+			console.log("Message received", event.data);
+			if(event.data.get(this.configId)){
+				console.log('Acknowledgement',event.data.get(this.configId)['status']);
+				return;
+			}
+			this.handlePostMessageEvents(event.data,isMatchingUniqueName);
+		}
+	}
+	handlePostMessageEvents(message,isMatchingUniqueName){
+		isMatchingUniqueName.forEach((element) => {
+			let operations = JSON.parse(JSON.stringify(message.get(element.uniqueName)));
+			if(element.uniqueName === this.configId){
+				//this operations will be performed on this layout element
+				/* eslint-disable */
+				for (const operation in operations) {
+					console.log('operations',operation,operations[operation]);
+					if(operation === 'refresh'){
+						console.log('Refreshing Whole Layout...');
+						this.name = this.configId.replaceAll(':','');
+						// this.tabConfigName = this.name;
+						libs.getGlobalVar(this.tabConfigName).componentsInLayout = [];
+						libs.getGlobalVar(this.tabConfigName).componentsInLayout.push({uniqueName: this.configId});
+						this.loadCfg(true);
+					}
+				}
+			}else{
+				this.template.querySelectorAll('c-Data-Table')?.forEach(ch => {
+					if (element.uniqueName === ch.cfg) ch.handlePostMessageEvents(operations);
+				});
+			}
+		});
+		// for (const key in message) {
+		// 	if(key === 'refresh'){
+		// 		if(message[key].includes('*')){
+		// 			console.log('Refreshing Whole Layout...');
+		// 			this.name = this.configId.replaceAll(':','');
+		// 			this.tabConfigName = this.name;
+		// 			this.loadCfg(true);
+		// 		}
+		// 	}
+		// }
 	}
 
 	setCustomLabels(cmd, data) {
 		console.log('CustomLabes are loaded', data[cmd]);
 		this.config._LABELS = data[cmd];
 		this.LABELS = data[cmd];
+		libs.setGlobalVar('_LABELS', data[cmd]);
 	}
 
 	loadCfg(isInit) {
@@ -51,7 +127,7 @@ export default class Layout extends LightningElement {
 		if (this.configuration) {
 			this.setConfig('getConfigResult', this.configuration);
 		} else {
-			libs.remoteAction(this, 'getConfigById', { configId: this.configId, callback: this.getWholeConfig.bind(this) });
+			libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: this.configId, callback: this.getWholeConfig.bind(this) });
 		}
 	}
 	async getWholeConfig(cmd,data){
@@ -64,10 +140,11 @@ export default class Layout extends LightningElement {
 			this.components = [];
 			this.config.listViewConfig.forEach((el,index)=>{
 				console.log('cmpName',el.cmpName);
-				if(el.cmpName === 'dataTable') this.components.push({isDataTable:true,key:'sFilter'+index});
-				if(el.cmpName === 'serversideFilter') this.components.push({isServerFilter:true,key:'dataTable'+index});
-				if(el.cmpName === 'chart') this.components.push({isChart:true,key:'chart'+index});
-				if(el.cmpName === 'chevron') this.components.push({isChevron:true,key:'chevron'+index});
+				if(el.cmpName === 'dataTable') this.components.push({isDataTable:true,key:'sFilter'+index,uniqueName:el.uniqueName});
+				if(el.cmpName === 'serversideFilter') this.components.push({isServerFilter:true,key:'dataTable'+index,uniqueName:el.uniqueName});
+				if(el.cmpName === 'chart') this.components.push({isChart:true,key:'chart'+index,uniqueName:el.uniqueName});
+				if(el.cmpName === 'chevron') this.components.push({isChevron:true,key:'chevron'+index,uniqueName:el.uniqueName});
+				if(el.cmpName === 'actionBar') this.components.push({isActionBar:true,key:'actionBar'+index,uniqueName:el.uniqueName});
 			});
 			// this.config.listViewName = jsonDetails[0].name;
 			// this.config.sObjApiName = jsonDetails[0].sObjApiName;
@@ -189,10 +266,10 @@ export default class Layout extends LightningElement {
 		if(event.detail.cmd.startsWith('filter:')) {
 			let comp = this.config.tabularConfig.dataModel.find(cmp => cmp.uniqueName === event.detail.source);
 			this.template.querySelectorAll('c-Data-Table')?.forEach(ch => {
-				if (comp.targets.includes(ch.cfg)) ch.handleEventMessage(event);
+				if (comp?.targets?.includes(ch.cfg) || event.detail.targets?.includes(ch.cfg)) ch.handleEventMessage(event);
 			});
 			if (event.detail.cmd.split(':')[1] === 'refresh') this.template.querySelectorAll('c-chartjs')?.forEach(ch => {
-				if (comp.targets.includes(ch.name)) ch.handleEventMessage(event);
+				if (comp?.targets?.includes(ch.name) || event.detail.targets?.includes(ch.cfg)) ch.handleEventMessage(event);
 			});
 		} else if(event.detail.cmd.startsWith('chart:')) {
 			this.template.querySelectorAll('c-Data-Table')?.forEach(ch => {
@@ -220,9 +297,10 @@ export default class Layout extends LightningElement {
 			this.config.rows = this.config.tabularConfig.tableDefinition.rows;
 			this.config.cols = this.config.tabularConfig.tableDefinition.cols;
 			let colSize = 12 / parseInt(this.config.cols);
+			let sortedDataModel = this.config.tabularConfig.dataModel.toSorted((a, b) => {return a.cmpName === 'actionBar' ? 1 : 0;});
 
 			// Loop through data model components
-			for (const cmp of this.config.tabularConfig.dataModel) {
+			for (const cmp of sortedDataModel) {
 				
 				cmp.class = this.config.cols != 12 ? `slds-col slds-size_${cmp.colSize || colSize}-of-12` : 'slds-col slds-size_12-of-12';
 
@@ -242,7 +320,12 @@ export default class Layout extends LightningElement {
 				cmp.isServerFilter = cmp.cmpName === 'serversideFilter';
 				cmp.isChart = cmp.cmpName === 'chart';
 				cmp.isChevron = cmp.cmpName === 'chevron';
-		
+				cmp.isActionBar = cmp.cmpName === 'actionBar';
+				
+				if(libs.getGlobalVar(this.tabConfigName).componentsInLayout === undefined) {
+					libs.getGlobalVar(this.tabConfigName).componentsInLayout = [{uniqueName: this.configId}];
+				}
+				libs.getGlobalVar(this.tabConfigName).componentsInLayout.push({uniqueName: cmp.uniqueName});
 				// Set component configuration
 				this.name = cmp.uniqueName;
 				let configUniqueName = cmp.configUniqueName;
@@ -260,7 +343,7 @@ export default class Layout extends LightningElement {
 					//await new Promise(resolve => setTimeout(resolve, 3000)); //this needs to debug, should work without timeout
 				} else if (cmp.isServerFilter) {
 					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, sObjApiName:this.config.sObjApiName || configUniqueName.split(':')[0] , callback: function(cmd, data) {
-						this.config.listViewConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig) : [];
+						this.config.listViewConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
 						this.config.sObjApiName = this.config.sObjApiName || configUniqueName.split(':')[0];
 						this.config.relField = this.config.relField || configUniqueName.split(':')[1];
 						this.config.financial = (data[cmd].Financial) ? data[cmd].Financial : {};
@@ -269,11 +352,21 @@ export default class Layout extends LightningElement {
 					} });
 				} else if (cmp.isChart) {
 					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
-						this.config.chartConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig) : [];
+						this.config.chartConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
 					} });
 				} else if (cmp.isChevron) {
 					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
-						this.config.chevronConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig) : [];
+						this.config.chevronConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
+					} });
+				} else if (cmp.isActionBar) {
+					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
+						this.config.actionsBar = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
+						cmp.config = {
+							'actions': this.config.actionsBar?.actions || [],
+							'_handleEvent': this.handleEvent.bind(this),
+							'_cfgName': cmp.tableName,
+							'_barName': this.name
+						};
 					} });
 				}
 			}
@@ -293,7 +386,7 @@ export default class Layout extends LightningElement {
 		libs.getGlobalVar(this.name).userInfo = data.userInfo;
 		libs.getGlobalVar(this.name).financial = data[cmd].Financial;
 		
-		this.config.listViewConfig = data[cmd].userConfig ? JSON.parse(data[cmd].userConfig) : [];
+		this.config.listViewConfig = data[cmd].userConfig ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
 		this.config.currency = data[cmd].currency;
 		this.config.describe = data[cmd].describe ? JSON.parse(data[cmd].describe) : {};
 		this.config.fields = [];
@@ -364,4 +457,270 @@ export default class Layout extends LightningElement {
 			}
 		});
 	}
+
+	handleEvent(event, cfg) {
+		console.log('action', event, event.target, JSON.parse(JSON.stringify(cfg)));
+		let actionId = event?.target?.getAttribute('data-id');
+
+		if (actionId.startsWith('std:')) {
+			this.handleStandardAction(event, cfg);
+		}		
+		if (actionId.startsWith('custom:')) {
+			this.handleCustomAction(event, cfg);
+		}
+	}
+
+	async handleStandardAction(event, cfg) {
+		let actionId = event?.target?.getAttribute('data-id');
+
+		let table = libs.getGlobalVar(cfg._cfgName);
+		let action = cfg.actions.find(act => act.actionId === actionId);
+		let _LABELS = libs.getGlobalVar('_LABELS');
+
+		if (actionId === 'std:delete') {
+			if (table.listViewConfig[0]._changedRecords) {
+				libs.showToast(this, {
+					title: 'Error',
+					message: _LABELS.msg_unsaveRecordsCannotPerformOtherAction,
+					variant: 'error'
+				});
+				return;
+			}
+			let records = table.listViewConfig[0]._selectedRecords();
+			if (records.length === 0) {
+				libs.showToast(this, {
+					title: 'Error',
+					message: _LABELS.lbl_deleteNoRecordSelectedError,
+					variant: 'error'
+				});
+				return;
+			}
+			let dialogCfg = {
+				title: _LABELS.lbl_confirmDelete,
+				headerStyle: 'slds-modal__header slds-theme_error',
+				contents: [
+					{
+						isMessage: true,
+						name: 'deleteConfirm',
+						text: _LABELS.msg_deleteConfirm1 + ' ' + records.length + ' ' + _LABELS.msg_deleteConfirm2
+					}
+				],
+				buttons: [
+					{
+						name: 'cancel',
+						label: _LABELS.lbl_cancel,
+						variant: 'neutral'
+					},
+					{
+						name: 'delete',
+						label: _LABELS.title_delete,
+						variant: 'brand',
+						class: 'slds-m-left_x-small'
+					}
+				]
+			};
+			let res = await this.openDialog(dialogCfg, cfg, actionId);
+			this.showDialog = false;
+			this.dialogCfg = null;
+			if (res.action === 'cancel') return;
+
+			let deleteChunk = action.chunkSize ? action.chunkSize : 200;
+			let index = 0;
+
+			try {
+				while (index < records.length) {
+					let chunk = records.slice(index, records[(parseInt(index) + parseInt(deleteChunk))] ? (parseInt(index) + parseInt(deleteChunk)) : (records.length));
+					index += records[(parseInt(index) + parseInt(deleteChunk))] ? parseInt(deleteChunk) : (records.length);
+
+					chunk = this.stripChunk(chunk);
+					await libs.remoteAction(this, 'delRecords', { records: chunk, sObjApiName: table.sObjApiName });
+				}
+				libs.showToast(this, {
+					title: 'Success',
+					message: this.config._LABELS.msg_successfullyDeleted,
+					variant: 'success'
+				});
+				let recIds = records.map(r => r.Id);
+				table.records = table.records.filter(rec => !recIds.includes(rec.Id));
+				table.listViewConfig[0].records = table.records;
+				table.listViewConfig[0]._updateView();
+			} catch (error) {
+				console.log(error);
+			}
+		}
+		if (actionId === 'std:new') {
+				let defValue = {};
+				defValue[this.config.relField] = this.recordId;
+				if (action?.defValues) {
+					Object.assign(defValue, action.defValues);
+				}
+				this[NavigationMixin.Navigate]({
+					type: 'standard__objectPage',
+					attributes: {
+						/*recordId: this.recordId, // pass the record id here.*/
+						objectApiName: action?.sObjApiName ? action?.sObjApiName : this.config.tabularConfig.sObjApiName,
+						actionName: 'new',
+					},
+					state: {
+						defaultFieldValues: encodeDefaultFieldValues(defValue),
+				        useRecordTypeCheck: 1
+					}
+				});
+
+			return;
+		}
+		if (actionId === 'std:edit') {
+				let defValue = {};
+				let hId = location.hash?.replace('#','');
+				defValue[this.config.relField] = hId ? hId : this.recordId;
+
+				this[NavigationMixin.Navigate]({
+					type: 'standard__recordPage',
+					attributes: {
+						/*recordId: this.recordId, // pass the record id here.*/
+						recordId: hId ? hId : this.recordId,
+						objectApiName: action?.sObjApiName ? action?.sObjApiName : this.config.tabularConfig.sObjApiName,
+						actionName: 'edit'
+					}
+				});
+
+			return;
+		}
+		if (actionId === 'std:untie') {
+			table.listViewConfig[0].isShowCheckBoxes = !table.listViewConfig[0].isShowCheckBoxes;
+			table.listViewConfig[0]._updateView();
+		}
+	}
+
+	stripChunk(chunkIn) {
+		let chunk = [];
+		chunkIn.forEach((item) => {
+			chunk.push(JSON.parse(JSON.stringify(item, (key, value) => { return typeof (value) === 'object' && key !== "" ? null : value; })))
+		});
+		return chunk;
+	}
+
+	async handleCustomAction(event, cfg) {
+		let actionId = event?.target?.getAttribute('data-id');
+		let table = libs.getGlobalVar(cfg._cfgName).listViewConfig[0];
+		let action = JSON.parse(JSON.stringify(cfg.actions.find(act => act.actionId === actionId)));
+		this.parseHandlers(action);
+		let tableElement = this.template.querySelector('[data-name="' + cfg._cfgName + '"]');
+		
+		let input = {}, confirmed = false, index = 0;
+		if (action.inputDialogs) {
+			do {
+				input = await this.openDialog(action.inputDialogs[index], cfg, actionId);
+				console.log('input', JSON.parse(JSON.stringify(input)));
+				this.showDialog = false;
+				this.dialogCfg = null;
+				if (input.action === 'cancel') return;
+				else if (input.action.startsWith('switch')) index = input.action.split(':')[1];
+				else confirmed = true;
+
+			} while (!confirmed);
+		}
+		input.index = index;
+
+		let validationResult;
+		if (action.validationCallBack && typeof action.validationCallBack === 'function') {
+			validationResult = await action.validationCallBack({ selected: table._selectedRecords(), input: input, table: table, tableElement: tableElement, action: action}, this, libs);
+			console.log('validationResult', JSON.parse(JSON.stringify(validationResult)));
+			if (validationResult.errorMessage) {
+				libs.showToast(this, {
+					title: 'Error',
+					message: validationResult.errorMessage,
+					variant: 'error'
+				});
+				return;
+			}
+		}
+
+		if (action.confirmationDialog) {
+			let result = await this.openDialog(action.confirmationDialog, cfg, actionId);
+			console.log('dialog res', JSON.parse(JSON.stringify(result)));
+			this.showDialog = false;
+			this.dialogCfg = null;
+			if (result.action === 'cancel') return;
+		}
+
+		let result;
+		if (action.actionCallBack && typeof action.actionCallBack === 'function') {
+			result = await action.actionCallBack({ selected: table._selectedRecords(), input: input, table: table, tableElement: tableElement, action: action, validationResult: validationResult} , this, libs);
+			console.log('result', JSON.parse(JSON.stringify(result)));
+			if (result.successMessage) {
+				libs.showToast(this, {
+					title: 'Success',
+					message: result.successMessage,
+					variant: 'success'
+				});
+				if (result.updateView) table._updateView();
+			} else if (result.errorMessage) {
+				libs.showToast(this, {
+					title: 'Error',
+					message: result.errorMessage,
+					variant: 'error'
+				});
+			}
+		}
+
+		if (action.completedCallBack && typeof action.completedCallBack === 'function') {
+			action.completedCallBack({ selected: table._selectedRecords(), input: input, table: table, tableElement: tableElement, action: action, validationResult: validationResult, result: result} , this, libs);
+		}
+
+	}
+
+	openDialog(dialogCfg, actionCfg, actionId) {
+		return new Promise(resolve => {
+			this.dialogCfg = {
+				data_id: actionCfg._cfgName + ':' + actionCfg._barName + ':' + actionId,
+				callback: ((data) => {
+					resolve(data);
+				})
+			};
+			this.replaceLiterals(dialogCfg, '_LABELS');
+			Object.assign(this.dialogCfg, dialogCfg);
+			this.showDialog = true;
+		});		
+	}
+
+	replaceLiterals(target, globalVar) {
+		let replaceObj = (ob) => {
+            for (let p in ob) {
+                if (typeof ob[p] === 'string' && ob[p].startsWith('%')) {
+					ob[p] = libs.replaceLiteralsInStr(ob[p], globalVar);
+                } else if (typeof ob[p] === 'object') {
+                    replaceObj(ob[p]);
+                }
+            }
+        };
+		if (typeof target === 'string')	libs.replaceLiteralsInStr(target, globalVar);
+		else replaceObj(target);
+	}
+
+	async bulkAction(cmd, recordIdList, recordParam, params, chunkSize, callback) {
+		let index = 0;
+		let result = [];
+		params.callback = (cmd, res) => {
+			console.log(cmd, res); 
+			result.push(res);
+		};
+		while (index < recordIdList.length) {
+			params[recordParam] = recordIdList.slice(index, index + chunkSize > recordIdList.length ? recordIdList.length : index + chunkSize);
+			index += chunkSize;
+			await libs.remoteAction(this, cmd, params);
+		}
+		console.log('bulkAction result', result); 
+		callback(result);
+	}
+	
+    parseHandlers(ob) {
+        for (let p in ob) {
+            if (typeof ob[p] === 'string' && ob[p].includes('function')) {
+                ob[p] = eval('(' + ob[p] + ')');
+            } else if (typeof ob[p] === 'object') {
+                this.parseHandlers(ob[p]);
+            }
+        }
+    }
 }

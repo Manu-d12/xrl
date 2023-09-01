@@ -15,7 +15,11 @@ export default class SqlBuilder extends LightningElement {
         this.config.sqlBuilder = {};
         this.config.sqlBuilder.fields = [];
         this.config.sqlBuilder.selectedFields = this.config.dialog.listViewConfig.colModel;
-        this.config.sqlBuilder.conditions = this.config.dialog.listViewConfig.conditionMap ? this.config.dialog.listViewConfig.conditionMap : [];
+        this.config.sqlBuilder.conditions = this.config.dialog.listViewConfig?.conditionMap ?? [];
+        this.config.sqlBuilder.conditions.forEach((el) => {
+            el._formattedValue = this.formatConditionValue(el, el.value);
+            el._formattedValueRange = el.valueRange ? this.formatConditionValue(el, el.valueRange) : undefined;
+        });
         this.config.sqlBuilder.orderings = this.config.dialog.listViewConfig.orderMap ? this.config.dialog.listViewConfig.orderMap : [];
         this.config.sqlBuilder.conditionOrdering = this.config.dialog.listViewConfig.conditionOrdering ? this.config.dialog.listViewConfig.conditionOrdering : '';
         this.config.sqlBuilder.sortOrderOptions = [{label: this.config._LABELS.lbl_ascending, value:'ASC'},
@@ -82,7 +86,7 @@ export default class SqlBuilder extends LightningElement {
             this.config.dialog.listViewConfig.orderBy = '';
         }
     }
-    handleBuilderEvent(event){
+    async handleBuilderEvent(event){
         let val = event.target.getAttribute('data-id');
 
         //For Select Fields Tabs
@@ -92,8 +96,12 @@ export default class SqlBuilder extends LightningElement {
             if( refObj === null){
                 //adding the validation of 20 max columns
                 if(this.config.sqlBuilder.selectedFields.length < 20){
-                    this.toggleArrayElement(this.config.sqlBuilder.selectedFields,event.target.getAttribute('data-val'));
                     event.target.classList.add('slds-theme_alt-inverse');
+                    let col = this.config.sqlBuilder.fields.find((el) => el.fieldName === event.target.getAttribute('data-val'));
+                    if(col !== undefined){
+                        col.css = 'slds-item slds-theme_alt-inverse';
+                    }
+                    this.toggleArrayElement(this.config.sqlBuilder.selectedFields,event.target.getAttribute('data-val'));
                     this.ElementList.push(event.target.getAttribute('data-val'));
                     this.dialogValues();
                 }else{
@@ -142,8 +150,13 @@ export default class SqlBuilder extends LightningElement {
             });
         }
         if(val === "sqlBuilder:deleteSelectedField"){
-            let field = event.target.getAttribute('data-val');                
+            let field = event.target.getAttribute('data-val');   
+            this.config.sqlBuilder.lastDeletedField = field;             
             this.config.sqlBuilder.selectedFields = this.config.sqlBuilder.selectedFields.filter(function(e) { return e.fieldName !== field });
+            let col = this.config.sqlBuilder.fields.find((el) => el.fieldName === field);
+            if(col !== undefined){
+                col.css = 'slds-item';
+            }
             this.ElementList = this.ElementList.filter(function(e) { return e !== field; });
             this.dialogValues();
         }
@@ -154,11 +167,12 @@ export default class SqlBuilder extends LightningElement {
             if( refObj === null){
                 let fieldVal = event.target.getAttribute('data-val');      
                 let selectedField = this.config.sqlBuilder.fields.find((el) => el.fieldName === fieldVal);
-                console.log(selectedField);
+                this.config.sqlBuilder.openConditionInput = false;
                 this.config.sqlBuilder.conditionOperations = [];
                 this.config.sqlBuilder.currentCondition = {};
                 this.config.sqlBuilder.currentCondition.field = fieldVal;
                 this.config.sqlBuilder.currentCondition.fieldType = selectedField.type;
+                this.config.sqlBuilder.currentCondition.referenceTo = selectedField.referenceTo;
                 this.config.sqlBuilder.noOperationError = false;
                 if(selectedField.type === 'picklist'){
                     this.config.sqlBuilder.currentCondition.fieldOptions = selectedField.options;
@@ -168,6 +182,21 @@ export default class SqlBuilder extends LightningElement {
                         {label:"True",value:"True"},
                         {label:"False",value:"False"}
                     ];
+                }
+                if(selectedField.type === 'reference'){
+                    selectedField._editOptions = [];
+                    await libs.remoteAction(this, 'query', {
+                        fields: ['Id','Name'],
+                        relField: '',
+                        sObjApiName: selectedField.referenceTo,
+                        callback: ((nodeName, data) => {
+                            data[nodeName].records.forEach((e)=>{
+                                selectedField._editOptions.push({"label":e.Name,"value":e.Id});
+                            });
+                        })
+                    });
+                    this.config.sqlBuilder.currentCondition._editOptions = selectedField._editOptions;
+                    this.config.sqlBuilder.currentCondition.referenceTo = selectedField.referenceTo;
                 }
                 if(sqlBuilderLibs[selectedField.type + 'FilterActions']){
                     sqlBuilderLibs[selectedField.type + 'FilterActions'](this.config._LABELS).forEach((el)=>{
@@ -195,11 +224,13 @@ export default class SqlBuilder extends LightningElement {
         if(val === "sqlBuilder:conditions:selectOperation"){
             let operator = event.target.getAttribute('data-val');     
             this.config.sqlBuilder.currentCondition.operator = sqlBuilderLibs[this.config.sqlBuilder.currentCondition.fieldType + 'FilterActions'](this.config._LABELS).find((el)=> el.value === operator);
-            console.log(this.config.sqlBuilder.currentCondition.fieldType);
+            console.log(this.config.sqlBuilder.currentCondition._editOptions);
             this.config.sqlBuilder.openConditionInput = {
                 isPicklist: this.config.sqlBuilder.currentCondition.fieldType === 'picklist' || this.config.sqlBuilder.currentCondition.fieldType === 'boolean' ? true : false,
-                isRange: operator === 'rg' ? true : false
+                isRange: operator === 'rg' ? true : false,
+                _isLookUp: this.config.sqlBuilder.currentCondition.fieldType === 'reference'
             };
+            this.config.sqlBuilder.currentCondition.valueRange = this.config.sqlBuilder.openConditionInput.isRange ? this.config.sqlBuilder.currentCondition.valueRange : false;
         }
         if(val === "sqlBuilder:conditions:addCondition"){
             if((this.config.sqlBuilder.currentCondition.operator.isUnary != undefined && this.config.sqlBuilder.currentCondition.operator.isUnary === true) 
@@ -236,9 +267,24 @@ export default class SqlBuilder extends LightningElement {
             }
         }
         if(val === "sqlBuilder:conditions:conditionText"){
-            this.config.sqlBuilder.currentCondition.value = event.target.value;
+            let value, selectedField, record;
+
+            if (this.config.sqlBuilder.currentCondition.fieldType === 'reference') {
+                // Reference field
+                value = event.detail.payload.value;
+                selectedField = this.config.sqlBuilder.fields.find((el) => el.fieldName === this.config.sqlBuilder.currentCondition.field);
+                record = selectedField._editOptions.find(el => el.value === value);
+                this.config.sqlBuilder.currentCondition.referenceValueLabel = record.label;
+            } else {
+                // Non-reference field
+                value = event.target.value;
+            }
+
+            this.config.sqlBuilder.currentCondition._formattedValue = this.formatConditionValue(this.config.sqlBuilder.currentCondition, value);
+            this.config.sqlBuilder.currentCondition.value = value;
         }
         if(val === "sqlBuilder:conditions:conditionTextRange"){
+            this.config.sqlBuilder.currentCondition._formattedValueRange = this.formatConditionValue(this.config.sqlBuilder.currentCondition,event.target.value);
             this.config.sqlBuilder.currentCondition.valueRange = event.target.value;
         }
         if(val === "sqlBuilder:conditions:deleteSelectedCondition"){
@@ -270,10 +316,25 @@ export default class SqlBuilder extends LightningElement {
                 ];
             }
             this.config.sqlBuilder.currentCondition= selectedCondition;
+            if(this.config.sqlBuilder.currentCondition.fieldType === 'reference'){
+                this.config.sqlBuilder.currentCondition._editOptions = [];
+                await libs.remoteAction(this, 'query', {
+                    fields: ['Id','Name'],
+                    relField: '',
+                    sObjApiName: this.config.sqlBuilder.currentCondition.referenceTo,
+                    callback: ((nodeName, data) => {
+                        data[nodeName].records.forEach((e)=>{
+                            this.config.sqlBuilder.currentCondition._editOptions.push({"label":e.Name,"value":e.Id});
+                        });
+                    })
+                });
+            }
             this.config.sqlBuilder.openConditionInput = {
                 isPicklist: this.config.sqlBuilder.currentCondition.fieldType === 'picklist' ? true : false,
-                isRange: this.config.sqlBuilder.currentCondition.operator.value === 'rg' ? true : false
+                isRange: this.config.sqlBuilder.currentCondition.operator.value === 'rg' ? true : false,
+                _isLookUp: this.config.sqlBuilder.currentCondition.fieldType === 'reference'
             };
+            this.config.sqlBuilder.currentCondition.valueRange = this.config.sqlBuilder.openConditionInput.isRange ? this.config.sqlBuilder.currentCondition.valueRange : false;
         }
         if(val === "sqlBuilder:conditions:orderingConditions"){
             console.log('sqlBuilder:conditions:orderingConditions', event.target.value);
@@ -349,9 +410,17 @@ export default class SqlBuilder extends LightningElement {
         }
     }
     isConditionExists(obj, arr) {
-        const copyArr = arr.map(item => ({...item})); // create a copy of the array
-        copyArr.forEach(item => delete item.index); // delete 'index' key from each item in the copy array
-        return copyArr.some(item => JSON.stringify(item) === JSON.stringify(obj)); // check if object exists in array
+        const copyArr = arr.map(item => ({
+            field: item.field,
+            value: item.value,
+            operator: item.operator.value
+        }));
+    
+        return copyArr.some(item =>
+            item.field === obj.field &&
+            item.value === obj.value &&
+            item.operator === obj.operator.value
+        );
     }
     upsertArray(array, item) { 
         const i = array.findIndex(_item => _item.field.fieldName === item.field.fieldName);
@@ -364,6 +433,31 @@ export default class SqlBuilder extends LightningElement {
         if(!isValExists){
             array.push(field); 
         }
+    }
+    formatConditionValue(field,value){
+        if(field.fieldType === 'date'){
+            let formattedDate = new Date(value).toLocaleString(this.config.userInfo.locale,{
+                month : "2-digit",
+                day : "2-digit",
+                year: "numeric"
+            });
+            return formattedDate;
+        }
+        else if(field.fieldType === 'datetime'){
+            let formattedDate = new Date(value).toLocaleString(this.config.userInfo.locale,{
+                month : "2-digit",
+                day : "2-digit",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second:"2-digit"
+            });
+            return formattedDate;
+        }
+        else if(field.fieldType === 'reference'){
+            return field.referenceValueLabel;
+        }
+        return value;
     }
     loadFields(sObjName){
         let objStr = '';
@@ -395,8 +489,9 @@ export default class SqlBuilder extends LightningElement {
         for (let key in describe) {
 
                 let itemCss = this.config.sqlBuilder.selectedFields.find(el => el.fieldName === (objStr ? objStr + describe[key].name : describe[key].name)) ? 'slds-item slds-theme_alt-inverse' : 'slds-item';
-                 fieldMap = { 
-                    label: describe[key].label, 
+                let label = describe[key].type === 'reference' && describe[key].label.toLowerCase().includes('id') ? describe[key].label.replaceAll('ID', '') : describe[key].label;
+                fieldMap = { 
+                    label: label, 
                     fieldName: objStr ? objStr + describe[key].name : describe[key].name, 
                     css: itemCss, 
                     type: describe[key].type,
@@ -404,9 +499,11 @@ export default class SqlBuilder extends LightningElement {
                     isNameField: describe[key] && describe[key].nameField === true,
                     referenceTo: describe[key].referenceTo[0],
                     filterable: describe[key].filterable,
+                    sortable: describe[key].sortable,
                     nillable: describe[key].nillable,
                 };
-                fieldMap.helpText = fieldMap.fieldName +  ' (' + describe[key].type + ')'; // assigning outside to get the fieldname to be populated first
+                let isFormula = describe[key].calculated ? 'f() ' : '';
+                fieldMap.helpText = fieldMap.fieldName +  ' (' + isFormula + describe[key].type + ')'; // assigning outside to get the fieldname to be populated first
                 // the fieldname was previously used as the helptext but 
                 // as we also want the field type to be displayed, I added it to the helptext
                 // changing the fieldname was not an option as it is used in the code for sql queries
@@ -449,6 +546,7 @@ export default class SqlBuilder extends LightningElement {
                         isNameField: describe[key] && describe[key].nameField === true,
                         referenceTo: describe[key].referenceTo[0],
                         filterable: describe[key].filterable,
+                        sortable: describe[key].sortable,
                     };
                     fieldMap.helpText = describe[key].relationshipName + ' (' + describe[key].referenceTo?.join(', ') + ')';
                     // I noticed that in some reference fields, there are multiple objects in the referenceTo array, so I joined all of them to the helpText
@@ -460,6 +558,12 @@ export default class SqlBuilder extends LightningElement {
     get filterableFields(){
         return this.config.sqlBuilder.fields.filter((el) => {
             if(el.filterable === true) return true;
+            else return false;
+        });
+    }
+    get sortableFields(){
+        return this.config.sqlBuilder.fields.filter((el) => {
+            if(el.sortable === true) return true;
             else return false;
         });
     }

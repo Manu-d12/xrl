@@ -22,8 +22,8 @@ export default class ComparingInterface extends LightningElement {
         console.log('apiName: ' + this.apiName);
         if(this.apiName === undefined){
             this.getExtRelListConfigs();
-        }else if(this.apiName.split('::')[1]){
-            libs.remoteAction(this, 'getConfigById', { configId: this.apiName.split('::')[0], callback: this.setConfig.bind(this) });
+        }else {
+            libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: this.apiName, callback: this.setConfig.bind(this) });
         }
     }
     async getExtRelListConfigs(){
@@ -73,7 +73,7 @@ export default class ComparingInterface extends LightningElement {
         let selectedFor = 'objOne';
         this.config.userSelections[selectedFor] = selectedObj;
         console.log(this.config.userSelections[selectedFor]);
-        if(this.leftRecord !== undefined && this.leftRecord !== 'CurrentRecord' && this.leftRecord !== 'recordId'){
+        if(this.leftRecord !== undefined && this.leftRecord !== null && this.leftRecord !== 'CurrentRecord' && this.leftRecord !== 'recordId'){
             await libs.remoteAction(this, 'customSoql', {
                 SOQL: libs.replaceLiteralsInStr(this.leftRecord,this.name),
                 callback: ((nodeName, data1) => {
@@ -120,7 +120,7 @@ export default class ComparingInterface extends LightningElement {
         selectedFor = 'objTwo';
         this.config.userSelections[selectedFor] = selectedObj;
         console.log(this.config.userSelections[selectedFor]);
-        if(this.rightRecord !== undefined && this.rightRecord !== 'CurrentRecord' && this.rightRecord !== 'recordId'){
+        if(this.rightRecord !== undefined && this.rightRecord !== null && this.rightRecord !== 'CurrentRecord' && this.rightRecord !== 'recordId'){
             await libs.remoteAction(this, 'customSoql', {
                 SOQL: libs.replaceLiteralsInStr(this.rightRecord,this.name),
                 callback: ((nodeName, data1) => {

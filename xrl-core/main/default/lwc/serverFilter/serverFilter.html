@@ -1,7 +1,7 @@
 <template>
     <div class="slds-grid slds-wrap" style="padding: 5px;">
         <template if:true={sFilterfields} for:each={sFilterfields} for:item="field" for:index="index">
-            <div class="slds-col slds-size_2-of-12" key={field.fieldName} style="padding: 2px;">
+            <div if:false={field.isHidden} class="slds-col slds-size_2-of-12" key={field.fieldName} style="padding: 2px;">
                 <lightning-input if:true={field.inputTypeStr} type="text" label={field.label} id={field.fieldName}
                     data-id={field.fieldName} onfocusout={handleChange}></lightning-input>
                 <c-multiselect if:true={field.inputTypeComboBox} multiselect={field.multiselect} listsize=10000 onselect={handleSelect} id={field.fieldName} 
@@ -14,10 +14,17 @@
                 </div>                
             </div>
         </template>
-        <div class="slds-col slds-size_2-of-12 slds-col_bump-left" style="height: 60px; display: flex; padding: 2px; align-items: end; justify-content: end;">
-            <lightning-button if:false={filterJson.hideMore} variant="brand" label={config._LABELS.lbl_more} title={config._LABELS.lbl_more} class="slds-m-left_x-small" onclick={handleClick}></lightning-button>
+        <div class="slds-col slds-size_2-of-12 slds-col_bump-left" style="height: 60px; display: flex; padding: 2px; align-items: end; justify-content: end; min-width: fit-content;">
+
+            <span if:false={filterJson.hideMore}>
+				<lightning-button-icon if:true={filterJson.iconMore} icon-name={filterJson.iconMore} variant="brand" title={config._LABELS.lbl_more} class="slds-m-left_x-small" onclick={handleClick}></lightning-button-icon>
+            	<lightning-button  if:false={filterJson.iconMore} variant="brand" label={config._LABELS.lbl_more} title={config._LABELS.lbl_more} class="slds-m-left_x-small" onclick={handleClick}></lightning-button>
+			</span>
             <lightning-button variant="brand" label={config._LABELS.lbl_apply} title={config._LABELS.lbl_apply} class="slds-m-left_x-small" onclick={applyFilter}></lightning-button>
-            <lightning-button if:false={filterJson.hideReset} variant="brand" label={config._LABELS.lbl_resetFilters} title={config._LABELS.lbl_resetFilters} class="slds-m-left_x-small" onclick={resetFilters}></lightning-button>
+			<span if:false={filterJson.hideReset}>
+				<lightning-button-icon if:true={filterJson.iconReset} icon-name={filterJson.iconReset} variant="brand" title={config._LABELS.lbl_more} class="slds-m-left_x-small" onclick={resetFilters}></lightning-button-icon>
+	            <lightning-button if:false={filterJson.iconReset} variant="brand" label={config._LABELS.lbl_resetFilters} title={config._LABELS.lbl_resetFilters} class="slds-m-left_x-small" onclick={resetFilters}></lightning-button>
+			</span>
         </div>        
         <div if:true={count} class="slds-size_12-of-12" style={countStyle}>
             {count} item(s)

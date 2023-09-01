@@ -2,25 +2,25 @@ export let filterLibs = {
 
     string__filter(filter, record) {
 		let value = this.getValue(filter, record);
-        if ((filter._filterOption !== 'em' && filter._filterOption !== 'ncn' && !value) || (filter._filterStr === undefined)) return false;
+        if ((filter._filterOption !== 'em' && filter._filterOption !== 'ncn' && !value)) return false;
 		/*eslint-disable*/
 		switch (filter._filterOption) {
 			case 'cn':
-				return value.toLowerCase().includes(filter._filterStr.toLowerCase());
+				return value.toString().toLowerCase().includes(filter._filterStr.toLowerCase());
 			case 'ncn': 
-				return value == undefined || value == '' ||  (value.toLowerCase().indexOf(filter._filterStr.toLowerCase()) === -1);
+				return value == undefined || value == '' ||  (value.toString().toLowerCase().indexOf(filter._filterStr.toLowerCase()) === -1);
 			case 'bn': 
-				return value.toLowerCase().startsWith(filter._filterStr.toLowerCase()) === true;
+				return value.toString().toLowerCase().startsWith(filter._filterStr.toLowerCase()) === true;
 			case 'nbn': 
-				return value.toLowerCase().startsWith(filter._filterStr.toLowerCase()) === false;
+				return value.toString().toLowerCase().startsWith(filter._filterStr.toLowerCase()) === false;
 			case 'ed': 
-				return value.toLowerCase().endsWith(filter._filterStr.toLowerCase()) === true;
+				return value.toString().toLowerCase().endsWith(filter._filterStr.toLowerCase()) === true;
 			case 'ned': 
-				return value.toLowerCase().endsWith(filter._filterStr.toLowerCase()) === false;	
+				return value.toString().toLowerCase().endsWith(filter._filterStr.toLowerCase()) === false;	
 			case 'eq':
-				return value.toLowerCase() === filter._filterStr.toLowerCase();
+				return value.toString().toLowerCase() === filter._filterStr.toLowerCase();
 			case 'neq':
-				return value.toLowerCase() !== filter._filterStr.toLowerCase();
+				return value.toString().toLowerCase() !== filter._filterStr.toLowerCase();
 			case 'em': 
 				return value === null || value == undefined;
 			case 'nem': 
@@ -98,6 +98,25 @@ export let filterLibs = {
 				return value !== null && value !== undefined;	
 		}
     },
+	multipicklist__filter(filter, record) {
+        let value = this.getValue(filter, record);
+        if ((filter._filterOption !== 'em' && filter._filterOption !== 'ncn' && !value)) return false;
+		let valueArr = value?.split(';');
+		switch (filter._filterOption) {
+			case 'cn':
+				return filter._filterStr.find(v => {return value.toLowerCase().includes(v.toLowerCase());});				
+			case 'ncn': 
+				return value == undefined || !filter._filterStr.find(v => {return value.toLowerCase().includes(v.toLowerCase());});		
+			case 'eq':
+				return this.containsAllElements(valueArr,filter._filterStr);
+			case 'neq':
+				return this.hasNoMatch(valueArr,filter._filterStr);
+			case 'em': 
+				return value === null || value == undefined;
+			case 'nem': 
+				return value !== null && value !== undefined;	
+		}
+    },
     number__filter(filter, record) {
 		let value = this.getValue(filter, record);
         if ((filter._filterOption !== 'em' && filter._filterOption !== 'ncn' && value == undefined)) return false;
@@ -115,23 +134,23 @@ export let filterLibs = {
 			case 'ned': 
 				return value.toString().endsWith(filter._filterStr) === false;	
 			case 'eq': 
-				return value === Number(filter._filterStr);
+				return Number(value) === Number(filter._filterStr);
 			case 'neq': 
-				return value !== Number(filter._filterStr);
+				return Number(value) !== Number(filter._filterStr);
 			case 'em': 
-				return value === null || value == undefined;
+				return Number(value) === null || value == undefined;
 			case 'nem': 
-				return value !== null && value !== undefined;
+				return Number(value) !== null && value !== undefined;
 			case 'gr': 
-				return value > Number(filter._filterStr);
+				return Number(value) > Number(filter._filterStr);
 			case 'gre': 
-				return value >= Number(filter._filterStr);
+				return Number(value) >= Number(filter._filterStr);
 			case 'ls': 
-				return value < Number(filter._filterStr);
+				return Number(value) < Number(filter._filterStr);
 			case 'lse': 
-				return value <= Number(filter._filterStr);
+				return Number(value) <= Number(filter._filterStr);
 			case 'rg': 
-				return value >= Number(filter._filterStr) && value <= Number(filter._filterStrTo);
+				return Number(value) >= Number(filter._filterStr) && Number(value) <= Number(filter._filterStrTo);
 			default :  console.log('Filter action not found', filter._filterOption);
 		}
 	},
@@ -150,6 +169,9 @@ export let filterLibs = {
 	encryptedstring__filter(filter, record) {
         return filterLibs.string__filter(filter, record);
     },
+	id__filter(filter, record) {
+        return filterLibs.string__filter(filter, record);
+    },
 	boolean__filter(filter, record) {
 		let value = this.getValue(filter, record);
         // if (value === null) return false;
@@ -157,7 +179,7 @@ export let filterLibs = {
 			case 'eq': 
 				return filter._filterStr.find((el =>  el ===  value.toString())) !== undefined;
 			case 'neq': 
-				return filter._filterStr.find((el =>  el ===  value.toString())) === undefined;
+				return filter._filterStr.find((el =>  el !==  value.toString())) !== undefined;
 			case 'em': 
 				return value === null || value == undefined;
 			case 'nem': 
@@ -169,20 +191,8 @@ export let filterLibs = {
 		if ((filter._filterOption !== 'em' && filter._filterOption !== 'neq' && !value)) return false;
 		let filterDate;
 		let recordDate;
-		filterDate = new Date(filter._filterStr).toLocaleString(filter._locale,{
-			month : "2-digit",
-			day : "2-digit",
-			year: "numeric",
-			hour: "2-digit",
-			timeZone: filter._timezone
-		});
-		recordDate = new Date(value).toLocaleString(filter._locale,{
-			month : "2-digit",
-			day : "2-digit",
-			year: "numeric",
-			hour: "2-digit",
-			timeZone: filter._timezone
-		});
+		filterDate = new Date(filter._filterStr).getTime();
+		recordDate = new Date(value).getTime();
 
 		switch (filter._filterOption) {
 			case 'eq':
@@ -202,13 +212,7 @@ export let filterLibs = {
 			case 'lse': 
 				return recordDate <= filterDate;
 			case 'rg': 
-				let filterTwoDate = new Date(filter._filterStrTo).toLocaleString(filter._locale,{
-					month : "2-digit",
-					day : "2-digit",
-					year: "numeric",
-					hour: "2-digit",
-					timeZone: filter._timezone
-				});
+				let filterTwoDate = new Date(filter._filterStrTo).getTime();
 				return recordDate >= filterDate && recordDate <= filterTwoDate;
 			
 		}
@@ -337,6 +341,9 @@ export let filterLibs = {
 			? actions.find( el => { return el.value === key})
 			: actions;
 	},
+	idFilterActions(labels,key) {
+        return filterLibs.stringFilterActions(labels,key);
+	},
 	encryptedstringFilterActions(labels,key) {
         return filterLibs.stringFilterActions(labels,key);
 	},
@@ -356,6 +363,9 @@ export let filterLibs = {
         return (key) 
 			? actions.find( el => { return el.value === key})
 			: actions;
+	},
+	multipicklistFilterActions(labels,key) {
+        return filterLibs.picklistFilterActions(labels,key);
 	},
 	booleanFilterActions(labels,key) {
 		const actions = [
@@ -433,7 +443,28 @@ export let filterLibs = {
 			:record[filter.fieldName]
 			: getRefField(filter.fieldName);
 		// console.log(value);
+		if(filter.type==='currency'){
+			value = Number(value.toFixed(2));
+		}
 		return formatter && typeof formatter === 'function' ? formatter(record, filter, record[filter.fieldName]) : value ;
-	}
+	},
+	containsAllElements(smallArray, bigArray) {
+		const bigSet = new Set(bigArray);
+		for (let i = 0; i < smallArray.length; i++) {
+		  if (!bigSet.has(smallArray[i])) {
+			return false;
+		  }
+		}
+		return true;
+	},
+	hasNoMatch(smallArray, bigArray) {
+		const bigSet = new Set(bigArray);
+		for (let i = 0; i < smallArray.length; i++) {
+		  if (bigSet.has(smallArray[i])) {
+			return false;
+		  }
+		}
+		return true;
+	  }
 
 }

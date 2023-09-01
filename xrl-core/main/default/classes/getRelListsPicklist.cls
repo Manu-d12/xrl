@@ -5,6 +5,7 @@ Need merge admin settings and user settings
 Current selected VIEW will be stored to localStorage
 */
 global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickList {
+
 	VisualEditor.DesignTimePageContext context;
     static VisualEditor.DynamicPickListRows picklistValues;
 
@@ -19,9 +20,11 @@ global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickLi
 	}
 
 	global override VisualEditor.DynamicPickListRows getValues() {
-        if (picklistValues!=null) return picklistValues;
-        
-        system.debug(LoggingLevel.Error, 'GET RELLIsts getValues ' + this.context);
+        return picklistValues != null ? picklistValues : generateList();
+	}
+
+	private VisualEditor.DynamicPickListRows generateList(){
+		system.debug(LoggingLevel.Error, 'GET RELLIsts getValues ' + this.context);
 		Map<String,Schema.SObjectType> gd = Schema.getGlobalDescribe();
 		picklistValues = new VisualEditor.DynamicPickListRows();
 		picklistValues.addRow(
@@ -40,18 +43,19 @@ global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickLi
 						new VisualEditor.DataRow(sObjLabel + ' ('+ sObjField +')', sObjLabel + '::' + sObjApiName + '::' + sObjField)
 					);
 					//only if the history object exists
-					if(gd.containsKey(sObjApiName + 'History') || gd.containsKey(sObjApiName.removeEnd('c') + 'history')){
-						SObjectType objToken = Schema.getGlobalDescribe().get(sObjApiName);
+					if(gd.containsKey(sObjApiName + 'History') || gd.containsKey(sObjApiName.removeEnd('c') + 'History')){
+						SObjectType objToken = gd.get(sObjApiName);
 						//for standard history objects
-						if(objToken  != null && !objToken.getDescribe().isCustom()){
+						boolean isCustom = objToken.getDescribe().isCustom(); 
+						if(objToken  != null && !isCustom){
 							picklistValues.addRow(
 								new VisualEditor.DataRow(sObjLabel+': History (' + sObjField +')', sObjLabel + ' History::' + sObjApiName + 'History::' + sObjApiName + '.' + sObjField)
 							);
 							//Example apiName- Account History::AccountHistory::AccountHistory.AccountId
-						}else if(objToken  != null && objToken.getDescribe().isCustom()){
+						}else if(objToken  != null && isCustom){
 							//for custom history objects
 							picklistValues.addRow(
-								new VisualEditor.DataRow(sObjLabel+': History', sObjLabel + ' History::' + sObjApiName.removeEnd('c') + 'history::' + 'Parent.' + sObjField)
+								new VisualEditor.DataRow(sObjLabel+': History', sObjLabel + ' History::' + sObjApiName.removeEnd('c') + 'History::' + 'Parent.' + sObjField)
 							);
 						}
 					}
@@ -69,6 +73,6 @@ global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickLi
                 );
             }
         }
-		return picklistValues;
+		return pickListValues;
 	}
 }

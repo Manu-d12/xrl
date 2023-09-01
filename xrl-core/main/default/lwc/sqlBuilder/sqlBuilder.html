@@ -103,11 +103,15 @@
                                 <br/>
                                 <template if:true={config.sqlBuilder.openConditionInput}>
                                     <template if:false={config.sqlBuilder.currentCondition.operator.isUnary}>
-                                        <lightning-input if:false={config.sqlBuilder.openConditionInput.isPicklist} data-id="sqlBuilder:conditions:conditionText" onchange={handleBuilderEvent} type={config.sqlBuilder.currentCondition.fieldType} label={config._LABELS.lbl_enterValue} value={config.sqlBuilder.currentCondition.value}></lightning-input>
-                                        <lightning-combobox if:true={config.sqlBuilder.openConditionInput.isPicklist} data-id="sqlBuilder:conditions:conditionText" onchange={handleBuilderEvent} options={config.sqlBuilder.currentCondition.fieldOptions} value={config.sqlBuilder.currentCondition.value} label="Select"></lightning-combobox>
+                                        <template if:false={config.sqlBuilder.openConditionInput._isLookUp}>
+                                            <lightning-input if:false={config.sqlBuilder.openConditionInput.isPicklist} data-id="sqlBuilder:conditions:conditionText" onchange={handleBuilderEvent} type={config.sqlBuilder.currentCondition.fieldType} label={config._LABELS.lbl_enterValue} value={config.sqlBuilder.currentCondition.value}></lightning-input>
+                                            <lightning-combobox if:true={config.sqlBuilder.openConditionInput.isPicklist} data-id="sqlBuilder:conditions:conditionText" onchange={handleBuilderEvent} options={config.sqlBuilder.currentCondition.fieldOptions} value={config.sqlBuilder.currentCondition.value} label="Select"></lightning-combobox>
+                                        </template>
+                                        <c-multiselect if:true={config.sqlBuilder.openConditionInput._isLookUp} listsize={config.dataTableConfig.displayOptionListSize} onselect={handleBuilderEvent} data-id="sqlBuilder:conditions:conditionText"
+				                            options={config.sqlBuilder.currentCondition._editOptions} selectedvalue={config.sqlBuilder.currentCondition.value}></c-multiselect>
                                     </template>
                                     <template if:true={config.sqlBuilder.openConditionInput.isRange}>
-                                        <lightning-input data-id="sqlBuilder:conditions:conditionTextRange" onchange={handleBuilderEvent} type={config.sqlBuilder.currentCondition.fieldType} label={config._LABELS.lbl_enterValue}></lightning-input>
+                                        <lightning-input data-id="sqlBuilder:conditions:conditionTextRange" onchange={handleBuilderEvent} type={config.sqlBuilder.currentCondition.fieldType} label={config._LABELS.lbl_enterValue} value={config.sqlBuilder.currentCondition.valueRange}></lightning-input>
                                     </template>
                                 </template>
                                 <br/>
@@ -159,8 +163,8 @@
                                     <div class="slds-truncate">{condition.operator.label}</div>
                                 </td>
                                 <td class="slds-truncate">
-                                    <div if:false={condition.valueRange} class="slds-truncate" style="max-width:20rem;" title={condition.value}>{condition.value} </div>
-                                    <div if:true={condition.valueRange} class="slds-truncate" style="max-width:20rem;" title={condition.valueRange}>Between {condition.value} and {condition.valueRange}</div>
+                                    <div if:false={condition.valueRange} class="slds-truncate" style="max-width:20rem;" title={condition.value}>{condition._formattedValue} </div>
+                                    <div if:true={condition.valueRange} class="slds-truncate" style="max-width:20rem;" title={condition.valueRange}>Between {condition._formattedValue} and {condition._formattedValueRange}</div>
                                 </td>
                                 <td>
                                     <div class="slds-truncate">
@@ -215,7 +219,7 @@
                         </ul>
                         <div class="slds-scrollable_y" style="height:22rem">
                             <ul class="slds-has-dividers_around-space">
-                                <template if:true={config.sqlBuilder.fields} for:each={config.sqlBuilder.fields} for:item="field" for:index="index">
+                                <template if:true={sortableFields} for:each={sortableFields} for:item="field" for:index="index">
                                     <li data-id="sqlBuilder:ordering:selectItem" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class={field.css} data-ref={field.refObj} data-val={field.fieldName} key={field.fieldName}>
                                         <lightning-helptext class="placeTop" content={field.helpText}></lightning-helptext>
                                         &nbsp;{field.label} 
@@ -227,7 +231,7 @@
                 </div>
                 <div class="slds-col slds-size_3-of-12">
                     <template if:true={config.sqlBuilder.currentOrder}>
-                        <div class="slds-text-heading_small"><b>{config._LABELS.lbl_configure}</b> {config.sqlBuilder.currentOrder.field.fieldName}</div>
+                        <div class="slds-text-heading_small" style="overflow-wrap: break-word;"><b>{config._LABELS.lbl_configure}</b> {config.sqlBuilder.currentOrder.field.fieldName}</div>
                         <div style="height:25rem;">
                                 <lightning-combobox if:true={config.sqlBuilder.currentOrder} data-id="sqlBuilder:ordering:sortOrder" onchange={handleBuilderEvent} options={config.sqlBuilder.sortOrderOptions} value={config.sqlBuilder.currentOrder.sortOrder} label={config._LABELS.lbl_selectSortOrder}></lightning-combobox>
                                 <lightning-combobox if:true={config.sqlBuilder.currentOrder} data-id="sqlBuilder:ordering:emptyFieldPosition" onchange={handleBuilderEvent} options={config.sqlBuilder.emptyFieldOptions} value={config.sqlBuilder.currentOrder.emptyField} label={config._LABELS.lbl_selectEmptyFieldLocation}></lightning-combobox>

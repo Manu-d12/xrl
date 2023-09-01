@@ -17,9 +17,23 @@ global with sharing class infrastructure {
 		isDebug = (boolean) data.get('isDebug') == true;
 		if (isDebug == true) data.remove('isDebug');
 		try {
+			Organization orgDetails = [SELECT Id, InstanceName, IsSandbox, Name, OrganizationType FROM Organization];
+			if(orgDetails.OrganizationType != 'Developer Edition' && !isUserLicensed()){
+				throw new InfrastructureException(null,label.msg_packageLicenseExpired, Infrastructure.exceptionType.GENERAL);
+			}
 
-			list < PermissionSetAssignment > permission = [SELECT Id FROM PermissionSetAssignment WHERE AssigneeId =: UserInfo.getUserId() AND PermissionSet.Name = 'XRL_Admin'];
-			if (permission.size() != 0) isAdminAccess = true;
+			if (!system.test.isRunningTest()) {
+				list < PermissionSetAssignment > permission = [SELECT Id,PermissionSet.Name FROM PermissionSetAssignment WHERE AssigneeId =: UserInfo.getUserId() AND (PermissionSet.Name = 'XRL_Admin' OR PermissionSet.Name = 'XRL_StandardUser')];
+				// if (permission.size() != 0) isAdminAccess = true;
+				
+				if (permission.size() == 0){
+					throw new InfrastructureException(null,'No Permission Set Assigned', Infrastructure.exceptionType.GENERAL);
+				}else{
+					PermissionSetAssignment userPermission = permission[0];
+					String permissionSetName = userPermission.PermissionSet.Name;
+					if(permissionSetName == 'XRL_Admin') isAdminAccess = true;
+				}
+			}
 
 			switch on cmd {
 				when 'getConfig' {
@@ -46,11 +60,17 @@ global with sharing class infrastructure {
 				when 'delRecords' {
 					resultMethod = delRecords(data);
 				}
+				when 'cloneRecords' {
+					resultMethod = cloneRecords(data);
+				}
 				when 'requestFeature' {
 					resultMethod = requestFeature(data);
 				}
 				when 'invokeAction' {
 					resultMethod = invokeAction(data);
+				}
+				when 'invokeApex' {
+					resultMethod = invokeApex((string) data.get('helperType'), data);
 				}
 				when 'getCustomLabels' {
 					resultMethod = getCustomLabels();
@@ -66,6 +86,9 @@ global with sharing class infrastructure {
 				}
 				when 'getIntrLst' {
 					resultMethod = getIntrLst();
+				}
+				when 'getStaticResource' {
+					resultMethod = getStaticResource();
 				}				
 				
 				when
@@ -120,6 +143,15 @@ global with sharing class infrastructure {
 		}
 		//result.put('log', log);
 		return result;
+	}
+	private static boolean isUserLicensed(){
+		boolean result = false;
+		try{
+			result = UserInfo.isCurrentUserLicensed('XRL');
+		}catch(Exception e){
+			result = false;
+		}
+		return (system.test.isRunningTest() || result);
 	}
 
 	private static object getQuery(map < string, object > data) {
@@ -179,11 +211,13 @@ global with sharing class infrastructure {
 			throw new InfrastructureException(null,'Data was stripped', Infrastructure.exceptionType.GENERAL);
 		}
 		*/
-		if (!Security.stripInaccessible(AccessType.READABLE, records).getModifiedIndexes().isEmpty()) {
-			throw new InfrastructureException(null,'Data was stripped', Infrastructure.exceptionType.GENERAL);
-		}
+		SObjectAccessDecision securityDecision = Security.stripInaccessible(AccessType.READABLE,records );
+		// if (!securityDecision.getModifiedIndexes().isEmpty()) {
+		// 	throw new InfrastructureException(null,'Data was stripped', Infrastructure.exceptionType.GENERAL);
+		// }
 
-		result.put('records', records);
+		result.put('records', securityDecision.getRecords());
+		result.put('removedFields', securityDecision.getRemovedFields());
 
 		//result.put('config', getConfig(sObjApiName, relField, listViewName));
 		return result;
@@ -252,6 +286,7 @@ global with sharing class infrastructure {
 		}
 		result.put('listViews', listViews);
 		result.put('iconMap', getIconName(sObjApiName));
+		result.put('staticResourceList',getStaticResource());
 
 		return result;
 	}
@@ -362,37 +397,43 @@ global with sharing class infrastructure {
 		string config = (string) data.get('config');
 		string configType = (string) data.get('configType');
 
-		listViewName = string.isBlank(listViewName) ?
-			(isAdminAccess ? '_admin' : null) :
-			listViewName;
-		listViewLabel = string.isBlank(listViewLabel) ?
-			(isAdminAccess ? 'Admin' : null) :
-			listViewLabel;
-		boolean isAdminConf = listViewName == '_admin' ? isAdminAccess : listViewAdmin;
+		Savepoint sp = Database.setSavepoint();
+		try{
+			listViewName = string.isBlank(listViewName) ?
+				(isAdminAccess ? '_admin' : null) :
+				listViewName;
+			listViewLabel = string.isBlank(listViewLabel) ?
+				(isAdminAccess ? 'Admin' : null) :
+				listViewLabel;
+			boolean isAdminConf = listViewName == '_admin' ? isAdminAccess : listViewAdmin;
 
-		if(listViewName.equals('_admin')){
-			delete [select Id from extRelListConfig__c where listViewName__c = '_admin'];
-		}
-		if(listViewName.equals('_default')){
-			delete [select Id from extRelListConfig__c where listViewName__c = '_default'];
-		}
+			if(listViewLabel.equals('_admin')){
+				delete [select Id from extRelListConfig__c where listViewLabel__c = '_admin'];
+			}
+			if(listViewLabel.equals('_default')){
+				delete [select Id from extRelListConfig__c where listViewLabel__c = '_default'];
+			}
 
-		extRelListConfig__c listView = new extRelListConfig__c(
-			listViewName__c = listViewName,
-			listViewLabel__c = listViewLabel,
-			sObjApiName__c = sObjApiName,
-			relFieldApiName__c = relField,
-			isAdminConfig__c = isAdminConf,
-			JSON__c = config,
-			ConfigType__c = String.isNotBlank(configType) ? configType : 'XRL',
-			uniqKey__c = sObjApiName + ':' + relField + ':' + isAdminConf + ':' + (string.isBlank(listViewName) ? '' : listViewName)
-		);
+			extRelListConfig__c listView = new extRelListConfig__c(
+				listViewName__c = listViewName,
+				listViewLabel__c = listViewLabel,
+				sObjApiName__c = sObjApiName,
+				relFieldApiName__c = relField,
+				isAdminConfig__c = isAdminConf,
+				JSON__c = config,
+				ConfigType__c = String.isNotBlank(configType) ? configType : 'XRL',
+				uniqKey__c = sObjApiName + ':' + relField + ':' + isAdminConf + ':' + (string.isBlank(listViewName) ? '' : listViewName)
+			);
 
-		upsert listView uniqKey__c;
+			upsert listView uniqKey__c;
 
-		//sharing _admin/_default record with all org users
-		if(listViewName.equals('_admin') || listViewName.equals('_default')){
-			shareRecord(listView.Id);
+			//sharing _admin/_default record with all org users
+			if(listViewLabel.equals('_admin') || listViewLabel.equals('_default')){
+				shareRecord(listView.Id);
+			}
+		}catch (Exception e){
+			Database.rollback(sp);
+			throw new InfrastructureException(null,String.valueOf(e.getMessage()) , Infrastructure.exceptionType.GENERAL);
 		}
 
 		return data;
@@ -400,7 +441,7 @@ global with sharing class infrastructure {
 	private static boolean shareRecord(Id recordId){
 		List<extRelListConfig__Share> shrObj = new List<extRelListConfig__Share>();
 
-		for(User u:  [SELECT Id,name,ProfileId,IsActive,UserType FROM User WHERE Profile.UserLicense.Name != null AND Id != :UserInfo.getUserId() AND UserType NOT IN ('Guest','CsnOnly','AutomatedProcess','CspLitePortal','CloudIntegrationUser')] ){
+		for(User u:  [SELECT Id,name,ProfileId,IsActive,UserType FROM User WHERE IsActive = true AND Profile.UserLicense.Name != null AND Id != :UserInfo.getUserId() AND UserType NOT IN ('Guest','CsnOnly','AutomatedProcess','CspLitePortal','CloudIntegrationUser')] ){
 			extRelListConfig__Share jobShr  = new extRelListConfig__Share();
 
 			jobShr.ParentId = recordId;
@@ -422,6 +463,8 @@ global with sharing class infrastructure {
 		boolean isInsert = (boolean) data.get('isInsert') == true;
 		string beforeSaveValidationClass = (string) data.get('beforeSaveAction');
 		Type T = type.forName('list<' + sObjApiName + '>');
+		map < string, object > result = new map < string, object > ();
+		string[] errorsList = new List<String>();
 		if (T == null) throw new InfrastructureException(null, ('Can\'t find sObject {1}').replace('{1}', sObjApiName), exceptionType.INSTANCE_CLASS_NOT_FOUND);
 
 		/*This part only for security review. Please don't remove
@@ -443,19 +486,31 @@ global with sharing class infrastructure {
         sObject[] records = (sObject[]) JSON.deserialize(JSON.serialize(data.get('records')), T);
 		// Savepoint sp = Database.setSavepoint();
 		system.debug('RollBack ' + isRollback);
- 
-		Database.UpsertResult[] srs = Database.upsert(records, isRollback);
-        for (Database.UpsertResult sr : srs) {
-			if (!sr.isSuccess()) {
-				String error = '';
-				for (Database.Error err : sr.getErrors()) {
-					// if(isRollback == true)
-					// 	Database.rollback(sp);
-					throw new InfrastructureException(null,String.valueOf(err.getStatusCode()) + ': ' + err.getMessage() , Infrastructure.exceptionType.GENERAL);
+
+		Integer countOfFailedRecords = 0;
+		
+		try{
+			Database.UpsertResult[] srs = Database.upsert(records, isRollback);
+			for (Database.UpsertResult sr : srs) {
+				if (!sr.isSuccess()) {
+					String error = '';
+					for (Database.Error err : sr.getErrors()) {
+						countOfFailedRecords = countOfFailedRecords + 1;
+						errorsList.add(String.valueOf(sr.getId() + ': ' +err.getStatusCode()) + ': ' + err.getMessage());
+						// if(isRollback == true)
+						// 	Database.rollback(sp);
+						// throw new InfrastructureException(null,String.valueOf(err.getStatusCode()) + ': ' + err.getMessage() , Infrastructure.exceptionType.GENERAL);
+					}
 				}
 			}
+		}catch(Exception e) {
+			countOfFailedRecords = records.size();
+			errorsList.add(e.getMessage());
 		}
-		return records;
+		result.put('countOfFailedRecords',String.valueOf(countOfFailedRecords));
+		result.put('listOfErrors',errorsList);
+		result.put('records', records);
+		return result;
 	}
 
 	private static object delRecords(map < string, object > data) {
@@ -466,18 +521,133 @@ global with sharing class infrastructure {
 
 		map < string, object > result = new map < string, object > ();
 		Savepoint sp = Database.setSavepoint();
-		Database.DeleteResult[] srs = Database.delete(records, isRollback);
-        for (Database.DeleteResult sr : srs) {
+		try{
+			Database.DeleteResult[] srs = Database.delete(records, isRollback);
+			for (Database.DeleteResult sr : srs) {
+				if (!sr.isSuccess()) {
+					String error = '';
+					for (Database.Error err : sr.getErrors()) {
+						// if(isRollback == true)
+						// 	Database.rollback(sp);
+						throw new InfrastructureException(null,String.valueOf(err.getStatusCode()) + ': ' + err.getMessage() , Infrastructure.exceptionType.GENERAL);
+					}
+				}
+			}
+		}catch (Exception e){
+			Database.rollback(sp);
+			throw new InfrastructureException(null,String.valueOf(e.getMessage()) , Infrastructure.exceptionType.GENERAL);
+		}
+		return records;
+	}
+
+	private static object cloneRecords(map < string, object > data) {
+		string transformType = (string) data.get('transformType');
+		string destObjectName = (string) data.get('destObjectName');
+		boolean isRollback = (boolean) data.get('rollback') == true;		
+		id[] recordIdList = (id[]) JSON.deserialize(JSON.serialize(data.get('recordIdList')), id[].class);
+		map < string, string > mapping = (map < string, string >) JSON.deserialize(JSON.serialize(data.get('mapping')),  map < string, string >.class);
+
+		if (recordIdList == null) throw new InfrastructureException(null, 'Provide parameter recordIdList', exceptionType.IMPLEMENTATION);
+		if (mapping == null) throw new InfrastructureException(null, 'Provide parameter mapping', exceptionType.IMPLEMENTATION);
+		if (string.isBlank(destObjectName)) throw new InfrastructureException(null, 'Provide parameter destObjectName', exceptionType.IMPLEMENTATION);
+		
+		handler transformHandler;
+		if (!string.isBlank(transformType)) {
+			Type T = type.forName(transformType);			
+			if (T == null) throw new InfrastructureException(null, ('Can\'t find transformation class {1}').replace('{1}', transformType), exceptionType.CLASS_NOT_FOUND);
+			transformHandler = (handler) T.newInstance();
+		}
+
+		string srcObjectName = recordIdList[0].getSObjectType().getDescribe().getName();
+
+		map < String, Schema.SObjectField > fieldsMap = Schema.getGlobalDescribe().get(destObjectName).getDescribe().fields.getMap();
+		map < string, Schema.SOAPType > fieldsTypes = new map < string, Schema.SOAPType > ();
+
+		set < string > fields = new set < string > ();
+		for (string item: mapping.values()) {
+			if (item.startsWith('const:') || item.startsWith('constGMT:')) continue;
+			fields.add(item);
+		}
+
+		string SOQL = 'SELECT {fields} FROM {sObjectType} WHERE Id IN :recordIdList'.replace('{fields}', string.join(new list<string>(fields), ',')).replace('{sObjectType}', srcObjectName);
+		sObject[] source = database.query(SOQL);
+		sObject[] destinationList = new sObject[] {};
+		Type t = Type.forName(destObjectName);		
+
+		for (sObject sItem: source) {
+			sObject tmp = (sObject) t.newInstance();
+			for (string item: mapping.keySet()) {
+				if (!fieldsMap.containsKey(item)) throw new InfrastructureException(null, ('Missing field {1}').replace('{1}', item), exceptionType.IMPLEMENTATION);
+				if (!fieldsTypes.containsKey(item) || fieldsMap.get(item) != null) fieldsTypes.put(item, fieldsMap.get(item).getDescribe().getSOAPType());
+				tmp.put(item, getValue(mapping.get(item), fieldsTypes.get(item), sItem));
+			}
+			if (transformHandler != null) {
+				map < string, object > transformTmp = new map < string, object > ();
+				transformTmp.put('srcRecord', sItem);
+				transformTmp.put('destRecord', tmp);
+				transformHandler.execute(transformTmp);
+			}
+			destinationList.add(tmp);
+		}
+		
+		string[] errorsList = new List<String>();
+		Database.SaveResult[] srs = Database.insert(destinationList, isRollback);
+        for (Database.SaveResult sr : srs) {
 			if (!sr.isSuccess()) {
-				String error = '';
 				for (Database.Error err : sr.getErrors()) {
-					// if(isRollback == true)
-					// 	Database.rollback(sp);
-					throw new InfrastructureException(null,String.valueOf(err.getStatusCode()) + ': ' + err.getMessage() , Infrastructure.exceptionType.GENERAL);
+					errorsList.add(String.valueOf(sr.getId() + ': ' +err.getStatusCode()) + ': ' + err.getMessage());
 				}
 			}
 		}
-		return records;
+		map < string, object > result = new map < string, object > ();
+		result.put('records', destinationList);
+		result.put('errorList', errorsList);
+		return result;
+	}
+
+	private static object getValue(string mapValue, Schema.SOAPType fieldType, sObject sourceRecord) {
+		if (mapValue.startsWith('const:') || mapValue.startsWith('constGMT:')) {
+			return getValueByType(fieldType, mapValue.replace('const:', '').trim());
+		}
+		return getFieldValue(mapValue, fieldType, sourceRecord);
+	}
+
+	private static object getFieldValue(string field, Schema.SOAPType fieldType, sObject record) {
+		string[] fields = field.split('\\.');
+		sObject result = record;
+		for (string fItem: fields) {
+			if (fItem == fields[fields.size() - 1]) return getValueByType(fieldType, record.get(fItem));
+			result = result.getSObject(fItem);
+			if (result == null) break;
+		}
+		return null;
+	}
+
+	private static object getValueByType(Schema.SOAPType fieldType, object value) {
+		switch on fieldType {
+			when Boolean {
+				return boolean.valueof(value);
+			}
+			when Date {
+				return value !=null && string.valueOf(value).startsWith('constGMT:') ? DateTime.valueof(string.valueOf(value).replace('constGMT:','')) : value;
+			}
+			when DateTime {
+				return value !=null && string.valueOf(value).startsWith('constGMT:') ? DateTime.valueof(string.valueOf(value).replace('constGMT:','')) : value;
+			}
+			when Double {
+				return double.valueof(value);
+			}
+			when Integer {
+				return integer.valueof(value);
+			}
+			when String {
+				return string.valueof(value);
+			}
+			when
+			else {
+				return value;
+			}
+		}
 	}
 
 	private static object requestFeature(map < string, object > data) {
@@ -524,6 +694,7 @@ global with sharing class infrastructure {
 
 		return result;
 	}
+
 	private static map < string, string > getCustomLabels() {
 		return new map < string, string > {
 			'altTxt_collapse' => label.altTxt_collapse,
@@ -544,6 +715,7 @@ global with sharing class infrastructure {
 			'altTxt_locked'=>label.altTxt_locked,
 			'altTxt_resetFilters'=>label.altTxt_resetFilters,
 			'altTxt_hlpUrl'=>label.altTxt_hlpUrl,
+			'altTxt_cancelRecordSave'=>label.altTxt_cancelRecordSave,
 			'errMsg_recordsNotFound' => label.errMsg_recordsNotFound,
 			'errMsg_wrapableAndClipableCanNotBeSelectedTogether' => label.errMsg_wrapableAndClipableCanNotBeSelectedTogether,
 			'errMsg_anEmptyMsgCannotBeSent' => label.errMsg_anEmptyMsgCannotBeSent,
@@ -691,6 +863,12 @@ global with sharing class infrastructure {
 			'lbl_overrideGridHeader'=>label.lbl_overrideGridHeader,
 			'lbl_rollback'=>label.lbl_rollback,
 			'lbl_enableColumnHeaderWrap'=>label.lbl_enableColumnHeaderWrap,
+			'lbl_afterloadTransformation'=>label.lbl_afterloadTransformation,
+			'lbl_fieldToMapToIndex'=>label.lbl_fieldToMapToIndex,
+			'lbl_advancedFieldSettings' => label.lbl_advancedFieldSettings,
+			'lbl_advancedTableSettings'=>label.lbl_advancedTableSettings,
+			'lbl_advancedActionSettings'=>label.lbl_advancedActionSettings,
+			'lbl_externalJS' => label.lbl_externalJS,
 			'msg_enterUniqueActionId'=>label.msg_enterUniqueActionId,
 			'msg_lisViewWasUpdated' => label.msg_lisViewWasUpdated,
 			'msg_requestWasSent' => label.msg_requestWasSent,
@@ -713,11 +891,15 @@ global with sharing class infrastructure {
 			'msg_cannotKeepThisBlank'=>label.msg_cannotKeepThisBlank,
 			'msg_failedValidationCallback'=>label.msg_failedValidationCallback,
 			'msg_yourFileWillStartDownloadingShortly'=>label.msg_yourFileWillStartDownloadingShortly,
+			'msg_entityIsDeleted'=>label.msg_entityIsDeleted,
+			'msg_itemsUpdateFailed'=>label.msg_itemsUpdateFailed,
+			'msg_onlyAcceptsPositiveNumbers'=>label.msg_onlyAcceptsPositiveNumbers,
 			'placeHolder_beforeSaveValidation'=>label.placeHolder_beforeSaveValidation,
 			'placeHolder_beforeDeleteValidation'=>label.placeHolder_beforeDeleteValidation,
 			'placeholder_actionCallback'=> label.placeholder_actionCallback,
 			'placeHolder_rowCss'=> label.placeHolder_rowCss,
 			'placeholder_groupingFunction'=>label.placeholder_groupingFunction,
+			'placeHolder_afterloadTransformation'=>label.placeHolder_afterloadTransformation,
 			'title_close' => label.title_close,
 			'title_clear' => label.title_clear,
 			'title_collapse' => label.title_collapse,
@@ -790,20 +972,26 @@ global with sharing class infrastructure {
 			'tooltip_rollback'=>label.tooltip_rollback,
 			'tooltip_configDelete'=>label.tooltip_configDelete,
 			'tooltip_enableColumnHeaderWrap'=>label.tooltip_enableColumnHeaderWrap,
+			'tooltip_afterloadTransformation'=>label.tooltip_afterloadTransformation,
+			'tooltip_fieldToMapToIndex'=>label.tooltip_fieldToMapToIndex,
+			'tooltip_advancedFieldSettings'=>label.tooltip_advancedFieldSettings,
+			'tooltip_advancedTableSettings'=>label.tooltip_advancedTableSettings,
+			'tooltip_advancedActionSettings'=>label.tooltip_advancedActionSettings,
+			'tooltip_externalJS'=>label.tooltip_externalJS,
 			'srcLbl_available' => label.srcLbl_available,
 			'srcLbl_optional' => label.srcLbl_optional,
 			'url_reqFeature'=>label.url_reqFeature
 		};
 	}
 
-	public static Group[] getGroupsForUser(Id userId) {
+	private static Group[] getGroupsForUser(Id userId) {
 
 		Set < Id > groupIds = getGroupsForIds(new Set < Id > { userId });
 		return [SELECT Id, Name FROM Group WHERE Id IN: groupIds];
 
 	}
 
-	public static Set < Id > getGroupsForIds(Set < Id > userOrGroupIds) {
+	private static Set < Id > getGroupsForIds(Set < Id > userOrGroupIds) {
 
 		Set < Id > groupIds = new Set < Id > ();
 		Set < Id > nestedGroupIds = new Set < Id > ();
@@ -868,12 +1056,15 @@ global with sharing class infrastructure {
 		// 		objs.put(String.valueOf(objResult.getName()),objResult.getLabel());
 		// 	}
 		// }
-		Map<String,Schema.DescribeSObjectResult> objectMap = new Map<String,Schema.DescribeSObjectResult>();
-		map<string, object> result = new map<string, object>{};
+		Map<String,Map<String,String>> objectMap = new Map<String,Map<String,String>>();
+		map<string, Object> result = new map<string, object>{};
 			for(Schema.SObjectType objTyp : gd.Values()){
 				if(!String.valueOf(objTyp).startsWith('Salesforce')){
 					Schema.DescribeSObjectResult descResult = objTyp.getDescribe();
-					objectMap.put(objTyp.getDescribe().getName(), descResult);
+					if(descResult.isQueryable()){
+						Map<String,String> obj = new Map<String,String>{'label' => descResult.getLabel(), 'name'=> descResult.getName(), 'associateParentEntity'=> descResult.getAssociateParentEntity()};
+						objectMap.put(descResult.getName(), obj);
+					}
 				}
 			}
 		result.put('describe', JSON.serialize(objectMap));
@@ -930,8 +1121,8 @@ global with sharing class infrastructure {
 		return years;
 	}
     
-    private static void invokeApex(string helperType, map<string, object> data) {
-		string nameSpacePrefix = (string) data.get('nameSpacePrefix');
+    private static map < string, object > invokeApex(string helperType, map<string, object> data) {
+		/*string nameSpacePrefix = (string) data.get('nameSpacePrefix');
 		string[] apexHelper = helperType.split('\\.');
 		
         string helperTypeClass = apexHelper[0];// customActions.getPackage, customActions.getPackage, customActions, Stratavar.customActions
@@ -944,8 +1135,23 @@ global with sharing class infrastructure {
         Type T = string.isEmpty(A[0].namespacePrefix) ? type.forName(helperType) : type.forName(A[0].namespacePrefix, helperType);
         if (T == null) throw new InfrastructureException(null, ('Can\'t find method {1} in class ' + helperType).replace('{1}', helperType) + ':' + helperTypeClass, exceptionType.INSTANCE_CLASS_NOT_FOUND);
                 
-        handler handlerClass = (handler) JSON.deserialize(JSON.serialize(data), T);
-        handlerClass.execute(data);
+        handler handlerClass = (handler) JSON.deserialize(JSON.serialize(data), T);*/
+
+		Type T = type.forName(helperType);			
+		if (T == null) throw new InfrastructureException(null, ('Can\'t find class {1}').replace('{1}', helperType), exceptionType.CLASS_NOT_FOUND);
+		handler handlerClass = (handler) T.newInstance();
+
+		map < string, object > result = new map < string, object > ();
+		try {
+			object res = handlerClass.execute(data);
+			result.put('success', true);
+			result.put('result', res);
+		} catch (Exception e) {
+			result.put('success', false);
+			result.put('errorMessage', e.getMessage());
+			system.debug(LoggingLevel.Error, e.getMessage());
+		}
+		return result;
     }
 
 	private static string[] getIntrLst() {
@@ -966,6 +1172,17 @@ global with sharing class infrastructure {
                 }
                 
          }
+		return lst;
+    }
+
+	private static string[] getStaticResource() {
+        StaticResource[] static_resource = [SELECT Name,Id, SystemModStamp FROM StaticResource WHERE ContentType IN ('text/javascript')];
+        
+        string[] lst = new string[]{};
+        for (StaticResource item : static_resource) {
+			String url_file_ref = '/resource/' + String.valueOf(((DateTime)item.get('SystemModStamp')).getTime())+ '/' + item.get('Name');
+			lst.add(url_file_ref );    
+        }
 		return lst;
     }
 

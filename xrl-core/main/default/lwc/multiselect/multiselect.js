@@ -1,4 +1,5 @@
 import { LightningElement, track, api } from 'lwc';
+import { libs } from 'c/libs';
 
 export default class Multiselect extends LightningElement {
     
@@ -7,8 +8,12 @@ export default class Multiselect extends LightningElement {
     @api selectedvalues = [];
     @api label;
     @api disabled = false;
+    @api required = false;
     @api multiselect = false;
     @api listsize = 20;
+    @api cfg;
+    @api optionsfromglobalvar;
+    @api col;
 
     @track mSelectConfig = {};
 
@@ -23,6 +28,21 @@ export default class Multiselect extends LightningElement {
         this.setSelect();
     }
 
+    @api setDisabled(v) {
+        this.disabled = v;
+    }
+
+    @api checkValidity() {
+        let input = this.template.querySelector('.inputBox');
+        let valid = input?.checkValidity();
+        return !this.required || (this.required && (this.mSelectConfig.value || this.mSelectConfig.values.length > 0));
+    }
+
+    @api reportValidity() {
+        let input = this.template.querySelector('.inputBox');
+        input?.reportValidity();
+    }
+
     connectedCallback() {
         this.setSelect();
     }
@@ -31,7 +51,13 @@ export default class Multiselect extends LightningElement {
         this.mSelectConfig.showDropdown = false;
         this.mSelectConfig.showOptionCount = true;
         this.mSelectConfig.minChar = 2;
-        var optionData = this.options ? (JSON.parse(JSON.stringify(this.options))) : [];
+        var optionData = [];
+        // var optionData = this.options ? libs.jsonParse(this.options) : [];
+        if(this.optionsfromglobalvar){
+            optionData = libs.getGlobalVar(this.cfg).optionsForMultiselect.has(this.col.fieldName) ? libs.jsonParse(libs.getGlobalVar(this.cfg).optionsForMultiselect.get(this.col.fieldName)) : [];
+        }else{
+            optionData = this.options ? libs.jsonParse(this.options) : [];
+        }
         var value = this.selectedvalue && !this.multiselect ? (JSON.parse(JSON.stringify(this.selectedvalue))) : '';
         var values = this.selectedvalues && this.multiselect ? (JSON.parse(JSON.stringify(this.selectedvalues))) : [];
 		if(value || values) {
@@ -127,7 +153,7 @@ export default class Multiselect extends LightningElement {
     }
 
     showOptions() {
-        if(this.disabled == false && this.options) {
+        if(!this.disabled && this.options) {
             this.mSelectConfig.message = '';
             this.mSelectConfig.searchString = '';
             var options = JSON.parse(JSON.stringify(this.mSelectConfig.optionData));
@@ -171,6 +197,9 @@ export default class Multiselect extends LightningElement {
         }
         else{
             this.mSelectConfig.searchString = previousLabel;
+            //if someone presses Enter without selecting anything. 
+            //To prevent NoErrorObjectAvailable Script error
+            if(event.target.value === "") return; 
             this.dispatchEvent(new CustomEvent('select', {
                 detail: {
                     'payloadType' : 'multi-select',

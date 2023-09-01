@@ -8,18 +8,34 @@
 					</svg>
 					<span class="slds-assistive-text">Close</span>
 				</button>
-                <h1 class="slds-modal__title slds-hyphenate">{title}</h1>
+                <h1 if:true={title} class="slds-modal__title slds-hyphenate">{title}</h1>
 			</header>
 			<div class="slds-modal__content slds-p-around_medium slds-is-relative">                
                 <div if:true={isLoading}>
                     <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
                 </div>
-                <template for:each={contents} for:item="item" key={item.name}>
+                <template for:each={contents} for:item="item">
                     <div if:true={item.isIframe} key={item.name}>
                         <iframe style={item.style} src={item.url}></iframe>
                     </div>
                     <div if:true={item.isMessage} key={item.name}>
                         {item.text}
+                    </div>
+                    <div if:true={item.isInput} key={item.name}>
+                        <lightning-input
+                            type={item.type}
+                            label={item.label}
+                            value={item.value}
+                            data-id={item.name}
+                            variant={item.variant}
+                            checked={item.checked}
+                            disabled={item.disabled}
+                            required={item.required}
+                            placeholder={item.placeholder}
+                            message-when-value-missing={item.messageWhenValueMissing}
+                            onchange={handleChange}
+                            class="inputs">
+                        </lightning-input>
                     </div>
                     <div if:true={item.isTextarea} key={item.name}>
                         <lightning-textarea
@@ -27,16 +43,45 @@
                             value={item.value}
                             data-id={item.name}
                             variant={item.variant}
+                            disabled={item.disabled}
                             required={item.required}
                             placeholder={item.placeholder}
                             message-when-value-missing={item.messageWhenValueMissing}
+                            onchange={handleChange}
                             class="inputs">
                         </lightning-textarea>
+                    </div>
+                    <div if:true={item.isCombobox} key={item.name}>
+                        <c-multiselect 
+                            id={item.name} 
+                            label={item.label} 
+                            data-id={item.name}
+                            options={item.options} 
+                            disabled={item.disabled}
+                            required={item.required}
+                            selectedvalue={item.value}
+                            selectedvalues={item.value} 
+                            multiselect={item.multiselect} 
+                            onselect={handleChange}
+                            listsize=10000
+                            class="inputs"
+                            data-type="select">
+                        </c-multiselect>                        
+                    </div>
+                    <div if:true={item.isSwitch} key={item.name}>
+                        <lightning-button
+                            label={item.label}
+                            title={item.label}
+                            class={item.class}
+                            data-id={item.name}
+                            variant={item.variant}
+                            onclick={handleClick}>
+                        </lightning-button>
                     </div>
                 </template>
 			</div>
 			<footer class="slds-modal__footer">
-                <template for:each={buttons} for:item="item" key={item.name}>
+                <template for:each={buttons} for:item="item">
                     <lightning-button
                         key={item.name}
                         label={item.label}

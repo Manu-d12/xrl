@@ -51,9 +51,12 @@ export let libs = {
 
 		let isReverse = isASCSort ? 1 : -1;
 
+		//in case of number it will sort normally but in case of string it will convert it to lower case
 		records.sort((x, y) => {
-			x = keyValue(x) ? keyValue(x) : ''; // handling null values
-			y = keyValue(y) ? keyValue(y) : '';
+			let xKeyValue = keyValue(x);
+			let yKeyValue = keyValue(y);
+			x = xKeyValue ? (typeof xKeyValue === 'number' ? xKeyValue : xKeyValue.toLowerCase()) : ''; // handling null values
+			y = yKeyValue ? (typeof yKeyValue === 'number' ? yKeyValue : yKeyValue.toLowerCase()) : '';
 			return isReverse * ((x > y) - (y > x));
 		});
 
@@ -67,6 +70,9 @@ export let libs = {
 		let node = (varName.indexOf(':') > -1) ? globalVars[varName.split(':')[0]] : globalVars;
 		node[(varName.indexOf(':') > -1) ? varName.split(':')[1] : varName] = value; //JSON.parse(JSON.stringify(value));
 		console.log('GLOBAL VARS', globalVars);
+	},
+	getGlobalVarsCount : function() {
+		return Object.keys(globalVars).length;
 	},
 	getGlobalVar: function(varName) {
 		//console.log(globalVars);
@@ -139,20 +145,21 @@ export let libs = {
 				"label": _labels.lbl_fieldLabel,
 				"tooltip": _labels.tooltip_fieldLabel
 			},
-			"formatter": {
-				"type": "function",
-				"params": "(row, col, val)",
-				"label": _labels.lbl_customFunctionForFormatting,
-				"placeHolder" : _labels.lbl_customFunctionExample,
-				"useExample":true
-			},
-			"uStyle": {
-				"type": "function",
-				"params": "(row, col, val)",
-				"label": _labels.lbl_customFunctionForStyle,
-				"placeHolder" : _labels.lbl_customFunctionStyleExample,
-				"useExample":true
-			},
+			// "formatter": {
+			// 	"type": "function",
+			// 	"params": "(row, col, val)",
+			// 	"label": _labels.lbl_customFunctionForFormatting,
+			// 	"placeHolder" : _labels.lbl_customFunctionExample,
+			// 	"useExample":true
+			// },
+			//in advanced JSON the key for this uStyle should be customStyle
+			// "uStyle": {
+			// 	"type": "function",
+			// 	"params": "(row, col, val)",
+			// 	"label": _labels.lbl_customFunctionForStyle,
+			// 	"placeHolder" : _labels.lbl_customFunctionStyleExample,
+			// 	"useExample":true
+			// },
 			"isHidden": {
 				"defValue": false,
 				"type": "checkbox",
@@ -197,6 +204,12 @@ export let libs = {
 				"type": "string",
 				"label" : _labels.lbl_width,
 				"tooltip": _labels.tooltip_widthExample
+			},
+			"advanced": {
+				"type": "function",
+				"label": _labels.lbl_advancedFieldSettings,
+				"tooltip" : _labels.tooltip_advancedFieldSettings,
+				"isAdvanced" : true
 			}
 		};
 		if (colModelItem !== undefined) {
@@ -294,13 +307,14 @@ export let libs = {
 				"cmd" : "dialog:setTableParam",
 				"helpArticleUrl": _labels.hlpUrl_groupFieldName,
 			},
-			"groupingFunction": {
-				"type": "function",
-				"label": _labels.lbl_groupingFunction,
-				"tooltip": _labels.tooltip_groupingFunction,
-				"placeHolder": _labels.placeholder_groupingFunction,
-				"cmd" : "dialog:setTableParam"
-			},
+			// "groupingFunction": {
+			// 	"type": "function",
+			// 	"label": _labels.lbl_groupingFunction,
+			// 	"tooltip": _labels.tooltip_groupingFunction,
+			// 	"placeHolder": _labels.placeholder_groupingFunction,
+			// 	"cmd" : "dialog:setTableParam",
+			// 	"useExample":true,
+			// },
 			"groupOrder" : {
 				"defValue": "ASC",
 				"type": "combobox",
@@ -309,7 +323,29 @@ export let libs = {
 				"options": [{label:'ASC',value:'ASC'},{label:'DESC',value:'DESC'}],
 				"cmd" : "dialog:setTableParam",
 			},
-			
+			"isRecordsDragDropEnabled": {
+				"defValue": false,
+				"type": "checkbox",
+				"label": "Enable drag & drop on records?",
+				"tooltip": "If you enable this, you will be create hierarchy with records just by drag and drop",
+				"cmd" : "dialog:setTableParam",
+			},
+			"fieldToMapToIndex" : {
+				"type": "string",
+				"label": _labels.lbl_fieldToMapToIndex,
+				"tooltip": _labels.tooltip_fieldToMapToIndex,
+				"isReadOnly": true,
+				"cmd" : "dialog:setTableParam",
+			},
+			// "recordsDragDropCallback": {
+			// 	"type": "function",
+			// 	"label": "Callback for record drag drop",
+			// 	"tooltip": "Callback for record drag drop",
+			// 	"placeHolder": "function(scope,records,draggedRecord,droppedRecord,libs){ return records; }",
+			// 	"isReadOnly": true,
+			// 	"cmd" : "dialog:setTableParam",
+			// 	"useExample":true,
+			// },
 			"saveChunkSize" : {
 				"defValue": 200,
 				"type": "string",
@@ -334,15 +370,16 @@ export let libs = {
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
 			},
-			"beforeSaveValidation": {
-				"type": "function",
-				"label": _labels.lbl_beforeSaveValidation,
-				"tooltip": _labels.tooltip_beforeSaveValidation,
-				"placeHolder": _labels.placeHolder_beforeSaveValidation,
-				"isReadOnly": true,
-				"cmd" : "dialog:setTableParam",
-				"helpArticleUrl": _labels.hlpUrl_beforeSaveValidation,
-			},
+			// "beforeSaveValidation": {
+			// 	"type": "function",
+			// 	"label": _labels.lbl_beforeSaveValidation,
+			// 	"tooltip": _labels.tooltip_beforeSaveValidation,
+			// 	"placeHolder": _labels.placeHolder_beforeSaveValidation,
+			// 	"isReadOnly": true,
+			// 	"cmd" : "dialog:setTableParam",
+			// 	"helpArticleUrl": _labels.hlpUrl_beforeSaveValidation,
+			// 	"useExample":true,
+			// },
 			"beforeSaveApexAction": {
 				"defValue": "",
 				"type": "combobox",
@@ -354,15 +391,16 @@ export let libs = {
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam"
 			},
-			"beforeDeleteValidation": {
-				"type": "function",
-				"label": _labels.lbl_beforeDeleteValidation,
-				"tooltip": _labels.tooltip_beforeDeleteValidation,
-				"placeHolder": _labels.placeHolder_beforeDeleteValidation,
-				"isReadOnly": true,
-				"cmd" : "dialog:setTableParam",
-				"helpArticleUrl": _labels.hlpUrl_beforeDeleteValidation,
-			},
+			// "beforeDeleteValidation": {
+			// 	"type": "function",
+			// 	"label": _labels.lbl_beforeDeleteValidation,
+			// 	"tooltip": _labels.tooltip_beforeDeleteValidation,
+			// 	"placeHolder": _labels.placeHolder_beforeDeleteValidation,
+			// 	"isReadOnly": true,
+			// 	"cmd" : "dialog:setTableParam",
+			// 	"helpArticleUrl": _labels.hlpUrl_beforeDeleteValidation,
+			// 	"useExample":true,
+			// },
 			"displayOptionListSize" : {
 				"defValue": 20,
 				"type": "string",
@@ -370,20 +408,23 @@ export let libs = {
 				"tooltip": _labels.tooltip_numbersOfOptionsShown,
 				"cmd" : "dialog:setTableParam",
 			},
-			"rowCss": {
-				"type": "function",
-				"label": _labels.lbl_rowCss,
-				"tooltip": _labels.tooltip_changeRowStyleByFunction,
-				"placeHolder": _labels.placeHolder_rowCss,
-				"cmd" : "dialog:setTableParam"
-			},
-			"afterloadTransformation": {
-				"type": "function",
-				"label": 'afterloadTransformation',
-				"tooltip": 'afterloadTransformation this function must return a records as input also must get records',
-				"placeHolder": 'afterloadTransformation',
-				"cmd" : "dialog:setTableParam"
-			},
+			//moved to advanced config JSON
+			// "rowCss": {
+			// 	"type": "function",
+			// 	"label": _labels.lbl_rowCss,
+			// 	"tooltip": _labels.tooltip_changeRowStyleByFunction,
+			// 	"placeHolder": _labels.placeHolder_rowCss,
+			// 	"cmd" : "dialog:setTableParam",
+			// 	"useExample":true,
+			// },
+			// "afterloadTransformation": {
+			// 	"type": "function",
+			// 	"label": _labels.lbl_afterloadTransformation,
+			// 	"tooltip": _labels.tooltip_afterloadTransformation,
+			// 	"placeHolder": _labels.placeHolder_afterloadTransformation,
+			// 	"cmd" : "dialog:setTableParam",
+			// 	"useExample":true,
+			// },
 			"rowRecalcApex": {
 				"defValue": "",
 				"type": "combobox",
@@ -394,11 +435,44 @@ export let libs = {
 				"tooltip": 'Apex class for row recalculation',
 				"placeHolder": 'Apex class for row recalculation',
 				"cmd" : "dialog:setTableParam"
+			},
+			"externalJS": {
+				"defValue": "",
+				"type": "combobox",
+				"optionsCallBack" : function(scope){
+					return scope.config._staticResourceList;
+				},
+				"label": _labels.lbl_externalJS,
+				"tooltip": _labels.tooltip_externalJS,
+				"placeHolder": _labels.lbl_externalJS,
+				"cmd" : "dialog:setTableParam"
+			},
+			"advanced": {
+				"type": "function",
+				"label": _labels.lbl_advancedTableSettings,
+				"tooltip" : _labels.tooltip_advancedTableSettings,
+				"cmd" : "dialog:setTableParam",
+				"isAdvanced" : true
 			}
 			
 			
 		}
 		return defParams;
+	},
+	jsonParse: function(input){
+		return JSON.parse(JSON.stringify(input));
+	},
+	setDefaultColumns: function(){
+		let columns = [{
+			"fieldName" : "Id",
+			"updateable": false,
+			"isNameField": false,
+			"isEditable": false,
+			"isFilterable": true,
+			"isSortable": true,
+			"helpText": 'Id (id)'
+		}];
+		return columns;
 	},
 	customActions:function(){
 		let _labels = globalVars[Object.keys(globalVars)[0]]._LABELS;
@@ -425,7 +499,8 @@ export let libs = {
 				"defValue":'',
 				"type": "function",
 				"label": _labels.lbl_actionCallback,
-				"placeHolder" : _labels.placeholder_actionCallback
+				"placeHolder" : _labels.placeholder_actionCallback,
+				"useExample":true,
 			},
 			"actionIsHidden" : {
 				"defValue":false,
@@ -472,40 +547,42 @@ export let libs = {
 					return scope.config.flowList;
 				},
 				"label": _labels.lbl_actionFlowName
+			},
+			"advanced": {
+				"type": "function",
+				"label": _labels.lbl_advancedActionSettings,
+				"tooltip" : _labels.tooltip_advancedActionSettings,
+				"isAdvanced" : true
 			}
 		}
 		return defParams;
 	},
 	remoteAction: async function(scope, cmd, params) {
-		scope.config.isSpinner = true;
+		if (scope.config) scope.config.isSpinner = true;
 		let outParams = {};
+		if (scope.recordId!=undefined) libs.setGlobalVar('recordId', scope.recordId);
 		Object.assign(outParams, params, { recordId: scope.recordId });
-		if (cmd === 'query' && scope.config.dataTableConfig && scope.config.dataTableConfig.loadChunkSize) {
+		if (cmd === 'query' && scope.config?.dataTableConfig && scope.config?.dataTableConfig.loadChunkSize) {
 			console.log('query', scope.config.dataTableConfig.loadChunkSize);
 			outParams.loadChunkSize = scope.config.dataTableConfig.loadChunkSize;
 		}
 		delete outParams.callback;
 		await apexInterface({ cmd: cmd, data: outParams }).then(result => {
 			console.log(result);
-			scope.config.isSpinner = false;
+			if (scope.config) scope.config.isSpinner = false;
 			if ('exception' in result) {
+				scope.config.isExceptionInRemoteAction = true;
 				console.error(result.exception, result.log);
 				//HYPER-247
-				let formattedErrMsg = '';
-				if(result.exception.message.includes('Update failed') && result.exception.message.includes('max length')){
-					formattedErrMsg = (result.exception.message.substring(
-						result.exception.message.indexOf(";") + 1, 
-						result.exception.message.lastIndexOf("):")
-					) + ')').replaceAll('&quot;','"');
-				}else{
-					formattedErrMsg = result.exception.message;
-				}
+				let formattedErrMsg = this.formatErrMessage(result.exception.message);				
 				const event = new ShowToastEvent({
 					title: result.exception.title,
 					message: formattedErrMsg,
 					variant: 'error'
 				});
-				scope.dispatchEvent(event);
+				if (!formattedErrMsg.includes('License is expired') && !formattedErrMsg.includes('Permission Set')) {
+					scope.dispatchEvent(event);
+				}
 			} else {
 				if (typeof(params.callback) === 'function') {
 					params.callback.bind(scope)(cmd + 'Result', result);
@@ -513,9 +590,90 @@ export let libs = {
 			}
 		})
 	},
+	formatErrMessage: function(errMsg) {
+		let message = '';
+		if(errMsg.includes('Update failed') && errMsg.includes('max length')){
+			message = (errMsg.substring(
+				errMsg.indexOf(";") + 1, 
+				errMsg.lastIndexOf("):")
+			) + ')').replaceAll('&quot;','"');
+		}
+		else if(errMsg.includes('ENTITY_IS_DELETED: entity is deleted')){
+			message = globalVars[Object.keys(globalVars)[0]]._LABELS.msg_entityIsDeleted;
+		}
+		else{
+			message = errMsg;
+		}
+		return message;
+	},
 	showToast : function(scope, params) {
 		const event = new ShowToastEvent(params);
 		scope.dispatchEvent(event);
+	},
+	findRecordWithChild:function(records, targetId) {
+		for (const record of records) {
+			if (record.Id === targetId) {
+				return record;
+			}
+	
+			if (record.childRecords) {
+				const foundInChild = libs.findRecordWithChild(record.childRecords, targetId);
+				if (foundInChild) {
+					return foundInChild;
+				}
+			}
+		}
+	
+		return null;
+	},
+	flattenRecordsWithChildren:function(records) {
+		const singleLevelRecords = [];
+	
+		function flatten(record) {
+			const { Id, childRecords } = record;
+	
+			if (!singleLevelRecords.some(r => r.Id === Id)) {
+				singleLevelRecords.push({ ...record, childRecords: [] });
+	
+				if (childRecords) {
+					childRecords.forEach(childRecord => flatten(childRecord));
+				}
+			}
+		}
+	
+		records.forEach(record => {
+			flatten(record);
+		});
+	
+		return singleLevelRecords;
+	},
+	broadcastMessage: function(scope, messageObject, target) {
+		// every broadcast message should have a Id which will be used to identify if the message is for any specific
+		// component when receiving
+		try{
+			if(target === undefined) {
+				target = "*";
+			}
+			console.log('Sending Message: ', messageObject, " to ", target);
+			window.postMessage(messageObject, target);
+		}catch(e){
+			console.error("Error in postMessage", e);
+		}
+	},
+	findMatchingKey: function(map, array) {
+		try{
+			if(map.size === 0) return [];
+			const matchingObjects = [];
+			for (const obj of array) {
+				const uniqueName = obj.uniqueName;
+				if (map?.has(uniqueName)) {
+					matchingObjects.push(obj);
+				}
+			}
+			return matchingObjects.length > 0 ? matchingObjects : [];
+		}catch(e){
+			console.log('No message received');
+		}
 	},
 	isFunction: function (param) {
         return param && (typeof (param) === 'function' || typeof param === "string" && param.trim().startsWith('function'))
@@ -569,7 +727,7 @@ export let libs = {
 		return result;
 	},	
 	standardActions: function(){
-		let _labels = globalVars[Object.keys(globalVars)[0]]._LABELS;
+		let _labels = globalVars[Object.keys(globalVars)[0]]._LABELS || {};
 		let actions = [
 			{
 				"actionId": "std:reset_filters",
@@ -638,12 +796,18 @@ export let libs = {
 			  "actionTip": _labels.title_expandView,
 			  "actionCallBack": "",
 			  "actionIsHidden": false,
-			  "actionIconName": "utility:expand",
+			  "actionIconName": "utility:expand/utility:contract",
 			  "isActionStandard":true,
 			  "actionOrder":60
 			}
 		  ];
 		  return actions;
+	},
+	getParentHistorySObjName: function(name){
+		let config = globalVars[name];
+		return config.sObjApiName.toLowerCase().endsWith('__history') ? 
+				config.sObjApiName.replace('__History','__c') :
+				config.sObjApiName.replace('History','');
 	},
 	historyGrid: function(apiName){
 		//apiName.split('::')[2].split('.')[1] === false means that it is the current object's history
@@ -652,16 +816,17 @@ export let libs = {
 		let fieldName = isChildObjectHistory ? apiName.split('::')[2].split('.')[0] + "Id"
 		: apiName.split('::')[2].split('.')[0].slice(0,-2) + ".Id";
 		let defFields = [
-			{
-				"fieldName" : "Id",
-				"type": "string",
-				"updateable": false,
-				"isFilterable": true,
-				"isSortable": true,
-				"isNameField": false,
-				"isEditable": false,
-				"isHidden": true,
-			},
+			// {
+			// 	"fieldName" : "Id",
+			// 	"type": "string",
+			// 	"updateable": false,
+			// 	"isFilterable": true,
+			// 	"isSortable": true,
+			// 	"isNameField": false,
+			// 	"isEditable": false,
+			// 	"isHidden": true,
+			// 	"helpText": 'Id (id)',
+			// },
 			{
 				"label": "New Value",
 				"fieldName": "NewValue",
@@ -671,6 +836,7 @@ export let libs = {
 				"isSortable": true,
 				"isNameField": false,
 				"isEditable": false,
+				"helpText": 'NewValue (anyType)',
 			},
 			{
 				"label": "Old Value",
@@ -681,6 +847,7 @@ export let libs = {
 				"isSortable": true,
 				"isNameField": false,
 				"isEditable": false,
+				"helpText": 'OldValue (anyType)',
 			},
 			{
 				"label": "Created Date",
@@ -691,6 +858,7 @@ export let libs = {
 				"isSortable": true,
 				"isNameField": false,
 				"isEditable": false,
+				"helpText": 'CreatedDate (dateTime)',
 			},
 			{
 				"label": "Changed Field",
@@ -701,6 +869,7 @@ export let libs = {
 				"isSortable": true,
 				"isNameField": false,
 				"isEditable": false,
+				"helpText": 'Field (picklist)',
 			},
 			{
 				"label": "Changed By",
@@ -713,6 +882,7 @@ export let libs = {
 				"isEditable": false,
 				"isFilterable": true,
 				"isSortable": true,
+				"helpText": 'CreatedBy.Name (string)',
 			}
 		];
 		if(isChildObjectHistory){
@@ -723,6 +893,7 @@ export let libs = {
 				"referenceTo": apiName.split('::')[2].split('.')[0],
 				"isFilterable": true,
 				"isSortable": true,
+				"helpText": fieldName + ' (reference)',
 			});
 		}
 		return defFields;
@@ -736,6 +907,15 @@ export let libs = {
 			address = addressObject?.street + " " + addressObject?.city + " " + addressObject?.state + " " + addressObject?.country;
 		}
 		return address;
+	},
+	getCurrentStaticResourceURLWithSameName: function(staticURLLists, currentURL){
+		let updatedURL = currentURL;
+		staticURLLists.forEach((url) => { 
+			if(url.value.split('/')[3] !== undefined && url.value.split('/')[3] === currentURL.split('/')[3]) {
+				updatedURL = url.value;
+			}
+		});
+		return updatedURL;
 	},
 	currencyMap: function(cur) {
 		let map = {

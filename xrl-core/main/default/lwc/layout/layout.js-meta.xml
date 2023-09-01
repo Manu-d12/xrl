@@ -7,10 +7,14 @@
         <target>lightning__AppPage</target>
         <target>lightning__RecordPage</target>
         <target>lightning__HomePage</target>
+        <target>lightning__FlowScreen</target>
     </targets>
     <targetConfigs>
         <targetConfig targets="lightning__AppPage,lightning__RecordPage,lightning__HomePage">
             <property required="true" default="" name="configId" type="String" label="Select Config" description="Please select the Config name" datasource="apex://getConfigs"/>
+        </targetConfig>
+        <targetConfig targets="lightning__FlowScreen">
+            <property required="true" default="" name="configId" type="String" label="Related List" description="Choose Needed RelatedList."/>
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>

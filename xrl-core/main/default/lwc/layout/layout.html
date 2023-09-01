@@ -21,12 +21,14 @@
                         <template if:true={component.isCmp}>
                             <c-server-Filter if:true={component.isServerFilter} style={component.cmpStyle} cfg={component.uniqueName}
                                 record-id={recordId} onmessage={handleChildMessage}></c-server-Filter>
-                            <c-Data-Table if:true={component.isDataTable} style={component.cmpStyle} data-ind="Case"
+                            <c-Data-Table if:true={component.isDataTable} style={component.cmpStyle} data-name={component.uniqueName}
                                 cfg={component.uniqueName}></c-Data-Table>
                             <c-chartjs if:true={component.isChart} style={component.cmpStyle} name={component.uniqueName}
                                 onmessage={handleChildMessage} data-name={component.uniqueName}></c-chartjs>
                             <c-chevron if:true={component.isChevron} style={component.cmpStyle} name={component.uniqueName}
                                 onmessage={handleChildMessage}></c-chevron>
+                            <c-action-Bar if:true={component.isActionBar} style={component.cmpStyle} actionscfg={component.config}
+                                data-name={component.uniqueName}></c-action-Bar>
                         </template>
                         <template if:true={component.isCollapsible}>
                             <div class="slds-section" data-id={component.uniqueName}>
@@ -41,12 +43,14 @@
                                 <div class="slds-section__content">
                                     <c-server-Filter if:true={component.isServerFilter} style={component.cmpStyle} cfg={component.uniqueName}
                                         record-id={recordId} onmessage={handleChildMessage}></c-server-Filter>
-                                    <c-Data-Table if:true={component.isDataTable} style={component.cmpStyle} data-ind="Case"
+                                    <c-Data-Table if:true={component.isDataTable} style={component.cmpStyle} data-name={component.uniqueName}
                                         cfg={component.uniqueName}></c-Data-Table>
                                     <c-chartjs if:true={component.isChart} style={component.cmpStyle} name={component.uniqueName}
                                         onmessage={handleChildMessage} data-name={component.uniqueName}></c-chartjs>
                                     <c-chevron if:true={component.isChevron} style={component.cmpStyle} name={component.uniqueName}
                                         onmessage={handleChildMessage}></c-chevron>
+                                    <c-action-Bar if:true={component.isActionBar} style={component.cmpStyle} actionscfg={component.config}
+                                        data-name={component.uniqueName}></c-action-Bar>
                                 </div>
                             </div>
                         </template>
@@ -66,4 +70,7 @@
             </div>
         </template>
     </div>
+
+	<c-dialog if:true={showDialog} cfg={dialogCfg} data-id={dialogCfg.data_id}></c-dialog>
+
 </template>

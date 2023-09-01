@@ -44,3 +44,18 @@
 	top: -2px;
 	left: 7px;
 }
+
+.slds-th__action, .slds-cell-wrap{
+	height: fit-content !important;
+}
+.slds-th__action{
+	justify-content: space-between;
+}
+.editIconDataTable{
+	position:absolute;
+	right:5px;
+}
+.spanDataTableHeader{
+	padding-left:1px;
+	max-width: 90%;
+}

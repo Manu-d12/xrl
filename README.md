@@ -52,4 +52,12 @@ sfdx scanner:run:dfa --target "./**/*.cls" --projectdir "./" >SCA.log
 
 
 
-https://login.salesforce.com/packaging/installPackage.apexp?p0=04t8d000000liqlAAA
+https://login.salesforce.com/packaging/installPackage.apexp?p0=04t8d000000lnTuAAI
+
+
+
+[Dymmy Json]
+https://dummyjson.com/
+https://dummyjson.com/products
+
+https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_dev2gp_release_note_urls.htm

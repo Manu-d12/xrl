@@ -16,12 +16,12 @@ export default class ExrlTab extends LightningElement {
 
     getAllObjects(cmd,data){
         this.config.objList = [];
-        console.log('getAllObjects',JSON.parse(data[cmd].describe));
+        // console.log('getAllObjects',JSON.parse(data[cmd].describe));
         this.config.allObjectDesc = JSON.parse(data[cmd].describe);
         for(const key in this.config.allObjectDesc){
-            if(this.config.allObjectDesc[key].queryable){
-                this.config.objList.push({'label':this.config.allObjectDesc[key].label,'value':this.config.allObjectDesc[key].name});
-            }
+            let label = this.config.allObjectDesc[key].label;
+            let apiName = this.config.allObjectDesc[key].name;
+            this.config.objList.push({'label':label + ' (' + apiName + ')' ,'value':apiName});
         }
         this.config.objList.sort();
     }

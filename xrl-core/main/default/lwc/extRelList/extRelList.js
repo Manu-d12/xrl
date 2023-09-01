@@ -3,6 +3,7 @@ import { libs } from 'c/libs';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { NavigationMixin } from "lightning/navigation"
 import { encodeDefaultFieldValues, decodeDefaultFieldValues } from 'lightning/pageReferenceUtils'
+import { FlowNavigationFinishEvent } from 'lightning/flowSupport'
 
 import resource from '@salesforce/resourceUrl/extRelList';
 import { loadScript, loadStyle } from 'lightning/platformResourceLoader';
@@ -11,7 +12,7 @@ import { loadScript, loadStyle } from 'lightning/platformResourceLoader';
 export default class extRelList extends NavigationMixin(LightningElement) {
 
 	@api apiName;
-	@api name;
+	@api name; // already part of managed package and can't be removed
 	@api recordId;
 	@api defaultListView;	
 	@api configuration;
@@ -30,6 +31,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 	constructor() {
 		super();
+
 		Promise.all([
 			loadStyle(this, resource + '/css/extRelList.css'),
 			loadScript(this, resource + '/js/xlsx.full.min.js'),
@@ -39,11 +41,19 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		});
 
 		window.addEventListener('beforeunload', (event) => {
-			if (this.config.listViewConfig[0]._changedRecords) {
+			if (this.config.listViewConfig !== undefined && this.config.listViewConfig[0]._changedRecords) {
 				event.preventDefault();
 				event.returnValue = '';
 			}
 		});
+		//postMessage listener to communicate between different Layout components
+		//need to listen improve the security concerns to block messages from unauthorized access
+		if(!window.location.href.includes('flexipageEditor')){
+			window.addEventListener(
+				"message",this.listenEvent.bind(this),
+				false,
+			);
+		}
 	}
 	@api 
 	updateGridView(newApiName){
@@ -52,8 +62,23 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	connectedCallback() {
+		this.name = libs.getGlobalVarsCount().toString();
 		console.log('RENDERED');
+		this._flowSupport =  FlowNavigationFinishEvent;
 		this.loadCfg(true);
+	}
+	listenEvent(event){
+		// console.log("Message received0 XRL", [...event.data.keys()],this.name);
+		let isMatchingUniqueName = libs.findMatchingKey(event.data,[{uniqueName:this.name}]);
+		if(isMatchingUniqueName !== undefined && isMatchingUniqueName.length > 0) {
+			console.log("Message received", event.data);
+			this.loadCfg(true);
+			// if(event.data.get(this.configId)){
+			// 	console.log('Acknowledgement',event.data.get(this.configId)['status']);
+			// 	return;
+			// }
+			// this.handlePostMessageEvents(event.data,isMatchingUniqueName);
+		}
 	}
 
 	setCustomLabels(cmd, data) {
@@ -70,6 +95,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		libs.remoteAction(this, 'getCustomLabels', {callback: this.setCustomLabels.bind(this) });
 		let apiNames = this.apiName.split('::');
 		console.log(apiNames);
+		if(apiNames[1] === undefined) return;
 		this.localConfig = {};
 
 		let cfg = libs.loadConfig(this.name);
@@ -96,7 +122,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		console.log(JSON.parse(JSON.stringify(this.config)));
 
 		// let listViewName = isInit && this.defaultListView !== undefined ? this.defaultListView : (!isInit && this.name !== undefined ? this.name : undefined);
-		let listViewName = libs.loadUserPreferredView(this.name) != undefined ? libs.loadUserPreferredView(this.name) : '';
+		let listViewName = apiNames.length>3 && apiNames[3] ? apiNames[3] : (libs.loadUserPreferredView(this.name) != undefined ? libs.loadUserPreferredView(this.name) : '');
+		if (apiNames.length>3) this.config.isDisabledListView = true;
 		console.log(this.defaultListView);
 		console.log('listViewName ',listViewName);
 		if (this.configuration) {
@@ -117,6 +144,13 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		libs.getGlobalVar(this.name).iconName = data[cmd].iconMap.iconURL === undefined ? "/img/icon/t4v35/standard/custom_120.png" : data[cmd].iconMap.iconURL;
 		libs.getGlobalVar(this.name).iconStyle = libs.getGlobalVar(this.name).iconName?.includes('custom_120.png') ? 'width:32px;height:32px;margin: 5px;background-color:#d8c760;' : 'width:32px;height:32px;margin: 5px;';
 		this.config.isIconUrl = data[cmd].iconMap.iconURL?.includes('https') || libs.getGlobalVar(this.name).iconName?.includes('custom_120.png');
+		let options =  [{label : "None", value : ""}];
+		if (data[cmd].staticResourceList) {
+			data[cmd].staticResourceList.forEach(e=>{
+				options.push({label : e.split('/')[3], value: e})	
+			});
+		}	
+		this.config._staticResourceList = options;
 		this.config.actionsBar = {};
 
 		let adminConfig = (data[cmd].baseConfig) ? JSON.parse(data[cmd].baseConfig) : [];
@@ -140,14 +174,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if (this.config.dataTableConfig === undefined){
 			this.config.dataTableConfig = {};
 			this.config.dataTableConfig.cmpName = 'dataTable';
-			this.config.dataTableConfig.colModel = [{
-				"fieldName" : "Id",
-				"updateable": false,
-				"isNameField": false,
-				"isEditable": false,
-				"isFilterable": true,
-				"isSortable": true
-			}];
+			this.config.dataTableConfig.colModel = libs.setDefaultColumns();
 			if(this.config.sObjApiName.toLowerCase().includes('history')){
 				this.config.dataTableConfig.colModel = libs.historyGrid(this.apiName);
 				let changedField = this.config.dataTableConfig.colModel.find(field => field.fieldName === 'Field');
@@ -176,6 +203,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				];
 			}
 		} 
+		if(this.config.dataTableConfig.colModel === undefined){
+			this.config.dataTableConfig.colModel = libs.setDefaultColumns();
+		}
 		console.log('dataTable Config: ', this.config.dataTableConfig.colModel);
 
 		let mergedConfig = {};
@@ -229,18 +259,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		this.config.fields = [];
 		this.config.lockedFields = [];
 		
-		this.config.listViewConfig[0]?.colModel?.forEach(e => {
-			let describe = this.config.describe[e.fieldName];
-			if (describe && describe.type === 'reference') {
-				let nameField = describe.relationshipName === 'Case' ? '.CaseNumber' : '.Name';
-				this.config.fields.push(describe.relationshipName ? describe.relationshipName + nameField : e.fieldName);
-				if (e.locked) this.config.lockedFields.push(describe.relationshipName ? describe.relationshipName + '.Name' : e.fieldName);
-			}
-			this.config.fields.push(e.fieldName);
-			if (e.locked) this.config.lockedFields.push(e.fieldName);
-		});
-		
 		this.config.isGlobalSearch=this.config.listViewConfig[0].isGlobalSearch;
+		this.loadExternalScript();
+			
 		let notAllowedActions = ['std:delete','std:new'];
 		if(!this.config.listViewConfig[0].actions){
 			this.config.listViewConfig[0].actions = libs.standardActions();
@@ -262,10 +283,16 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 		this.config.listViewConfig[0].rowChecked = false;
 		//HYPER-382
+		const expandAction = this.config.listViewConfig[0].actions.find((el) => el.actionId === 'std:expand_view');
+		this.config._expandIcon = expandAction.actionIconName;
+		this.config._expandTip = expandAction.actionTip;
 		if(this.isFullscreen){
-			const expandAction = this.config.listViewConfig[0].actions.find((el) => el.actionId === 'std:expand_view');
-			this.config._expandTip = expandAction.actionTip;
-			expandAction.actionTip = this.config._LABELS.lbl_collapseView;
+			// expandAction.actionTip = this.config._LABELS.lbl_collapseView;
+			expandAction.actionTip = this.config._LABELS.title_expandView.split('/')[1];
+			expandAction.actionIconName = this.config._expandIcon.split('/')[1];
+		}else{
+			expandAction.actionTip = this.config._LABELS.title_expandView.split('/')[0];
+			expandAction.actionIconName = this.config._expandIcon.split('/')[0];
 		}
 		this.config.actionsBar = {
 			'actions':this.config.listViewConfig[0].actions,
@@ -273,41 +300,70 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			'_handleEventFlow': this.handleEventFlow.bind(this),
 			'_cfgName': this.name
 		};
-
+		if(this.config.listViewConfig[0].advanced !== undefined && this.config.listViewConfig[0].advanced !== ''){
+			this.config._advanced = eval('['+ this.config.listViewConfig[0].advanced + ']')[0];
+		}
 		console.log('this.config', this.config);
 		this.loadRecords();		
 	}
+	
+	async loadRecords() {
+		await this.prepareFieldsToFetch();
 
-	loadRecords() {
-		this.loadBulkData();
-		libs.remoteAction(this, 'query', {
-			isNeedDescribe: true,
-			sObjApiName: this.config.sObjApiName,
-			relField: this.config.relField,
-			addCondition: libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name),
-			orderBy: this.config.listViewConfig[0].orderBy,
-			fields: this.config.fields,
-			listViewName: this.config?.listView?.name,
-			callback: ((nodeName, data) => {
-				console.log('length', data[nodeName].records);
-				
-				libs.getGlobalVar(this.name).records = data[nodeName].records.length > 0 ? data[nodeName].records : undefined;
-				if(this.config.listViewConfig[0].afterloadTransformation !== undefined && this.config.listViewConfig[0].afterloadTransformation !== ""){
-					try {
-    	                this.config.records = eval('(' + this.config.listViewConfig[0].afterloadTransformation + ')')(this, libs.getGlobalVar(this.name).records);
-        	        } catch(err){
-            	        console.log('EXCEPTION', err);
-                	}
-				} else {
-                    this.config.records = libs.getGlobalVar(this.name).records;
-				}
-				this.allRecords = this.config.records;
-				this.config.listViewConfig[0]._loadCfg = this.loadCfg.bind(this);
-				
-				console.log('loadRecords', libs.getGlobalVar(this.name));
-				this.generateColModel();
-			})
-		});
+		if(this.config.isHistoryGrid){
+			this.config.describeMap = new Map();
+			let parentSObjName = libs.getParentHistorySObjName(this.name);
+			await libs.remoteAction(this, 'objectFieldList', { sObjApiName: parentSObjName, 
+				callback: function(func,result){
+					let objectFields = JSON.parse(result[func].describe);
+					libs.getGlobalVar(this.name).describeMap[parentSObjName] = objectFields;   
+				} });
+		}
+		if(this.config.listViewConfig[0].loadChunkSize !== undefined){
+			await this.loadBulkData();
+		}else{
+			await libs.remoteAction(this, 'query', {
+				isNeedDescribe: true,
+				sObjApiName: this.config.sObjApiName,
+				relField: this.config.relField,
+				addCondition: libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name),
+				orderBy: this.config.listViewConfig[0].orderBy,
+				fields: this.config.fields,
+				listViewName: this.config?.listView?.name,
+				callback: ((nodeName, data) => {
+					console.log('length', data[nodeName].records);
+					this.config.inaccessibleFields= data[nodeName].removedFields;
+					this.config.query = data[nodeName].SOQL;
+					
+					libs.getGlobalVar(this.name).records = data[nodeName].records.length > 0 ? data[nodeName].records : undefined;
+					if(this.config?._advanced?.afterloadTransformation !== undefined && this.config?._advanced?.afterloadTransformation !== ""){
+						try {
+							this.config.records = eval('(' + this.config?._advanced?.afterloadTransformation + ')')(this,libs, libs.getGlobalVar(this.name).records);
+						} catch(err){
+							console.log('EXCEPTION', err);
+						}
+					} else {
+						this.config.records = libs.getGlobalVar(this.name).records;
+					}
+					this.allRecords = this.config.records;
+					this.config.listViewConfig[0]._loadCfg = this.loadCfg.bind(this);
+					
+					console.log('loadRecords', libs.getGlobalVar(this.name));
+					this.generateColModel();
+				})
+			});
+		}
+
+	}
+	afterLoadTransformation(records){
+		if(this.config?._advanced?.afterloadTransformation !== undefined && this.config?._advanced?.afterloadTransformation !== ""){
+			try {
+				records = eval('(' + this.config?._advanced?.afterloadTransformation + ')')(this,libs, records);
+			} catch(err){
+				console.log('EXCEPTION', err);
+			}
+		} 
+		return records;
 	}
 	async loadBulkData(){
 		let soqlRel = '';
@@ -396,44 +452,130 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			listViewName: this.config?.listView?.name,
 			callback: ((nodeName, data) => {
 				console.log('records chunk size', data[nodeName].records);
+				this.config.inaccessibleFields= data[nodeName].removedFields;
+				this.config.query = data[nodeName].SOQL;
 				this.config.listOfBulkRecords = this.config.listOfBulkRecords.concat(data[nodeName].records);
 			})
 		});
 	}
+	async loadExternalScript(){
+		//need to fetch this static resource list here because, every time the external JS file is uploaded the url(url gets updated with latest timestamp) changes but the name remains the same, 
+		// so to make sure it loads correctly needs to get the list beforehand
+		// await libs.remoteAction(this, 'getStaticResource', {
+		// 	callback: ((nodeName, data11) => {
+		// 		let options =  [{label : "None", value : ""}];
+		// 		if (data11[nodeName]) {
+		// 			data11[nodeName].forEach(e=>{
+		// 				options.push({label : e.split('/')[3], value: e})	
+		// 			});
+		// 		}
+		// 		this.config._staticResourceList = options;
+		// 	})
+		// });
+		if(this.config.listViewConfig[0].externalJS !== undefined && this.config.listViewConfig[0].externalJS !== ''){
+			try{
+				this.config.listViewConfig[0].externalJS = libs.getCurrentStaticResourceURLWithSameName(this.config._staticResourceList,this.config.listViewConfig[0].externalJS);
+				const response = await fetch(this.config.listViewConfig[0].externalJS+'?'+Date.now());
+				const code = await response.text();
+				libs.getGlobalVar(this.name)._externalJS = eval('['+ code + ']')[0];
+			}catch(e){
+				console.error('Error in loading external JS', e);
+			}
+		}
+	}
 
 	generateColModel() {
 		this.config.listViewConfig[0].colModel.forEach(e => {
-			if(e.fieldName === 'Id'){
-				let describe = this.config.describe[e.fieldName];
+			if(e.fieldName.split('.')[1]){
+				if(this.config.inaccessibleFields[e.fieldName.split('.')[0]] && this.config.inaccessibleFields[e.fieldName.split('.')[0]].includes(e.fieldName.split('.')[1])){
+					e._skipFieldFromDisplay = true;
+				}else{
+					e._skipFieldFromDisplay = false;
+				}
+			}else{
+				if(this.config.inaccessibleFields && this.config.inaccessibleFields[this.config.sObjApiName] && this.config.inaccessibleFields[this.config.sObjApiName].includes(e.fieldName)){
+					e._skipFieldFromDisplay = true;
+				}else{
+					e._skipFieldFromDisplay = false;
+				}
+			}
+			let describe = this.config.describe[e.fieldName];
+			if(describe !== undefined || describe !== null){
 				if (e.label === undefined) e.label = describe.label;
 				if (e.type === undefined) e.type = describe.type;
 				if (e.updateable === undefined) e.updateable = describe.updateable;
 				if (e.isNameField === undefined) e.isNameField = describe && describe.nameField === true;
-				if (e.type === 'picklist' && e.options === undefined) {
-					e.options = [];
-					describe.picklistValues.forEach(field => {
-						e.options.push(
-							{ label: field.label, value: field.value }
-						)
-					});
-				}
-				if (e.isEditable && describe.updateable) {
-					if (e.type === 'picklist' || e.type === 'reference') {
-						e.isEditableAsPicklist = true;
-						console.log('picklist', e);
-					} else if (e.type === 'boolean') {
-						e.isEditableBool = true;
-					} else if (e.type === 'textarea') {
-						e.isEditableTextArea = true;
-					} else {
-						e.isEditableRegular = true;
-					}
-				} else {
-					e.isEditable = false;
-				}
+				if(e.type === 'picklist' || e.type === 'multipicklist'){
+                    e.options = [];
+                    if(describe.nillable){
+                        e.options.push(
+                            { label: '--None--', value: 'NONE' }
+                        )
+                    }
+                    describe.picklistValues.forEach(field => {
+                        e.options.push(
+                            { label: field.label != null ? field.label : field.value, value: field.value }
+                        )
+                    });
+                }
+				// if (e.isEditable && describe.updateable) {
+				// 	if (e.type === 'picklist' || e.type === 'reference') {
+				// 		e.isEditableAsPicklist = true;
+				// 		console.log('picklist', e);
+				// 	} else if (e.type === 'boolean') {
+				// 		e.isEditableBool = true;
+				// 	} else if (e.type === 'textarea') {
+				// 		e.isEditableTextArea = true;
+				// 	} else {
+				// 		e.isEditableRegular = true;
+				// 	}
+				// } else {
+				// 	e.isEditable = false;
+				// }
 			}
 		});
 		console.log('ColModel', JSON.parse(JSON.stringify(this.config.listViewConfig[0].colModel)));
+	}
+
+	async prepareFieldsToFetch(){
+		let refFieldsObject = [];
+		this.config.objectNameFieldsMap = new Map();
+
+		this.config.listViewConfig[0]?.colModel?.forEach(e => {
+			if (e.type === 'reference') {
+				refFieldsObject.push(e.referenceTo);
+			}
+		});
+
+		if(refFieldsObject.length > 0) {
+			const resultString = refFieldsObject.join("','");
+
+			const finalString = "'" + resultString + "'";
+			await libs.remoteAction(this, 'customSoql', {
+				SOQL: "SELECT EntityDefinition.QualifiedApiName,QualifiedApiName FROM FieldDefinition WHERE EntityDefinition.QualifiedApiName IN (" + finalString + ") AND IsNameField = TRUE",
+				callback: ((nodeName, data1) => {
+					data1[nodeName].records.forEach(obj => {
+						this.config.objectNameFieldsMap.set(obj.EntityDefinitionId, obj.QualifiedApiName);
+					});
+				})
+			});
+			console.log('this.config.objectNameFieldsMap: ', this.config.objectNameFieldsMap);
+		}
+		
+		this.config.listViewConfig[0]?.colModel?.forEach(e => {
+			let describe = this.config.describe[e.fieldName];
+			if (e.type === 'reference') {
+				let nameField = this.config.objectNameFieldsMap.get(e.referenceTo) ? '.'+this.config.objectNameFieldsMap.get(e.referenceTo) : '.Name';
+				this.config.fields.push(describe.relationshipName ? describe.relationshipName + nameField : e.fieldName);
+				if (e.locked) this.config.lockedFields.push(describe.relationshipName ? describe.relationshipName + '.Name' : e.fieldName);
+			}
+			if(e.type==="picklist"){
+				this.config.fields.push('toLabel(' +e.fieldName + ')');
+			}else{
+				this.config.fields.push(e.fieldName);
+			}
+			if (e.locked) this.config.lockedFields.push(e.fieldName);
+		});
 	}
 
 	isHistoryGrid(){
@@ -453,17 +595,40 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	resetChangedRecords(validatedRecordSize) {
-		if(this.template.querySelector('c-Data-Table')){
-			this.template.querySelector('c-Data-Table').setUpdateInfo('• ' + validatedRecordSize + ' ' +this.config._LABELS.msg_itemsUpdated);
+		if(this.template.querySelector('c-Data-Table') && (validatedRecordSize - this.config.countOfFailedRecords) > 0){
+			this.template.querySelector('c-Data-Table').setUpdateInfo('• ' + (validatedRecordSize - this.config.countOfFailedRecords) + ' ' +this.config._LABELS.msg_itemsUpdated);
+			const toast = new ShowToastEvent({
+				title: 'Success',
+				message: (validatedRecordSize - this.config.countOfFailedRecords) + ' of ' + validatedRecordSize + ' ' + this.config._LABELS.msg_itemsUpdated,
+				variant: 'success'
+			});
+			this.dispatchEvent(toast);
+			setTimeout((() => { this.template.querySelector('c-Data-Table')?.setUpdateInfo(''); }), 3000);
 		}
-		setTimeout((() => { this.template.querySelector('c-Data-Table')?.setUpdateInfo(''); }), 3000);
-		const toast = new ShowToastEvent({
-			title: 'Success',
-			message: validatedRecordSize + ' ' +this.config._LABELS.msg_itemsUpdated,
-			variant: 'success'
-		});
-		this.dispatchEvent(toast);
-		this.config.listViewConfig[0]._changedRecords = undefined;
+		if(this.config.countOfFailedRecords > 0){
+			const toast = new ShowToastEvent({
+				title: 'Error',
+				message: libs.formatStr('{0} ' + this.config._LABELS.msg_itemsUpdateFailed,[this.config.countOfFailedRecords]) + this.config.errorList.toString(),
+				variant: 'error'
+			});
+			this.dispatchEvent(toast);
+			const errorIds = [];
+			this.config.errorList.forEach((el) => {
+				errorIds.push(el.split(':')[0]); //getting the IDs of the records that caused the error
+			});
+			for (let key of this.config.listViewConfig[0]._changedRecords.keys()) {
+				if (!errorIds.includes(key)) {
+					this.config.listViewConfig[0]._changedRecords.delete(key);
+				}
+			}
+			console.error(JSON.parse(JSON.stringify(this.config.errorList)));
+		}else{
+			this.config.listViewConfig[0]._changedRecords = undefined;
+			this.config.records.forEach((record) => {
+				delete record._cellCss;
+			});
+			libs.getGlobalVar(this.name).records = this.config.records;
+		}
 		this.template.querySelector('c-Data-Table').updateView();
 	}
 
@@ -498,39 +663,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 		if (val.startsWith(':save')) {
 			this.prepareRecordsForSave();
-			//libs.getGlobalVar(this.name).records = undefined;
-
-			// let changedItems = this.template.querySelector('c-Data-Table').getRecords().filter(el => {
-			// 	// In thiscase need merge to libs.getGlobalVar(this.name).records;
-			// 	return this.config.listViewConfig[0]._changedRecords.indexOf(el.Id) > -1
-			// })
-			
-			// if(this.config.listViewConfig[0].beforeSaveValidation !== undefined && 
-			// 	this.config.listViewConfig[0].beforeSaveValidation !== ""){
-			// 	changedItems.forEach((el)=>{
-			// 		let rec = eval('('+this.config.listViewConfig[0].beforeSaveValidation+')')(el);
-			// 		if(rec){
-			// 			el = rec;
-			// 		}
-			// 	});
-			// }
-
-			// this.config.loopIndex = 0;
-			// this.config.resetIndex = 0;
-			// let saveChunk = this.config.listViewConfig[0].saveChunkSize ? this.config.listViewConfig[0].saveChunkSize : 200; //200 is the default value for saveChunk
-			// let index = 0;
-			// // console.log("rollback",this.config.listViewConfig[0].rollBack);
-			// while(index <= changedItems.length){
-			// 	let lIndex = changedItems[(parseInt(index)+parseInt(saveChunk))] ? (parseInt(index)+parseInt(saveChunk)) : (changedItems.length);
-			// 	let chunk = changedItems.slice(index,lIndex);
-			// 	index += changedItems[(parseInt(index)+parseInt(saveChunk))] ? parseInt(saveChunk) : (changedItems.length);
-			// 	// index += chunk.length;
-			// 	this.config.loopIndex += 1;
-			// 	libs.remoteAction(this, 'saveRecords', { records: chunk, 
-			// 		sObjApiName: this.config.sObjApiName,
-			// 		rollback:this.config.listViewConfig[0].rollBack ? this.config.listViewConfig[0].rollBack : true,
-			// 		callback: this.resetChangedRecords });
-			// }
+		}
+		if (val.startsWith(':cancelRecordSave')) {
+			this.config.listViewConfig[0]._changedRecords = undefined;
+			this.config.records = undefined;
+			this.loadRecords();
 		}
 
 		if (val.startsWith(':change_view')) {
@@ -652,11 +789,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let allRecordsValidation = true;
 
 		//user validation callback
-		if(this.config.listViewConfig[0].beforeDeleteValidation !== undefined && 
-			this.config.listViewConfig[0].beforeDeleteValidation !== ""){
+		if(this.config?._advanced?.beforeDeleteValidation !== undefined && 
+			this.config?._advanced?.beforeDeleteValidation !== ""){
 			records.forEach((el)=>{
 				try{
-					let rec = eval('('+this.config.listViewConfig[0].beforeDeleteValidation+')')(this,libs,el);
+					let rec = eval('('+this.config._advanced.beforeDeleteValidation+')')(this,libs,el);
 					if(!rec){
 						console.error('Failed Validation for ',JSON.parse(JSON.stringify(el)));
 						allRecordsValidation = false;
@@ -689,22 +826,30 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let deleteChunk = this.config.listViewConfig[0].deleteChunkSize ? this.config.listViewConfig[0].deleteChunkSize : 200; //200 is the default value for saveChunk
 		let index = 0;
 
+		this.config.isExceptionInRemoteAction = false;
+
 		while(index < records.length){
 			let chunk = records.slice(index,records[(parseInt(index)+parseInt(deleteChunk))] ? (parseInt(index)+parseInt(deleteChunk)) : (records.length));
 			index += records[(parseInt(index)+parseInt(deleteChunk))] ? parseInt(deleteChunk) : (records.length);
 			await this.deleteRecords(chunk);
 		}
-		const toast = new ShowToastEvent({
-			title: 'Success',
-			message: this.config._LABELS.msg_successfullyDeleted,
-			variant: 'success'
-		});
-		this.dispatchEvent(toast);
+		if(this.config.isExceptionInRemoteAction === false){
+			const toast = new ShowToastEvent({
+				title: 'Success',
+				message: this.config._LABELS.msg_successfullyDeleted,
+				variant: 'success'
+			});
+			this.dispatchEvent(toast);
+		}
 		this.showDialog = false;
 		if(records.length < 1000){
+			this.config.records = libs.flattenRecordsWithChildren(this.config.records);
 			this.config.records = this.config.records.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
+			this.config.records = this.afterLoadTransformation(this.config.records);
 			// //HYPER-243
+			this.allRecords = libs.flattenRecordsWithChildren(this.allRecords);
 			this.allRecords = this.allRecords.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
+			this.allRecords = this.afterLoadTransformation(this.allRecords);
 			this.template.querySelector('c-Data-Table').updateView();
 			this.config.listViewConfig[0].rowChecked = false;
 		}else{
@@ -722,19 +867,56 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			console.log(error);
 		}
 	}
+	// flattenRecordsWithChildren(records) {
+	// 	const singleLevelRecords = [];
+	
+	// 	function flatten(record) {
+	// 		const { Id, childRecords } = record;
+	
+	// 		if (!singleLevelRecords.some(r => r.Id === Id)) {
+	// 			singleLevelRecords.push({ ...record, childRecords: [] });
+	
+	// 			if (childRecords) {
+	// 				childRecords.forEach(childRecord => flatten(childRecord));
+	// 			}
+	// 		}
+	// 	}
+	
+	// 	records.forEach(record => {
+	// 		flatten(record);
+	// 	});
+	
+	// 	return singleLevelRecords;
+	// }
+
+	mapSerialNumberField(records, field){
+		records.forEach(rec => {
+			if(rec[field] === undefined){
+				rec[field] = "";
+			}
+			rec[field] = rec.sl.trim();
+			this.config.listViewConfig[0]._changedRecords.add(rec.Id);
+
+		});
+		return records;
+	}
 
 	async prepareRecordsForSave(){
-		let changedItems = this.template.querySelector('c-Data-Table').getRecords().filter(el => {
+		let records = libs.flattenRecordsWithChildren(this.template.querySelector('c-Data-Table').getRecords());
+		if(this.config.listViewConfig[0].isRecordsDragDropEnabled && this.config.listViewConfig[0].fieldToMapToIndex !== undefined && this.config.listViewConfig[0].fieldToMapToIndex !== ""){
+			records = this.mapSerialNumberField(records, this.config.listViewConfig[0].fieldToMapToIndex);
+		}
+		let changedItems = records.filter(el => {
 			return this.config.listViewConfig[0]._changedRecords.has(el.Id)
 		});
 		
 		let allRecordsValidation = true;
 
-		if(this.config.listViewConfig[0].beforeSaveValidation !== undefined && 
-			this.config.listViewConfig[0].beforeSaveValidation !== ""){
+		if(this.config?._advanced?.beforeSaveValidation !== undefined && 
+			this.config?._advanced?.beforeSaveValidation !== ""){
 			changedItems.forEach((el)=>{
 				try{
-					let rec = eval('('+this.config.listViewConfig[0].beforeSaveValidation+')')(this,libs,el);
+					let rec = eval('('+this.config._advanced.beforeSaveValidation+')')(this,libs,el);
 					if(!rec){
 						console.error('Failed Validation for ',JSON.parse(JSON.stringify(el)));
 						allRecordsValidation = false;
@@ -764,6 +946,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 
 		this.config.saveStatus = 0;
+		this.config.countOfFailedRecords = 0;
+		this.config.errorList = [];
 		let chunkCount = 0;
 
 		while(changedItems.length > 0 && index < changedItems.length){
@@ -786,6 +970,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				beforeSaveAction: this.config.listViewConfig[0].beforeSaveApexAction ? this.config.listViewConfig[0].beforeSaveApexAction : '',
 				callback: function(nodename,data){
 					this.config.saveStatus += 1;
+					this.config.countOfFailedRecords += parseInt(data[nodename].countOfFailedRecords);
+					this.config.errorList = this.config.errorList.concat(data[nodename].listOfErrors);
 					console.log('From callback ', data[nodename]);
 				}
 			});
@@ -803,28 +989,27 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	isThereUnsavedRecords(){
 		return this.config.listViewConfig[0]._changedRecords ? true : false;
 	}
+	generateDialogTitle(){
+		let lViewName = this.config?.listView?.label === undefined || this.config?.listView?.label === false ? '' : this.config?.listView?.label;
+		let title = this.config.userInfo.isAdminAccess === true ? 
+			(lViewName !== '' ? 
+			this.config._LABELS.title_listViewConfiguration + ' ' +  lViewName : this.config._LABELS.title_listViewConfiguration.slice(0, -2))
+			:(lViewName !== '' ? 
+			this.config._LABELS.title_selectFieldToDisplay + ' ' +  lViewName : this.config._LABELS.title_selectFieldToDisplay.slice(0, -2));
+		return title;
+		}
 
 	handleEventCfg(event) {
 		if(!this.isThereUnsavedRecords()){
 			this.config = libs.getGlobalVar(this.name);
 			let variant = this.config.userInfo.isAdminAccess === true ? 'error' : 'shade'; // shade, error, warning, info, confirm
-			let fields = [];
-			for (let key in this.config.describe) {
-				fields.push({ label: this.config.describe[key].label, value: this.config.describe[key].name });
-			}
-			let lockedOptions = [];
-			for (let col of this.config.listViewConfig[0].colModel) {
-				lockedOptions.push({ label: col.label, value: col.fieldName });
-			}
 			this.config._tabs = {};
 			this.config.dialog = {
-				"title": this.config.userInfo.isAdminAccess === true ? this.config._LABELS.title_listViewConfiguration + ' ' +  this.config?.listView?.label: this.config._LABELS.title_selectFieldToDisplay + ' ' +  this.config?.listView?.label,
+				"title": this.generateDialogTitle(),
 				"variant": variant,
 				"css": 'slds-modal__header slds-theme_{1} slds-theme_alert-texture'.replace('{1}', variant),
-				"options": libs.sortRecords(fields, 'label', true),
 				"selectedFields": this.config.fields,
 				"requiredOptions": this.config.lockedFields,
-				"lockedOptions": libs.sortRecords(lockedOptions, 'label', true),
 				"lockedFields": this.config.lockedFields,
 				"handleEvent": this.handleEventDialog.bind(this),
 				"handleHelpEvent": this.handleHelpEvent.bind(this),
@@ -991,6 +1176,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					field[param] = value;
 				}
 			}
+			const expandAction0 = this.config.dialog.listViewConfig.actions.find((el) => el.actionId === 'std:expand_view');
+			this.config._expandIcon = expandAction0.actionIconName;
+			this.config._expandTip = expandAction0.actionTip;
 		}
 		if (val === 'dialog:setFieldParam') {
 			let param = event.target.getAttribute('data-param');
@@ -1003,11 +1191,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			})
 			if (field) {
 				field[param] = value;
-			} /*else {
-				field = { 'fieldName': this.config.dialog.field };
-				field[param] = value;
-				this.config.dialog.listViewConfig.colModel.push(field);
-			}*/ //we will return this part in case that we will have a fieldPiecker component
+			}
 		}
 		if (val === 'dialog:setTableParam') {
 			
@@ -1017,9 +1201,18 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			let value = (type === 'checkbox') ? event.target.checked : event.target.value;
 			console.log(type, param, value);
 
+			if(param === 'displayOptionListSize' && value !== undefined && value !== null && (value.startsWith('-') || isNaN(value))) {
+				const msgEvent3 = new ShowToastEvent({
+					title: 'Error',
+					message: 'Only accepts positive numbers',
+					variant: 'error'
+				});
+				this.dispatchEvent(msgEvent3);
+				event.target.value = this.config.dialog.listViewConfig[param] ?? '20';
+				return;
+			} 
 			this.config.dialog.listViewConfig[param] = value;
 
-			console.log('saving table params', param, this.config.dialog.listViewConfig[param]);
 		}
 		if (val === 'dialog:setPagerParam') {
 			
@@ -1043,7 +1236,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			this.config.dialog.saveAs = true;
 		}
 		if (val === 'dialog:saveAsCancel') {
-			this.config.dialog.title = this.config.userInfo.isAdminAccess === true ? this.config._LABELS.title_listViewConfiguration + ' ' +  this.config?.listView?.name: this.config._LABELS.title_selectFieldToDisplay + ' ' +  this.config?.listView?.name;
+			this.config.dialog.title = this.generateDialogTitle();
 			this.config.dialog.saveAs = false;
 		}
 		//HYPER-455
@@ -1153,20 +1346,51 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	prepareConfigForSave() {
-		//HYPER-382
-		if(this.isFullscreen){
-			const expandAction = this.config.dialog.listViewConfig.actions.find((el) => el.actionId === 'std:expand_view');
-			expandAction.actionTip = this.config._expandTip;
+		let exAction = this.config.dialog.listViewConfig.actions.find((el) => el.actionId === 'std:expand_view');
+		if(this.config._expandIcon !== exAction.actionIconName){
+			exAction.actionIconName = this.config._expandIcon;
+			exAction.actionTip = this.config._expandTip;
 		}
 		let tmp = JSON.parse(JSON.stringify(this.config.dialog.listViewConfig));
-		for (let key in tmp) {
-			if (key.startsWith('_')) delete tmp[key];
+		//to delete the recordsToShow mistakenly added to config
+		if(tmp.recordsToShow !== undefined || tmp.isAnyRecordsHaveChildren !== undefined){
+			delete tmp.isAnyRecordsHaveChildren;
+			delete tmp.recordsToShow;
 		}
-		console.log(tmp);
+		tmp = this.deleteKeysStartingWithUnderscore(tmp);
 		let cnfg = [];
 		cnfg.push(tmp);
 		return JSON.stringify(cnfg, null, '\t');
 	}
+	deleteKeysStartingWithUnderscore(obj) {
+		if (Array.isArray(obj)) {
+		  for (let i = 0; i < obj.length; i++) {
+			if (typeof obj[i] === 'object' && obj[i] !== null) {
+				this.deleteKeysStartingWithUnderscore(obj[i]);
+			}
+		  }
+		} else if (typeof obj === 'object' && obj !== null) {
+		  for (let key in obj) {
+			if (key.startsWith('_')) {
+			  delete obj[key];
+			}else if(key === 'options'){
+				delete obj[key];
+			} else {
+			  if (typeof obj[key] === 'object' && obj[key] !== null) {
+				this.deleteKeysStartingWithUnderscore(obj[key]);
+			  }
+			}
+		  }
+	  
+		  // Check if any child object is empty after deletion and remove it
+		  for (let key in obj) {
+			if (obj.hasOwnProperty(key) && typeof obj[key] === 'object' && obj[key] !== null && Object.keys(obj[key]).length === 0) {
+			  delete obj[key];
+			}
+		  }
+		}
+		return obj;
+	  }
 
 	saveListView(nodeName, data) {
 		const event = new ShowToastEvent({
@@ -1291,22 +1515,14 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 			if(!this.isThereUnsavedRecords()){
 				if(this.isFullscreen){
+					window.close();
 					history.back();
 				}else{
-					let stateVars = {
-						c__apiName: btoa(this.apiName),
-						c__name: btoa(this.name),
-					};
+					let url = '/lightning/n/XRL__EXRL?c__apiName='+ btoa(this.apiName) + '&c__name='+ btoa(this.name);
 					if(this.recordId !== undefined && this.recordId !== null){
-						stateVars.c__recordId = btoa(this.recordId);
+						url += '&c__recordId='+btoa(this.recordId);
 					}
-					this[NavigationMixin.Navigate]({
-						type: 'standard__navItemPage',
-						attributes: {
-							apiName: 'XRL__EXRL',
-						},
-						state: stateVars
-					});
+					window.open(url,"_self");
 				}
 				this.handleStandardCallback(val);
 			}else{
@@ -1320,6 +1536,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 		if (val.startsWith('std:reset_filters')) {
 			if(!this.isThereUnsavedRecords()){
+				this.config.isSpinner = true;
+				let recs = [... this.config.records];
+				this.config.records = false;
+				const actionsBar = Object.assign({}, this.config.actionsBar);
+				this.config.actionsBar = false;
 				this.config.listViewConfig[0].colModel.forEach( e=>  {
 					if(e._filterStrLastChangeDate !== undefined){
 						e._isFilterOptions = undefined;
@@ -1333,7 +1554,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 						e._filterOption = undefined;
 					}
 				});
-				this.template.querySelector('c-Data-Table').updateView();
+				setTimeout(function(that) {
+					that.config.records = recs; //refreshing the dataTable component
+					that.config.actionsBar = actionsBar;//refreshing the action bar component
+					that.config.isSpinner = false;
+				},1,this);
 			}else{
 				const event = new ShowToastEvent({
 					title: 'Error',
@@ -1369,11 +1594,15 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 	handleFlowStatusChange(event) {
 		console.log('FLOW', event.detail.status);
+		if(event.detail.status === 'STARTED') {
+			this.config.flowApiClass = "slds-modal__container slds-scrollable_y";
+		}
 		if(event.detail.status === 'FINISHED') {
 			delete this.config.flowApiName;
 			delete this.config.flowInputVariables;
             const outputVariables = event.detail.outputVariables;
 			console.log('FLOW OUTPUT PARAMS',outputVariables)
+			this.loadCfg();
 		}
 	}
 
@@ -1384,13 +1613,14 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			if (val === 'flow:close') {
 				delete this.config.flowApiName;
 				delete this.config.flowInputVariables;
+				return;
 			}
 		}
 
-		let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
+		let records = this.template.querySelector('c-Data-Table')?.getSelectedRecords();
 
 		let recordIdList;
-		if (records.length !== 0) {
+		if (records && records.length !== 0) {
 			recordIdList = records.map(rec => rec.Id);
 			if (action.name.startsWith('AutoLaunchedFlow')) {
 				libs.remoteAction(this, 'invokeAction', { name: action.name.split(/::/)[1], recordIdList: recordIdList, callback: (cmd, data) => {
@@ -1415,6 +1645,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				}});
 			} else {
 				this.config.flowApiName = action.name.split(/::/)[1];
+				this.config.flowApiClass = "slds-modal__container slds-scrollable_y slds-hidden"
 				this.config.flowInputVariables = [
 					{
 						name : "records",
@@ -1425,107 +1656,182 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				//Need to run screen flow
 			}
 		}else{
-			const event = new ShowToastEvent({
-				title: 'Error',
-				message: this.config._LABELS.lbl_deleteNoRecordSelectedError,
-				variant: 'error'
-			});
-			this.dispatchEvent(event);
+			if (!action.name.startsWith('AutoLaunchedFlow')) {
+				this.config.flowApiName = action.name.split(/::/)[1];
+				this.config.flowApiClass = "slds-modal__container slds-scrollable_y slds-hidden"
+				this.config.flowInputVariables = [
+					{
+						name : "records",
+     					type : "SObject",
+     					value : records ? JSON.parse(JSON.stringify(records)) : []
+					}
+				];
+			}
+			
 		}
 	}
+	handleDownloadJSONFile(records,fileName) {
+        let data = JSON.stringify({
+			"sObjApiName" : this.config.sObjApiName,
+			"SOQL" : this.config.query,
+			"records" : records
+		  });
+        // Creating anchor element to download
+        let downloadElement = document.createElement('a');
+        // This  encodeURI encodes special characters, except: , / ? : @ & = + $ # (Use encodeURIComponent() to encode these characters).
+        downloadElement.href = 'data:text/json;charset=utf-8,' + encodeURIComponent(data);
+        downloadElement.target = '_self';
+        downloadElement.download = fileName+'.JSON';
+        // below statement is required if you are using firefox browser
+        document.body.appendChild(downloadElement);
+        downloadElement.click();
+    }
 
 	async handleEventExport(event) {
 		let dataTable = this.template.querySelector('c-Data-Table');
 		let records = dataTable.getSelectedRecords().length ? dataTable.getSelectedRecords() : dataTable.getRecords();
 		let locale = libs.getGlobalVar(this.name).userInfo.locale;
-
+		const groupedRecords = libs.getGlobalVar(this.name)?.groupedRecords;
+		console.log('libs.getGlobalVar(this.name)', libs.getGlobalVar(this.name));
+		const newRecords = []; // to store records with group title, cannot use the old array as serial won't match
+		if (groupedRecords && groupedRecords.length > 0) {
+			const isRecordsSelected = dataTable.getSelectedRecords().length > 0;
+			groupedRecords.forEach(group => {
+				if (group && group.records) {
+					const recordsToBeCopied = isRecordsSelected ?
+						group.records.filter(rec => {
+							return records.find(r => r.Id === rec.Id); // filter records which are present in the records array
+						}) :
+						group.records; // if no records are selected, then all records of the group will be exported
+					if (recordsToBeCopied && recordsToBeCopied.length > 0) {
+						recordsToBeCopied[0].groupTitle = group.title;
+						newRecords.push(...recordsToBeCopied);
+					}
+				}
+			});
+		}
+		records = newRecords.length > 0 ? newRecords : records;
+		let fileName = this.config.sObjLabel + ' ' + this.config?.listView?.label;
 		console.log(JSON.parse(JSON.stringify(this.config)));
 		console.log(JSON.parse(JSON.stringify(records)));
+		let exportActionData = this.config.listViewConfig[0].actions.find((el) => el.actionId === 'std:export');
+		let _advanced = eval('[' + exportActionData.advanced + ']')[0];
+		if(_advanced?.outputFormat === 'JSON'){
+			this.handleDownloadJSONFile(records,fileName);
+		}else{
 
-		let wb = XLSX.utils.book_new();
-		wb.cellStyles = true;
-		wb.Props = {
-			Title: this.config.sObjLabel + ' ' + this.config?.listView?.label,
-			Subject: this.config.sObjLabel + " Export",
-			Author: "Extended Related List",
-			CreatedDate: new Date(),
+			let wb = XLSX.utils.book_new();
+			wb.cellStyles = true;
+			wb.Props = {
+				Title: fileName,
+				Subject: this.config.sObjLabel + " Export",
+				Author: "Extended Related List",
+				CreatedDate: new Date(),
 
-		};
-		let wrapText = { wrapText: '0' };
-		let evenStyle = { alignment: wrapText, bold: false, color: { rgb: 0 }, fgColor: { rgb: 15658734 } };
-		let oddStyle = { alignment: wrapText, bold: false, color: { rgb: 0 } };
+			};
+			let wrapText = { wrapText: '0' };
+			let evenStyle = { alignment: wrapText, bold: false, color: { rgb: 0 }, fgColor: { rgb: 15658734 } };
+			let oddStyle = { alignment: wrapText, bold: false, color: { rgb: 0 } };
 
-		let ws = {
-			'!cols': []
-		};
-		let columns = this.config.listViewConfig[0].colModel.filter(col => { return !col.isHidden; });
-		records.forEach(async (rec, i) => {
-			columns.forEach(async (col, j) => {
-				if (i === 0) {
-					let cell_ref = XLSX.utils.encode_cell({ c: j, r: i });
+			let ws = {
+				'!cols': []
+			};
+			let columns = this.config.listViewConfig[0].colModel.filter(col => { return !col.isHidden && !col._skipFieldFromDisplay; });
+			let groupNumber = 0; // to keep track of group title and shift the rows accordingly
+			const merges = [];
+			records.forEach(async (rec, i) => {
+				i+=groupNumber;
+				if(rec.groupTitle !== undefined){
+					groupNumber++;
+					i++;
+					const cell_ref = XLSX.utils.encode_cell({ c: 0, r: i });
 					ws[cell_ref] = {
-						v: col.label, s: { bold: true, fgColor: { rgb: 0 }, color: { rgb: 16777215 } }
+						v: rec.groupTitle, s: { bold: true, fgColor: { rgb: 272822 }, color: { rgb: 16777215 } }
 					}
+					const merge = {s: {c: 0, r: i}, e: {c: columns.length-1, r: i}};
+					merges.push(merge);
 					ws['!cols'].push({ wch: 40 });
 				}
-				let cell_ref = XLSX.utils.encode_cell({ c: j, r: i + 1 });
-				ws[cell_ref] = {
-					s: i % 2 ? evenStyle : oddStyle
-				};
-				let fieldValue;
-				if (col.fieldName.includes('.')) {
-				const [refFieldName, refChildFieldName] = col.fieldName.split('.');
-				if (rec[refFieldName] && rec[refFieldName][refChildFieldName]) {
-					fieldValue = rec[refFieldName][refChildFieldName];
-				} else if (col.referenceTo !== undefined && rec[col.referenceTo] && rec[col.referenceTo][refChildFieldName]) {
-					fieldValue = rec[col.referenceTo][refChildFieldName];
-				} else {
-					fieldValue = '';
-				}
-				}else {
-				fieldValue = rec[col.fieldName] || '';
-				}
-
-				switch (col.type) {
-				case 'reference':
-					const [lookupRow, lookupId] = libs.getLookupRow(rec, col.fieldName);
-					ws[cell_ref].v = lookupRow.Name || '';
-					ws[cell_ref].l = {
-					Target: window.location.origin + '/' + lookupId,
-					Tooltip: window.location.origin + '/' + lookupId
+				columns.forEach(async (col, j) => {
+					if (i-groupNumber === 0) {
+						let cell_ref = XLSX.utils.encode_cell({ c: j, r: i-groupNumber }); // -groupNumber to skip the group title row without modyfying the existing logic
+						ws[cell_ref] = {
+							v: col.label, s: { bold: true, fgColor: { rgb: 0 }, color: { rgb: 16777215 } }
+						}
+						ws['!cols'].push({ wch: 40 });
+					}
+					let cell_ref = XLSX.utils.encode_cell({ c: j, r: i + 1 });
+					ws[cell_ref] = {
+						s: i % 2 ? evenStyle : oddStyle
 					};
-					ws[cell_ref].t = 's';
-					break;
-				case 'date':
-					ws[cell_ref].v = fieldValue ? new Date(fieldValue) : '';
-					ws[cell_ref].t = 'd';
-					break;
-				case 'datetime':
-					ws[cell_ref].v = fieldValue ? new Date(fieldValue) : '';
-					ws[cell_ref].t = 'dt';
-					break;
-				case 'number':
-					ws[cell_ref].v = fieldValue ? Number(fieldValue) : '';
-					ws[cell_ref].t = 'n';
-					break;
-				case 'boolean':
-					ws[cell_ref].v = Boolean(fieldValue);
-					ws[cell_ref].t = 'b';
-					break;
-				default:
-					ws[cell_ref].v = fieldValue;
-					ws[cell_ref].t = 's';
-					break;
-				}
+					let fieldValue;
+					if (col.fieldName.includes('.')) {
+					const [refFieldName, refChildFieldName] = col.fieldName.split('.');
+					if (rec[refFieldName] && (rec[refFieldName][refChildFieldName] || rec[refFieldName][refChildFieldName]==0)) {
+						fieldValue = rec[refFieldName][refChildFieldName];
+					} else if (col.referenceTo !== undefined && rec[col.referenceTo] && rec[col.referenceTo][refChildFieldName]) {
+						fieldValue = rec[col.referenceTo][refChildFieldName];
+					} else {
+						fieldValue = '';
+					}
+					}else {
+					fieldValue = (rec[col.fieldName] || rec[col.fieldName]==0) ? rec[col.fieldName] : '';
+					}
+					if (col.formatter !== undefined && col.formatter!=="") {
+						let row,val;
+						[row,val] = libs.getLookupRow(rec, col.fieldName);
+						try{
+							fieldValue = eval('(' + col.formatter + ')')(row, col, val);
+						}catch(e) {
+							fieldValue = fieldValue;
+							console.error(e);
+						}
+					}
 
+					switch (col.type) {
+					case 'reference':
+						if((col.formatter === undefined || col.formatter==="")){
+							//in case it is a reference and no formatting is defined, otherwise treat it as normal string value
+							const [lookupRow, lookupId] = libs.getLookupRow(rec, col.fieldName);
+							ws[cell_ref].v = lookupRow.Name || '';
+							ws[cell_ref].l = {
+							Target: window.location.origin + '/' + lookupId,
+							Tooltip: window.location.origin + '/' + lookupId
+							};
+						}else{
+							ws[cell_ref].v = fieldValue;
+						}
+						ws[cell_ref].t = 's';
+						break;
+					case 'date':
+						ws[cell_ref].v = fieldValue ? new Date(fieldValue) : '';
+						ws[cell_ref].t = fieldValue ? 'd' : 's';
+						break;
+					case 'datetime':
+						ws[cell_ref].v = fieldValue ? new Date(fieldValue) : '';
+						ws[cell_ref].t = fieldValue ? 'dt' : 's';
+						break;
+					case 'number':
+						ws[cell_ref].v = fieldValue ? Number(fieldValue) : '';
+						ws[cell_ref].t = 'n';
+						break;
+					case 'boolean':
+						ws[cell_ref].v = Boolean(fieldValue);
+						ws[cell_ref].t = 'b';
+						break;
+					default:
+						ws[cell_ref].v = fieldValue;
+						ws[cell_ref].t = 's';
+						break;
+					}
+
+				});
 			});
-		});
-		ws['!ref'] = XLSX.utils.encode_range({ s: { c: 0, r: 0 }, e: { c: columns.length, r: records.length } });
-		XLSX.utils.book_append_sheet(wb, ws, (this.config.sObjLabel + ' '  + this.config?.listView?.label).length > 30 ? (this.config.sObjLabel + ' '  + this.config?.listView?.label).substring(0,30):(this.config.sObjLabel + ' '  + this.config?.listView?.label));
-		XLSX.writeFile(wb, this.config.sObjLabel + ' ' + this.config?.listView?.label + '.xlsx', { cellStyles: true, WTF: 1 });
-		
-		//deselecting the records if there is any
-		this.template.querySelector('c-Data-Table').updateView();
+			ws['!merges'] = merges; // merges the group title cells
+			ws['!ref'] = XLSX.utils.encode_range({ s: { c: 0, r: 0 }, e: { c: columns.length, r: records.length + groupNumber } }); // +groupNumber to include the group title row
+			XLSX.utils.book_append_sheet(wb, ws, (this.config.sObjLabel + ' '  + this.config?.listView?.label).length > 30 ? (this.config.sObjLabel + ' '  + this.config?.listView?.label).substring(0,30):(this.config.sObjLabel + ' '  + this.config?.listView?.label));
+			XLSX.writeFile(wb, this.config.sObjLabel + ' ' + this.config?.listView?.label + '.xlsx', { cellStyles: true, WTF: 1 });
+		}
 		this.config.isSpinner = false;
 	}
 
@@ -1538,14 +1844,15 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			let action = this.config.listViewConfig[0].actions.find((el)=>{
 				return el.actionId == val;
 			});
-			actionCallBack = action.actionCallBack;
-			selectedRecords = this.template.querySelector('c-Data-Table').getSelectedRecords();
+			let _advanced = eval('['+action?.advanced + ']')[0];
+			actionCallBack = _advanced?.actionCallBack;
+			selectedRecords = this.template.querySelector('c-Data-Table')?.getSelectedRecords();
 			// if(action.actionCallBack != undefined && action.actionCallBack != ''){
 			// 	console.log('Callback defined: ', action.actionCallBack);
 			// 	eval('(' + action.actionCallBack + ')')(this.template.querySelector('c-Data-Table').getSelectedRecords());
 			// }
 		}else{
-			actionCallBack = listViewAction?.action?.actionCallBack;
+			actionCallBack = eval('['+listViewAction?.action?.advanced?.actionCallBack+ ']')[0];
 			selectedRecords = listViewAction?.selectedRecords; // the selected records are coming from the caller function
 			// The loadCfg method and the c/dataTable component are still not ready to be used
 			// at the time of this function call, so we have to handle the refresh action differently

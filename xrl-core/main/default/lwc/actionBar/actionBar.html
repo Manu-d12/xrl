@@ -6,7 +6,7 @@
     </template>
     <lightning-button-menu if:true={config.showActionDropdown} variant="border-filled" icon-name="utility:apps" class="slds-p-horizontal_xx-small" menu-alignment="right">
         <template if:true={visibleActions} for:each={visibleActions} for:item="action" for:index="index">
-            <lightning-menu-item key={action.actionId} data-id={action.actionId} label={action.actionLabel} prefix-icon-name={action.actionIconName} onclick={handleEventClick}></lightning-menu-item>
+            <lightning-menu-item key={action.actionId} data-id={action.actionId} label={action.actionLabel} prefix-icon-name={action.actionIconName} onclick={handleEventClick} title={action.actionTip}></lightning-menu-item>
         </template>
     </lightning-button-menu>
 </template>

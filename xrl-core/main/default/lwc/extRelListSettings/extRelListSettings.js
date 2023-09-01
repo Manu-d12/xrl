@@ -62,11 +62,19 @@ export default class extRelListSettings extends LightningElement {
 
 	get selectedFields() {
 		let items = [];
-		let allColumns = this.dataTable.colModel;
-		this.config.dialog.selectedFields.forEach( e=>{
-			let item = allColumns.find((el)=> el.fieldName === e);
-			if (item) items.push({value: item.fieldName, label: item.label});
+		// let allColumns = this.dataTable.colModel;
+		this.config?.sqlBuilder?.selectedFields.forEach( e=>{
+			// let item = allColumns.find((el)=> el.fieldName === e);
+			// if (item) items.push({value: item.fieldName, label: item.label});
+			items.push({value: e.fieldName, label: e.label});
 		});
+		//if the last opened column in field settings is deleted then we need to close the settings from that column
+		if(this.config.dialog.field !== undefined 
+			&& this.config.sqlBuilder.lastDeletedField !== undefined
+			&& !items.includes(this.config.dialog.field)
+			&& this.config.sqlBuilder.lastDeletedField === this.config.dialog.field){
+				this.config.dialog.field = undefined;
+		}
         return items;
     } 
 
@@ -74,12 +82,6 @@ export default class extRelListSettings extends LightningElement {
 		let result = [];
 		if (this.config.dialog.field === undefined) {return result};
 		
-		let describe = this.config.describe;
-		// this.config.listViewConfig.forEach((el)=>{
-		// 	if(el.cmpName === 'dataTable') {
-		// 		this.dataTable = el;
-		// 	}
-		// });
 		let fieldParams = this.config.dialog.listViewConfig.colModel.find( e=>{
 			return e.fieldName === this.config.dialog.field;
 		});
@@ -87,10 +89,12 @@ export default class extRelListSettings extends LightningElement {
 		if (!fieldParams) fieldParams = {}
 
 		let tmp = libs.colModelItem();
+		let desc = this.config.describe;
 
 		for (let item in tmp) {
 			if(this.config.isHistoryGrid && tmp[item].isReadOnly) continue;
-			if(item === 'isEditable' && (!this.config.describeObject.updateable || !fieldParams.updateable || fieldParams.fieldName.includes('.'))) continue;
+			// (desc[fieldParams.fieldName] && !desc[fieldParams.fieldName].updateable) - if the user don't have permission skip this field for editing
+			if(item === 'isEditable' && (!this.config.describeObject.updateable || (desc[fieldParams.fieldName] && !desc[fieldParams.fieldName].updateable) || fieldParams.fieldName.includes('.'))) continue;
 			let defValue = (item === 'fieldName') 
 				? this.config.dialog.field 
 				: fieldParams[item] === undefined
@@ -114,7 +118,8 @@ export default class extRelListSettings extends LightningElement {
 				"helpLabel": tmp[item].label,
 				"helpTooltip" : (item === 'fieldName') ? tmp[item].tooltip + '\n' + '.Field Type:' + fieldParams.type : tmp[item].tooltip,
 				"helpArticleUrl": tmp[item].helpArticleUrl !== undefined ? tmp[item].helpArticleUrl : false,
-				"helpStyle": this.generateStyleForHelp(tmp[item].type)
+				"helpStyle": this.generateStyleForHelp(tmp[item].type),
+				"isAdvanced" : tmp[item].isAdvanced,
 			})
 		}
 		// console.log(result, describe[this.config.dialog.field]);
@@ -135,7 +140,10 @@ export default class extRelListSettings extends LightningElement {
                         this.dataTable.pager[item] :
                         (tmp[item] != undefined ? tmp[item].defValue : false))) :
                 false;
-
+			
+			if(this.config.dialog.useExampleParams[item] !== undefined){
+				defValue = this.config.dialog.useExampleParams[item];
+			}
 			
 			let sFields = [{label:'No Grouping',value:''}];
 			sFields = sFields.concat(this.selectedFields);
@@ -156,14 +164,16 @@ export default class extRelListSettings extends LightningElement {
 				"options" : options,
 				"cmd": tmp[item].cmd,
 				"placeHolder" : tmp[item].placeHolder,
+				"useExample": tmp[item].useExample,
 				"helpId": 'help:' + item,
 				"helpLabel": tmp[item].label,
 				"helpTooltip" : tmp[item].tooltip,
 				"helpArticleUrl": tmp[item].helpArticleUrl !== undefined ? tmp[item].helpArticleUrl : false,
-				"helpStyle": this.generateStyleForHelp(tmp[item].type)
+				"helpStyle": this.generateStyleForHelp(tmp[item].type),
+				"isAdvanced" : tmp[item].isAdvanced,
 			})
 		}
-		console.log(result);
+		// console.log(result);
 		return result;
 	}
 	generateStyleForHelp(type){
@@ -189,6 +199,10 @@ export default class extRelListSettings extends LightningElement {
 
 		if (!fieldParams) fieldParams = {}
 
+		if(fieldParams.actionId === 'std:expand_view'){
+			fieldParams.actionIconName = this.config._expandIcon;
+			fieldParams.actionTip = this.config._expandTip;
+		}
 		let tmp = libs.customActions();
 
 		/* eslint-disable */
@@ -198,6 +212,10 @@ export default class extRelListSettings extends LightningElement {
 			: fieldParams[item] === undefined
 				? tmp[item].defValue
 				: fieldParams[item];
+			
+			if(this.config.dialog.useExampleParams[item] !== undefined){
+				defValue = this.config.dialog.useExampleParams[item];
+			}
 			let options = typeof(tmp[item].optionsCallBack) == 'function' ?  tmp[item].optionsCallBack(this) : tmp[item].options;
 			result.push({
 				"paramName" : item,
@@ -211,7 +229,9 @@ export default class extRelListSettings extends LightningElement {
 				"value" : defValue,
 				"isChecked" : (tmp[item].type === 'checkbox') ? defValue : undefined,
 				"placeHolder" : tmp[item].placeHolder,
-				"isCombo" : (tmp[item].type === 'combobox' && options != undefined)
+				"useExample": tmp[item].useExample,
+				"isCombo" : (tmp[item].type === 'combobox' && options != undefined),
+				"isAdvanced" : tmp[item].isAdvanced,
 			})
 		}
 		return result;
@@ -293,7 +313,6 @@ export default class extRelListSettings extends LightningElement {
 		this.config.dialog.useExampleParams[event.target.getAttribute('data-param')] = event.target.getAttribute('data-val').substring(event.target.getAttribute('data-val').indexOf('function')).replaceAll("//","");
 	}
 	tabChanged(event){
-		console.log('tab changed', event.target.value);
 		this.config._tabs.currentOpenedTab = event.target.value;
 	}
 }
