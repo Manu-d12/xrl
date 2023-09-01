@@ -260,15 +260,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		this.config.lockedFields = [];
 		
 		this.config.isGlobalSearch=this.config.listViewConfig[0].isGlobalSearch;
-		// if(this.config.listViewConfig[0].externalJS !== undefined && this.config.listViewConfig[0].externalJS !== ''){
-			// Promise.all([
-			// 	loadScript(this, this.config.listViewConfig[0].externalJS),
-			// ]).then(() => {
-			// 	console.log('External Resources are loaded');
-			// });
-			this.loadExternalScript();
+		this.loadExternalScript();
 			
-		// }
 		let notAllowedActions = ['std:delete','std:new'];
 		if(!this.config.listViewConfig[0].actions){
 			this.config.listViewConfig[0].actions = libs.standardActions();
@@ -313,7 +306,154 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		console.log('this.config', this.config);
 		this.loadRecords();		
 	}
+	
+	async loadRecords() {
+		await this.prepareFieldsToFetch();
 
+		if(this.config.isHistoryGrid){
+			this.config.describeMap = new Map();
+			let parentSObjName = libs.getParentHistorySObjName(this.name);
+			await libs.remoteAction(this, 'objectFieldList', { sObjApiName: parentSObjName, 
+				callback: function(func,result){
+					let objectFields = JSON.parse(result[func].describe);
+					libs.getGlobalVar(this.name).describeMap[parentSObjName] = objectFields;   
+				} });
+		}
+		if(this.config.listViewConfig[0].loadChunkSize !== undefined && this.config.listViewConfig[0].loadChunkSize !== ''){
+			try{
+				await this.loadBulkData();
+			}catch(e){
+				console.error('Error in bulk loading', e);
+			}
+		}else{
+			await libs.remoteAction(this, 'query', {
+				isNeedDescribe: true,
+				sObjApiName: this.config.sObjApiName,
+				relField: this.config.relField,
+				addCondition: libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name),
+				orderBy: this.config.listViewConfig[0].orderBy,
+				fields: this.config.fields,
+				listViewName: this.config?.listView?.name,
+				callback: ((nodeName, data) => {
+					console.log('length', data[nodeName].records);
+					this.config.inaccessibleFields= data[nodeName].removedFields;
+					this.config.query = data[nodeName].SOQL;
+					
+					libs.getGlobalVar(this.name).records = data[nodeName].records.length > 0 ? data[nodeName].records : undefined;
+					if(this.config?._advanced?.afterloadTransformation !== undefined && this.config?._advanced?.afterloadTransformation !== ""){
+						try {
+							this.config.records = eval('(' + this.config?._advanced?.afterloadTransformation + ')')(this,libs, libs.getGlobalVar(this.name).records);
+						} catch(err){
+							console.log('EXCEPTION', err);
+						}
+					} else {
+						this.config.records = libs.getGlobalVar(this.name).records;
+					}
+					this.allRecords = this.config.records;
+					this.config.listViewConfig[0]._loadCfg = this.loadCfg.bind(this);
+					
+					console.log('loadRecords', libs.getGlobalVar(this.name));
+					this.generateColModel();
+				})
+			});
+		}
+
+	}
+	afterLoadTransformation(records){
+		if(this.config?._advanced?.afterloadTransformation !== undefined && this.config?._advanced?.afterloadTransformation !== ""){
+			try {
+				records = eval('(' + this.config?._advanced?.afterloadTransformation + ')')(this,libs, records);
+			} catch(err){
+				console.log('EXCEPTION', err);
+			}
+		} 
+		return records;
+	}
+	async loadBulkData(){
+		let soqlRel = '';
+		if(this.config.relField !== undefined && this.config.relField !== ''){
+			soqlRel = " WHERE " + this.config.relField + "='" + this.recordId + "' " + libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name);
+		}
+		await libs.remoteAction(this, 'customSoql', {
+			isNeedDescribe: true,
+			sObjApiName: this.config.sObjApiName,
+			SOQL: 'SELECT Count(Id) totalRecordsCount FROM ' + this.config.sObjApiName + soqlRel,
+			isAggregateResult: true,
+			callback: ((nodeName, data) => {
+				console.log('Returned records', data[nodeName].records);
+				this.config.totalRecordsCount = data[nodeName].records[0].totalRecordsCount;
+			})
+		});
+		console.log('Total records', this.config.totalRecordsCount);
+		this.config.listOfRecordIds = [];
+		this.config.fetchIdLimit = 49950;
+		for (let i = 1; i < ((parseInt(this.config.totalRecordsCount) / parseInt(this.config.fetchIdLimit)) + 1);i++) {
+			if(i === 1) await this.getBulkRecordsId(libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name),this.config.fetchIdLimit);
+			else{
+				await this.getBulkRecordsId(" AND Id > '" + this.config.listOfRecordIds[parseInt(this.config.listOfRecordIds.length)-1].Id+"' " + libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name),this.config.fetchIdLimit);
+			}
+			console.log('Verifying loop', i);
+		}
+		console.log('All records Id fetched successfully', this.config.listOfRecordIds.length);
+		this.config.loadChunkSize = this.config.listViewConfig[0].loadChunkSize === undefined ? 20000 : this.config.listViewConfig[0].loadChunkSize;
+		this.config.listOfBulkRecords = [];
+		let startIndex = 0;
+		let endIndex = parseInt(this.config.loadChunkSize) - 1;
+		for (let i = 1; i < ((parseInt(this.config.totalRecordsCount) / parseInt(this.config.loadChunkSize)) + 1);i++) {
+			let recordsIds = [];
+			let chunkRecords = this.config.listOfRecordIds.slice(startIndex, endIndex);
+			chunkRecords.forEach(e => {
+				recordsIds.push(e.Id);
+			});
+			startIndex = startIndex + parseInt(recordsIds.length);
+			endIndex = endIndex + parseInt(recordsIds.length);
+			let con = libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name);
+			let condition = " AND Id IN ('" + recordsIds.join("','") + "') " + (con !== undefined ? con : '');
+			// console.log('condition',condition, i);
+			await this.getBulkRecords(this.config.fields,this.config.sObjApiName,condition,this.config.listViewConfig[0].orderBy,this.config.loadChunkSize);
+		}
+		console.log('All records fetched successfully', JSON.parse(JSON.stringify(this.config.listOfBulkRecords)));
+		libs.getGlobalVar(this.name).records = JSON.parse(JSON.stringify(this.config.listOfBulkRecords)).length > 0 ? JSON.parse(JSON.stringify(this.config.listOfBulkRecords)) : undefined;
+		this.config.records = JSON.parse(JSON.stringify(this.afterLoadTransformation(libs.getGlobalVar(this.name).records)));
+		this.allRecords = this.config.records;
+		this.config.listViewConfig[0]._loadCfg = this.loadCfg.bind(this);
+		
+		console.log('loadRecords', libs.getGlobalVar(this.name));
+		this.generateColModel();
+	}
+	async getBulkRecordsId(whereCondition,limit){
+		await libs.remoteAction(this, 'query', {
+			isNeedDescribe: true,
+			sObjApiName: this.config.sObjApiName,
+			relField: this.config.relField,
+			addCondition: whereCondition,
+			orderBy: ' ORDER BY Id ASC',
+			fields: ['Id'],
+			listViewName: this.config?.listView?.name,
+			callback: ((nodeName, data) => {
+				console.log('record Ids chunk size', data[nodeName].records);
+				this.config.listOfRecordIds = this.config.listOfRecordIds.concat(data[nodeName].records);
+			})
+		});
+	}
+	async getBulkRecords(fields,sObjApiName,whereCondition,orderBy,limit){
+		await libs.remoteAction(this, 'query', {
+			isNeedDescribe: true,
+			sObjApiName: this.config.sObjApiName,
+			relField: this.config.relField,
+			addCondition: whereCondition,
+			orderBy: this.config.listViewConfig[0].orderBy === undefined ? '' : this.config.listViewConfig[0].orderBy,
+			fields: this.config.fields,
+			limit: 'LIMIT ' + limit,
+			listViewName: this.config?.listView?.name,
+			callback: ((nodeName, data) => {
+				console.log('records chunk size', data[nodeName].records);
+				this.config.inaccessibleFields= data[nodeName].removedFields;
+				this.config.query = data[nodeName].SOQL;
+				this.config.listOfBulkRecords = this.config.listOfBulkRecords.concat(data[nodeName].records);
+			})
+		});
+	}
 	async loadExternalScript(){
 		//need to fetch this static resource list here because, every time the external JS file is uploaded the url(url gets updated with latest timestamp) changes but the name remains the same, 
 		// so to make sure it loads correctly needs to get the list beforehand
@@ -340,61 +480,6 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 	}
 
-	async loadRecords() {
-		await this.prepareFieldsToFetch();
-
-		if(this.config.isHistoryGrid){
-			this.config.describeMap = new Map();
-			let parentSObjName = libs.getParentHistorySObjName(this.name);
-			await libs.remoteAction(this, 'objectFieldList', { sObjApiName: parentSObjName, 
-				callback: function(func,result){
-					let objectFields = JSON.parse(result[func].describe);
-					libs.getGlobalVar(this.name).describeMap[parentSObjName] = objectFields;   
-				} });
-		}
-		await libs.remoteAction(this, 'query', {
-			isNeedDescribe: true,
-			sObjApiName: this.config.sObjApiName,
-			relField: this.config.relField,
-			addCondition: libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name),
-			orderBy: this.config.listViewConfig[0].orderBy,
-			fields: this.config.fields,
-			listViewName: this.config?.listView?.name,
-			callback: ((nodeName, data) => {
-				console.log('length', data[nodeName].records);
-				this.config.inaccessibleFields= data[nodeName].removedFields;
-				this.config.query = data[nodeName].SOQL;
-				
-				libs.getGlobalVar(this.name).records = data[nodeName].records.length > 0 ? data[nodeName].records : undefined;
-				if(this.config?._advanced?.afterloadTransformation !== undefined && this.config?._advanced?.afterloadTransformation !== ""){
-					try {
-    	                this.config.records = eval('(' + this.config?._advanced?.afterloadTransformation + ')')(this,libs, libs.getGlobalVar(this.name).records);
-        	        } catch(err){
-            	        console.log('EXCEPTION', err);
-                	}
-				} else {
-                    this.config.records = libs.getGlobalVar(this.name).records;
-				}
-				this.allRecords = this.config.records;
-				this.config.listViewConfig[0]._loadCfg = this.loadCfg.bind(this);
-				
-				console.log('loadRecords', libs.getGlobalVar(this.name));
-				this.generateColModel();
-			})
-		});
-
-	}
-	afterLoadTransformation(records){
-		if(this.config?._advanced?.afterloadTransformation !== undefined && this.config?._advanced?.afterloadTransformation !== ""){
-			try {
-				records = eval('(' + this.config?._advanced?.afterloadTransformation + ')')(this,libs, records);
-			} catch(err){
-				console.log('EXCEPTION', err);
-			}
-		} 
-		return records;
-	}
-
 	generateColModel() {
 		this.config.listViewConfig[0].colModel.forEach(e => {
 			if(e.fieldName.split('.')[1]){
@@ -404,7 +489,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					e._skipFieldFromDisplay = false;
 				}
 			}else{
-				if(this.config.inaccessibleFields[this.config.sObjApiName] && this.config.inaccessibleFields[this.config.sObjApiName].includes(e.fieldName)){
+				if(this.config.inaccessibleFields && this.config.inaccessibleFields[this.config.sObjApiName] && this.config.inaccessibleFields[this.config.sObjApiName].includes(e.fieldName)){
 					e._skipFieldFromDisplay = true;
 				}else{
 					e._skipFieldFromDisplay = false;
