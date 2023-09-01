@@ -280,34 +280,34 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 	loadRecords() {
 		this.loadBulkData();
-		// libs.remoteAction(this, 'query', {
-		// 	isNeedDescribe: true,
-		// 	sObjApiName: this.config.sObjApiName,
-		// 	relField: this.config.relField,
-		// 	addCondition: libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name),
-		// 	orderBy: this.config.listViewConfig[0].orderBy,
-		// 	fields: this.config.fields,
-		// 	listViewName: this.config?.listView?.name,
-		// 	callback: ((nodeName, data) => {
-		// 		console.log('length', data[nodeName].records);
+		libs.remoteAction(this, 'query', {
+			isNeedDescribe: true,
+			sObjApiName: this.config.sObjApiName,
+			relField: this.config.relField,
+			addCondition: libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name),
+			orderBy: this.config.listViewConfig[0].orderBy,
+			fields: this.config.fields,
+			listViewName: this.config?.listView?.name,
+			callback: ((nodeName, data) => {
+				console.log('length', data[nodeName].records);
 				
-		// 		libs.getGlobalVar(this.name).records = data[nodeName].records.length > 0 ? data[nodeName].records : undefined;
-		// 		if(this.config.listViewConfig[0].afterloadTransformation !== undefined && this.config.listViewConfig[0].afterloadTransformation !== ""){
-		// 			try {
-    	//                 this.config.records = eval('(' + this.config.listViewConfig[0].afterloadTransformation + ')')(this, libs.getGlobalVar(this.name).records);
-        // 	        } catch(err){
-        //     	        console.log('EXCEPTION', err);
-        //         	}
-		// 		} else {
-        //             this.config.records = libs.getGlobalVar(this.name).records;
-		// 		}
-		// 		this.allRecords = this.config.records;
-		// 		this.config.listViewConfig[0]._loadCfg = this.loadCfg.bind(this);
+				libs.getGlobalVar(this.name).records = data[nodeName].records.length > 0 ? data[nodeName].records : undefined;
+				if(this.config.listViewConfig[0].afterloadTransformation !== undefined && this.config.listViewConfig[0].afterloadTransformation !== ""){
+					try {
+    	                this.config.records = eval('(' + this.config.listViewConfig[0].afterloadTransformation + ')')(this, libs.getGlobalVar(this.name).records);
+        	        } catch(err){
+            	        console.log('EXCEPTION', err);
+                	}
+				} else {
+                    this.config.records = libs.getGlobalVar(this.name).records;
+				}
+				this.allRecords = this.config.records;
+				this.config.listViewConfig[0]._loadCfg = this.loadCfg.bind(this);
 				
-		// 		console.log('loadRecords', libs.getGlobalVar(this.name));
-		// 		this.generateColModel();
-		// 	})
-		// });
+				console.log('loadRecords', libs.getGlobalVar(this.name));
+				this.generateColModel();
+			})
+		});
 	}
 	async loadBulkData(){
 		let soqlRel = '';
@@ -335,11 +335,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			console.log('Verifying loop', i);
 		}
 		console.log('All records Id fetched successfully', this.config.listOfRecordIds.length);
-		this.config.loadRecordsChunkSize = 20000;
+		this.config.loadChunkSize = this.config.listViewConfig[0].loadChunkSize === undefined ? 20000 : this.config.listViewConfig[0].loadChunkSize;
 		this.config.listOfBulkRecords = [];
 		let startIndex = 0;
-		let endIndex = parseInt(this.config.loadRecordsChunkSize) - 1;
-		for (let i = 1; i < ((parseInt(this.config.totalRecordsCount) / parseInt(this.config.loadRecordsChunkSize)) + 1);i++) {
+		let endIndex = parseInt(this.config.loadChunkSize) - 1;
+		for (let i = 1; i < ((parseInt(this.config.totalRecordsCount) / parseInt(this.config.loadChunkSize)) + 1);i++) {
 			let recordsIds = [];
 			let chunkRecords = this.config.listOfRecordIds.slice(startIndex, endIndex);
 			chunkRecords.forEach(e => {
@@ -350,7 +350,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			let con = libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name);
 			let condition = " AND Id IN ('" + recordsIds.join("','") + "') " + (con !== undefined ? con : '');
 			// console.log('condition',condition, i);
-			await this.getBulkRecords(this.config.fields,this.config.sObjApiName,condition,this.config.listViewConfig[0].orderBy,this.config.loadRecordsChunkSize);
+			await this.getBulkRecords(this.config.fields,this.config.sObjApiName,condition,this.config.listViewConfig[0].orderBy,this.config.loadChunkSize);
 		}
 		console.log('All records fetched successfully', JSON.parse(JSON.stringify(this.config.listOfBulkRecords)));
 		libs.getGlobalVar(this.name).records = JSON.parse(JSON.stringify(this.config.listOfBulkRecords)).length > 0 ? JSON.parse(JSON.stringify(this.config.listOfBulkRecords)) : undefined;
