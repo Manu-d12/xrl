@@ -319,7 +319,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					libs.getGlobalVar(this.name).describeMap[parentSObjName] = objectFields;   
 				} });
 		}
-		if(this.config.listViewConfig[0].loadChunkSize !== undefined){
+		if(this.config.listViewConfig[0].loadChunkSize !== undefined && this.config.listViewConfig[0].loadChunkSize !== ''){
 			await this.loadBulkData();
 		}else{
 			await libs.remoteAction(this, 'query', {
@@ -410,15 +410,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 		console.log('All records fetched successfully', JSON.parse(JSON.stringify(this.config.listOfBulkRecords)));
 		libs.getGlobalVar(this.name).records = JSON.parse(JSON.stringify(this.config.listOfBulkRecords)).length > 0 ? JSON.parse(JSON.stringify(this.config.listOfBulkRecords)) : undefined;
-		if(this.config.listViewConfig[0].afterloadTransformation !== undefined && this.config.listViewConfig[0].afterloadTransformation !== ""){
-			try {
-				this.config.records = eval('(' + this.config.listViewConfig[0].afterloadTransformation + ')')(this, libs.getGlobalVar(this.name).records);
-			} catch(err){
-				console.log('EXCEPTION', err);
-			}
-		} else {
-			this.config.records = JSON.parse(JSON.stringify(libs.getGlobalVar(this.name).records));
-		}
+		this.config.records = JSON.parse(JSON.stringify(this.afterLoadTransformation(libs.getGlobalVar(this.name).records)));
 		this.allRecords = this.config.records;
 		this.config.listViewConfig[0]._loadCfg = this.loadCfg.bind(this);
 		
