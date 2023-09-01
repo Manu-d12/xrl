@@ -170,10 +170,10 @@ global with sharing class infrastructure {
 
 		set < string > soqlFields = new set < string > { 'Id' };
 	
-        if (loadChunkSize == null) {
+        // if (loadChunkSize == null) {
           set < string > fields = (set < string > ) JSON.deserialize(JSON.serialize(data.get('fields')), set < string > .class);
           soqlFields.addAll(fields);
-        }
+        // }
 
 		if (string.isBlank(addCondition)) addCondition = '';
 
