@@ -1507,6 +1507,32 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				this.dispatchEvent(event);
 			}
 		}
+
+		if (val.startsWith('std:clone')) {
+			if(!this.isThereUnsavedRecords()){
+
+				let defValue = {};
+				defValue[this.config.relField] = this.recordId;
+
+				this[NavigationMixin.Navigate]({
+					type: 'standard__objectPage',
+					attributes: {
+						recordId: event.detail.recordId,
+						objectApiName: this.config.sObjApiName,
+						actionName: 'clone',
+					}
+				});
+				this.handleStandardCallback(val);
+			}else{
+				const event = new ShowToastEvent({
+					title: 'Error',
+					message: this.config._LABELS.msg_unsaveRecordsCannotPerformOtherAction,
+					variant: 'error'
+				});
+				this.dispatchEvent(event);
+			}
+		}
+
 		if (val.startsWith('std:expand_view')) {
 
 			if(!this.isThereUnsavedRecords()){
