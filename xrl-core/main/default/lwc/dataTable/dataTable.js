@@ -591,8 +591,12 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					// })
 					r._cellCss = 'background-color:rgb(255,255,189);color:black;';
 					r._isEditable = false;
-					if(this.config._advanced.afterEditCallback !== undefined && this.config._advanced.afterEditCallback !== ""){
-						this.config._advanced.afterEditCallback(this,libs,[r]);
+					if(this.config?._advanced?.afterEditCallback !== undefined && this.config?._advanced?.afterEditCallback !== ""){
+						try{
+							this.config?._advanced?.afterEditCallback(this,libs,[r]);
+						}catch(e){
+							console.error("Error",e);
+						}
 					}
 					Object.assign(globalItem, r);
 					libs.getGlobalVar(this.cfg).records = this.records;
@@ -1377,16 +1381,24 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if (chBox.checked === false) {
 			//console.log('One item');
 			changeItem(this, this.records[this.config._bulkEdit.rowId], this.config._bulkEdit.cItem.fieldName, getValue(this.config._bulkEdit.cItem, value), refNode, refNodeValue);
-			if(this.config._advanced.afterEditCallback !== undefined && this.config._advanced.afterEditCallback !== ""){
-				this.config._advanced.afterEditCallback(this,libs,[this.records[this.config._bulkEdit.rowId]]);
+			if(this.config?._advanced?.afterEditCallback !== undefined && this.config?._advanced?.afterEditCallback !== ""){
+				try{
+					this.config?._advanced?.afterEditCallback(this,libs,[this.records[this.config._bulkEdit.rowId]]);
+				}catch(e){
+					console.error("Error",e);
+				}
 			}
 		} else {
 			//console.log('More then One item');
 			this.getSelectedRecords().forEach((item) => {
 				changeItem(this, item, this.config._bulkEdit.cItem.fieldName, getValue(this.config._bulkEdit.cItem, value),refNode, refNodeValue);
 			});
-			if(this.config._advanced.afterEditCallback !== undefined && this.config._advanced.afterEditCallback !== ""){
-				this.config._advanced.afterEditCallback(this,libs,this.getSelectedRecords());
+			if(this.config?._advanced?.afterEditCallback !== undefined && this.config?._advanced?.afterEditCallback !== ""){
+				try{
+					this.config?._advanced?.afterEditCallback(this,libs,this.getSelectedRecords());
+				}catch(e){
+					console.error("Error",e);
+				}
 			}
 		}
 		//console.log('Bulk Edit', getValue(this.config._bulkEdit.cItem, value), chBox.checked);
