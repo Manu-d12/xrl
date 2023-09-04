@@ -31,7 +31,8 @@
 					</th>
 					<th scope="col" if:true={config.isShowCheckBoxes} style="width: 2rem;">
 						<div class="">
-							<lightning-input type="checkbox" name="selectAll" class="checkAll" onchange={selectAll}></lightning-input>
+							<lightning-input if:true={isCheckboxDisabled} type="checkbox" name="selectAll" class="checkAll" onchange={selectAll} disabled></lightning-input>
+							<lightning-input if:false={isCheckboxDisabled} type="checkbox" name="selectAll" class="checkAll" onchange={selectAll}></lightning-input>
 						</div>
 					</th>
 					<th scope="col" if:true={config.isAnyRecordsHaveChildren} style="width: 2rem;">
