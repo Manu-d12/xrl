@@ -444,7 +444,7 @@ export let filterLibs = {
 			: getRefField(filter.fieldName);
 		// console.log(value);
 		if(filter.type==='currency'){
-			value = Number(value.toFixed(2));
+			value = value !== undefined ? Number(value.toFixed(2)) : undefined;
 		}
 		return formatter && typeof formatter === 'function' ? formatter(record, filter, record[filter.fieldName]) : value ;
 	},
