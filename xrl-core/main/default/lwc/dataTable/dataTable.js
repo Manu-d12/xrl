@@ -248,13 +248,22 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			let isPager = this.config.pager;
 			if(!this.config.pager.pagerTop && !this.config.pager.pagerBottom){
 				let startIndex = 0;
-				let endIndex = this.records.length > 200 ? 200 : this.records.length;
+				let endIndex = this.records.length > 201 ? 201 : this.records.length;
 				let result = [];
-				for (let i = startIndex; i < endIndex; i++) {
-					result.push(this.records[i]);
+				for (let group of this.groupedRecords) {
+					if (startIndex > group.records[group.records.length - 1].index) continue;
+					if (endIndex <= group.records[0].index - 1) break;   
+					let gr = Object.assign({}, group);
+					gr.records = group.records.map(r => r);
+					if (startIndex >= gr.records[0].index) {
+						gr.records.splice(0, startIndex - (gr.records[0].index));
+					}					
+					if (endIndex <= gr.records[gr.records.length - 1].index) {
+						gr.records.splice(endIndex - (gr.records[0].index));
+					}
+					result.push(gr);
 				}
-				this.displayedItemCount = this.recordInfo+ ' Showing only '+ endIndex  +' item(s)';
-				//console.log('result', JSON.parse(JSON.stringify(result)));
+				this.displayedItemCount = libs.formatStr('{0} Showing only {1} item(s)', [this.recordInfo,(endIndex - 1) < 1 ? 0 : (endIndex - 1)]);
 				this.config._recordsToShow = result;
 				return result;
 			}
