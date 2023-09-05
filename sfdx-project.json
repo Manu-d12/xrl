@@ -4,9 +4,9 @@
       "path": "xrl-core",
       "default": true,
       "package": "Extended Related List",
-      "versionName": "3.99.4 PreRelease",
+      "versionName": "3.99.7 PreRelease",
       "versionDescription": "Initial release",
-      "versionNumber": "3.99.4.NEXT",
+      "versionNumber": "3.99.7.NEXT",
       "definitionFile": "config/scratch-org-def.json",
       "ancestorVersion": "HIGHEST"
     }
@@ -293,6 +293,9 @@
     "Extended Related List@3.99.0-1": "04t8d000000lospAAA",
     "Extended Related List@3.99.1-1": "04t8d000000lotEAAQ",
     "Extended Related List@3.99.2-1": "04t8d000000lotTAAQ",
-    "Extended Related List@3.99.3-1": "04t8d000000lotdAAA"
+    "Extended Related List@3.99.3-1": "04t8d000000lotdAAA",
+    "Extended Related List@3.99.4-1": "04t8d000000lou2AAA",
+    "Extended Related List@3.99.5-1": "04t8d000000lou7AAA",
+    "Extended Related List@3.99.6-1": "04t8d000000louMAAQ"
   }
 }

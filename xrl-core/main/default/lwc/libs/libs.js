@@ -205,12 +205,12 @@ export let libs = {
 				"label" : _labels.lbl_width,
 				"tooltip": _labels.tooltip_widthExample
 			},
-			"advanced": {
+			/*"advanced": {
 				"type": "function",
 				"label": _labels.lbl_advancedFieldSettings,
 				"tooltip" : _labels.tooltip_advancedFieldSettings,
 				"isAdvanced" : true
-			}
+			}*/
 		};
 		if (colModelItem !== undefined) {
 			let result = {}
@@ -323,20 +323,20 @@ export let libs = {
 				"options": [{label:'ASC',value:'ASC'},{label:'DESC',value:'DESC'}],
 				"cmd" : "dialog:setTableParam",
 			},
-			"isRecordsDragDropEnabled": {
+			/*"isRecordsDragDropEnabled": { // Kuntal, we need to remove this checkbox, and check callback on advanced section
 				"defValue": false,
 				"type": "checkbox",
 				"label": "Enable drag & drop on records?",
 				"tooltip": "If you enable this, you will be create hierarchy with records just by drag and drop",
 				"cmd" : "dialog:setTableParam",
-			},
-			"fieldToMapToIndex" : {
+			},*/
+			/*"fieldToMapToIndex" : { // Kuntal, we need to remove this checkbox, and check callback on advanced section
 				"type": "string",
 				"label": _labels.lbl_fieldToMapToIndex,
 				"tooltip": _labels.tooltip_fieldToMapToIndex,
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
-			},
+			},*/
 			// "recordsDragDropCallback": {
 			// 	"type": "function",
 			// 	"label": "Callback for record drag drop",
@@ -362,14 +362,14 @@ export let libs = {
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
 			},
-			"loadChunkSize" : {
+			/*"loadChunkSize" : { // Temporary removed
 				//"defValue": 200,
 				"type": "string",
 				"label": _labels.lbl_loadChunkSize,
 				"tooltip": _labels.tooltip_loadChunkSize,
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
-			},
+			},*/
 			// "beforeSaveValidation": {
 			// 	"type": "function",
 			// 	"label": _labels.lbl_beforeSaveValidation,
@@ -380,7 +380,7 @@ export let libs = {
 			// 	"helpArticleUrl": _labels.hlpUrl_beforeSaveValidation,
 			// 	"useExample":true,
 			// },
-			"beforeSaveApexAction": {
+			/*"beforeSaveApexAction": { // Temporary removed
 				"defValue": "",
 				"type": "combobox",
 				"optionsCallBack" : function(scope){
@@ -390,7 +390,7 @@ export let libs = {
 				"tooltip": _labels.tooltip_beforeSaveApexAction,
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam"
-			},
+			},*/
 			// "beforeDeleteValidation": {
 			// 	"type": "function",
 			// 	"label": _labels.lbl_beforeDeleteValidation,
@@ -425,7 +425,7 @@ export let libs = {
 			// 	"cmd" : "dialog:setTableParam",
 			// 	"useExample":true,
 			// },
-			"rowRecalcApex": {
+			/*"rowRecalcApex": { // Temporary removed
 				"defValue": "",
 				"type": "combobox",
 				"optionsCallBack" : function(scope){
@@ -435,8 +435,8 @@ export let libs = {
 				"tooltip": 'Apex class for row recalculation',
 				"placeHolder": 'Apex class for row recalculation',
 				"cmd" : "dialog:setTableParam"
-			},
-			"externalJS": {
+			},*/
+			/*"externalJS": {
 				"defValue": "",
 				"type": "combobox",
 				"optionsCallBack" : function(scope){
@@ -453,7 +453,7 @@ export let libs = {
 				"tooltip" : _labels.tooltip_advancedTableSettings,
 				"cmd" : "dialog:setTableParam",
 				"isAdvanced" : true
-			}
+			}*/
 			
 			
 		}
@@ -548,12 +548,12 @@ export let libs = {
 				},
 				"label": _labels.lbl_actionFlowName
 			},
-			"advanced": {
+			/*"advanced": {
 				"type": "function",
 				"label": _labels.lbl_advancedActionSettings,
 				"tooltip" : _labels.tooltip_advancedActionSettings,
 				"isAdvanced" : true
-			}
+			}*/
 		}
 		return defParams;
 	},
