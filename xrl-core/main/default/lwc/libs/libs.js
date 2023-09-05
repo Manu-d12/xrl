@@ -145,21 +145,6 @@ export let libs = {
 				"label": _labels.lbl_fieldLabel,
 				"tooltip": _labels.tooltip_fieldLabel
 			},
-			// "formatter": {
-			// 	"type": "function",
-			// 	"params": "(row, col, val)",
-			// 	"label": _labels.lbl_customFunctionForFormatting,
-			// 	"placeHolder" : _labels.lbl_customFunctionExample,
-			// 	"useExample":true
-			// },
-			//in advanced JSON the key for this uStyle should be customStyle
-			// "uStyle": {
-			// 	"type": "function",
-			// 	"params": "(row, col, val)",
-			// 	"label": _labels.lbl_customFunctionForStyle,
-			// 	"placeHolder" : _labels.lbl_customFunctionStyleExample,
-			// 	"useExample":true
-			// },
 			"isHidden": {
 				"defValue": false,
 				"type": "checkbox",
@@ -193,13 +178,6 @@ export let libs = {
 				"label": _labels.lbl_isColumnWrapable,
 				"tooltip": _labels.tooltip_isColumnWrapable
 			},
-			/*'isEditableMethod': {
-				"defValue": false,
-				"type": "function",
-				"params": "(value)",
-				"label" : "isEditable Method",
-				"tooltip": "Can edit column or not method. We can implement dynamic properties"
-			},*/
 			"width": {
 				"type": "string",
 				"label" : _labels.lbl_width,
@@ -307,14 +285,6 @@ export let libs = {
 				"cmd" : "dialog:setTableParam",
 				"helpArticleUrl": _labels.hlpUrl_groupFieldName,
 			},
-			// "groupingFunction": {
-			// 	"type": "function",
-			// 	"label": _labels.lbl_groupingFunction,
-			// 	"tooltip": _labels.tooltip_groupingFunction,
-			// 	"placeHolder": _labels.placeholder_groupingFunction,
-			// 	"cmd" : "dialog:setTableParam",
-			// 	"useExample":true,
-			// },
 			"groupOrder" : {
 				"defValue": "ASC",
 				"type": "combobox",
@@ -337,15 +307,6 @@ export let libs = {
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
 			},
-			// "recordsDragDropCallback": {
-			// 	"type": "function",
-			// 	"label": "Callback for record drag drop",
-			// 	"tooltip": "Callback for record drag drop",
-			// 	"placeHolder": "function(scope,records,draggedRecord,droppedRecord,libs){ return records; }",
-			// 	"isReadOnly": true,
-			// 	"cmd" : "dialog:setTableParam",
-			// 	"useExample":true,
-			// },
 			"saveChunkSize" : {
 				"defValue": 200,
 				"type": "string",
@@ -370,16 +331,6 @@ export let libs = {
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
 			},
-			// "beforeSaveValidation": {
-			// 	"type": "function",
-			// 	"label": _labels.lbl_beforeSaveValidation,
-			// 	"tooltip": _labels.tooltip_beforeSaveValidation,
-			// 	"placeHolder": _labels.placeHolder_beforeSaveValidation,
-			// 	"isReadOnly": true,
-			// 	"cmd" : "dialog:setTableParam",
-			// 	"helpArticleUrl": _labels.hlpUrl_beforeSaveValidation,
-			// 	"useExample":true,
-			// },
 			"beforeSaveApexAction": {
 				"defValue": "",
 				"type": "combobox",
@@ -391,16 +342,6 @@ export let libs = {
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam"
 			},
-			// "beforeDeleteValidation": {
-			// 	"type": "function",
-			// 	"label": _labels.lbl_beforeDeleteValidation,
-			// 	"tooltip": _labels.tooltip_beforeDeleteValidation,
-			// 	"placeHolder": _labels.placeHolder_beforeDeleteValidation,
-			// 	"isReadOnly": true,
-			// 	"cmd" : "dialog:setTableParam",
-			// 	"helpArticleUrl": _labels.hlpUrl_beforeDeleteValidation,
-			// 	"useExample":true,
-			// },
 			"displayOptionListSize" : {
 				"defValue": 20,
 				"type": "string",
@@ -408,23 +349,6 @@ export let libs = {
 				"tooltip": _labels.tooltip_numbersOfOptionsShown,
 				"cmd" : "dialog:setTableParam",
 			},
-			//moved to advanced config JSON
-			// "rowCss": {
-			// 	"type": "function",
-			// 	"label": _labels.lbl_rowCss,
-			// 	"tooltip": _labels.tooltip_changeRowStyleByFunction,
-			// 	"placeHolder": _labels.placeHolder_rowCss,
-			// 	"cmd" : "dialog:setTableParam",
-			// 	"useExample":true,
-			// },
-			// "afterloadTransformation": {
-			// 	"type": "function",
-			// 	"label": _labels.lbl_afterloadTransformation,
-			// 	"tooltip": _labels.tooltip_afterloadTransformation,
-			// 	"placeHolder": _labels.placeHolder_afterloadTransformation,
-			// 	"cmd" : "dialog:setTableParam",
-			// 	"useExample":true,
-			// },
 			"rowRecalcApex": {
 				"defValue": "",
 				"type": "combobox",
