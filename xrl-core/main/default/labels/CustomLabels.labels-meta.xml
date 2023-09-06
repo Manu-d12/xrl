@@ -616,6 +616,22 @@
         <value>Number of options to be displayed in dropdown</value>
     </labels>
     <labels>
+        <fullName>lbl_rowCss</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_rowCss</shortDescription>
+        <value>Row Css</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_changeRowStyleByFunction</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_changeRowStyleByFunction</shortDescription>
+        <value>Change Row Style by Function</value>
+    </labels>
+    <labels>
         <fullName>lbl_fieldApiName</fullName>
         <categories>XRL</categories>
         <language>en_US</language>
@@ -1239,6 +1255,22 @@
         <value>Please enter the chunk size for bulk load operation</value>
     </labels>
     <labels>
+        <fullName>lbl_beforeDeleteValidation</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>lbl_beforeDeleteValidation</shortDescription>
+        <value>Before Delete validation Callback</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_beforeDeleteValidation</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>tooltip_beforeDeleteValidation</shortDescription>
+        <value>This JS function will be executed before Delete action</value>
+    </labels>
+    <labels>
         <fullName>lbl_actionCallback</fullName>
         <categories>XRL</categories>
         <language>en_US</language>
@@ -1301,6 +1333,15 @@
         <protected>false</protected>
         <shortDescription>lbl_actionTip</shortDescription>
         <value>Tip for the action</value>
+    </labels>
+    <labels>
+        <fullName>lbl_beforeSaveValidation</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_beforeSaveValidation</shortDescription>
+        <value>Before save
+ validation Callback</value>
     </labels>
     <labels>
         <fullName>placeholder_actionCallback</fullName>
@@ -1377,6 +1418,41 @@
         <value>example : function(row, col, val) { return val; }</value>
     </labels>
     <labels>
+        <fullName>placeHolder_beforeSaveValidation</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>placeHolder_beforeSaveValidation</shortDescription>
+        <value>function(scope,libs,record){
+        console.log(&apos;Record Type &apos;,record.Type);
+        if(record.Type==&apos;Electrical&apos;) 
+        return true;
+        else
+        return false;
+        }</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_beforeSaveValidation</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_beforeSaveValidation</shortDescription>
+        <value>This JS function will be executed before save action</value>
+    </labels>
+    <labels>
+        <fullName>placeHolder_beforeDeleteValidation</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>placeHolder_beforeDeleteValidation</shortDescription>
+        <value>//Example- If a record fails the validation the no records will be deleted
+function(scope,libs,record){
+  if(record.Type==&apos;Electrical&apos;)
+    return false; 
+  else 
+    return true;
+}</value>
+    </labels>
+    <labels>
         <fullName>tooltip_configSave</fullName>
         <categories>XRL</categories>
         <language>en_US</language>
@@ -1431,6 +1507,21 @@
         <protected>false</protected>
         <shortDescription>altTxt_new</shortDescription>
         <value>New</value>
+    </labels>
+    <labels>
+        <fullName>placeHolder_rowCss</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>placeHolder_rowCss</shortDescription>
+        <value>//Example - This is the logic of striped row if you want to change row colors please modify according to your needs
+function(row){
+if(row.sl % 2 === 0){
+return &quot;background-color:#ffffff;&quot; //white
+}else {
+return &quot;background-color:#F5F5F5;&quot; //light grey
+}
+}</value>
     </labels>
     <labels>
         <fullName>lbl_columnFilter</fullName>
@@ -1889,6 +1980,22 @@ Once you are done editing the pattern, click outside the input box.</value>
         <value>data-lookup-filter-and-search/client-side-filters-in-hypergrid-xrl#sorting-columns-4</value>
     </labels>
     <labels>
+        <fullName>hlpUrl_beforeDeleteValidation</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_beforeDeleteValidation</shortDescription>
+        <value>data-editingupdate-operations/enable-validations-to-confirm-the-data-update-xrl#before-delete-validation-callback-6</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_beforeSaveValidation</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_beforeSaveValidation</shortDescription>
+        <value>data-editingupdate-operations/enable-validations-to-confirm-the-data-update-xrl#before-save-validation-callback-1</value>
+    </labels>
+    <labels>
         <fullName>hlpUrl_groupFieldName</fullName>
         <categories>XRL</categories>
         <language>en_US</language>
@@ -2023,6 +2130,32 @@ Once you are done editing the pattern, click outside the input box.</value>
         <protected>true</protected>
         <shortDescription>msg_entityIsDeleted</shortDescription>
         <value>Error: Changes are not saved because one or more Item is deleted</value>
+    </labels>
+    <labels>
+        <fullName>lbl_afterloadTransformation</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_afterloadTransformation</shortDescription>
+        <value>After Load Transformation</value>
+    </labels>
+    <labels>
+        <fullName>tooltip_afterloadTransformation</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>tooltip_afterloadTransformation</shortDescription>
+        <value>this function must return a records as input also must get records</value>
+    </labels>
+    <labels>
+        <fullName>placeHolder_afterloadTransformation</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>placeHolder_afterloadTransformation</shortDescription>
+        <value>function(scope,records){
+return records;
+}</value>
     </labels>
     <labels>
         <fullName>msg_itemsUpdateFailed</fullName>
