@@ -324,9 +324,15 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 
 	get hasGrouping() {
-		// return this.config.grouping === true;
-		//console.log('hasGrouping ',this.config.groupFieldName !== undefined && this.config.groupFieldName !== null && this.config.groupFieldName !== '');
-		return this.config.groupFieldName !== undefined && this.config.groupFieldName !== null && this.config.groupFieldName !== '';
+		let fieldName = (this.config.groupFieldName !== undefined && this.config.groupFieldName !== null && this.config.groupFieldName !== '') ? this.config.groupFieldName : undefined;
+		if(fieldName !== undefined){
+			let cItem = this.getColItem(this.config.groupFieldName);
+			if(cItem === undefined){
+				delete this.config.groupFieldName;
+			}
+			return cItem !== undefined;
+		}
+		return false;
 	}
 
 	get groupColspan() {
