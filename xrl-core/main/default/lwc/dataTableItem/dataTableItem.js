@@ -44,7 +44,7 @@ export default class dataTableItem extends LightningElement {
 		//console.log(this.col.fieldName, JSON.stringify(this.row), this.row[this.col.fieldName]);
 		//this.col.fieldName
 		let row,val;
-		[row,val] = libs.getLookupRow(this.row, this.col.fieldName);
+		[row,val] = libs.getLookupRow(JSON.parse(JSON.stringify(this.row)), this.col.fieldName);
 		let config = libs.getGlobalVar(this.cfg);
 		if(config.isHistoryGrid && this.col.fieldName === 'Field'){
 			let sObjName = libs.getParentHistorySObjName(this.cfg);
@@ -107,7 +107,11 @@ export default class dataTableItem extends LightningElement {
 			}
 
 			if (this.col.type === 'reference'){
-				return libs.formatStr(refTmp,[val, row.Name ? row.Name : row[config.objectNameFieldsMap?.get(this.col.referenceTo)] ? row[config.objectNameFieldsMap?.get(this.col.referenceTo)] : '']); // Need to investigate this line. Why sometimes for reference we have 'Invalid Name'
+				console.log('row',JSON.parse(JSON.stringify(row)));
+				row = JSON.parse(JSON.stringify(row));
+				return libs.formatStr(refTmp,[val, row.Name ? row.Name : 
+					row[config.objectNameFieldsMap?.get(this.col.referenceTo)] ? row[config.objectNameFieldsMap?.get(this.col.referenceTo)] :  
+					(row[this.col.relationshipName][config.objectNameFieldsMap?.get(this.col.referenceTo)] ? row[this.col.relationshipName][config.objectNameFieldsMap?.get(this.col.referenceTo)] : '')]); // Need to investigate this line. Why sometimes for reference we have 'Invalid Name'
 			}
 			if (this.col.type === 'boolean'){
 				this.isBool = true;

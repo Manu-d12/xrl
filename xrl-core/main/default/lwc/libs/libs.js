@@ -118,6 +118,8 @@ export let libs = {
 			else
 				obj = '';
 		}
+		if(field === 'Contact.CreatedBy')
+			console.log('row lookup',row);
 		return [row ? row : {}, obj];
 	},
 	formatStr: function(template, args) {

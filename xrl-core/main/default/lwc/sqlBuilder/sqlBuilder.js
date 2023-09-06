@@ -498,6 +498,7 @@ export default class SqlBuilder extends LightningElement {
                     updateable: describe[key].updateable,
                     isNameField: describe[key] && describe[key].nameField === true,
                     referenceTo: describe[key].referenceTo[0],
+                    relationshipName: describe[key].relationshipName,
                     filterable: describe[key].filterable,
                     sortable: describe[key].sortable,
                     nillable: describe[key].nillable,
@@ -545,6 +546,7 @@ export default class SqlBuilder extends LightningElement {
                         type: describe[key].type,
                         isNameField: describe[key] && describe[key].nameField === true,
                         referenceTo: describe[key].referenceTo[0],
+                        relationshipName: describe[key].relationshipName,
                         filterable: describe[key].filterable,
                         sortable: describe[key].sortable,
                     };
