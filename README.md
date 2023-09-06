@@ -19,7 +19,7 @@ The `sfdx-project.json` file contains useful configuration information for your 
 
 
 https://login.salesforce.com/packaging/installPackage.apexp?p0=04t8d000000lEWPAA2 - version 1.0.0
-/packaging/installPackage.apexp?p0=04t8d000000lou7AAA
+/packaging/installPackage.apexp?p0=04t8d000000lEWZAA2
 
 
 How to create a package version
@@ -52,7 +52,7 @@ sfdx scanner:run:dfa --target "./**/*.cls" --projectdir "./" >SCA.log
 
 
 
-https://login.salesforce.com/packaging/installPackage.apexp?p0=04t8d000000losQAAQ
+https://login.salesforce.com/packaging/installPackage.apexp?p0=04t8d000000lnTuAAI
 
 
 

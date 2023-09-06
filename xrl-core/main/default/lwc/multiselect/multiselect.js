@@ -67,7 +67,6 @@ export default class Multiselect extends LightningElement {
                 if(this.multiselect) {
                     if(values.includes(optionData[i].value)) {
                         optionData[i].selected = true;
-                        searchString = searchString === undefined ? optionData[i].label : searchString;
                         count++;
                     }  
                 } else {
@@ -76,11 +75,10 @@ export default class Multiselect extends LightningElement {
                     }
                 }
             }
-            // if(this.multiselect)
-            //     this.mSelectConfig.searchString = 'Select a option';
-            // else
-            this.mSelectConfig.searchString = searchString !== undefined ? searchString : 'Select a option';
-            this.mSelectConfig.badgeValue = count;
+            if(this.multiselect)
+                this.mSelectConfig.searchString = count + ' Option(s) Selected';
+            else
+                this.mSelectConfig.searchString = searchString;
         }
         this.mSelectConfig.value = value;
         this.mSelectConfig.values = values;
@@ -88,16 +86,8 @@ export default class Multiselect extends LightningElement {
         this.mSelectConfig.optionData = optionData.sort((a, b) => {return a.selected ? -1 : 1}).slice(0,this.listsize);
         this.mSelectConfig.allOptions = optionData;
     }
-    get searchString() {
-        return this.mSelectConfig.searchString ?? 'Select a option';
-    }
-
-    get badgeValue(){
-        return this.multiselect && this.mSelectConfig.badgeValue > 1 ? '+' + (this.mSelectConfig.badgeValue - 1) : false;
-    }
 
     filterOptions(event) {
-        this.mSelectConfig.showDropdown = true;
         this.mSelectConfig.searchString = event.target.value;
         if( this.mSelectConfig.searchString && this.mSelectConfig.searchString.length > 0 ) {
             this.mSelectConfig.message = '';
@@ -124,7 +114,7 @@ export default class Multiselect extends LightningElement {
             this.mSelectConfig.showDropdown = true;
         } else {
             this.mSelectConfig.optionData = this.mSelectConfig.allOptions.sort((a, b) => {return a.selected ? -1 : 1}).slice(0,this.listsize);
-            // this.mSelectConfig.showDropdown = false;
+            this.mSelectConfig.showDropdown = false;
         }
     }
 
@@ -132,7 +122,6 @@ export default class Multiselect extends LightningElement {
         var selectedVal = event.currentTarget.dataset.id;
         if(selectedVal) {
             var count = 0;
-            let searchString;
             var options = JSON.parse(JSON.stringify(this.mSelectConfig.optionData));
             for(var i = 0; i < options.length; i++) {
                 if(options[i].value === selectedVal) {
@@ -145,33 +134,28 @@ export default class Multiselect extends LightningElement {
                         options[i].selected = options[i].selected ? false : true;   
                     } else {
                         this.mSelectConfig.value = options[i].value;
-                        searchString = options[i].label;
+                        this.mSelectConfig.searchString = options[i].label;
                     }
                 }
                 if(options[i].selected) {
-                    searchString = searchString === undefined ? options[i].label : searchString;
                     count++;
                 }
             }
             this.mSelectConfig.optionData = options;
             if(this.multiselect)
-                this.mSelectConfig.searchString = '+' + count;
+                this.mSelectConfig.searchString = count + ' Option(s) Selected';
             if(this.multiselect){
                 event.preventDefault();
                 this.blurEvent('',true);
-            }else{
+            }else
                 this.mSelectConfig.showDropdown = false;
-                this.blurEvent('',true);
-            }
-            this.mSelectConfig.searchString = searchString !== undefined ? searchString : 'Select a option';
-            this.mSelectConfig.badgeValue = count;
         }
     }
 
     showOptions() {
         if(!this.disabled && this.options) {
             this.mSelectConfig.message = '';
-            // this.mSelectConfig.searchString = '';
+            this.mSelectConfig.searchString = '';
             var options = JSON.parse(JSON.stringify(this.mSelectConfig.optionData));
             for(var i = 0; i < options.length; i++) {
                 options[i].isVisible = true;
@@ -184,40 +168,19 @@ export default class Multiselect extends LightningElement {
         }
 	}
 
-    clearSelection(){
-        let options = JSON.parse(JSON.stringify(this.mSelectConfig.optionData));
-        for(let i = 0; i < options.length; i++) {
-            options[i].selected = false ;   
-        }
-        this.mSelectConfig.optionData = options;
-        this.mSelectConfig.allOptions = JSON.parse(JSON.stringify(options));
-        this.mSelectConfig.searchString = 'Select a option';
-        this.mSelectConfig.badgeValue = 0;
-        this.template.querySelector('.optionBtn').focus();
-    }
-    closeDropdown(event){
-        if(event.relatedTarget === undefined){
-            this.mSelectConfig.showDropdown = false;
-        }
-    }
-
     blurEvent(event,shouldDispatchEvent) {
         var previousLabel;
         var count = 0;
-        let searchString;
         for(var i = 0; i < this.mSelectConfig.optionData.length; i++) {
             if(this.mSelectConfig.optionData[i].value === this.mSelectConfig.value) {
                 previousLabel = this.mSelectConfig.optionData[i].label;
             }
             if(this.mSelectConfig.optionData[i].selected) {
-                searchString = searchString === undefined ? this.mSelectConfig.optionData[i].label : searchString;
                 count++;
             }
         }
         if(this.multiselect){
-            this.mSelectConfig.searchString = searchString !== undefined ? searchString : 'Select a option';
-            this.mSelectConfig.badgeValue = count;
-            // this.mSelectConfig.searchString = count + ' Option(s) Selected';
+            this.mSelectConfig.searchString = count + ' Option(s) Selected';
             if(shouldDispatchEvent !== undefined){
                 this.dispatchEvent(new CustomEvent('select', {
                     detail: {
@@ -236,7 +199,7 @@ export default class Multiselect extends LightningElement {
             this.mSelectConfig.searchString = previousLabel;
             //if someone presses Enter without selecting anything. 
             //To prevent NoErrorObjectAvailable Script error
-            if(event.target?.value === "") return; 
+            if(event.target.value === "") return; 
             this.dispatchEvent(new CustomEvent('select', {
                 detail: {
                     'payloadType' : 'multi-select',

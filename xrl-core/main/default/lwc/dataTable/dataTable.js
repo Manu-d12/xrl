@@ -248,22 +248,13 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			let isPager = this.config.pager;
 			if(!this.config.pager.pagerTop && !this.config.pager.pagerBottom){
 				let startIndex = 0;
-				let endIndex = this.records.length > 201 ? 201 : this.records.length;
+				let endIndex = this.records.length > 200 ? 200 : this.records.length;
 				let result = [];
-				for (let group of this.groupedRecords) {
-					if (startIndex > group.records[group.records.length - 1].index) continue;
-					if (endIndex <= group.records[0].index - 1) break;   
-					let gr = Object.assign({}, group);
-					gr.records = group.records.map(r => r);
-					if (startIndex >= gr.records[0].index) {
-						gr.records.splice(0, startIndex - (gr.records[0].index));
-					}					
-					if (endIndex <= gr.records[gr.records.length - 1].index) {
-						gr.records.splice(endIndex - (gr.records[0].index));
-					}
-					result.push(gr);
+				for (let i = startIndex; i < endIndex; i++) {
+					result.push(this.records[i]);
 				}
-				this.displayedItemCount = libs.formatStr('{0} Showing only {1} item(s)', [this.recordInfo,(endIndex - 1) < 1 ? 0 : (endIndex - 1)]);
+				this.displayedItemCount = this.recordInfo+ ' Showing only '+ endIndex  +' item(s)';
+				//console.log('result', JSON.parse(JSON.stringify(result)));
 				this.config._recordsToShow = result;
 				return result;
 			}
@@ -333,15 +324,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 
 	get hasGrouping() {
-		let fieldName = (this.config.groupFieldName !== undefined && this.config.groupFieldName !== null && this.config.groupFieldName !== '') ? this.config.groupFieldName : undefined;
-		if(fieldName !== undefined){
-			let cItem = this.getColItem(this.config.groupFieldName);
-			if(cItem === undefined){
-				delete this.config.groupFieldName;
-			}
-			return cItem !== undefined;
-		}
-		return false;
+		// return this.config.grouping === true;
+		//console.log('hasGrouping ',this.config.groupFieldName !== undefined && this.config.groupFieldName !== null && this.config.groupFieldName !== '');
+		return this.config.groupFieldName !== undefined && this.config.groupFieldName !== null && this.config.groupFieldName !== '';
 	}
 
 	get groupColspan() {
@@ -887,31 +872,25 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 			if (cItem.type === 'reference' && cItem.options === undefined) {
 				let describe = libs.getGlobalVar(this.cfg).describe[cItem.fieldName];
-				let fields = ['Id','Name'];
-				if(cItem._advanced?.referencedObject?.fields){
-					fields.push(...cItem._advanced?.referencedObject?.fields);
-				}
 				libs.remoteAction(this, 'query', {
 					isNeedDescribe: false,
 					sObjApiName: describe.referenceTo[0],
-					fields: fields,
-					addCondition: cItem._advanced?.referencedObject?.whereCondition ? libs.replaceLiteralsInStr(cItem._advanced.referencedObject.whereCondition,this.cfg) : '',
+					fields: cItem._advanced?.referencedObject?.fields ? cItem._advanced.referencedObject.fields : ['Id','Name'],
+					addCondition: cItem._advanced?.referencedObject?.fields ? libs.replaceLiteralsInStr(cItem._advanced.referencedObject.whereCondition,this.cfg) : '',
 					callback: ((nodeName, data) => {
 						//console.log('length from Citem', data[nodeName].records);
 						cItem.options = [];
-						cItem._editOptions = [];
 						cItem._refNodeOptions = [...data[nodeName].records]; 
 						if(cItem.nillable === true){
-							cItem._editOptions.push({"label":'--None--',"value":'NONE'});
+							cItem.options.push({"label":'--None--',"value":'NONE'});
 							cItem._refNodeOptions.push({"label":'--None--',"Id":'NONE'});
 						}
 						data[nodeName].records.forEach(e => {
-							cItem.options.push(Object.assign({label: e.Name, value: e.Id},e));
-							cItem._editOptions.push(Object.assign({"label":e.Name,"value":e.Id},e)); //need to refactor here and have to keep only one array
+							cItem.options.push({label: e.Name, value: e.Id});
 							
 						});
 
-						// console.log('cItem', cItem._editOptions);
+						//console.log('cItem', col.options, libs.getGlobalVar(this.cfg));
 					})
 				});
 				cItem.isEditableRegular = false;
@@ -952,20 +931,16 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						if(cItem.nillable === true){
 							el._editOptions.push({"label":'--None--',"value":'NONE'});
 						}
-						let fields = ['Id','Name'];
-						if(el._advanced?.referencedObject?.fields){
-							fields.push(...el._advanced?.referencedObject?.fields);
-						}
 						await libs.remoteAction(this, 'query', {
-							fields: fields,
+							fields: el._advanced?.referencedObject?.fields ? el._advanced.referencedObject.fields : ['Id','Name'],
 							relField: '',
-							addCondition: el._advanced?.referencedObject?.whereCondition ? libs.replaceLiteralsInStr(el._advanced.referencedObject.whereCondition,this.cfg) : '',
+							addCondition: el._advanced?.referencedObject?.fields ? libs.replaceLiteralsInStr(el._advanced.referencedObject.whereCondition,this.cfg) : '',
 							sObjApiName: el.referenceTo,
 							callback: ((nodeName, data) => {
+								//console.log('accountRecords', data[nodeName].records.length);
 								data[nodeName].records.forEach((e)=>{
-									el._editOptions.push(Object.assign({"label":e.Name,"value":e.Id},e));
+									el._editOptions.push({"label":e.Name,"value":e.Id});
 								});
-								// console.log('accountRecords', el._editOptions);
 							})
 						});
 						libs.getGlobalVar(this.cfg).optionsForMultiselect.set(el.fieldName,el._editOptions);

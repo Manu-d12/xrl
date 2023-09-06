@@ -664,44 +664,6 @@
         <value>If you want to use default label, no change is needed here. In this case, label will be displayed in user language</value>
     </labels>
     <labels>
-        <fullName>lbl_customFunctionForFormatting</fullName>
-        <categories>XRL</categories>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>lbl_customFunctionForFormatting</shortDescription>
-        <value>Custom function for formatting</value>
-    </labels>
-    <labels>
-        <fullName>lbl_customFunctionExample</fullName>
-        <categories>XRL</categories>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>tooltip_customFunctionExample</shortDescription>
-        <value>//Example
-function(row, col, val) { 
-//return val;
-}</value>
-    </labels>
-    <labels>
-        <fullName>lbl_customFunctionForStyle</fullName>
-        <categories>XRL</categories>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>lbl_customFunctionForStyle</shortDescription>
-        <value>Custom function for style</value>
-    </labels>
-    <labels>
-        <fullName>lbl_customFunctionStyleExample</fullName>
-        <categories>XRL</categories>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>lbl_customFunctionStyleExample</shortDescription>
-        <value>//Example
-function(row,col,val){
-//return &quot;color:#FF0000&quot;;
-}</value>
-    </labels>
-    <labels>
         <fullName>lbl_isColumnHidden</fullName>
         <categories>XRL</categories>
         <language>en_US</language>
@@ -1880,34 +1842,6 @@ Once you are done editing the pattern, click outside the input box.</value>
         <protected>true</protected>
         <shortDescription>lbl_conditionAlreadyExists</shortDescription>
         <value>Condition Already Exists</value>
-    </labels>
-    <labels>
-        <fullName>lbl_groupingFunction</fullName>
-        <categories>XRL</categories>
-        <language>en_US</language>
-        <protected>true</protected>
-        <shortDescription>lbl_groupingFunction</shortDescription>
-        <value>Custom Function for Grouping records</value>
-    </labels>
-    <labels>
-        <fullName>tooltip_groupingFunction</fullName>
-        <categories>XRL</categories>
-        <language>en_US</language>
-        <protected>true</protected>
-        <shortDescription>tooltip_groupingFunction</shortDescription>
-        <value>This function will be used for grouping values</value>
-    </labels>
-    <labels>
-        <fullName>placeholder_groupingFunction</fullName>
-        <categories>XRL</categories>
-        <language>en_US</language>
-        <protected>true</protected>
-        <shortDescription>placeholder_groupingFunction</shortDescription>
-        <value>//Example- this receives the array of groups done on the selected fields and it must return the array of groups in same format
-function(groups){
-console.log('From Group Function',groups);
-return groups;
-}</value>
     </labels>
     <labels>
         <fullName>lbl_groupFieldName</fullName>

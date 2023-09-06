@@ -37,8 +37,5 @@
     "**/{aura,lwc}/**": [
       "eslint"
     ]
-  },
-  "dependencies": {
-    "sfdx-cli": "^7.209.6"
   }
 }

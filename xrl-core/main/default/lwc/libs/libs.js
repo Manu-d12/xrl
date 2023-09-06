@@ -145,21 +145,6 @@ export let libs = {
 				"label": _labels.lbl_fieldLabel,
 				"tooltip": _labels.tooltip_fieldLabel
 			},
-			// "formatter": {
-			// 	"type": "function",
-			// 	"params": "(row, col, val)",
-			// 	"label": _labels.lbl_customFunctionForFormatting,
-			// 	"placeHolder" : _labels.lbl_customFunctionExample,
-			// 	"useExample":true
-			// },
-			//in advanced JSON the key for this uStyle should be customStyle
-			// "uStyle": {
-			// 	"type": "function",
-			// 	"params": "(row, col, val)",
-			// 	"label": _labels.lbl_customFunctionForStyle,
-			// 	"placeHolder" : _labels.lbl_customFunctionStyleExample,
-			// 	"useExample":true
-			// },
 			"isHidden": {
 				"defValue": false,
 				"type": "checkbox",
@@ -193,13 +178,6 @@ export let libs = {
 				"label": _labels.lbl_isColumnWrapable,
 				"tooltip": _labels.tooltip_isColumnWrapable
 			},
-			/*'isEditableMethod': {
-				"defValue": false,
-				"type": "function",
-				"params": "(value)",
-				"label" : "isEditable Method",
-				"tooltip": "Can edit column or not method. We can implement dynamic properties"
-			},*/
 			"width": {
 				"type": "string",
 				"label" : _labels.lbl_width,
@@ -307,14 +285,6 @@ export let libs = {
 				"cmd" : "dialog:setTableParam",
 				"helpArticleUrl": _labels.hlpUrl_groupFieldName,
 			},
-			// "groupingFunction": {
-			// 	"type": "function",
-			// 	"label": _labels.lbl_groupingFunction,
-			// 	"tooltip": _labels.tooltip_groupingFunction,
-			// 	"placeHolder": _labels.placeholder_groupingFunction,
-			// 	"cmd" : "dialog:setTableParam",
-			// 	"useExample":true,
-			// },
 			"groupOrder" : {
 				"defValue": "ASC",
 				"type": "combobox",
@@ -336,6 +306,7 @@ export let libs = {
 				"tooltip": _labels.tooltip_fieldToMapToIndex,
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
+			},
 			},*/
 			// "recordsDragDropCallback": {
 			// 	"type": "function",
@@ -390,6 +361,7 @@ export let libs = {
 				"tooltip": _labels.tooltip_beforeSaveApexAction,
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam"
+			},
 			},*/
 			// "beforeDeleteValidation": {
 			// 	"type": "function",

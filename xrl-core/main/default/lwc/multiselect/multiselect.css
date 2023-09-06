@@ -3,7 +3,7 @@
        padding: 0px 5px !important;
    }
    .slds-dropdown {
-       /* padding:0px !important; */
+       padding:0px !important;
    }
    .recordListBox {
     margin-top:0px !important;
@@ -24,7 +24,7 @@
    /* For Scrolling */
    ::-webkit-scrollbar {
        width: 7px;
-       height: 27px;
+       height: 7px;
    }
    ::-webkit-scrollbar-track {
       display: none !important;
