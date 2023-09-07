@@ -6,12 +6,18 @@
     <div class="slds-combobox_container">
         <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open" aria-expanded="true" aria-haspopup="listbox" role="combobox">
             <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
-                <lightning-input disabled={disabled} required={required} class="inputBox" placeholder="Select an Option" onblur={blurEvent} onclick={showOptions} onkeyup={filterOptions} value={mSelectConfig.searchString} variant="label-hidden" id="combobox-id-1" ></lightning-input>
-                <lightning-icon class="slds-input__icon" icon-name="utility:down" size="x-small" alternative-text="search"></lightning-icon>
+                <!-- <lightning-input disabled={disabled} required={required} class="inputBox" placeholder="Search..." onblur={blurEvent} onclick={showOptions} onkeyup={filterOptions} value={mSelectConfig.searchString} variant="label-hidden" id="combobox-id-1" ></lightning-input>
+                <lightning-icon class="slds-input__icon" icon-name="utility:search" size="x-small" alternative-text="search"></lightning-icon> -->
+                <button class="slds-button slds-button_brand slds-truncate optionBtn" onclick={showOptions} onblur={closeDropdown}>{searchString} &nbsp;<span if:true={badgeValue} class="slds-badge">{badgeValue}</span></button>
+                <!-- <span>{mSelectConfig.searchString}</span> -->
             </div>
             <template if:true={mSelectConfig.showDropdown}>
-                <div id="listbox-id-1" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid"><!--style="{! 'max-height:' + (8 + (v.recordCount * 40)) + 'px' }""-->
-                    <ul class="slds-listbox slds-listbox_vertical recordListBox" role="presentation">
+                <div id="listbox-id-1" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid">
+                    <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none" style="margin-top: -5px;">
+                        <lightning-input disabled={disabled} required={required} class="inputBox" placeholder="Search..." onblur={blurEvent} onkeyup={filterOptions} variant="label-hidden" id="combobox-id-1" ></lightning-input>
+                        <lightning-icon class="slds-input__icon" icon-name="utility:search" size="x-small" alternative-text="search"></lightning-icon>
+                    </div>
+                    <ul class="slds-listbox slds-listbox_vertical recordListBox" role="presentation" style="display: block;max-height: 140px;margin: 0;padding: 0;">
                         <template if:false={mSelectConfig.message} >
                             <template for:each={mSelectConfig.optionData} for:item="option">
                                 <template if:true={option.isVisible}>
@@ -23,18 +29,24 @@
                                     </li>
                                 </template>
                             </template>
-                            <template if:true={mSelectConfig.showOptionCount}>
-                                <li class="slds-listbox__item">
-                                    <span class="slds-media slds-listbox__option_entity verticalAlign slds-truncate">Showing {mSelectConfig.optionData.length} of {mSelectConfig.optionLength} options</span>
+                            <!-- <template if:true={mSelectConfig.showOptionCount}>
+                                <li class="slds-listbox__item" style="position: sticky;bottom: 6px;background-color: #cecdcd;">
+                                    <span class="slds-media slds-listbox__option_entity verticalAlign slds-truncate" style="float:right">{mSelectConfig.optionData.length} of {mSelectConfig.optionLength}</span>
+                                    <span class="slds-media slds-listbox__option_entity verticalAlign slds-truncate">Clear Selection</span>
                                 </li>
-                            </template>
+                            </template> -->
                         </template>
                         <template if:true={mSelectConfig.message} >
                             <li class="slds-listbox__item">
-                                <span class="slds-media slds-listbox__option_entity verticalAlign slds-truncate">{mSelectConfig.message}</span>
+                                <span class="slds-media slds-listbox__option_entity slds-truncate">{mSelectConfig.message}</span>
                             </li>
                         </template>
                     </ul>
+                    <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                        <span class="slds-truncate" style="float:right">{mSelectConfig.optionData.length} of {mSelectConfig.optionLength}&nbsp;</span>
+                        <!-- 'tabindex' is necessary to understand if I need to close the dropdown or not -->
+                        <strong onclick={clearSelection} tabindex="0">&nbsp;Clear Selection</strong>
+                    </div>
                 </div>
             </template>
         </div>
