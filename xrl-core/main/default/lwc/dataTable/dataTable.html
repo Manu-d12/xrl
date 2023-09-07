@@ -18,6 +18,7 @@
 				</div>
 			</div>
 		</div>
+		<div style="overflow-x: auto;">
 		<table role="grid" if:true={tableRecords} class="slds-table slds-table_bordered slds-table_col-bordered extRelList" style="table-layout: fixed;">
 			<thead>
 				<tr class="slds-line-height_reset" style="height:50px;">
@@ -298,6 +299,7 @@
 			</tbody>
 			
 		</table>
+		</div>
 		<p if:false={isRecordsAvailableForUI} class="slds-card__footer"><b>{config._LABELS.errMsg_recordsNotFound}</b></p>
 		<div class="slds-grid slds-m-around_xx-small">
 			<div class="slds-size_7-of-12"></div>
