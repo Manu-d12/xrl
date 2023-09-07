@@ -39,24 +39,26 @@ global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickLi
 					string sObjApiName = string.valueOf(thisChild.getChildSObject());
 					string sObjField = string.valueOf(thisChild.getField());
 					string sObjLabel = gd.get(sObjApiName).getDescribe().getLabelPlural();
-					picklistValues.addRow(
-						new VisualEditor.DataRow(sObjLabel + ' ('+ sObjField +')', sObjLabel + '::' + sObjApiName + '::' + sObjField)
-					);
-					//only if the history object exists
-					if(gd.containsKey(sObjApiName + 'History') || gd.containsKey(sObjApiName.removeEnd('c') + 'History')){
-						SObjectType objToken = gd.get(sObjApiName);
-						//for standard history objects
-						boolean isCustom = objToken.getDescribe().isCustom(); 
-						if(objToken  != null && !isCustom){
-							picklistValues.addRow(
-								new VisualEditor.DataRow(sObjLabel+': History (' + sObjField +')', sObjLabel + ' History::' + sObjApiName + 'History::' + sObjApiName + '.' + sObjField)
-							);
-							//Example apiName- Account History::AccountHistory::AccountHistory.AccountId
-						}else if(objToken  != null && isCustom){
-							//for custom history objects
-							picklistValues.addRow(
-								new VisualEditor.DataRow(sObjLabel+': History', sObjLabel + ' History::' + sObjApiName.removeEnd('c') + 'History::' + 'Parent.' + sObjField)
-							);
+					if(gd.get(sObjApiName).getDescribe().isQueryable()){
+						picklistValues.addRow(
+							new VisualEditor.DataRow(sObjLabel + ' ('+ sObjField +')', sObjLabel + '::' + sObjApiName + '::' + sObjField)
+						);
+						//only if the history object exists
+						if(gd.containsKey(sObjApiName + 'History') || gd.containsKey(sObjApiName.removeEnd('c') + 'History')){
+							SObjectType objToken = gd.get(sObjApiName);
+							//for standard history objects
+							boolean isCustom = objToken.getDescribe().isCustom(); 
+							if(objToken  != null && !isCustom){
+								picklistValues.addRow(
+									new VisualEditor.DataRow(sObjLabel+': History (' + sObjField +')', sObjLabel + ' History::' + sObjApiName + 'History::' + sObjApiName + '.' + sObjField)
+								);
+								//Example apiName- Account History::AccountHistory::AccountHistory.AccountId
+							}else if(objToken  != null && isCustom){
+								//for custom history objects
+								picklistValues.addRow(
+									new VisualEditor.DataRow(sObjLabel+': History', sObjLabel + ' History::' + sObjApiName.removeEnd('c') + 'History::' + 'Parent.' + sObjField)
+								);
+							}
 						}
 					}
 				}
