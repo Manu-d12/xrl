@@ -502,7 +502,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				}
 			}
 			let describe = this.config.describe[e.fieldName];
-			if(describe !== undefined || describe !== null){
+			if(describe !== undefined && describe !== null){
 				if (e.label === undefined) e.label = describe.label;
 				if (e.type === undefined) e.type = describe.type;
 				if (e.updateable === undefined) e.updateable = describe.updateable;
