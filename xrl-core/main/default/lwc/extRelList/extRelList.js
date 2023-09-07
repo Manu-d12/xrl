@@ -181,11 +181,13 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			this.config.dataTableConfig.colModel = libs.setDefaultColumns();
 			if(this.config.sObjApiName.toLowerCase().includes('history')){
 				this.config.dataTableConfig.colModel = libs.historyGrid(this.apiName);
-				let changedField = this.config.dataTableConfig.colModel.find(field => field.fieldName === 'Field');
-				changedField.options = [];
-				this.config.describe[changedField.fieldName].picklistValues.forEach((e)=>{
-					changedField.options.push({label: e.label, value: e.value});
-				});
+				if(this.apiName.split('::')[1] !== 'OpportunityHistory'){
+					let changedField = this.config.dataTableConfig.colModel.find(field => field.fieldName === 'Field');
+					changedField.options = [];
+					this.config.describe[changedField.fieldName].picklistValues.forEach((e)=>{
+						changedField.options.push({label: e.label, value: e.value});
+					});
+				}
 				this.config.dataTableConfig.orderBy = " ORDER BY CreatedDate DESC NULLS FIRST";
 				this.config.dataTableConfig.orderMap=  [
 				  {
