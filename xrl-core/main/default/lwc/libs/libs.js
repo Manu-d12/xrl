@@ -516,25 +516,25 @@ export let libs = {
 				"tooltip": _labels.tooltip_actionVisibleOnRecords
 
 			},
-			"actionVariant" : {
+			/*"actionVariant" : { // Temporary removed
 				"type": "combobox",
 				"defValue": "bare",
 				"options" : [{label : "bare", value : "bare"}, {label : "bare-inverse", value : "bare-inverse"}, {label : "border", value : "border"},{label : "border-filled", value : "border-filled"},{label : "border-inverse", value : "border-inverse"},{label : "brand", value : "brand"},{label : "container", value : "container"}],
 				"label": 'variant',
 				"tooltip": 'variant'
-			},
+			},*/
 
 			"actionIconName" : {
 				"type": "text",
 				"label": _labels.lbl_actionIconName,
 				"tooltip": _labels.tooltip_actionIconName
 			},
-			"refreshAfterCustomActionExecution" : {
+			/*"refreshAfterCustomActionExecution" : { // Temporary removed
 				"defValue":false,
 				"type": "checkbox",
 				"label": _labels.lbl_refreshAfterCustomActionExecution,
 				"tooltip": _labels.tooltip_refreshAfterCustomActionExecution
-			},
+			},*/
 			"actionOrder" : {
 				"type": "text",
 				"label": _labels.lbl_actionOrder,
