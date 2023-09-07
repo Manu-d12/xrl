@@ -65,7 +65,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		this.name = libs.getGlobalVarsCount().toString();
 		console.log('RENDERED');
 		this._flowSupport =  FlowNavigationFinishEvent;
-		this.loadCfg(true);
+		try{
+			this.loadCfg(true);
+		}catch(e){
+			console.error('Error loading configuration',e);
+		}
 	}
 	listenEvent(event){
 		// console.log("Message received0 XRL", [...event.data.keys()],this.name);
@@ -562,8 +566,10 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			let describe = this.config.describe[e.fieldName];
 			if (e.type === 'reference') {
 				let nameField = this.config.objectNameFieldsMap.get(e.referenceTo) ? '.'+this.config.objectNameFieldsMap.get(e.referenceTo) : '.Name';
-				this.config.fields.push(describe.relationshipName ? describe.relationshipName + nameField : e.fieldName);
-				if (e.locked) this.config.lockedFields.push(describe.relationshipName ? describe.relationshipName + '.Name' : e.fieldName);
+				let prefix = e.fieldName.split('.');
+				prefix.splice(-1, 1);
+				this.config.fields.push(e.relationshipName ? (prefix.length> 0 ? prefix.join(".") +'.' : '') + e.relationshipName + nameField : e.fieldName);
+				if (e.locked) this.config.lockedFields.push(e.relationshipName ? e.relationshipName + '.Name' : e.fieldName);
 			}
 			if(e.type==="picklist" && e.fieldName !== 'CurrencyIsoCode'){ // can't use toLabel(CurrencyIsoCode) because it will break the currency field formatting. Will fix with HYPER-633
 				this.config.fields.push('toLabel(' +e.fieldName + ')');
