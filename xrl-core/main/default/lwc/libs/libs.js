@@ -145,21 +145,6 @@ export let libs = {
 				"label": _labels.lbl_fieldLabel,
 				"tooltip": _labels.tooltip_fieldLabel
 			},
-			// "formatter": {
-			// 	"type": "function",
-			// 	"params": "(row, col, val)",
-			// 	"label": _labels.lbl_customFunctionForFormatting,
-			// 	"placeHolder" : _labels.lbl_customFunctionExample,
-			// 	"useExample":true
-			// },
-			//in advanced JSON the key for this uStyle should be customStyle
-			// "uStyle": {
-			// 	"type": "function",
-			// 	"params": "(row, col, val)",
-			// 	"label": _labels.lbl_customFunctionForStyle,
-			// 	"placeHolder" : _labels.lbl_customFunctionStyleExample,
-			// 	"useExample":true
-			// },
 			"isHidden": {
 				"defValue": false,
 				"type": "checkbox",
@@ -193,13 +178,6 @@ export let libs = {
 				"label": _labels.lbl_isColumnWrapable,
 				"tooltip": _labels.tooltip_isColumnWrapable
 			},
-			/*'isEditableMethod': {
-				"defValue": false,
-				"type": "function",
-				"params": "(value)",
-				"label" : "isEditable Method",
-				"tooltip": "Can edit column or not method. We can implement dynamic properties"
-			},*/
 			"width": {
 				"type": "string",
 				"label" : _labels.lbl_width,
@@ -307,14 +285,6 @@ export let libs = {
 				"cmd" : "dialog:setTableParam",
 				"helpArticleUrl": _labels.hlpUrl_groupFieldName,
 			},
-			// "groupingFunction": {
-			// 	"type": "function",
-			// 	"label": _labels.lbl_groupingFunction,
-			// 	"tooltip": _labels.tooltip_groupingFunction,
-			// 	"placeHolder": _labels.placeholder_groupingFunction,
-			// 	"cmd" : "dialog:setTableParam",
-			// 	"useExample":true,
-			// },
 			"groupOrder" : {
 				"defValue": "ASC",
 				"type": "combobox",
@@ -336,6 +306,7 @@ export let libs = {
 				"tooltip": _labels.tooltip_fieldToMapToIndex,
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
+			},
 			},*/
 			// "recordsDragDropCallback": {
 			// 	"type": "function",
@@ -390,6 +361,7 @@ export let libs = {
 				"tooltip": _labels.tooltip_beforeSaveApexAction,
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam"
+			},
 			},*/
 			// "beforeDeleteValidation": {
 			// 	"type": "function",
@@ -815,18 +787,126 @@ export let libs = {
 		let isChildObjectHistory = apiName.split('::')[2].split('.')[1] !== undefined;
 		let fieldName = isChildObjectHistory ? apiName.split('::')[2].split('.')[0] + "Id"
 		: apiName.split('::')[2].split('.')[0].slice(0,-2) + ".Id";
+		if(apiName.split('::')[1] === 'OpportunityHistory'){
+			let defFields = [
+				{
+					"label": "Opportunity ",
+					"fieldName": "OpportunityId",
+					"type": "reference",
+					"updateable": false,
+					"isNameField": false,
+					"referenceTo": "Opportunity",
+					"filterable": true,
+					"sortable": true,
+					"nillable": false,
+					"helpText": "OpportunityId (reference)",
+					"isEditable": false,
+					"isFilterable": true,
+					"isSortable": true,
+				},
+				{
+					"label": "Amount",
+					"fieldName": "Amount",
+					"type": "currency",
+					"updateable": false,
+					"isNameField": false,
+					"filterable": true,
+					"sortable": true,
+					"nillable": true,
+					"helpText": "Amount (currency)",
+					"isEditable": false,
+					"isFilterable": true,
+					"isSortable": true,
+				},
+				{
+					"label": "Stage Name",
+					"fieldName": "StageName",
+					"type": "picklist",
+					"updateable": false,
+					"isNameField": false,
+					"filterable": true,
+					"sortable": true,
+					"nillable": false,
+					"helpText": "StageName (picklist)",
+					"isEditable": false,
+					"isFilterable": true,
+					"isSortable": true,
+				},
+				{
+					"label": "Previous Amount",
+					"fieldName": "PrevAmount",
+					"type": "currency",
+					"updateable": false,
+					"isNameField": false,
+					"filterable": true,
+					"sortable": true,
+					"nillable": true,
+					"helpText": "PrevAmount (currency)",
+					"isEditable": false,
+					"isFilterable": true,
+					"isSortable": true,
+				},
+				{
+					"label": "Previous Close Date",
+					"fieldName": "PrevCloseDate",
+					"type": "date",
+					"updateable": false,
+					"isNameField": false,
+					"filterable": true,
+					"sortable": true,
+					"nillable": true,
+					"helpText": "PrevCloseDate (date)",
+					"isEditable": false,
+					"isFilterable": true,
+					"isSortable": true,
+				},
+				{
+					"label": "Close Date",
+					"fieldName": "CloseDate",
+					"type": "date",
+					"updateable": false,
+					"isNameField": false,
+					"filterable": true,
+					"sortable": true,
+					"nillable": true,
+					"helpText": "CloseDate (date)",
+					"isEditable": false,
+					"isFilterable": true,
+					"isSortable": true,
+				},
+				{
+					"label": "Created By ",
+					"fieldName": "CreatedById",
+					"type": "reference",
+					"updateable": false,
+					"isNameField": false,
+					"referenceTo": "User",
+					"filterable": true,
+					"sortable": true,
+					"nillable": false,
+					"helpText": "CreatedById (reference)",
+					"isEditable": false,
+					"isFilterable": true,
+					"isSortable": true,
+				},
+				{
+					"label": "Created Date",
+					"fieldName": "CreatedDate",
+					"type": "datetime",
+					"updateable": false,
+					"isNameField": false,
+					"filterable": true,
+					"sortable": true,
+					"nillable": false,
+					"helpText": "CreatedDate (datetime)",
+					"isEditable": false,
+					"isFilterable": true,
+					"isSortable": true,
+				}
+			];
+			return defFields;
+		}
 		let defFields = [
-			// {
-			// 	"fieldName" : "Id",
-			// 	"type": "string",
-			// 	"updateable": false,
-			// 	"isFilterable": true,
-			// 	"isSortable": true,
-			// 	"isNameField": false,
-			// 	"isEditable": false,
-			// 	"isHidden": true,
-			// 	"helpText": 'Id (id)',
-			// },
 			{
 				"label": "New Value",
 				"fieldName": "NewValue",

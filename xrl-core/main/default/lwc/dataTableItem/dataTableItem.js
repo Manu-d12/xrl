@@ -44,7 +44,7 @@ export default class dataTableItem extends LightningElement {
 		//console.log(this.col.fieldName, JSON.stringify(this.row), this.row[this.col.fieldName]);
 		//this.col.fieldName
 		let row,val;
-		[row,val] = libs.getLookupRow(this.row, this.col.fieldName);
+		[row,val] = libs.getLookupRow(JSON.parse(JSON.stringify(this.row)), this.col.fieldName);
 		let config = libs.getGlobalVar(this.cfg);
 		if(config.isHistoryGrid && this.col.fieldName === 'Field'){
 			let sObjName = libs.getParentHistorySObjName(this.cfg);
