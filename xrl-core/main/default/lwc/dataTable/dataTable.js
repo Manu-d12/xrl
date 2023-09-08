@@ -515,6 +515,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			// item._isReference = (item.isNameField) ? true : false;
 			item._filterCondition = item._filterCondition ? item._filterCondition : this.config._LABELS.lbl_columnFilter;
 			delete item.isASCSort;
+
+			const event = new CustomEvent('datatablerefresh');
+			this.dispatchEvent(event);
 		});
 		//Showing server side sorting
 		this.config.orderMap?.forEach((el) =>{

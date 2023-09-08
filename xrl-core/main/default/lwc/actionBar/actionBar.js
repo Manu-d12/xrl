@@ -12,9 +12,27 @@ export default class ActionBar extends LightningElement {
         let cmpWidth = libs.getGlobalVar(this.actionscfg._cfgName).componentWidth;
         this.config.showActionDropdown = this.visibleActions.length > 2 && (cmpWidth === 'MEDIUM' || cmpWidth === 'SMALL');
 		this._flowSupport =  FlowNavigationFinishEvent;
+        console.log('refreshed action bar');
+    }
+    @api 
+    refreshActionbar(){
+        this.connectedCallback();
     }
     get visibleActions(){
+        /*
+            3 things needs to be checked before showing an action to the grid
+            1. Check if the action is visible by actionIsHidden flag
+            2. Check if the action is visible by actionShowHideCallback function, if defined
+            3. Check if the action is visible by actionVisibleOnRecordSelection, if it is enabled then we can show the action only if there is a record selection
+        */
         this.config.visibleActions = this.config.actions.filter((el) => {
+            let _advanced = eval('['+el?.advanced + ']')[0];
+            let isActionVisibleByShowHideCallback = true;
+            if (_advanced?.actionShowHideCallback !== undefined && _advanced?.actionShowHideCallback !== ''){
+                let records = libs.getGlobalVar(this.actionscfg._cfgName)?.records;
+                isActionVisibleByShowHideCallback = _advanced?.actionShowHideCallback(this,libs,records);
+                return isActionVisibleByShowHideCallback;
+            }
             return el.actionIsHidden === undefined || el.actionIsHidden === false;           
         });
         if(this.config.dataTable?.rowChecked === undefined || this.config.dataTable?.rowChecked === false){
@@ -22,7 +40,6 @@ export default class ActionBar extends LightningElement {
                 return el.actionVisibleOnRecordSelection === undefined ||el.actionVisibleOnRecordSelection === false;           
             });
         }
-        console.log('visible actions',this.config.visibleActions.length);
         this.config.visibleActions = this.sortRecords(this.config.visibleActions, 'actionOrder', true);
         return this.config.visibleActions;
     }
