@@ -1427,12 +1427,12 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		// let origRecords = libs.getGlobalVar(this.cfg).records;
 		// let flattenRecords = libs.flattenRecordsWithChildren(libs.getGlobalVar(this.cfg).records);
 		this.origRecords = new Map(libs.getGlobalVar(this.cfg).records.map(record => [record.Id, record]));
-		let refNode = describe.relationshipName;
+		let refNode = describe?.relationshipName;
 		let refNodeValue;
 
 		//console.log('chBox.checked', chBox.checked, this.config._bulkEdit);
 		
-		if (describe.type === 'reference') {
+		if (describe?.type === 'reference') {
 
 			refNodeValue = this.config._bulkEdit.cItem._refNodeOptions.find( elem =>{
 				return elem.Id === value.value;
@@ -1485,14 +1485,16 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		event.stopPropagation()
         const Element = this.template.querySelectorAll('.Items')
         const DragValName = this.template.querySelector('.drag').getAttribute('data-rowind');
-        const DropValName = event.target.getAttribute('data-recid');
+        const DropValName = event.target.getAttribute('data-recid') !== null ? event.target.getAttribute('data-recid') : 'draggedOnHeader';
 		console.log('dropped', DropValName);
 		let cal = this.calcRowIndex(DropValName);
 		let draggedRecord = libs.findRecordWithChild(this.records, DragValName);
-		// let futureParentRecord = this.records[cal];
-		const futureParentRecord = libs.findRecordWithChild(this.records, DropValName);
+		let futureParentRecord = null;
+		if(DropValName !== 'draggedOnHeader'){
+			futureParentRecord = libs.findRecordWithChild(this.records, DropValName);
+		}
 		//will do nothing if dropped on same record
-		if(draggedRecord.Id === futureParentRecord.Id){
+		if(draggedRecord?.Id === futureParentRecord?.Id){
 			return;
 		}
 		if(this.config?._advanced?.recordsDragDropCallback !== undefined && this.config?._advanced?.recordsDragDropCallback !== ""){
@@ -1500,9 +1502,6 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				this.config.records = eval('(' + this.config._advanced.recordsDragDropCallback + ')')(this, libs, this.records,draggedRecord,futureParentRecord);
 				this.records = this.config.records;
 				libs.getGlobalVar(this.cfg).records = this.config.records;
-				// this.config.records.forEach(item => {
-				// 	this.changeRecord(item.Id);	
-				// })
 				this.changeRecord(draggedRecord.Id);
 				
 			} catch(err){

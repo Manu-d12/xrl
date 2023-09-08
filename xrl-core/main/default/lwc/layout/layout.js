@@ -339,7 +339,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 
 				// Call getConfigById for DataTable or ServerSideFilter
 				if (cmp.isDataTable) {
-					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: this.setConfigTabular.bind(this) });
+					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName,sObjApiName:this.config.sObjApiName || configUniqueName.split(':')[0], callback: this.setConfigTabular.bind(this) });
 					//await new Promise(resolve => setTimeout(resolve, 3000)); //this needs to debug, should work without timeout
 				} else if (cmp.isServerFilter) {
 					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, sObjApiName:this.config.sObjApiName || configUniqueName.split(':')[0] , callback: function(cmd, data) {
