@@ -461,7 +461,7 @@ export let libs = {
 				"tooltip": _labels.tooltip_actionLabelTooltip
 			},
 			"actionTip" : {
-				"defValue":'Tip Representation',
+				"defValue":'',
 				"type": "text",
 				"label": _labels.lbl_actionTip,
 				"tooltip": _labels.tooltip_actionTipTooltip
