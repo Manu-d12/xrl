@@ -26,12 +26,16 @@ export default class ActionBar extends LightningElement {
             3. Check if the action is visible by actionVisibleOnRecordSelection, if it is enabled then we can show the action only if there is a record selection
         */
         this.config.visibleActions = this.config.actions.filter((el) => {
-            let _advanced = eval('['+el?.advanced + ']')[0];
-            let isActionVisibleByShowHideCallback = true;
-            if (_advanced?.actionShowHideCallback !== undefined && _advanced?.actionShowHideCallback !== ''){
-                let records = libs.getGlobalVar(this.actionscfg._cfgName)?.records;
-                isActionVisibleByShowHideCallback = _advanced?.actionShowHideCallback(this,libs,records);
-                return isActionVisibleByShowHideCallback;
+            try{
+                let _advanced = eval('['+el?.advanced + ']')[0];
+                let isActionVisibleByShowHideCallback = true;
+                if (_advanced?.actionShowHideCallback !== undefined && _advanced?.actionShowHideCallback !== ''){
+                    let records = libs.getGlobalVar(this.actionscfg._cfgName)?.records;
+                    isActionVisibleByShowHideCallback = _advanced?.actionShowHideCallback(this,libs,records);
+                    return isActionVisibleByShowHideCallback;
+                }
+            }catch(e){
+                console.error(e);
             }
             return el.actionIsHidden === undefined || el.actionIsHidden === false;           
         });
