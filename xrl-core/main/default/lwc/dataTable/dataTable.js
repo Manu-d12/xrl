@@ -452,6 +452,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			if (this.config.colModel.find(f => f.fieldName === add.fieldName)) return;
 			this.config.colModel.push(add);
 		});
+		let tableWidth=0
 		this.config.colModel.forEach((item,index) => {
 			if(item.advanced !== undefined && item.advanced !== ''){
 				item._advanced =  eval('['+item.advanced+ ']')[0];
@@ -504,6 +505,11 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			if (item.width !== undefined) {
 				let maxWidth = item.width.replace(';','').slice(-1) === '%' ? ';max-width: 40%;' : ';max-width: 500px;';
 				let wd = (item.width.endsWith('%') || item.width.endsWith('px')) ? item.width : item.width + 'px';
+				//item._style = 'width: ' + wd.replace(';','') + maxWidth + 'padding-left:1px;' + 'min-width: 100px;';
+				if(item.width !== ""){
+					//here checking the width is more than max width(500px in here) column can have and adding them in tableWidth
+					tableWidth+= parseInt(wd.endsWith('%') ? wd.replace('%','') : wd.replace('px','')) >500 ? 500 : parseInt(wd.endsWith('%') ? wd.replace('%','') : wd.replace('px',''))
+				}
 				item._style = 'width: ' + wd.replace(';','') + maxWidth + 'padding-left:1px;';
 			}else{
 				item._style = 'padding-left:1px;padding-right:1px;';
@@ -516,6 +522,27 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			item._filterCondition = item._filterCondition ? item._filterCondition : this.config._LABELS.lbl_columnFilter;
 			delete item.isASCSort;
 		});
+		//Here first checking the table width(total width the user has enter for different column) with the screen size on the basic of where XRL is used
+		//jira no- HYPER-557
+		let compWidth= libs.getGlobalVar(this.cfg).componentWidth
+		//console.log('width'+compWidth)
+		let screenWidth=0
+		if(compWidth === 'LARGE'){
+			screenWidth = (window.screen.width - 100);
+		}else if(compWidth === 'MEDIUM'){
+			screenWidth = (window.screen.width/2);
+		}else if(compWidth === 'SMALL'){
+			screenWidth = (window.screen.width/4);
+		}
+		//console.log('container '+screenWidth+'  '+tableWidth)
+		if(tableWidth >= screenWidth){
+			this.config.colModel.forEach((item,index) => {
+				if (item.width === undefined || item.width === "") {
+					item._style = 'width:100px; padding-left:1px;padding-right:1px;' + 'max-width:500px;'
+				}
+			});
+		}
+
 		//Showing server side sorting
 		this.config.orderMap?.forEach((el) =>{
 			let col = this.config.colModel.find((e) => e.fieldName === el.field.fieldName);
