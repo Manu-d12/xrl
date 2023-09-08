@@ -521,6 +521,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			// item._isReference = (item.isNameField) ? true : false;
 			item._filterCondition = item._filterCondition ? item._filterCondition : this.config._LABELS.lbl_columnFilter;
 			delete item.isASCSort;
+
+			const event = new CustomEvent('datatablerefresh');
+			this.dispatchEvent(event);
 		});
 		//Here first checking the table width(total width the user has enter for different column) with the screen size on the basic of where XRL is used
 		//jira no- HYPER-557

@@ -590,6 +590,10 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 	}
 
+	dataTableRefresh(){
+		this.template.querySelector('c-action-Bar').refreshActionbar();
+	}
+
 	get changedRecords() {
 		return 'Count of changed records ' + this.config.listViewConfig[0]._changedRecords.size;
 	}
@@ -1589,11 +1593,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 						e._filterOption = undefined;
 					}
 				});
-				setTimeout(function(that) {
+				setTimeout(function(that,recs,actionsBar) {
 					that.config.records = recs; //refreshing the dataTable component
 					that.config.actionsBar = actionsBar;//refreshing the action bar component
 					that.config.isSpinner = false;
-				},1,this);
+				},1,this,recs,actionsBar);
 			}else{
 				const event = new ShowToastEvent({
 					title: 'Error',
