@@ -98,15 +98,15 @@ export default class Multiselect extends LightningElement {
 
     filterOptions(event) {
         this.mSelectConfig.showDropdown = true;
-        this.mSelectConfig.searchString = event.target.value;
-        if( this.mSelectConfig.searchString && this.mSelectConfig.searchString.length > 0 ) {
+        let searchString = event.target.value;
+        if( searchString !== '' && searchString.length > 0 ) {
             this.mSelectConfig.message = '';
             let results = [];
-            if(this.mSelectConfig.searchString.length >= this.mSelectConfig.minChar) {
+            if(searchString.length >= this.mSelectConfig.minChar) {
                 var flag = true;
                 for(var i = 0; i < this.mSelectConfig.allOptions.length; i++) {
-					if(this.mSelectConfig.allOptions[i].label.toLowerCase().trim().includes(this.mSelectConfig.searchString.toLowerCase().trim()) ||
-                    this.mSelectConfig.allOptions[i].value.toLowerCase().trim().includes(this.mSelectConfig.searchString.toLowerCase().trim())) {
+					if(this.mSelectConfig.allOptions[i].label.toLowerCase().trim().includes(searchString.toLowerCase().trim()) ||
+                    this.mSelectConfig.allOptions[i].value.toLowerCase().trim().includes(searchString.toLowerCase().trim())) {
                         this.mSelectConfig.allOptions[i].isVisible = true;
                         flag = false;
                         results.push(this.mSelectConfig.allOptions[i]);
@@ -115,7 +115,7 @@ export default class Multiselect extends LightningElement {
                     }
                 }
                 if(flag) {
-                    this.mSelectConfig.message = "No results found for '" + this.mSelectConfig.searchString + "'";
+                    this.mSelectConfig.message = "No results found for '" + searchString + "'";
                 }else{
                     this.mSelectConfig.optionLength = results.length;
                     this.mSelectConfig.optionData = results.sort((a, b) => {return a.selected ? -1 : 1}).slice(0,this.listsize);
@@ -123,7 +123,10 @@ export default class Multiselect extends LightningElement {
             }
             this.mSelectConfig.showDropdown = true;
         } else {
-            this.mSelectConfig.optionData = this.mSelectConfig.allOptions.sort((a, b) => {return a.selected ? -1 : 1}).slice(0,this.listsize);
+            this.mSelectConfig.allOptions.forEach((el) =>{
+                el.isVisible = true;
+            });
+            this.mSelectConfig.optionData = JSON.parse(JSON.stringify(this.mSelectConfig.allOptions.sort((a, b) => {return a.selected ? -1 : 1}).slice(0,this.listsize)));
             // this.mSelectConfig.showDropdown = false;
         }
     }
@@ -153,6 +156,9 @@ export default class Multiselect extends LightningElement {
                     count++;
                 }
             }
+            //updating the allOptions
+            let op = this.mSelectConfig.allOptions.find((el) => el.value === selectedVal);
+            op.selected = op.selected ? false : true; 
             this.mSelectConfig.optionData = options;
             if(this.multiselect)
                 this.mSelectConfig.searchString = '+' + count;
