@@ -803,6 +803,7 @@ export let libs = {
 					"isEditable": false,
 					"isFilterable": true,
 					"isSortable": true,
+					"relationshipName": "Opportunity",
 				},
 				{
 					"label": "Amount",
@@ -888,6 +889,7 @@ export let libs = {
 					"isEditable": false,
 					"isFilterable": true,
 					"isSortable": true,
+					"relationshipName": "CreatedBy",
 				},
 				{
 					"label": "Created Date",
