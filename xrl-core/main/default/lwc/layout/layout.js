@@ -548,6 +548,9 @@ export default class Layout extends NavigationMixin(LightningElement) {
 				console.log(error);
 			}
 		}
+		if (actionId === 'std:save') {
+			this.prepareRecordsForSave(table);
+		}
 		if (actionId === 'std:new') {
 				let defValue = {};
 				defValue[this.config.relField] = this.recordId;
@@ -589,6 +592,126 @@ export default class Layout extends NavigationMixin(LightningElement) {
 		if (actionId === 'std:untie') {
 			table.listViewConfig[0].isShowCheckBoxes = !table.listViewConfig[0].isShowCheckBoxes;
 			table.listViewConfig[0]._updateView();
+		}
+	}
+	async prepareRecordsForSave(scope){
+		let records = [];
+		if(scope.listViewConfig[0]._changedRecords === undefined || scope.listViewConfig[0]._changedRecords.size === 0) {
+			libs.showToast(this,{
+				title: 'Error',
+				message: 'Please change some records first',
+				variant: 'error'
+			});
+			return;
+		}
+		if(scope.listViewConfig[0].isRecordsDragDropEnabled && scope?._advanced?.afterloadTransformation !== undefined && scope?._advanced?.afterloadTransformation !== ""){
+			records = libs.flattenRecordsWithChildren(scope.records);
+		}else{
+			records = scope.records;
+		}
+		let changedItems = records.filter(el => {
+			return scope.listViewConfig[0]._changedRecords.has(el.Id)
+		});
+		
+		let allRecordsValidation = true;
+
+		if(scope?._advanced?.beforeSaveValidation !== undefined && 
+			scope?._advanced?.beforeSaveValidation !== ""){
+			changedItems.forEach((el)=>{
+				try{
+					let rec = eval('('+scope._advanced.beforeSaveValidation+')')(scope,libs,el);
+					if(!rec){
+						console.error('Failed Validation for ',JSON.parse(JSON.stringify(el)));
+						allRecordsValidation = false;
+					}
+				}catch(e){
+					libs.showToast(this,{
+						title: 'Error',
+						message: e.toString(),
+						variant: 'error'
+					});
+					console.log('Error', e);
+				}
+			});
+		}
+
+		let saveChunk = scope.listViewConfig[0].saveChunkSize ? scope.listViewConfig[0].saveChunkSize : 200; //200 is the default value for saveChunk
+		let index = 0;
+
+		if(!allRecordsValidation){
+			libs.showToast(this,{
+				title: 'Error',
+				message: this.config._LABELS.msg_failedValidationCallback,
+				variant: 'error'
+			});
+			console.error('Validation Not passed');
+			return;
+		}
+
+		scope.saveStatus = 0;
+		scope.countOfFailedRecords = 0;
+		scope.errorList = [];
+		let chunkCount = 0;
+
+		while(changedItems.length > 0 && index < changedItems.length){
+			let lIndex = changedItems[(parseInt(index)+parseInt(saveChunk))] ? (parseInt(index)+parseInt(saveChunk)) : (changedItems.length);
+			let chunk = changedItems.slice(index,lIndex);
+			index += changedItems[(parseInt(index)+parseInt(saveChunk))] ? parseInt(saveChunk) : (changedItems.length);
+			chunkCount +=1;
+			await this.saveRecords(chunk,scope);
+		}
+		if(chunkCount === scope.saveStatus)
+			this.resetChangedRecords(changedItems.length,scope);
+	}
+	async saveRecords(chunkIn,scope){
+		try{
+			//[DR] in case of saving custom settings need delete all nested attributes inside records, otherwise we will get EXCEPTION "Cannot deserialize instance of <unknown> from null value null or request may be missing a required field"
+			let chunk = this.stripChunk(chunkIn);
+			await libs.remoteAction(this, 'saveRecords', { records: chunk, 
+				sObjApiName: scope.sObjApiName,
+				rollback:scope.listViewConfig[0].rollBack ? scope.listViewConfig[0].rollBack : false,
+				beforeSaveAction: scope.listViewConfig[0].beforeSaveApexAction ? scope.listViewConfig[0].beforeSaveApexAction : '',
+				callback: function(nodename,data){
+					scope.saveStatus += 1;
+					scope.countOfFailedRecords += parseInt(data[nodename].countOfFailedRecords);
+					scope.errorList = scope.errorList.concat(data[nodename].listOfErrors);
+					console.log('From callback ', data[nodename]);
+				}
+			});
+		} catch (error) {
+			console.log(error);
+		}
+	}
+	resetChangedRecords(validatedRecordSize,scope) {
+		let _LABELS = libs.getGlobalVar('_LABELS');
+		if((validatedRecordSize - scope.countOfFailedRecords) > 0){
+			libs.showToast(this,{
+				title: 'Success',
+				message: (validatedRecordSize - scope.countOfFailedRecords) + ' of ' + validatedRecordSize + ' ' + _LABELS.msg_itemsUpdated,
+				variant: 'success'
+			});
+		}
+		if(scope.countOfFailedRecords > 0){
+			libs.showToast(this,{
+				title: 'Error',
+				message: libs.formatStr('{0} ' +_LABELS.msg_itemsUpdateFailed,[scope.countOfFailedRecords]) + scope.errorList.toString(),
+				variant: 'error'
+			});
+			const errorIds = [];
+			scope.errorList.forEach((el) => {
+				errorIds.push(el.split(':')[0]); //getting the IDs of the records that caused the error
+			});
+			for (let key of scope.listViewConfig[0]._changedRecords.keys()) {
+				if (!errorIds.includes(key)) {
+					scope.listViewConfig[0]._changedRecords.delete(key);
+				}
+			}
+			console.error(JSON.parse(JSON.stringify(scope.errorList)));
+		}else{
+			scope.listViewConfig[0]._changedRecords = undefined;
+			scope.records.forEach((record) => {
+				delete record._cellCss;
+			});
 		}
 	}
 
