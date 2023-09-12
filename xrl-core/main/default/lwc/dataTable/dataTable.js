@@ -409,7 +409,12 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		result.forEach(group => {
 			group.records.forEach(rec => {rec.index = ind++;})
 		});
-		this.groupedRecords = this.config?._advanced?.groupingFunction !== undefined && this.config?._advanced?.groupingFunction !== '' ? eval('(' + this.config._advanced.groupingFunction + ')')(this,libs,result) : result;
+		try{
+			this.groupedRecords = this.config?._advanced?.groupingFunction !== undefined && this.config?._advanced?.groupingFunction !== '' ? this.config._advanced.groupingFunction(this,libs,result) : result;
+		}catch(e){
+			console.error(e);
+			this.groupedRecords = result;
+		}
 		libs.getGlobalVar(this.cfg).groupedRecords = this.groupedRecords;
 		//console.log('groupedRecords', JSON.parse(JSON.stringify(this.groupedRecords)));
 	}
