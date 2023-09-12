@@ -103,7 +103,10 @@ export default class dataTableItem extends LightningElement {
 			}
 
 			if (this.col.type === 'currency') {
-				return val!=null && val!=undefined && typeof val === 'number' ? this.formatNumber(val, this.getCurrencySymbol()) : null;
+				if(val === null || val === undefined || val === '') return null;
+				else if(typeof val === 'number' || !isNaN(val)) return this.formatNumber(val, this.getCurrencySymbol());
+				return null;
+				// return val!=null && val!=undefined && typeof val === 'number' ? this.formatNumber(val, this.getCurrencySymbol()) : null ;
 			}
 
 			if (this.col.type === 'reference'){
