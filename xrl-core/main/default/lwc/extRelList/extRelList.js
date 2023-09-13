@@ -1566,7 +1566,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					window.close();
 					history.back();
 				}else{
-					let url = '/lightning/n/TTNAMESPACE__EXRL?c__apiName='+ btoa(this.apiName) + '&c__name='+ btoa(this.name);
+					let url = '/lightning/n/XRL__EXRL?c__apiName='+ btoa(this.apiName) + '&c__name='+ btoa(this.name);
 					if(this.recordId !== undefined && this.recordId !== null){
 						url += '&c__recordId='+btoa(this.recordId);
 					}
