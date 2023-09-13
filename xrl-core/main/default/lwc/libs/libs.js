@@ -976,6 +976,7 @@ export let libs = {
 				"isFilterable": true,
 				"isSortable": true,
 				"helpText": fieldName + ' (reference)',
+				"relationshipName": apiName.split('::')[2].split('.')[0],
 			});
 		}
 		return defFields;
