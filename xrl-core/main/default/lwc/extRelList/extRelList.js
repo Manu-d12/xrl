@@ -1198,9 +1198,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					field[param] = value;
 				}
 			}
-			const expandAction0 = this.config.dialog.listViewConfig.actions.find((el) => el.actionId === 'std:expand_view');
-			this.config._expandIcon = expandAction0.actionIconName;
-			this.config._expandTip = expandAction0.actionTip;
+			// const expandAction0 = this.config.dialog.listViewConfig.actions.find((el) => el.actionId === 'std:expand_view');
+			// this.config._expandIcon = expandAction0.actionIconName;
+			// this.config._expandTip = expandAction0.actionTip;
 		}
 		if (val === 'dialog:setFieldParam') {
 			let param = event.target.getAttribute('data-param');
@@ -1566,7 +1566,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					window.close();
 					history.back();
 				}else{
-					let url = '/lightning/n/XRL__EXRL?c__apiName='+ btoa(this.apiName) + '&c__name='+ btoa(this.name);
+					let url = '/lightning/n/TTNAMESPACE__EXRL?c__apiName='+ btoa(this.apiName) + '&c__name='+ btoa(this.name);
 					if(this.recordId !== undefined && this.recordId !== null){
 						url += '&c__recordId='+btoa(this.recordId);
 					}
