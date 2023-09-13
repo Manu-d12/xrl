@@ -1,7 +1,7 @@
 <template>
 	
 	
-	
+	<lightning-formatted-rich-text if:true={config._errors} value={config._errors}></lightning-formatted-rich-text>
 	<div style="height: 100%; position: relative;" ondropdownevent={handleDropDownEvents}>
 		<div class="slds-grid slds-m-around_xx-small">
 			<div class="slds-size_7-of-12 recordInfo">

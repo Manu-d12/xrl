@@ -307,7 +307,12 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			'_cfgName': this.name
 		};
 		if(this.config.listViewConfig[0].advanced !== undefined && this.config.listViewConfig[0].advanced !== ''){
-			this.config._advanced = eval('['+ this.config.listViewConfig[0].advanced + ']')[0];
+			try{
+				this.config._advanced = eval('['+ this.config.listViewConfig[0].advanced + ']')[0];
+			}catch(e){
+				this.config._errors = libs.formatCallbackErrorMessages(e,'table','Table Advanced JSON');
+				return;
+			}
 		}
 		console.log('this.config', this.config);
 		this.loadRecords();		
@@ -349,8 +354,10 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					if(this.config?._advanced?.afterloadTransformation !== undefined && this.config?._advanced?.afterloadTransformation !== ""){
 						try {
 							this.config.records = eval('(' + this.config?._advanced?.afterloadTransformation + ')')(this,libs, libs.getGlobalVar(this.name).records);
-						} catch(err){
-							console.log('EXCEPTION', err);
+						} catch(e){
+							// console.log('EXCEPTION', err);
+							this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Load Transformation Callback');
+							return;
 						}
 					} else {
 						this.config.records = libs.getGlobalVar(this.name).records;
@@ -369,8 +376,10 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if(this.config?._advanced?.afterloadTransformation !== undefined && this.config?._advanced?.afterloadTransformation !== ""){
 			try {
 				records = eval('(' + this.config?._advanced?.afterloadTransformation + ')')(this,libs, records);
-			} catch(err){
-				console.log('EXCEPTION', err);
+			} catch(e){
+				// console.log('EXCEPTION', err);
+				this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Load Transformation Callback');
+				return;
 			}
 		} 
 		return records;

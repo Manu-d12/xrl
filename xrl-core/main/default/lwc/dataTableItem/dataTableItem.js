@@ -53,9 +53,12 @@ export default class dataTableItem extends LightningElement {
 		}
 		if (typeof(this.col._formatter) === 'function') {
 			try{
+				// eval(this.col._formatter);
 				val = this.col._formatter(row, this.col, val);
 			}catch(e) {
-				console.error(e.toString);
+				// console.error(e);
+				val = libs.formatCallbackErrorMessages(e,'cell');
+				return val;
 			}
 			val = this.col.type === 'currency' ? this.formatNumber(val,this.getCurrencySymbol()) : val;
 		} 

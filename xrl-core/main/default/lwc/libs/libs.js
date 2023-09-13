@@ -999,6 +999,20 @@ export let libs = {
 		});
 		return updatedURL;
 	},
+	formatCallbackErrorMessages: function(error,errorIn,errorJSONName) {
+		/*
+			error = error is the error string that is caught by the catch block
+			errorIn = table or column level error
+		*/ 
+		console.error(error);
+		let message = '<b style="color:red;">#ERROR</b>';
+		if(errorIn === 'table') {
+			return '<b style="color:red;">#ERROR:</b> in "' + errorJSONName + '". Check console for more details';
+		}else if(errorIn === 'field') {
+			return '<b style="color:red;">#ERROR:</b> in "' + errorJSONName + '". Check console for more details';
+		}
+		return message;
+	},
 	currencyMap: function(cur) {
 		let map = {
 			AED: 'د.إ',

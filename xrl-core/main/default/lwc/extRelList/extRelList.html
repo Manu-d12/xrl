@@ -49,6 +49,7 @@
 					</div>
 				</div>
 			</div>
+			<lightning-formatted-rich-text if:true={config._errors} value={config._errors}></lightning-formatted-rich-text>
 			<c-Data-Table if:true={config.records} style="width:100%; height:inherit" data-ind={config.sObjApiName} cfg={name} ondatatablerefresh={dataTableRefresh}></c-Data-Table>
 			<p if:false={config.records} class="slds-card__footer"><b>{config._LABELS.errMsg_recordsNotFound}</b></p>
 

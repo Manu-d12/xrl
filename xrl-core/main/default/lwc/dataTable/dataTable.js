@@ -204,12 +204,13 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				try {
 					el._rowStyle += eval('(' + this.config._advanced?.rowCss + ')')(el);
 				} catch (e) {
-					libs.showToast(this, {
-						title: 'Error',
-						message: e.toString(),
-						variant: 'error',
-					});
-					console.error('Error', e);
+					this.config._errors = libs.formatCallbackErrorMessages(e,'table','Row Css Callback');
+					// libs.showToast(this, {
+					// 	title: 'Error',
+					// 	message: e.toString(),
+					// 	variant: 'error',
+					// });
+					// console.error('Error', e);
 				}
 			}
 		});
@@ -230,12 +231,13 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					try {
 						el._rowStyle += eval('(' + this.config._advanced?.rowCss + ')')(el);
 					} catch (e) {
-						libs.showToast(this, {
-							title: 'Error',
-							message: e.toString(),
-							variant: 'error',
-						});
-						console.error('Error', e);
+						// libs.showToast(this, {
+						// 	title: 'Error',
+						// 	message: e.toString(),
+						// 	variant: 'error',
+						// });
+						// console.error('Error', e);
+						this.config._errors = libs.formatCallbackErrorMessages(e,'table','Row Css Callback');
 					}
 				}
 			});
@@ -412,7 +414,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		try{
 			this.groupedRecords = this.config?._advanced?.groupingFunction !== undefined && this.config?._advanced?.groupingFunction !== '' ? this.config._advanced.groupingFunction(this,libs,result) : result;
 		}catch(e){
-			console.error(e);
+			// console.error(e);
+			this.config._errors = libs.formatCallbackErrorMessages(e,'table','Grouping Function Callback');
 			this.groupedRecords = result;
 		}
 		libs.getGlobalVar(this.cfg).groupedRecords = this.groupedRecords;
@@ -448,7 +451,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			try{
 				this.config._advanced = eval('['+this.config.advanced + ']')[0];
 			}catch(e){
-				console.error('Error',e);
+				// console.error('Error',e);
+				this.config._errors = libs.formatCallbackErrorMessages(e,'table','Table Advanced JSON');
 			}
 		}
 		this.defaultFields = this.defaultFields.length === 0 ? this.config.colModel.map(f => f.fieldName) : this.defaultFields;
@@ -460,7 +464,13 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		let tableWidth=0
 		this.config.colModel.forEach((item,index) => {
 			if(item.advanced !== undefined && item.advanced !== ''){
-				item._advanced =  eval('['+item.advanced+ ']')[0];
+				try{
+					item._advanced =  eval('['+item.advanced+ ']')[0];
+				}catch(e){
+					// console.error('Error',e);
+					let msg = libs.formatCallbackErrorMessages(e,'field',item.label + ' advanced JSON');
+					this.config._errors = this.config._errors ? this.config._errors + '</br>' +msg : msg;
+				}
 			}
 			// console.log('item', item);
 			if(this.config.enableColumnHeaderWrap){
@@ -652,7 +662,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						try{
 							this.config?._advanced?.afterEditCallback(this,libs,[r]);
 						}catch(e){
-							console.error("Error",e);
+							// console.error("Error",e);
+							this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Edit Callback');
 						}
 					}
 					Object.assign(globalItem, r);
@@ -841,7 +852,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				record = libs.findRecordWithChild(this.records,event.target.getAttribute('data-recid'));
 				let fn = this.config._advanced.rowCallback(this,libs,record, colName);
 			}catch(e){
-				console.error('Exception in row callback', e);
+				// console.error('Exception in row callback', e);
+				this.config._errors = libs.formatCallbackErrorMessages(e,'table','Row Callback');
 			}
 		}	
 
@@ -850,7 +862,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				if(record === undefined) record = libs.findRecordWithChild(this.records,event.target.getAttribute('data-recid'));
 				let fn = cItem._advanced.cellCallback(this,libs,this.calcRowIndex(rowId), colName,record);
 			}catch(e){
-				console.error('Exception in cell callback', e);
+				// console.error('Exception in cell callback', e);
+				this.config._errors = libs.formatCallbackErrorMessages(e,'table','Cell Callback');
 			}
 		}
 		//console.log('row click', event, colName, rowId);
@@ -1452,7 +1465,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				try{
 					this.config?._advanced?.afterEditCallback(this,libs,[this.records[this.config._bulkEdit.rowId]]);
 				}catch(e){
-					console.error("Error",e);
+					// console.error("Error",e);
+					this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Edit Callback');
 				}
 			}
 		} else {
@@ -1464,7 +1478,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				try{
 					this.config?._advanced?.afterEditCallback(this,libs,this.getSelectedRecords());
 				}catch(e){
-					console.error("Error",e);
+					// console.error("Error",e);
+					this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Edit Callback');
 				}
 			}
 		}
@@ -1509,8 +1524,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				libs.getGlobalVar(this.cfg).records = this.config.records;
 				this.changeRecord(draggedRecord.Id);
 				
-			} catch(err){
-				console.log('EXCEPTION', err);
+			} catch(e){
+				// console.log('EXCEPTION', err);
+				this.config._errors = libs.formatCallbackErrorMessages(e,'table','Records drag drop Callback');
 			}
 		}
 		console.log('records',this.records);
@@ -1560,8 +1576,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						try {
 							this.config.records = this.config._advanced?.afterloadTransformation(this, data[nodeName].records.length > 0 ? data[nodeName].records : []);
 							libs.getGlobalVar(this.cfg).records = this.config.records;
-						} catch(err){
-							console.log('EXCEPTION', err);
+						} catch(e){
+							// console.log('EXCEPTION', err);
+							this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Load Transformation Callback');
 						}
 					} else {
 						libs.getGlobalVar(this.cfg).records = data[nodeName].records.length > 0 ? data[nodeName].records : [];
@@ -1624,8 +1641,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 							try {
 								this.config.records = this.config._advanced?.afterloadTransformation(this, data[nodeName].records.length > 0 ? data[nodeName].records : []);
 								libs.getGlobalVar(this.cfg).records = this.config.records;
-							} catch(err){
-								console.log('EXCEPTION', err);
+							} catch(e){
+								// console.log('EXCEPTION', err);
+								this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Load Transformation Callback');
 							}
 						} else {
 							libs.getGlobalVar(this.cfg).records = data[nodeName].records.length > 0 ? data[nodeName].records : [];
