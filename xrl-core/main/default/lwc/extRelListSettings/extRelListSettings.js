@@ -273,6 +273,7 @@ export default class extRelListSettings extends LightningElement {
 		if(dataId === 'actionDeleteOpenConfirmation'){
 			this.dialogCfg = {
 				title: this.config._LABELS.title_deleteCustomAction,
+				headerStyle: 'slds-modal__header slds-theme_error',
 				contents: [
 					{
 						isMessage: true,
