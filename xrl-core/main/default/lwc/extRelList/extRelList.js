@@ -1198,9 +1198,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					field[param] = value;
 				}
 			}
-			const expandAction0 = this.config.dialog.listViewConfig.actions.find((el) => el.actionId === 'std:expand_view');
-			this.config._expandIcon = expandAction0.actionIconName;
-			this.config._expandTip = expandAction0.actionTip;
+			// const expandAction0 = this.config.dialog.listViewConfig.actions.find((el) => el.actionId === 'std:expand_view');
+			// this.config._expandIcon = expandAction0.actionIconName;
+			// this.config._expandTip = expandAction0.actionTip;
 		}
 		if (val === 'dialog:setFieldParam') {
 			let param = event.target.getAttribute('data-param');
