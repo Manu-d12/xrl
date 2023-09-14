@@ -102,7 +102,10 @@ export default class dataTableItem extends LightningElement {
 				return val!=null && val!=undefined ? this.formatNumber(val) : null;
 			}
 			if (this.col.type === 'percent') {
-				return val!=null && val!=undefined && typeof val === 'number' ?  this.formatNumber(val)+'%' : null;
+				if(val === null || val === undefined || val === '') return null;
+				else if(typeof val === 'number' || !isNaN(val)) return this.formatNumber(val)+'%';
+				return null;
+				// return val!=null && val!=undefined && typeof val === 'number' ?  this.formatNumber(val)+'%' : null;
 			}
 
 			if (this.col.type === 'currency') {
