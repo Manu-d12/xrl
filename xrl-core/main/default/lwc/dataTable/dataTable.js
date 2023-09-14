@@ -250,7 +250,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			let isPager = this.config.pager;
 			if(!this.config.pager.pagerTop && !this.config.pager.pagerBottom){
 				let startIndex = 0;
-				let endIndex = this.records.length > 201 ? 201 : this.records.length;
+				let endIndex = this.records.length > 201 ? 201 : this.records.length + 1;
 				let result = [];
 				for (let group of this.groupedRecords) {
 					if (startIndex > group.records[group.records.length - 1].index) continue;
