@@ -154,7 +154,7 @@ global with sharing class infrastructure {
 		return (system.test.isRunningTest() || result);
 	}
 
-	private static object getQuery(map < string, object > data) {
+	private static map < string, object > getQuery(map < string, object > data) {
 		map < string, object > result = new map < string, object > ();
 		string sObjApiName = (string) data.get('sObjApiName');
 		string relField = (string) data.get('relField');
