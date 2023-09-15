@@ -247,10 +247,10 @@
                     <div class="slds-scrollable_y" style="height:25rem;border:0.5px solid rgb(183, 180, 180);padding:4px;">
                         <ul class="slds-has-dividers_around-space">
                             <template if:true={config.sqlBuilder.orderings} for:each={config.sqlBuilder.orderings} for:item="field" for:index="index">
-                                <li class="slds-item" key={field.value} style="margin-top: 0px;padding:5px;">
+                                <li class="slds-item" key={field.value} style="margin-top: 0px;padding:5px;padding-right:13px;">
                                     <lightning-helptext class="placeTopItem" content={field.field.helpText}></lightning-helptext>
                                     &nbsp;{field.field.label} {field.sortOrder} {field.emptyField} 
-                                    <lightning-icon style="float:right;cursor:pointer" size="x-small" data-id="sqlBuilder:ordering:delete" data-val={field.field.fieldName} onclick={handleBuilderEvent} icon-name="utility:delete" alternative-text="Delete" title="Delete"></lightning-icon>
+                                    <lightning-icon style="float:right;cursor:pointer;margin-right:-10px" size="x-small" data-id="sqlBuilder:ordering:delete" data-val={field.field.fieldName} onclick={handleBuilderEvent} icon-name="utility:delete" alternative-text="Delete" title="Delete"></lightning-icon>
                                 </li>
                             </template>
                         </ul>
