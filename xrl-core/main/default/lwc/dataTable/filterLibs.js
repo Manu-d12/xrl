@@ -443,6 +443,9 @@ export let filterLibs = {
 			:record[filter.fieldName]
 			: getRefField(filter.fieldName);
 		// console.log(value);
+		if(filter.type === 'picklist'){
+			value = filter.options.find((el) => el.label === value)?.value;
+		}
 		if(filter.type==='currency'){
 			value = value !== undefined ? Number(value.toFixed(2)) : undefined;
 		}
