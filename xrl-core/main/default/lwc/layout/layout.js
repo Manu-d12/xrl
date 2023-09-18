@@ -91,20 +91,10 @@ export default class Layout extends NavigationMixin(LightningElement) {
 				});
 			}
 		});
-		// for (const key in message) {
-		// 	if(key === 'refresh'){
-		// 		if(message[key].includes('*')){
-		// 			console.log('Refreshing Whole Layout...');
-		// 			this.name = this.configId.replaceAll(':','');
-		// 			this.tabConfigName = this.name;
-		// 			this.loadCfg(true);
-		// 		}
-		// 	}
-		// }
 	}
 
 	setCustomLabels(cmd, data) {
-		console.log('CustomLabes are loaded', data[cmd]);
+		console.log('CustomLabels are loaded', data[cmd]);
 		this.config._LABELS = data[cmd];
 		this.LABELS = data[cmd];
 		libs.setGlobalVar('_LABELS', data[cmd]);
@@ -295,6 +285,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 			this.tabConfigName = this.name;
 			this.config.tabularConfig = JSON.parse(configData.userConfig);
 			this.config.rows = this.config.tabularConfig.tableDefinition.rows;
+			this.config.sObjApiName = configData?.listViews[0]?.sObjApiName;
 			this.config.cols = this.config.tabularConfig.tableDefinition.cols;
 			let colSize = 12 / parseInt(this.config.cols);
 			let sortedDataModel = this.config.tabularConfig.dataModel.toSorted((a, b) => {return a.cmpName === 'actionBar' ? 1 : 0;});
