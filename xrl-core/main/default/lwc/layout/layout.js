@@ -122,6 +122,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 	}
 	async getWholeConfig(cmd,data){
 		let jsonDetails = JSON.parse(JSON.stringify(data[cmd].listViews));
+		libs.getGlobalVar(this.tabConfigName).userInfo = data.userInfo;
 		if(jsonDetails[0].configType === 'Tabular'){
 			console.log('In Tabular');
 			this.handleTabularFormat(data[cmd]);
@@ -288,10 +289,27 @@ export default class Layout extends NavigationMixin(LightningElement) {
 			this.config.sObjApiName = configData?.listViews[0]?.sObjApiName;
 			this.config.cols = this.config.tabularConfig.tableDefinition.cols;
 			let colSize = 12 / parseInt(this.config.cols);
-			let sortedDataModel = this.config.tabularConfig.dataModel.toSorted((a, b) => {return a.cmpName === 'actionBar' ? 1 : 0;});
+			// let sortedDataModel = this.config.tabularConfig.dataModel.toSorted((a, b) => {return a.cmpName === 'actionBar' ? 1 : 0;});
+
+			let result;
+			let count = 0;
+			
+			await libs.remoteAction(this, 'query', {
+				isNeedDescribe: true,
+				sObjApiName: 'XRL__extRelListConfig__c',
+				addCondition: libs.replaceLiteralsInStr("Parent__r.uniqKey__c='" + this.configId +"'",this.name),
+				orderBy: 'ORDER BY loadIndex__c ASC NULLS LAST',
+				fields: ['Id','Name','listViewLabel__c','sObjApiName__c','uniqKey__c','relFieldApiName__c','loadIndex__c','JSON__c'],
+				callback: ((nodeName, data) => {
+					result = data[nodeName];
+				})
+			});
+			libs.getGlobalVar(this.tabConfigName).tabularConfig.dataModel = [];
 
 			// Loop through data model components
-			for (const cmp of sortedDataModel) {
+			for (let cmp of result?.records) {
+
+				cmp = JSON.parse(cmp.XRL__JSON__c);
 				
 				cmp.class = this.config.cols != 12 ? `slds-col slds-size_${cmp.colSize || colSize}-of-12` : 'slds-col slds-size_12-of-12';
 
@@ -320,7 +338,6 @@ export default class Layout extends NavigationMixin(LightningElement) {
 				// Set component configuration
 				this.name = cmp.uniqueName;
 				let configUniqueName = cmp.configUniqueName;
-				console.log('Name:', this.name);
 		
 				libs.setGlobalVar(this.name, {});
 				this.config = libs.getGlobalVar(this.name);
@@ -330,17 +347,22 @@ export default class Layout extends NavigationMixin(LightningElement) {
 
 				// Call getConfigById for DataTable or ServerSideFilter
 				if (cmp.isDataTable) {
-					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName,sObjApiName:this.config.sObjApiName || configUniqueName.split(':')[0], callback: this.setConfigTabular.bind(this) });
-					//await new Promise(resolve => setTimeout(resolve, 3000)); //this needs to debug, should work without timeout
+					let dtConfig = {
+						userConfig: JSON.stringify([cmp]),
+						userInfo: libs.getGlobalVar(this.tabConfigName).userInfo,
+						financial: configData?.Financial,
+						currency: configData?.currency,
+						describe: result.describe,
+						relField: result?.records[count].XRL__relFieldApiName__c
+					}
+					this.setConfigTabular(dtConfig);
 				} else if (cmp.isServerFilter) {
-					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, sObjApiName:this.config.sObjApiName || configUniqueName.split(':')[0] , callback: function(cmd, data) {
-						this.config.listViewConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
-						this.config.sObjApiName = this.config.sObjApiName || configUniqueName.split(':')[0];
-						this.config.relField = this.config.relField || configUniqueName.split(':')[1];
-						this.config.financial = (data[cmd].Financial) ? data[cmd].Financial : {};
-						this.config.describe = (data[cmd].describe) ? JSON.parse(data[cmd].describe) : {};
-						this.config.userInfo = (data.userInfo) ? data.userInfo : {};
-					} });
+					this.config.listViewConfig = (cmp) ? JSON.parse(JSON.stringify([cmp]).replace(/\s{2,}/g, ' ')) : [];
+					this.config.sObjApiName = result?.records[count].XRL__sObjApiName__c;
+					this.config.relField = result?.records[count].XRL__relFieldApiName__c;
+					this.config.financial = (configData?.Financial) ? configData?.Financial : {};
+					this.config.describe = (result.describe) ? JSON.parse(result.describe) : {};
+					this.config.userInfo = (libs.getGlobalVar(this.tabConfigName).userInfo) ? libs.getGlobalVar(this.tabConfigName).userInfo : {};
 				} else if (cmp.isChart) {
 					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
 						this.config.chartConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
@@ -350,16 +372,16 @@ export default class Layout extends NavigationMixin(LightningElement) {
 						this.config.chevronConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
 					} });
 				} else if (cmp.isActionBar) {
-					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
-						this.config.actionsBar = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
-						cmp.config = {
-							'actions': this.config.actionsBar?.actions || [],
-							'_handleEvent': this.handleEvent.bind(this),
-							'_cfgName': cmp.tableName,
-							'_barName': this.name
-						};
-					} });
+					this.config.actionsBar = (cmp) ? JSON.parse(JSON.stringify([cmp]).replace(/\s{2,}/g, ' ')) : [];
+					cmp.config = {
+						'actions': this.config.actionsBar[0]?.actions || [],
+						'_handleEvent': this.handleEvent.bind(this),
+						'_cfgName': cmp.tableName,
+						'_barName': this.name
+					};
 				}
+				libs.getGlobalVar(this.tabConfigName).tabularConfig.dataModel.push(cmp);
+				count++;
 			}
 	
 			// Set global configuration
@@ -372,14 +394,13 @@ export default class Layout extends NavigationMixin(LightningElement) {
 		}
 	}
 
-	async setConfigTabular(cmd, data) {
-		console.log(cmd, JSON.parse(JSON.stringify(data)), JSON.parse(JSON.stringify(data[cmd])));
-		libs.getGlobalVar(this.name).userInfo = data.userInfo;
-		libs.getGlobalVar(this.name).financial = data[cmd].Financial;
+	async setConfigTabular(dtConfig) {
+		libs.getGlobalVar(this.name).userInfo = dtConfig.userInfo;
+		libs.getGlobalVar(this.name).financial = dtConfig.Financial;
 		
-		this.config.listViewConfig = data[cmd].userConfig ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
-		this.config.currency = data[cmd].currency;
-		this.config.describe = data[cmd].describe ? JSON.parse(data[cmd].describe) : {};
+		this.config.listViewConfig = dtConfig.userConfig ? JSON.parse(dtConfig.userConfig.replace(/\s{2,}/g, ' ')) : [];
+		this.config.currency = dtConfig.currency;
+		this.config.describe = dtConfig.describe ? JSON.parse(dtConfig.describe) : {};
 		this.config.fields = [];
 		this.config.lockedFields = [];
 
@@ -418,8 +439,8 @@ export default class Layout extends NavigationMixin(LightningElement) {
 			this.config.fields.push(col.fieldName);
 		});
 		dataTableConfig.rowChecked = false;
-		this.config.relField = data[cmd].listViews[0].relField;
-		this.config.sObjApiName = data[cmd].listViews[0].sObjApiName;
+		this.config.relField = dtConfig.relField;
+		this.config.sObjApiName = libs.getGlobalVar(this.tabConfigName).sObjApiName;
 		this.config.records = [];
 		
 		console.log('this.config', JSON.parse(JSON.stringify(this.config)));
