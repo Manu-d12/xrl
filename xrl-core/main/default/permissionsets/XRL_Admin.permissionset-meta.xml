@@ -29,12 +29,22 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>extRelListConfig__c.Parent__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>extRelListConfig__c.isAdminConfig__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>extRelListConfig__c.listViewLabel__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>extRelListConfig__c.loadIndex__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
