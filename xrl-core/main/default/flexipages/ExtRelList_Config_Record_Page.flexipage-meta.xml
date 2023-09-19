@@ -32,7 +32,7 @@
         <componentInstances>
             <componentInstanceProperties>
                 <name>apiName</name>
-                <value>ExtRelList Configs::pqwqa15__extRelListConfig__c::pqwqa15__Parent__c</value>
+                <value>ExtRelList Configs::XRL__extRelListConfig__c::XRL__Parent__c</value>
             </componentInstanceProperties>
             <componentName>extRelList</componentName>
         </componentInstances>
