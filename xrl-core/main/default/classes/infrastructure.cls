@@ -324,7 +324,7 @@ global with sharing class infrastructure {
 		string uniqueName = (string) data.get('uniqueName');
 		string sObjApiName = (string) data.get('sObjApiName');
 		boolean isNeedDescribe = true;
-		string sObiApiNameFromView = 'Account';
+		string sObjApiNameFromView = 'Account'; // Kept default value to prevent any unexpected error if no sObjApiName is specified
 
 		map < string, object > result = new map < string, object > {};
 
@@ -341,14 +341,14 @@ global with sharing class infrastructure {
 				'relField' => item.relFieldApiName__c,
 				'configType' => item.configType__c
 			};
-			sObiApiNameFromView = item.sObjApiName__c;
+			sObjApiNameFromView = item.sObjApiName__c;
 			view.put('isUserConfig', true);
 			result.put('userConfig', item.JSON__c);
 			if (item.isAdminConfig__c) result.put('baseConfig', item.JSON__c);
 			listViews.add(view);
 		}
 		result.put('listViews', listViews);
-		sObjApiName = sObjApiName != null ? sObjApiName : sObiApiNameFromView;
+		sObjApiName = sObjApiName != null ? sObjApiName : sObjApiNameFromView;
 		result.putAll(getOtherConfigInfo(isNeedDescribe,sObjApiName));
 
 		return result;
