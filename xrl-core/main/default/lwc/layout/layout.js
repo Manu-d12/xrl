@@ -121,6 +121,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 		}
 	}
 	async getWholeConfig(cmd,data){
+		libs.getGlobalVar(this.name).describe = data[cmd].describe ? JSON.parse(data[cmd].describe) : {};
 		let jsonDetails = JSON.parse(JSON.stringify(data[cmd].listViews));
 		libs.getGlobalVar(this.tabConfigName).userInfo = data.userInfo;
 		if(jsonDetails[0].configType === 'Tabular'){
@@ -352,7 +353,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 						userInfo: libs.getGlobalVar(this.tabConfigName).userInfo,
 						financial: configData?.Financial,
 						currency: configData?.currency,
-						describe: result.describe,
+						describe: libs.getGlobalVar(this.tabConfigName).describe,
 						relField: result?.records[count].XRL__relFieldApiName__c
 					}
 					this.setConfigTabular(dtConfig);
@@ -361,7 +362,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 					this.config.sObjApiName = result?.records[count].XRL__sObjApiName__c;
 					this.config.relField = result?.records[count].XRL__relFieldApiName__c;
 					this.config.financial = (configData?.Financial) ? configData?.Financial : {};
-					this.config.describe = (result.describe) ? JSON.parse(result.describe) : {};
+					this.config.describe = libs.getGlobalVar(this.tabConfigName).describe;
 					this.config.userInfo = (libs.getGlobalVar(this.tabConfigName).userInfo) ? libs.getGlobalVar(this.tabConfigName).userInfo : {};
 				} else if (cmp.isChart) {
 					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
@@ -400,7 +401,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 		
 		this.config.listViewConfig = dtConfig.userConfig ? JSON.parse(dtConfig.userConfig.replace(/\s{2,}/g, ' ')) : [];
 		this.config.currency = dtConfig.currency;
-		this.config.describe = dtConfig.describe ? JSON.parse(dtConfig.describe) : {};
+		this.config.describe = dtConfig.describe ? dtConfig.describe : {};
 		this.config.fields = [];
 		this.config.lockedFields = [];
 

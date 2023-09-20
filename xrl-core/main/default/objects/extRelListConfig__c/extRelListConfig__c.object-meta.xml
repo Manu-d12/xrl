@@ -276,7 +276,16 @@
         
     </nameField>
     <pluralLabel>ExtRelList Configs</pluralLabel>
-    <searchLayouts/>
+    <searchLayouts>
+        <searchResultsAdditionalFields>sObjApiName__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>relFieldApiName__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>isAdminConfig__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>listViewName__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Is_Active__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>listViewLabel__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>uniqKey__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>Parent__c</searchResultsAdditionalFields>
+    </searchLayouts>
     <sharingModel>Private</sharingModel>
     <startsWith>Vowel</startsWith>
     <visibility>Public</visibility>
