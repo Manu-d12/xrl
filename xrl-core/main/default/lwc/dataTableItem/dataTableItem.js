@@ -93,13 +93,22 @@ export default class dataTableItem extends LightningElement {
 				}
 			}
 			if (this.col.type === 'number') {
-				return val!=null && val!=undefined ? this.formatNumber(val) : null;
+				if(val === null || val === undefined || val === '') return null;
+				else if(typeof val === 'number' || !isNaN(val)) return this.formatNumber(val);
+				return null;
+				// return val!=null && val!=undefined ? this.formatNumber(val) : null;
 			}
 			if (this.col.type === 'double') {
-				return val!=null && val!=undefined ? this.formatNumber(val) : null;
+				if(val === null || val === undefined || val === '') return null;
+				else if(typeof val === 'number' || !isNaN(val)) return this.formatNumber(val);
+				return null;
+				// return val!=null && val!=undefined ? this.formatNumber(val) : null;
 			}
 			if (this.col.type === 'int') {
-				return val!=null && val!=undefined ? this.formatNumber(val) : null;
+				if(val === null || val === undefined || val === '') return null;
+				else if(typeof val === 'number' || !isNaN(val)) return this.formatNumber(val);
+				return null;
+				// return val!=null && val!=undefined ? this.formatNumber(val) : null;
 			}
 			if (this.col.type === 'percent') {
 				if(val === null || val === undefined || val === '') return null;
