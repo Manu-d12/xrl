@@ -298,7 +298,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 			await libs.remoteAction(this, 'query', {
 				isNeedDescribe: true,
 				sObjApiName: 'XRL__extRelListConfig__c',
-				addCondition: libs.replaceLiteralsInStr("Parent__r.uniqKey__c='" + this.configId +"'",this.name),
+				addCondition: libs.replaceLiteralsInStr("Parent__r.uniqKey__c='" + this.configId +"' AND Is_Active__c = true",this.name),
 				orderBy: 'ORDER BY loadIndex__c ASC NULLS LAST',
 				fields: ['Id','Name','listViewLabel__c','sObjApiName__c','uniqKey__c','relFieldApiName__c','loadIndex__c','JSON__c'],
 				callback: ((nodeName, data) => {
@@ -311,6 +311,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 			for (let cmp of result?.records) {
 
 				cmp = JSON.parse(cmp.XRL__JSON__c);
+				cmp.uniqueName = result?.records[count].XRL__uniqKey__c.split(':')[3] !== undefined ? result?.records[count].XRL__uniqKey__c.split(':')[3] : result?.records[count].XRL__uniqKey__c.split(':')[0];
 				
 				cmp.class = this.config.cols != 12 ? `slds-col slds-size_${cmp.colSize || colSize}-of-12` : 'slds-col slds-size_12-of-12';
 
@@ -365,9 +366,10 @@ export default class Layout extends NavigationMixin(LightningElement) {
 					this.config.describe = libs.getGlobalVar(this.tabConfigName).describe;
 					this.config.userInfo = (libs.getGlobalVar(this.tabConfigName).userInfo) ? libs.getGlobalVar(this.tabConfigName).userInfo : {};
 				} else if (cmp.isChart) {
-					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
-						this.config.chartConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
-					} });
+					// await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
+					// 	this.config.chartConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
+					// } });
+					this.config.chartConfig = (cmp) ? JSON.parse(JSON.stringify([cmp]).replace(/\s{2,}/g, ' '))[0] : [];
 				} else if (cmp.isChevron) {
 					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
 						this.config.chevronConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
