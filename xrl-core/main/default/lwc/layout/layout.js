@@ -543,6 +543,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 			let index = 0;
 
 			try {
+				this.config.isExceptionInRemoteAction = false;
 				while (index < records.length) {
 					let chunk = records.slice(index, records[(parseInt(index) + parseInt(deleteChunk))] ? (parseInt(index) + parseInt(deleteChunk)) : (records.length));
 					index += records[(parseInt(index) + parseInt(deleteChunk))] ? parseInt(deleteChunk) : (records.length);
@@ -550,15 +551,17 @@ export default class Layout extends NavigationMixin(LightningElement) {
 					chunk = this.stripChunk(chunk);
 					await libs.remoteAction(this, 'delRecords', { records: chunk, sObjApiName: table.sObjApiName });
 				}
-				libs.showToast(this, {
-					title: 'Success',
-					message: this.config._LABELS.msg_successfullyDeleted,
-					variant: 'success'
-				});
-				let recIds = records.map(r => r.Id);
-				table.records = table.records.filter(rec => !recIds.includes(rec.Id));
-				table.listViewConfig[0].records = table.records;
-				table.listViewConfig[0]._updateView();
+				if(!this.config.isExceptionInRemoteAction){
+					libs.showToast(this, {
+						title: 'Success',
+						message: this.config._LABELS.msg_successfullyDeleted,
+						variant: 'success'
+					});
+					let recIds = records.map(r => r.Id);
+					table.records = table.records.filter(rec => !recIds.includes(rec.Id));
+					table.listViewConfig[0].records = table.records;
+					table.listViewConfig[0]._updateView();
+				}
 			} catch (error) {
 				console.log(error);
 			}
