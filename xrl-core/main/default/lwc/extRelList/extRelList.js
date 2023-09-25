@@ -639,8 +639,57 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			// });
 		}
 	}
-	processFile(file){
+	async processFile(file){
 		console.log('sObjApiName',file.sObjApiName);
+		if(!(file.sObjApiName.includes('extRelListConfig__c') && this.config.sObjApiName.includes('extRelListConfig__c'))) return;
+		this.config.namespace = 'XRL';
+		let recordsWithParents = [];
+		let recordsWithoutParents = [];
+		//storing with parent and without parent records in different array as we need to insert without parents records first to get the records Id.
+		file.records.forEach((record) => {
+			delete record.Id;
+			if(record[this.config.namespace +'__Parent__c'] === undefined) {
+				recordsWithoutParents.push(record);
+			}else{
+				recordsWithParents.push(record);
+			}
+		});
+		//saving the without parent records
+		await libs.remoteAction(this, 'saveRecords', { records: recordsWithoutParents, 
+			sObjApiName: this.config.sObjApiName,
+			isInsert: true,
+			callback: function(nodename,data){
+				console.log('saved without parents', data[nodename].records);
+				recordsWithoutParents = data[nodename].records;
+				libs.showToast(this,{
+					title: 'Success',
+					message: 'Successfully inserted without parent '+ recordsWithoutParents.length +' records.',
+					variant: 'success'
+				});
+			}
+		});
+		// updating the with parent records with new parent__c Id
+		recordsWithParents.forEach((record) => {
+			let newParentRecord = recordsWithoutParents.find((el) => el[this.config.namespace + '__uniqKey__c'] === record[this.config.namespace +'__Parent__r'][this.config.namespace +'__uniqKey__c']);
+			if(newParentRecord !== undefined){
+				record[this.config.namespace +'__Parent__c'] = newParentRecord.Id;
+			}else{
+				delete record[this.config.namespace +'__Parent__c'];
+			}
+		});
+		//now updating the with parent records with the new parent Id
+		await libs.remoteAction(this, 'saveRecords', { records: recordsWithParents, 
+			sObjApiName: this.config.sObjApiName,
+			isInsert: true,
+			callback: function(nodename,data){
+				console.log('saved with parents', data[nodename].records);
+				libs.showToast(this,{
+					title: 'Success',
+					message: 'Successfully inserted with parent '+ data[nodename].records.length +' records.',
+					variant: 'success'
+				});
+			}
+		});
 	}
 
 	dragOverHandler(ev) {
