@@ -574,7 +574,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 					type: 'standard__objectPage',
 					attributes: {
 						/*recordId: this.recordId, // pass the record id here.*/
-						objectApiName: action?.sObjApiName ? action?.sObjApiName : this.config.tabularConfig.sObjApiName,
+						objectApiName: action?.sObjApiName ? action?.sObjApiName : this.config.sObjApiName,
 						actionName: 'new',
 					},
 					state: {
