@@ -575,7 +575,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 					table.listViewConfig[0]._updateView();
 					libs.showToast(this, {
 						title: 'Success',
-						message: this.config._LABELS.msg_successfullyDeleted,
+						message: successFullyDeletedRecordIds.length + ' records deleted successfully',
 						variant: 'success'
 					});
 				}
