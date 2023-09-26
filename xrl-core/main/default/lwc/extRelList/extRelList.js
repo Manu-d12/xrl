@@ -612,7 +612,6 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	dropHandler(ev) {
-		console.log("File(s) dropped");
 		
 		// Prevent default behavior (Prevent file from being opened)
 		ev.preventDefault();
@@ -625,9 +624,20 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			// If dropped items aren't files, reject them
 			if (item.kind === "file") {
 				const file = item.getAsFile();
+
+				// will not process if the file is not JSON
+				if(file.type !== "application/json"){
+					libs.showToast(this,{
+						title: 'Error',
+						message: 'Only accepts JSON files',
+						variant: 'error'
+					});
+					return;
+				}
+
 				const reader = new FileReader();
 				reader.addEventListener('load', (event) => {
-					this.processFile(JSON.parse(event.target.result));
+					this.processFile(JSON.parse(event.target.result)); //sending only the file contents not file metadata
 				});
 				reader.readAsText(file);
 			}
@@ -640,8 +650,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 	}
 	async processFile(file){
-		console.log('sObjApiName',file.sObjApiName);
-		if(!(file.sObjApiName.includes('extRelListConfig__c') && this.config.sObjApiName.includes('extRelListConfig__c'))) return;
+		if(!(file?.sObjApiName.includes('extRelListConfig__c') && this.config.sObjApiName.includes('extRelListConfig__c'))) return;
 		this.config.namespace = 'XRL';
 		let recordsWithParents = [];
 		let recordsWithoutParents = [];
@@ -693,11 +702,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	dragOverHandler(ev) {
-		console.log("File(s) in drop zone");
-	  
 		// Prevent default behavior (Prevent file from being opened)
 		ev.preventDefault();
-	  }
+	}
 
 	resetChangedRecords(validatedRecordSize) {
 		if(this.template.querySelector('c-Data-Table') && (validatedRecordSize - this.config.countOfFailedRecords) > 0){
