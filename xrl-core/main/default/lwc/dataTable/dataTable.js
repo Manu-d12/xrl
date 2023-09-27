@@ -602,6 +602,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		}
 		this.config._originalURL = window.location.href;
 		this.config._isShowRowCallbackTooltip = this.config._advanced?.rowCallback !== undefined;
+		this.config._rowCallbackTooltipText = this.config._advanced?.rowCallbackTooltipText ?? this.config._LABELS.msg_rowCallbackEnabled; //added this so if rowCallback not defined it will use the default one.
 	}
 	get isCheckboxDisabled(){
 		return this.config?._advanced?.isSelectAllDisabled;

@@ -76,7 +76,7 @@
 							
 							<!-- Here _addSpace will be true because _addSpace is true only for the 0th column, so the tooltip will not show each for each column -->
 							<p if:true={hItem._addSpace}><span if:true={config._isShowRowCallbackTooltip} class="spnTooltip">
-									<strong>{config._LABELS.msg_rowCallbackEnabled}</strong>
+									<strong>{config._rowCallbackTooltipText}</strong>
 								</span>
 							</p>
 							<span if:false={hItem.isActions} class="slds-grid slds-grid_align-spread">
@@ -290,7 +290,7 @@
 							<td for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="hIndex" key={hItem.Id} data-recid={dItem.Id} role="gridcell" data-rowind={index} data-rowid={dItem.Id} data-colname={hItem.fieldName} ondblclick={rowDblCallback} class={hItem._cellCss}>
 								<!-- Here _addSpace will be true because _addSpace is true only for the 0th column, so the tooltip will not show each for each column -->
 								<p if:true={hItem._addSpace}><span if:true={config._isShowRowCallbackTooltip} class="spnTooltip">
-										<strong>{config._LABELS.msg_rowCallbackEnabled}</strong>
+										<strong>{config._rowCallbackTooltipText}</strong>
 									</span>
 								</p>
 								<span if:false={hItem.isActions} data-groupind={group.title} data-rowid={dItem.Id} class="slds-grid slds-grid_align-spread">
