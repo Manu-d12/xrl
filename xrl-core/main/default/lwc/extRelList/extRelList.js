@@ -292,13 +292,14 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		const expandAction = this.config.listViewConfig[0].actions.find((el) => el.actionId === 'std:expand_view');
 		this.config._expandIcon = expandAction.actionIconName;
 		this.config._expandTip = expandAction.actionTip;
-		if(this.isFullscreen){
-			// expandAction.actionTip = this.config._LABELS.lbl_collapseView;
-			expandAction.actionTip = this.config._LABELS.title_expandView.split('/')[1];
-			expandAction.actionIconName = this.config._expandIcon.split('/')[1];
-		}else{
-			expandAction.actionTip = this.config._LABELS.title_expandView.split('/')[0];
-			expandAction.actionIconName = this.config._expandIcon.split('/')[0];
+		try{
+			const labels = this.config._LABELS !== undefined ? this.config._LABELS.title_expandView.split('/') : 'Expand View / Collapse View'.split('/');
+			const icons = this.config._LABELS !== undefined ? this.config._expandIcon.split('/') : "utility:expand/utility:contract".split('/');
+
+			expandAction.actionTip = this.isFullscreen ? labels[1] : labels[0];
+			expandAction.actionIconName = this.isFullscreen ? icons[1] : icons[0];
+		}catch(e){
+			console.error(e);
 		}
 		this.config.actionsBar = {
 			'actions':this.config.listViewConfig[0].actions,
