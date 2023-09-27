@@ -73,6 +73,12 @@
 							<!-- <lightning-button-icon if:false={dItem._hasChildRecords} icon-name="utility:dash"  variant="bare" alternative-text={config._LABELS.altTxt_expand} title={config._LABELS.title_expand} onclick={toggleGroup}></lightning-button-icon> -->
 						</td>
 						<td for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="hIndex" data-recid={dItem.Id} key={hItem.fieldName} role="gridcell" data-rowind={index} data-colname={hItem.fieldName} onclick={rowCallback} ondblclick={rowDblCallback} style={dItem._cellCss}>
+							
+							<!-- Here _addSpace will be true because _addSpace is true only for the 0th column, so the tooltip will not show each for each column -->
+							<p if:true={hItem._addSpace}><span if:true={config._isShowRowCallbackTooltip} class="spnTooltip">
+									<strong>{config._rowCallbackTooltipText}</strong>
+								</span>
+							</p>
 							<span if:false={hItem.isActions} class="slds-grid slds-grid_align-spread">
 
 								<!--<lightning-input if:true={hItem.isEditable} type={hItem.type} field-level-help={hItem.inlineHelpText} data-rowind={index} data-colname={hItem.fieldName} onchange={inlineEdit}></lightning-input>-->
@@ -282,6 +288,11 @@
 								&nbsp;
 							</td> -->
 							<td for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="hIndex" key={hItem.Id} data-recid={dItem.Id} role="gridcell" data-rowind={index} data-rowid={dItem.Id} data-colname={hItem.fieldName} ondblclick={rowDblCallback} class={hItem._cellCss}>
+								<!-- Here _addSpace will be true because _addSpace is true only for the 0th column, so the tooltip will not show each for each column -->
+								<p if:true={hItem._addSpace}><span if:true={config._isShowRowCallbackTooltip} class="spnTooltip">
+										<strong>{config._rowCallbackTooltipText}</strong>
+									</span>
+								</p>
 								<span if:false={hItem.isActions} data-groupind={group.title} data-rowid={dItem.Id} class="slds-grid slds-grid_align-spread">
 									<template if:true={hItem.isNameField}>
 										<c-data-Table-Item if:false={dItem._isEditable} row={dItem} col={hItem} data-rowind={index} data-colname={hItem.fieldName} data-recordind={dItem.Id} cfg={cfg} class={hItem.wrapClass} style="width:100%" onmouseenter={showPop} onmouseleave={hidePop}></c-data-Table-Item>
