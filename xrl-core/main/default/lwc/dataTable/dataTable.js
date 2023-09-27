@@ -601,6 +601,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			libs.getGlobalVar(this.cfg).groupedRecords = undefined;
 		}
 		this.config._originalURL = window.location.href;
+		this.config._isShowRowCallbackTooltip = this.config._advanced?.rowCallback !== undefined;
 	}
 	get isCheckboxDisabled(){
 		return this.config?._advanced?.isSelectAllDisabled;

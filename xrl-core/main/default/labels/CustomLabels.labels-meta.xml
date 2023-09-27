@@ -2277,4 +2277,12 @@ return records;
         <shortDescription>altTxt_cancelRecordSave</shortDescription>
         <value>Discard the record changes</value>
     </labels>
+    <labels>
+        <fullName>msg_rowCallbackEnabled</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>altTxt_camsg_rowCallbackEnabledncelRecordSave</shortDescription>
+        <value>Row Callback enabled</value>
+    </labels>
 </CustomLabels>
