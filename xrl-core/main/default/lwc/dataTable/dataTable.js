@@ -591,7 +591,10 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		}
 		else{
 			this.config.pager.curPage = 1;
-			this.config.pager.pageSize = '20';
+			if(libs.getLocalStorageVar(this.cfg+'pageSize') === null){
+				libs.setLocalStorageVar(this.cfg+'pageSize','20');
+			}
+			this.config.pager.pageSize = libs.getLocalStorageVar(this.cfg+'pageSize');
 		}
 		this.setNumPages(this.config.pager.pageSize);
 
@@ -1384,13 +1387,14 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			if (fieldName === ':pagerPageSize') {
 				this.config.pager.curPage = 1,
 				this.config.pager.pageSize = value;
+				libs.setLocalStorageVar(this.cfg+'pageSize',this.config.pager.pageSize);
 				
 				this.setNumPages(value);
 				// this.config.pager.pageSize = value;
 			}
 			if (fieldName === ':pagerCurPage') {
 				
-				this.config.pager.curPage = value;
+				this.config.pager.curPage = parseInt(value);
 				if (value <= 1) this.config.pager.curPage = 1;
 				if (value > this.config.pager.numPages) this.config.pager.curPage = this.config.pager.numPages;
 			}
