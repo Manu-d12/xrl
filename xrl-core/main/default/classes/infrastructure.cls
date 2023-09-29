@@ -523,6 +523,7 @@ global with sharing class infrastructure {
 		sObject[] records = (sObject[]) JSON.deserialize(JSON.serialize(data.get('records')), T);
 
 		map < string, object > result = new map < string, object > ();
+		string[] errorsList = new List<String>();
 		Savepoint sp = Database.setSavepoint();
 		try{
 			Database.DeleteResult[] srs = Database.delete(records, isRollback);
@@ -532,7 +533,8 @@ global with sharing class infrastructure {
 					for (Database.Error err : sr.getErrors()) {
 						// if(isRollback == true)
 						// 	Database.rollback(sp);
-						throw new InfrastructureException(null,String.valueOf(err.getStatusCode()) + ': ' + err.getMessage() , Infrastructure.exceptionType.GENERAL);
+						errorsList.add(String.valueOf(sr.getId() + ': ' +err.getStatusCode()) + ': ' + err.getMessage());
+						// throw new InfrastructureException(null,String.valueOf(err.getStatusCode()) + ': ' + err.getMessage() , Infrastructure.exceptionType.GENERAL);
 					}
 				}
 			}
@@ -540,7 +542,9 @@ global with sharing class infrastructure {
 			Database.rollback(sp);
 			throw new InfrastructureException(null,String.valueOf(e.getMessage()) , Infrastructure.exceptionType.GENERAL);
 		}
-		return records;
+		result.put('listOfErrors',errorsList);
+		result.put('records', records);
+		return result;
 	}
 
 	private static object cloneRecords(map < string, object > data) {

@@ -298,7 +298,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 			await libs.remoteAction(this, 'query', {
 				isNeedDescribe: true,
 				sObjApiName: 'XRL__extRelListConfig__c',
-				addCondition: libs.replaceLiteralsInStr("Parent__r.uniqKey__c='" + this.configId +"'",this.name),
+				addCondition: libs.replaceLiteralsInStr("Parent__r.uniqKey__c='" + this.configId +"' AND Is_Active__c = true",this.name),
 				orderBy: 'ORDER BY loadIndex__c ASC NULLS LAST',
 				fields: ['Id','Name','listViewLabel__c','sObjApiName__c','uniqKey__c','relFieldApiName__c','loadIndex__c','JSON__c'],
 				callback: ((nodeName, data) => {
@@ -311,6 +311,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 			for (let cmp of result?.records) {
 
 				cmp = JSON.parse(cmp.XRL__JSON__c);
+				cmp.uniqueName = result?.records[count].XRL__uniqKey__c.split(':')[3] !== undefined ? result?.records[count].XRL__uniqKey__c.split(':')[3] : result?.records[count].XRL__uniqKey__c.split(':')[0];
 				
 				cmp.class = this.config.cols != 12 ? `slds-col slds-size_${cmp.colSize || colSize}-of-12` : 'slds-col slds-size_12-of-12';
 
@@ -365,9 +366,10 @@ export default class Layout extends NavigationMixin(LightningElement) {
 					this.config.describe = libs.getGlobalVar(this.tabConfigName).describe;
 					this.config.userInfo = (libs.getGlobalVar(this.tabConfigName).userInfo) ? libs.getGlobalVar(this.tabConfigName).userInfo : {};
 				} else if (cmp.isChart) {
-					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
-						this.config.chartConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
-					} });
+					// await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
+					// 	this.config.chartConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
+					// } });
+					this.config.chartConfig = (cmp) ? JSON.parse(JSON.stringify([cmp]).replace(/\s{2,}/g, ' '))[0] : [];
 				} else if (cmp.isChevron) {
 					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
 						this.config.chevronConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
@@ -539,24 +541,44 @@ export default class Layout extends NavigationMixin(LightningElement) {
 
 			let deleteChunk = action.chunkSize ? action.chunkSize : 200;
 			let index = 0;
+			this.config.errorList = [];
 
 			try {
+				this.config.isExceptionInRemoteAction = false;
 				while (index < records.length) {
 					let chunk = records.slice(index, records[(parseInt(index) + parseInt(deleteChunk))] ? (parseInt(index) + parseInt(deleteChunk)) : (records.length));
 					index += records[(parseInt(index) + parseInt(deleteChunk))] ? parseInt(deleteChunk) : (records.length);
 
 					chunk = this.stripChunk(chunk);
-					await libs.remoteAction(this, 'delRecords', { records: chunk, sObjApiName: table.sObjApiName });
+					await libs.remoteAction(this, 'delRecords', { records: chunk, sObjApiName: table.sObjApiName,callback: function(nodename,data){
+						this.config.errorList = this.config.errorList.concat(data[nodename].listOfErrors);
+					} });
 				}
-				libs.showToast(this, {
-					title: 'Success',
-					message: this.config._LABELS.msg_successfullyDeleted,
-					variant: 'success'
-				});
 				let recIds = records.map(r => r.Id);
-				table.records = table.records.filter(rec => !recIds.includes(rec.Id));
-				table.listViewConfig[0].records = table.records;
-				table.listViewConfig[0]._updateView();
+				const errorIds = [];
+				this.config.errorList.forEach((el) => {
+					errorIds.push(el.split(':')[0]); //getting the IDs of the records that caused the error
+				});
+				if(errorIds.length === 0) {
+					libs.showToast(this, {
+						title: 'Success',
+						message: this.config._LABELS.msg_successfullyDeleted,
+						variant: 'success'
+					});
+					table.records = table.records.filter(rec => !recIds.includes(rec.Id));
+					table.listViewConfig[0].records = table.records;
+					table.listViewConfig[0]._updateView();
+				}else{
+					let successFullyDeletedRecordIds = records.filter(rec => !errorIds.includes(rec.Id));
+					table.records = table.records.filter(rec => !successFullyDeletedRecordIds.includes(rec.Id));
+					table.listViewConfig[0].records = table.records;
+					table.listViewConfig[0]._updateView();
+					libs.showToast(this, {
+						title: 'Success',
+						message: successFullyDeletedRecordIds.length + ' records deleted successfully',
+						variant: 'success'
+					});
+				}
 			} catch (error) {
 				console.log(error);
 			}
