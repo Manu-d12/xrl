@@ -667,7 +667,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		//saving the without parent records
 		await libs.remoteAction(this, 'saveRecords', { records: recordsWithoutParents, 
 			sObjApiName: this.config.sObjApiName,
-			isInsert: true,
+			uniqueFieldNameForUpsert: this.config.namespace +'__extRelListConfig__c.'+ this.config.namespace +'__uniqKey__c',
 			callback: function(nodename,data){
 				console.log('saved without parents', data[nodename].records);
 				recordsWithoutParents = data[nodename].records;
@@ -688,18 +688,20 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			}
 		});
 		//now updating the with parent records with the new parent Id
-		await libs.remoteAction(this, 'saveRecords', { records: recordsWithParents, 
-			sObjApiName: this.config.sObjApiName,
-			isInsert: true,
-			callback: function(nodename,data){
-				console.log('saved with parents', data[nodename].records);
-				libs.showToast(this,{
-					title: 'Success',
-					message: 'Successfully inserted with parent '+ data[nodename].records.length +' records.',
-					variant: 'success'
-				});
-			}
-		});
+		if(recordsWithParents.length > 0){
+			await libs.remoteAction(this, 'saveRecords', { records: recordsWithParents, 
+				sObjApiName: this.config.sObjApiName,
+				uniqueFieldNameForUpsert: this.config.namespace +'__extRelListConfig__c.'+ this.config.namespace +'__uniqKey__c',
+				callback: function(nodename,data){
+					console.log('saved with parents', data[nodename].records);
+					libs.showToast(this,{
+						title: 'Success',
+						message: 'Successfully inserted with parent '+ data[nodename].records.length +' records.',
+						variant: 'success'
+					});
+				}
+			});
+		}
 	}
 
 	dragOverHandler(ev) {
