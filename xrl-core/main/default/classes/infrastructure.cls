@@ -18,7 +18,7 @@ global with sharing class infrastructure {
 		if (isDebug == true) data.remove('isDebug');
 		try {
 			Organization orgDetails = [SELECT Id, InstanceName, IsSandbox, Name, OrganizationType FROM Organization];
-			if(orgDetails.OrganizationType != 'Developer Edition' && !isUserLicensed()){
+			if(orgDetails.OrganizationType != 'Developer Edition' && !orgDetails.IsSandbox && !isUserLicensed()){
 				throw new InfrastructureException(null,label.msg_packageLicenseExpired, Infrastructure.exceptionType.GENERAL);
 			}
 
@@ -146,6 +146,7 @@ global with sharing class infrastructure {
 	}
 	private static boolean isUserLicensed(){
 		boolean result = false;
+		System.debug('Checing License');
 		try{
 			result = UserInfo.isCurrentUserLicensed('XRL');
 		}catch(Exception e){
