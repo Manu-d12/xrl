@@ -1745,6 +1745,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				message: event.detail.errors[0].message,
 				variant: 'error'
     		});
+			delete this.config.flowApiName;
+			delete this.config.flowInputVariables;
 		}
 		if(event.detail.status === 'STARTED') {
 			this.config.flowApiClass = "slds-modal__container slds-scrollable_y";
