@@ -34,21 +34,6 @@
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
-                <componentInstanceProperties>
-                    <name>apiName</name>
-                    <value>ExtRelList Configs::XRL__extRelListConfig__c::XRL__Parent__c</value>
-                </componentInstanceProperties>
-                <componentName>extRelList</componentName>
-                <identifier>XRL_extRelList</identifier>
-            </componentInstance>
-        </itemInstances>
-        <mode>Replace</mode>
-        <name>relatedTabContent</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-    <flexiPageRegions>
-        <itemInstances>
-            <componentInstance>
                 <componentName>force:detailPanel</componentName>
                 <identifier>force_detailPanel</identifier>
             </componentInstance>
