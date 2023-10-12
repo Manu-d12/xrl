@@ -179,6 +179,7 @@ export default class ComparingInterface extends LightningElement {
                 this.config.userSelections[selectedFor].push(el);
             }
         });
+        libs.getGlobalVar(this.config.json.dataTable.uniqueName).userSelections = JSON.parse(JSON.stringify(this.config.userSelections)); //need to store to to use it in the callbacks
     }
     //handling all the events here
     handleEvent(event){
