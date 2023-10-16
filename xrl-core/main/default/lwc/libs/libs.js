@@ -555,6 +555,9 @@ export let libs = {
 				if (!formattedErrMsg.includes('License is expired') && !formattedErrMsg.includes('Permission Set')) {
 					scope.dispatchEvent(event);
 				}
+				else if(formattedErrMsg.includes('Permission Set')){
+					scope.config._tableLevelErrors = '<b>XRL:</b> No permission set assigned';
+				}
 			} else {
 				if (typeof(params.callback) === 'function') {
 					params.callback.bind(scope)(cmd + 'Result', result);

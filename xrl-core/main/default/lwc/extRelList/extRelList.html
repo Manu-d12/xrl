@@ -1,5 +1,6 @@
 <template>
 	<lightning-card class=" slds-card_boundary" style="padding:5px; display:block" id="drop_zone" ondrop={dropHandler} ondragover={dragOverHandler}>
+		<lightning-formatted-rich-text if:true={config._tableLevelErrors} value={config._tableLevelErrors}></lightning-formatted-rich-text>
 		<template if:true={config._LABELS}>
 			<div class="slds-grid slds-wrap">
 				<div class="slds-col slds-grow-none slds-col_bump-right">
