@@ -4,16 +4,17 @@
       "path": "xrl-core",
       "default": true,
       "package": "Extended Related List",
-      "versionName": "3.99.7 PreRelease",
       "versionDescription": "Initial release",
-      "versionNumber": "3.99.7.NEXT",
+      "postInstallScript": "postInstallClass",
+      "versionName": "3.103.1 Release",
+      "versionNumber": "3.103.1.NEXT",
       "definitionFile": "config/scratch-org-def.json",
       "ancestorVersion": "HIGHEST"
     }
   ],
   "namespace": "XRL",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "57.0",
+  "sourceApiVersion": "58.0",
   "packageAliases": {
     "Extended Related List": "0Ho8d000000GmmCCAS",
     "Extended Related List@1.0.0-1": "04t8d000000lEWPAA2",
@@ -296,6 +297,25 @@
     "Extended Related List@3.99.3-1": "04t8d000000lotdAAA",
     "Extended Related List@3.99.4-1": "04t8d000000lou2AAA",
     "Extended Related List@3.99.5-1": "04t8d000000lou7AAA",
-    "Extended Related List@3.99.6-1": "04t8d000000louMAAQ"
+    "Extended Related List@3.99.6-1": "04t8d000000louMAAQ",
+    "Extended Related List@3.99.7-1": "04t8d000000louRAAQ",
+    "Extended Related List@3.99.8-1": "04t8d000000louWAAQ",
+    "Extended Related List@3.99.9-1": "04t8d000000loulAAA",
+    "Extended Related List@3.100.0-1": "04t8d000000lp87AAA",
+    "Extended Related List@3.100.1-1": "04t8d000000lp8CAAQ",
+    "Extended Related List@3.100.2-1": "04t8d000000lpCtAAI",
+    "Extended Related List@3.100.3-1": "04t8d000000lpPgAAI",
+    "Extended Related List@3.100.4-1": "04t8d000000lpYBAAY",
+    "Extended Related List@3.100.4-2": "04t8d000000lpcOAAQ",
+    "Extended Related List@3.100.5-1": "04t8d000000lpcTAAQ",
+    "Extended Related List@3.100.6-1": "04t8d000000lpcYAAQ",
+    "Extended Related List@3.100.7-1": "04t8d000000lpcdAAA",
+    "Extended Related List@3.100.8-1": "04t8d000000lptnAAA",
+    "Extended Related List@3.101.0-1": "04t8d000000lpyKAAQ",
+    "Extended Related List@3.101.1-1": "04t8d000000lq3pAAA",
+    "Extended Related List@3.101.2-1": "04t8d000000lq8bAAA",
+    "Extended Related List@3.102.0-1": "04t8d000000lq9eAAA",
+    "Extended Related List@3.103.0-1": "04t8d000000lq9oAAA",
+    "Extended Related List@3.103.1-1": "04t8d000000lqmVAAQ"
   }
 }
