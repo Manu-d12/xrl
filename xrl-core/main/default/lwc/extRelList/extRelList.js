@@ -1738,7 +1738,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 	handleFlowStatusChange(event) {
 		console.log('FLOW', event.detail.status);
-		if(event.detail.status === 'ERROR') {
+		if(event.detail.status === 'Error') {
 			console.error('FLOW', JSON.stringify(event.detail));
 			libs.showToast(this,{
 				title: event.detail.errors[0].errorCode,

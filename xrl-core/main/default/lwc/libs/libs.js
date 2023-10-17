@@ -183,12 +183,12 @@ export let libs = {
 				"label" : _labels.lbl_width,
 				"tooltip": _labels.tooltip_widthExample
 			},
-			/*"advanced": {
+			"advanced": {
 				"type": "function",
 				"label": _labels.lbl_advancedFieldSettings,
 				"tooltip" : _labels.tooltip_advancedFieldSettings,
 				"isAdvanced" : true
-			}*/
+			}
 		};
 		if (colModelItem !== undefined) {
 			let result = {}
@@ -333,14 +333,14 @@ export let libs = {
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
 			},
-			/*"loadChunkSize" : { // Temporary removed
+			"loadChunkSize" : {
 				//"defValue": 200,
 				"type": "string",
 				"label": _labels.lbl_loadChunkSize,
 				"tooltip": _labels.tooltip_loadChunkSize,
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
-			},*/
+			},
 			// "beforeSaveValidation": {
 			// 	"type": "function",
 			// 	"label": _labels.lbl_beforeSaveValidation,
@@ -351,7 +351,7 @@ export let libs = {
 			// 	"helpArticleUrl": _labels.hlpUrl_beforeSaveValidation,
 			// 	"useExample":true,
 			// },
-			/*"beforeSaveApexAction": { // Temporary removed
+			"beforeSaveApexAction": { // Temporary removed
 				"defValue": "",
 				"type": "combobox",
 				"optionsCallBack" : function(scope){
@@ -362,7 +362,6 @@ export let libs = {
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam"
 			},
-			},*/
 			// "beforeDeleteValidation": {
 			// 	"type": "function",
 			// 	"label": _labels.lbl_beforeDeleteValidation,
@@ -397,7 +396,7 @@ export let libs = {
 			// 	"cmd" : "dialog:setTableParam",
 			// 	"useExample":true,
 			// },
-			/*"rowRecalcApex": { // Temporary removed
+			"rowRecalcApex": { // Temporary removed
 				"defValue": "",
 				"type": "combobox",
 				"optionsCallBack" : function(scope){
@@ -407,7 +406,7 @@ export let libs = {
 				"tooltip": 'Apex class for row recalculation',
 				"placeHolder": 'Apex class for row recalculation',
 				"cmd" : "dialog:setTableParam"
-			},*/
+			},
 			/*"externalJS": {
 				"defValue": "",
 				"type": "combobox",
@@ -418,14 +417,14 @@ export let libs = {
 				"tooltip": _labels.tooltip_externalJS,
 				"placeHolder": _labels.lbl_externalJS,
 				"cmd" : "dialog:setTableParam"
-			},
+			},*/
 			"advanced": {
 				"type": "function",
 				"label": _labels.lbl_advancedTableSettings,
 				"tooltip" : _labels.tooltip_advancedTableSettings,
 				"cmd" : "dialog:setTableParam",
 				"isAdvanced" : true
-			}*/
+			}
 			
 			
 		}
@@ -488,25 +487,25 @@ export let libs = {
 				"tooltip": _labels.tooltip_actionVisibleOnRecords
 
 			},
-			/*"actionVariant" : { // Temporary removed
+			"actionVariant" : {
 				"type": "combobox",
 				"defValue": "bare",
 				"options" : [{label : "bare", value : "bare"}, {label : "bare-inverse", value : "bare-inverse"}, {label : "border", value : "border"},{label : "border-filled", value : "border-filled"},{label : "border-inverse", value : "border-inverse"},{label : "brand", value : "brand"},{label : "container", value : "container"}],
 				"label": 'variant',
 				"tooltip": 'variant'
-			},*/
+			},
 
 			"actionIconName" : {
 				"type": "text",
 				"label": _labels.lbl_actionIconName,
 				"tooltip": _labels.tooltip_actionIconName
 			},
-			/*"refreshAfterCustomActionExecution" : { // Temporary removed
+			"refreshAfterCustomActionExecution" : { 
 				"defValue":false,
 				"type": "checkbox",
 				"label": _labels.lbl_refreshAfterCustomActionExecution,
 				"tooltip": _labels.tooltip_refreshAfterCustomActionExecution
-			},*/
+			},
 			"actionOrder" : {
 				"type": "text",
 				"label": _labels.lbl_actionOrder,
@@ -520,12 +519,12 @@ export let libs = {
 				},
 				"label": _labels.lbl_actionFlowName
 			},
-			/*"advanced": {
+			"advanced": {
 				"type": "function",
 				"label": _labels.lbl_advancedActionSettings,
 				"tooltip" : _labels.tooltip_advancedActionSettings,
 				"isAdvanced" : true
-			}*/
+			}
 		}
 		return defParams;
 	},
