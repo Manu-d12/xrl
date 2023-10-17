@@ -179,6 +179,7 @@ export default class ComparingInterface extends LightningElement {
                 this.config.userSelections[selectedFor].push(el);
             }
         });
+        libs.getGlobalVar(this.config.json.dataTable.uniqueName).userSelections = JSON.parse(JSON.stringify(this.config.userSelections)); //need to store to to use it in the callbacks
     }
     //handling all the events here
     handleEvent(event){
@@ -268,7 +269,7 @@ export default class ComparingInterface extends LightningElement {
             });
         }
         if(this.config.json.compareChildRecordsCallback){
-            this.config.childRecordsResult = eval('(' + this.config.json.compareChildRecordsCallback + ')')(this.config.cr1,this.config.cr2)
+            this.config.childRecordsResult = eval('(' + this.config.json.compareChildRecordsCallback + ')')(this,libs,this.config.cr1,this.config.cr2)
         }else{
             let childRecords1 = this.convertArrToMap(this.config.cr1,this.config.json.uniqueKey.obj1);
             let childRecords2 = this.convertArrToMap(this.config.cr2,this.config.json.uniqueKey.obj2);

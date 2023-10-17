@@ -18,7 +18,7 @@ global with sharing class infrastructure {
 		if (isDebug == true) data.remove('isDebug');
 		try {
 			Organization orgDetails = [SELECT Id, InstanceName, IsSandbox, Name, OrganizationType FROM Organization];
-			if(orgDetails.OrganizationType != 'Developer Edition' && !isUserLicensed()){
+			if(orgDetails.OrganizationType != 'Developer Edition' && !orgDetails.IsSandbox && !isUserLicensed()){
 				throw new InfrastructureException(null,label.msg_packageLicenseExpired, Infrastructure.exceptionType.GENERAL);
 			}
 
@@ -146,6 +146,7 @@ global with sharing class infrastructure {
 	}
 	private static boolean isUserLicensed(){
 		boolean result = false;
+		System.debug('Checing License');
 		try{
 			result = UserInfo.isCurrentUserLicensed('XRL');
 		}catch(Exception e){
@@ -464,6 +465,7 @@ global with sharing class infrastructure {
 		string sObjApiName = (string) data.get('sObjApiName');
 		boolean isRollback = (boolean) data.get('rollback') == true;
 		boolean isInsert = (boolean) data.get('isInsert') == true;
+		string uniqueFieldNameForUpsert = (string) data.get('uniqueFieldNameForUpsert');
 		string beforeSaveValidationClass = (string) data.get('beforeSaveAction');
 		Type T = type.forName('list<' + sObjApiName + '>');
 		map < string, object > result = new map < string, object > ();
@@ -488,12 +490,18 @@ global with sharing class infrastructure {
         }
         sObject[] records = (sObject[]) JSON.deserialize(JSON.serialize(data.get('records')), T);
 		// Savepoint sp = Database.setSavepoint();
-		system.debug('RollBack ' + isRollback);
 
 		Integer countOfFailedRecords = 0;
 		
 		try{
-			Database.UpsertResult[] srs = Database.upsert(records, isRollback);
+			Database.UpsertResult[] srs;
+			if(String.isBlank(uniqueFieldNameForUpsert)){
+				srs = Database.upsert(records, isRollback);
+			}else{
+				//if the unique field name is other than the ID field. Need to pass the field name as 'ExtRelListConfig__c.uniqKey__c'
+				Schema.SObjectField field = Schema.getGlobalDescribe().get(uniqueFieldNameForUpsert.split('\\.')[0]).getDescribe().fields.getMap().get(uniqueFieldNameForUpsert.split('\\.')[1]);
+				srs = Database.upsert(records,field, isRollback);
+			}
 			for (Database.UpsertResult sr : srs) {
 				if (!sr.isSuccess()) {
 					String error = '';
