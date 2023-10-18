@@ -2282,7 +2282,15 @@ return records;
         <categories>XRL</categories>
         <language>en_US</language>
         <protected>true</protected>
-        <shortDescription>altTxt_camsg_rowCallbackEnabledncelRecordSave</shortDescription>
+        <shortDescription>msg_rowCallbackEnabledncelRecordSave</shortDescription>
         <value>Row Callback enabled</value>
+    </labels>
+    <labels>
+        <fullName>msg_recordLoadingStatus</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_recordLoadingStatus</shortDescription>
+        <value> records loaded</value>
     </labels>
 </CustomLabels>
