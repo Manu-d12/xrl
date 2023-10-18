@@ -401,6 +401,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			})
 		});
 		console.log('Total records', this.config.totalRecordsCount);
+		this.config._loadingInfo = libs.formatStr('0/{0} {1}',[this.config.totalRecordsCount,this.config._LABELS.msg_recordLoadingStatus]);
 		this.config.listOfRecordIds = [];
 		this.config.fetchIdLimit = 49950;
 		for (let i = 1; i < ((parseInt(this.config.totalRecordsCount) / parseInt(this.config.fetchIdLimit)) + 1);i++) {
@@ -414,7 +415,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		this.config.loadChunkSize = this.config.listViewConfig[0].loadChunkSize === undefined ? 20000 : this.config.listViewConfig[0].loadChunkSize;
 		this.config.listOfBulkRecords = [];
 		let startIndex = 0;
-		let endIndex = parseInt(this.config.loadChunkSize) - 1;
+		let endIndex = parseInt(this.config.loadChunkSize);
 		for (let i = 1; i < ((parseInt(this.config.totalRecordsCount) / parseInt(this.config.loadChunkSize)) + 1);i++) {
 			let recordsIds = [];
 			let chunkRecords = this.config.listOfRecordIds.slice(startIndex, endIndex);
@@ -435,6 +436,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		this.config.listViewConfig[0]._loadCfg = this.loadCfg.bind(this);
 		
 		console.log('loadRecords', libs.getGlobalVar(this.name));
+		this.config._loadingInfo = false;
 		this.generateColModel();
 	}
 	async getBulkRecordsId(whereCondition,limit){
@@ -467,6 +469,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				this.config.inaccessibleFields= data[nodeName].removedFields;
 				this.config.query = data[nodeName].SOQL;
 				this.config.listOfBulkRecords = this.config.listOfBulkRecords.concat(data[nodeName].records);
+				this.config._loadingInfo = libs.formatStr('{0}/{1} {2}',[this.config.listOfBulkRecords.length,this.config.totalRecordsCount,this.config._LABELS.msg_recordLoadingStatus]);
 			})
 		});
 	}

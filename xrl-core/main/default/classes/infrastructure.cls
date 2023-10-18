@@ -905,6 +905,7 @@ global with sharing class infrastructure {
 			'msg_itemsUpdateFailed'=>label.msg_itemsUpdateFailed,
 			'msg_onlyAcceptsPositiveNumbers'=>label.msg_onlyAcceptsPositiveNumbers,
 			'msg_rowCallbackEnabled'=>label.msg_rowCallbackEnabled,
+			'msg_recordLoadingStatus' => label.msg_recordLoadingStatus,
 			'placeHolder_beforeSaveValidation'=>label.placeHolder_beforeSaveValidation,
 			'placeHolder_beforeDeleteValidation'=>label.placeHolder_beforeDeleteValidation,
 			'placeholder_actionCallback'=> label.placeholder_actionCallback,
