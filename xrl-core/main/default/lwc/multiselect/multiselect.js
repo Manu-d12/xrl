@@ -46,6 +46,15 @@ export default class Multiselect extends LightningElement {
     connectedCallback() {
         this.setSelect();
     }
+    renderedCallback(){
+        let temp = this.template.querySelector('.mSelect');
+        temp.addEventListener('keydown', (e) => {
+            if(e.keyCode === 27 && this.mSelectConfig !== undefined) { //if 'Escape' is pressed
+                this.mSelectConfig.showDropdown = false;
+            }
+            
+        });
+    }
 
     setSelect() {
         this.mSelectConfig.showDropdown = false;
