@@ -5,6 +5,10 @@ import { loadScript, loadStyle } from 'lightning/platformResourceLoader';
 let globalVars = {};
 
 export let libs = {
+	getNameSpace: function(){
+		//it will be helpful for development
+		return 'XRL';
+	},
 	loadConfig: function(uniqKey) {
 		let localConfig = localStorage.getItem(uniqKey);
 		if (localConfig != null && typeof(localConfig) !== 'undefined') {
