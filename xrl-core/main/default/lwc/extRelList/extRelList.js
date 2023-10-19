@@ -1667,7 +1667,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					window.close();
 					history.back();
 				}else{
-					let url = '/lightning/n/XRL__EXRL?c__apiName='+ btoa(this.apiName) + '&c__name='+ btoa(this.name);
+					let url = '/lightning/n/'+ libs.getNameSpace() +'__EXRL?c__apiName='+ btoa(this.apiName) + '&c__name='+ btoa(this.name);
 					if(this.recordId !== undefined && this.recordId !== null){
 						url += '&c__recordId='+btoa(this.recordId);
 					}
@@ -1875,7 +1875,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		console.log(JSON.parse(JSON.stringify(records)));
 		let exportActionData = this.config.listViewConfig[0].actions.find((el) => el.actionId === 'std:export');
 		let _advanced = eval('[' + exportActionData.advanced + ']')[0];
-		if(_advanced?.outputFormat === 'JSON'){
+		if(_advanced?.outputFormat === 'JSON' || this.config.sObjApiName === libs.getNameSpace() + '__extRelListConfig__c'){
 			this.handleDownloadJSONFile(records,fileName);
 		}else{
 
