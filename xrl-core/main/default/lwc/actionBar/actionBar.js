@@ -75,7 +75,9 @@ export default class ActionBar extends LightningElement {
             } else if (actionDetails._advanced?.actionCallBack !== undefined && actionDetails._advanced?.actionCallBack !== ''){
                 //Callback execution
                 try{
-                    let fn = actionDetails._advanced.actionCallBack(this, libs, this.config.dataTable?._selectedRecords()); 
+					let selectedRecords = this.config.dataTable?._selectedRecords();
+					let records = libs.getGlobalVar(this.actionscfg._cfgName)?.records;
+                    let fn = actionDetails._advanced.actionCallBack(this, libs, selectedRecords.length > 0 ? selectedRecords : records); 
 					this.config.dataTable?._updateView();
                 }catch(err){
                     console.log('EXCEPTION', err);
