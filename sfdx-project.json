@@ -6,8 +6,8 @@
       "package": "Extended Related List",
       "versionDescription": "Initial release",
       "postInstallScript": "postInstallClass",
-      "versionName": "3.103.1 Release",
-      "versionNumber": "3.103.1.NEXT",
+      "versionName": "3.104.1 Release",
+      "versionNumber": "3.104.1.NEXT",
       "definitionFile": "config/scratch-org-def.json",
       "ancestorVersion": "HIGHEST"
     }
@@ -316,6 +316,8 @@
     "Extended Related List@3.101.2-1": "04t8d000000lq8bAAA",
     "Extended Related List@3.102.0-1": "04t8d000000lq9eAAA",
     "Extended Related List@3.103.0-1": "04t8d000000lq9oAAA",
-    "Extended Related List@3.103.1-1": "04t8d000000lqmVAAQ"
+    "Extended Related List@3.103.1-1": "04t8d000000lqmVAAQ",
+    "Extended Related List@3.103.2-1": "04t8d000000lr49AAA",
+    "Extended Related List@3.104.0-1": "04t8d000000hdbeAAA"
   }
 }
