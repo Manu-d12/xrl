@@ -537,9 +537,10 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			item._filterCondition = item._filterCondition ? item._filterCondition : this.config._LABELS.lbl_columnFilter;
 			delete item.isASCSort;
 
-			const event = new CustomEvent('datatablerefresh');
-			this.dispatchEvent(event);
 		});
+		//this event fires when the dataTable reloads. Used it to refresh the action bar depending on the records available on the UI and to decide which actions should be visible
+		const event = new CustomEvent('datatablerefresh');
+		this.dispatchEvent(event);
 		//Here first checking the table width(total width the user has enter for different column) with the screen size on the basic of where XRL is used
 		//jira no- HYPER-557
 		let compWidth= libs.getGlobalVar(this.cfg).componentWidth
