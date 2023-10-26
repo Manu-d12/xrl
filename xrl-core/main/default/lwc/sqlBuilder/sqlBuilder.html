@@ -64,7 +64,7 @@
                         </ul>
                         <div class="slds-scrollable_y" style="height:24rem;padding:4px;">
                             <ul class="slds-has-dividers_around-space">
-                                <template if:true={filterableFields} for:each={filterableFields} for:item="field" for:index="index">
+                                <template if:true={config.sqlBuilder.filterableFields} for:each={config.sqlBuilder.filterableFields} for:item="field" for:index="index">
                                     <li data-id="sqlBuilder:conditions:selectItem" onclick={handleBuilderEvent} style="cursor: pointer;margin-top: 0px;padding:5px;" class={field.css} data-ref={field.refObj} data-val={field.fieldName} key={field.fieldName}>
                                         <lightning-helptext class="placeTopItem" content={field.helpText}></lightning-helptext>
                                         &nbsp;{field.label}                            
@@ -219,7 +219,7 @@
                         </ul>
                         <div class="slds-scrollable_y" style="height:22rem">
                             <ul class="slds-has-dividers_around-space">
-                                <template if:true={sortableFields} for:each={sortableFields} for:item="field" for:index="index">
+                                <template if:true={config.sqlBuilder.sortableFields} for:each={config.sqlBuilder.sortableFields} for:item="field" for:index="index">
                                     <li data-id="sqlBuilder:ordering:selectItem" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class={field.css} data-ref={field.refObj} data-val={field.fieldName} key={field.fieldName}>
                                         <lightning-helptext class="placeTop" content={field.helpText}></lightning-helptext>
                                         &nbsp;{field.label} 
