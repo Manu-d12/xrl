@@ -2293,4 +2293,28 @@ return records;
         <shortDescription>msg_recordLoadingStatus</shortDescription>
         <value> records loaded</value>
     </labels>
+    <labels>
+        <fullName>hlpUrl_fieldSettings</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_fieldSettings</shortDescription>
+        <value>getting-started-with-hypergrid-20/hypergrid-understanding-the-xrl-interface#field-settings-6</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_tableSettings</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_tableSettings</shortDescription>
+        <value>getting-started-with-hypergrid-20/hypergrid-understanding-the-xrl-interface#table-settings-7</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_actions</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_actions</shortDescription>
+        <value>getting-started-with-hypergrid-20/hypergrid-understanding-the-xrl-interface#actions-9</value>
+    </labels>
 </CustomLabels>
