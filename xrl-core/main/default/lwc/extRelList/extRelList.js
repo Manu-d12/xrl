@@ -946,11 +946,14 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 		this.config.isExceptionInRemoteAction = false;
 
-		while(index < records.length){
-			let chunk = records.slice(index,records[(parseInt(index)+parseInt(deleteChunk))] ? (parseInt(index)+parseInt(deleteChunk)) : (records.length));
-			index += records[(parseInt(index)+parseInt(deleteChunk))] ? parseInt(deleteChunk) : (records.length);
-			await this.deleteRecords(chunk);
-		}
+		// while(index < records.length){
+		// 	let chunk = records.slice(index,records[(parseInt(index)+parseInt(deleteChunk))] ? (parseInt(index)+parseInt(deleteChunk)) : (records.length));
+		// 	index += records[(parseInt(index)+parseInt(deleteChunk))] ? parseInt(deleteChunk) : (records.length);
+		// 	await this.deleteRecords(chunk);
+		// }
+
+		await libs.splitRecordsIntoChunks(this,records,deleteChunk,this.deleteRecords);
+
 		if(this.config.isExceptionInRemoteAction === false){
 			const toast = new ShowToastEvent({
 				title: 'Success',
@@ -975,11 +978,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 	}
 
-	async deleteRecords(chunkIn){
+	async deleteRecords(scope,chunkIn){
 		let chunk = chunkIn.map((item)=>{return {Id:item.Id}});
 		try{
-			const a = await libs.remoteAction(this, 'delRecords', { records: chunk, 
-				sObjApiName: this.config.sObjApiName
+			const a = await libs.remoteAction(scope, 'delRecords', { records: chunk, 
+				sObjApiName: scope.config.sObjApiName
 			});
 		} catch (error) {
 			console.log(error);
@@ -1071,43 +1074,36 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		this.config.saveStatus = 0;
 		this.config.countOfFailedRecords = 0;
 		this.config.errorList = [];
-		let chunkCount = 0;
+		let chunkCount = await libs.splitRecordsIntoChunks(this,changedItems,saveChunk,this.saveRecords);
 
-		while(changedItems.length > 0 && index < changedItems.length){
-			let lIndex = changedItems[(parseInt(index)+parseInt(saveChunk))] ? (parseInt(index)+parseInt(saveChunk)) : (changedItems.length);
-			let chunk = changedItems.slice(index,lIndex);
-			index += changedItems[(parseInt(index)+parseInt(saveChunk))] ? parseInt(saveChunk) : (changedItems.length);
-			chunkCount +=1;
-			await this.saveRecords(chunk);
-		}
+		// while(changedItems.length > 0 && index < changedItems.length){
+		// 	let lIndex = changedItems[(parseInt(index)+parseInt(saveChunk))] ? (parseInt(index)+parseInt(saveChunk)) : (changedItems.length);
+		// 	let chunk = changedItems.slice(index,lIndex);
+		// 	index += changedItems[(parseInt(index)+parseInt(saveChunk))] ? parseInt(saveChunk) : (changedItems.length);
+		// 	chunkCount +=1;
+		// 	await this.saveRecords(chunk);
+		// }
 		if(chunkCount === this.config.saveStatus)
 			this.resetChangedRecords(changedItems.length);
 	}
-	async saveRecords(chunkIn){
+	async saveRecords(scope,chunkIn){
 		try{
 			//[DR] in case of saving custom settings need delete all nested attributes inside records, otherwise we will get EXCEPTION "Cannot deserialize instance of <unknown> from null value null or request may be missing a required field"
-			let chunk = this.stripChunk(chunkIn);
-			await libs.remoteAction(this, 'saveRecords', { records: chunk, 
-				sObjApiName: this.config.sObjApiName,
-				rollback:this.config.listViewConfig[0].rollBack ? this.config.listViewConfig[0].rollBack : false,
-				beforeSaveAction: this.config.listViewConfig[0].beforeSaveApexAction ? this.config.listViewConfig[0].beforeSaveApexAction : '',
+			let chunk = libs.stripChunk(chunkIn);
+			await libs.remoteAction(scope, 'saveRecords', { records: chunk, 
+				sObjApiName: scope.config.sObjApiName,
+				rollback:scope.config.listViewConfig[0].rollBack ? scope.config.listViewConfig[0].rollBack : false,
+				beforeSaveAction: scope.config.listViewConfig[0].beforeSaveApexAction ? scope.config.listViewConfig[0].beforeSaveApexAction : '',
 				callback: function(nodename,data){
-					this.config.saveStatus += 1;
-					this.config.countOfFailedRecords += parseInt(data[nodename].countOfFailedRecords);
-					this.config.errorList = this.config.errorList.concat(data[nodename].listOfErrors);
-					console.log('From callback ', data[nodename]);
+					scope.config.saveStatus += 1;
+					scope.config.countOfFailedRecords += parseInt(data[nodename].countOfFailedRecords);
+					scope.config.errorList = scope.config.errorList.concat(data[nodename].listOfErrors);
+					console.log('From callback save', data[nodename]);
 				}
 			});
 		} catch (error) {
 			console.log(error);
 		}
-	}
-	stripChunk(chunkIn) {
-		let chunk = [];
-		chunkIn.forEach((item) =>{
-			chunk.push(JSON.parse(JSON.stringify(item, (key, value) => {return typeof(value) === 'object' && key!=="" ? null : value;})))
-		});
-		return chunk;
 	}
 	isThereUnsavedRecords(){
 		return this.config.listViewConfig[0]._changedRecords ? true : false;

@@ -542,31 +542,42 @@ export let libs = {
 			outParams.loadChunkSize = scope.config.dataTableConfig.loadChunkSize;
 		}
 		delete outParams.callback;
-		await apexInterface({ cmd: cmd, data: outParams }).then(result => {
-			console.log(result);
-			if (scope.config) scope.config.isSpinner = false;
-			if ('exception' in result) {
-				scope.config.isExceptionInRemoteAction = true;
-				console.error(result.exception, result.log);
-				//HYPER-247
-				let formattedErrMsg = this.formatErrMessage(result.exception.message);				
-				const event = new ShowToastEvent({
-					title: result.exception.title,
-					message: formattedErrMsg,
-					variant: 'error'
-				});
-				if (!formattedErrMsg.includes('License is expired') && !formattedErrMsg.includes('Permission Set')) {
-					scope.dispatchEvent(event);
+		if(cmd === 'invokeApex' && outParams._chunkSize !== undefined){ //if it is invokeApex and chunk size is defined then we will split the records into chunks before sending it into apex
+			let allRecords = JSON.parse(JSON.stringify(outParams.data.records));
+			this.splitRecordsIntoChunks(scope,allRecords,parseInt(outParams._chunkSize),async function(scope,chunk){
+				outParams.data.records = chunk;
+				await callToApexInterface();
+			});
+		}else{
+			await callToApexInterface();
+		}
+		async function callToApexInterface(){
+			await apexInterface({ cmd: cmd, data: outParams }).then(result => {
+				console.log(result);
+				if (scope.config) scope.config.isSpinner = false;
+				if ('exception' in result) {
+					scope.config.isExceptionInRemoteAction = true;
+					console.error(result.exception, result.log);
+					//HYPER-247
+					let formattedErrMsg = this.formatErrMessage(result.exception.message);				
+					const event = new ShowToastEvent({
+						title: result.exception.title,
+						message: formattedErrMsg,
+						variant: 'error'
+					});
+					if (!formattedErrMsg.includes('License is expired') && !formattedErrMsg.includes('Permission Set')) {
+						scope.dispatchEvent(event);
+					}
+					else if(formattedErrMsg.includes('Permission Set')){
+						scope.config._tableLevelErrors = '<b>XRL:</b> No permission set assigned';
+					}
+				} else {
+					if (typeof(params.callback) === 'function') {
+						params.callback.bind(scope)(cmd + 'Result', result);
+					}
 				}
-				else if(formattedErrMsg.includes('Permission Set')){
-					scope.config._tableLevelErrors = '<b>XRL:</b> No permission set assigned';
-				}
-			} else {
-				if (typeof(params.callback) === 'function') {
-					params.callback.bind(scope)(cmd + 'Result', result);
-				}
-			}
-		})
+			})
+		}
 	},
 	formatErrMessage: function(errMsg) {
 		let message = '';
@@ -1005,6 +1016,25 @@ export let libs = {
 			}
 		});
 		return updatedURL;
+	},
+	splitRecordsIntoChunks: async function (scope,records,chunkSize, callback) {
+		let index = 0;
+		let chunkCount = 0;
+		while(records.length > 0 && index < records.length){
+			let lIndex = records[(parseInt(index)+parseInt(chunkSize))] ? (parseInt(index)+parseInt(chunkSize)) : (records.length);
+			let chunk = records.slice(index,lIndex);
+			index += records[(parseInt(index)+parseInt(chunkSize))] ? parseInt(chunkSize) : (records.length);
+			chunkCount +=1;
+			await callback(scope,chunk);
+		}
+		return chunkCount;
+	},
+	stripChunk(chunkIn) {
+		let chunk = [];
+		chunkIn.forEach((item) =>{
+			chunk.push(JSON.parse(JSON.stringify(item, (key, value) => {return typeof(value) === 'object' && key!=="" ? null : value;})))
+		});
+		return chunk;
 	},
 	formatCallbackErrorMessages: function(error,errorIn,errorJSONName) {
 		/*
