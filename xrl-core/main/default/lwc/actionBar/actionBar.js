@@ -44,7 +44,8 @@ export default class ActionBar extends LightningElement {
                 return el.actionVisibleOnRecordSelection === undefined ||el.actionVisibleOnRecordSelection === false;           
             });
         }
-        this.config.visibleActions = this.sortRecords(this.config.visibleActions, 'actionOrder', true);
+        //Sorts the actions, so that it will appear in the order in the UI
+        this.config.visibleActions = libs.sortRecords(JSON.parse(JSON.stringify(this.config.visibleActions)), 'actionOrder', true);
         return this.config.visibleActions;
     }
     handleEventClick(event){
@@ -99,28 +100,4 @@ export default class ActionBar extends LightningElement {
             console.log('Action Error');
         }
     }
-    sortRecords(records, fieldName, isASCSort, referenceField) {
-		let keyValue;
-		if(referenceField){
-			keyValue = (a) => {
-				return a[referenceField][fieldName];
-			};
-		}else{
-			keyValue = (a) => {
-				return a[fieldName];
-			};
-		}
-
-		let isReverse = isASCSort ? 1 : -1;
-
-		records.sort((x, y) => {
-			x = keyValue(x) ? keyValue(x) : ''; // handling null values
-			y = keyValue(y) ? keyValue(y) : '';
-            x = parseInt(x);
-            y = parseInt(y);
-			return isReverse * ((x > y) - (y > x));
-		});
-		
-		return records;
-	}
 }
