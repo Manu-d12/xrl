@@ -297,7 +297,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 			
 			await libs.remoteAction(this, 'query', {
 				isNeedDescribe: true,
-				sObjApiName: 'XRL__extRelListConfig__c',
+				sObjApiName: libs.getNameSpace() + '__extRelListConfig__c',
 				addCondition: libs.replaceLiteralsInStr("Parent__r.uniqKey__c='" + this.configId +"' AND Is_Active__c = true",this.name),
 				orderBy: 'ORDER BY loadIndex__c ASC NULLS LAST',
 				fields: ['Id','Name','listViewLabel__c','sObjApiName__c','uniqKey__c','relFieldApiName__c','loadIndex__c','JSON__c'],
@@ -310,8 +310,8 @@ export default class Layout extends NavigationMixin(LightningElement) {
 			// Loop through data model components
 			for (let cmp of result?.records) {
 
-				cmp = JSON.parse(cmp.XRL__JSON__c);
-				cmp.uniqueName = result?.records[count].XRL__uniqKey__c.split(':')[3] !== undefined ? result?.records[count].XRL__uniqKey__c.split(':')[3] : result?.records[count].XRL__uniqKey__c.split(':')[0];
+				cmp = JSON.parse(cmp[libs.getNameSpace() +'__JSON__c']);
+				cmp.uniqueName = result?.records[count][libs.getNameSpace() +'__uniqKey__c'].split(':')[3] !== undefined ? result?.records[count][libs.getNameSpace() +'__uniqKey__c'].split(':')[3] : result?.records[count][libs.getNameSpace() +'__uniqKey__c'].split(':')[0];
 				
 				cmp.class = this.config.cols != 12 ? `slds-col slds-size_${cmp.colSize || colSize}-of-12` : 'slds-col slds-size_12-of-12';
 
@@ -355,13 +355,13 @@ export default class Layout extends NavigationMixin(LightningElement) {
 						financial: configData?.Financial,
 						currency: configData?.currency,
 						describe: libs.getGlobalVar(this.tabConfigName).describe,
-						relField: result?.records[count].XRL__relFieldApiName__c
+						relField: result?.records[count][libs.getNameSpace() +'__relFieldApiName__c']
 					}
 					this.setConfigTabular(dtConfig);
 				} else if (cmp.isServerFilter) {
 					this.config.listViewConfig = (cmp) ? JSON.parse(JSON.stringify([cmp]).replace(/\s{2,}/g, ' ')) : [];
-					this.config.sObjApiName = result?.records[count].XRL__sObjApiName__c;
-					this.config.relField = result?.records[count].XRL__relFieldApiName__c;
+					this.config.sObjApiName = result?.records[count][libs.getNameSpace() +'__sObjApiName__c'];
+					this.config.relField = result?.records[count][libs.getNameSpace() +'__relFieldApiName__c'];
 					this.config.financial = (configData?.Financial) ? configData?.Financial : {};
 					this.config.describe = libs.getGlobalVar(this.tabConfigName).describe;
 					this.config.userInfo = (libs.getGlobalVar(this.tabConfigName).userInfo) ? libs.getGlobalVar(this.tabConfigName).userInfo : {};

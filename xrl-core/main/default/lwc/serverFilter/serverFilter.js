@@ -29,6 +29,9 @@ export default class ServerFilter extends LightningElement {
 			}
 		});
         libs.setGlobalVar(this.cfg, this.config);
+        this.config.applyLabel = this.filterJson?.buttons?.apply?.label ?? this.config._LABELS.lbl_apply;
+        this.config.moreLabel = this.filterJson?.buttons?.more?.label ?? this.config._LABELS.lbl_more;
+        this.config.resetFilterLabel = this.filterJson?.buttons?.resetFilter?.label ?? this.config._LABELS.lbl_resetFilters;
         this.sFilterfields = this.filterJson.sFilterCols ? this.filterJson.sFilterCols : [];
         for (let key in this.config.describe) {
             if(this.config.describe[key].type !== 'textarea' && !this.config.describe[key].label.includes('Deprecated')){
