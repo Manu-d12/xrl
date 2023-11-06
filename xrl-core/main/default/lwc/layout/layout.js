@@ -371,9 +371,10 @@ export default class Layout extends NavigationMixin(LightningElement) {
 					// } });
 					this.config.chartConfig = (cmp) ? JSON.parse(JSON.stringify([cmp]).replace(/\s{2,}/g, ' '))[0] : [];
 				} else if (cmp.isChevron) {
-					await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
-						this.config.chevronConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
-					} });
+					// await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
+					// 	this.config.chevronConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
+					// } });
+					this.config.chevronConfig = (cmp) ? JSON.parse(JSON.stringify([cmp]).replace(/\s{2,}/g, ' '))[0] : [];
 				} else if (cmp.isActionBar) {
 					this.config.actionsBar = (cmp) ? JSON.parse(JSON.stringify([cmp]).replace(/\s{2,}/g, ' ')) : [];
 					cmp.config = {

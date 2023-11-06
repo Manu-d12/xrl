@@ -17,13 +17,14 @@
         <div class="slds-col slds-size_2-of-12 slds-col_bump-left" style="height: 60px; display: flex; padding: 2px; align-items: end; justify-content: end; min-width: fit-content;">
 
             <span if:false={filterJson.hideMore}>
-				<lightning-button-icon if:true={filterJson.iconMore} icon-name={filterJson.iconMore} variant="brand" title={config._LABELS.lbl_more} class="slds-m-left_x-small" onclick={handleClick}></lightning-button-icon>
-            	<lightning-button  if:false={filterJson.iconMore} variant="brand" label={config.moreLabel} title={config.moreLabel} class="slds-m-left_x-small" onclick={handleClick}></lightning-button>
+				<lightning-button-icon if:true={config.moreIcon} icon-name={config.moreIcon} variant={config.moreVariant} title={config._LABELS.lbl_more} class="slds-m-left_x-small" onclick={handleClick}></lightning-button-icon>
+            	<lightning-button if:false={config.moreIcon} variant={config.moreVariant} label={config.moreLabel} title={config.moreLabel} class="slds-m-left_x-small" onclick={handleClick}></lightning-button>
 			</span>
-            <lightning-button variant="brand" label={config.applyLabel} title={config.applyLabel} class="slds-m-left_x-small" onclick={applyFilter}></lightning-button>
-			<span if:false={filterJson.hideReset}>
-				<lightning-button-icon if:true={filterJson.iconReset} icon-name={filterJson.iconReset} variant="brand" title={config._LABELS.lbl_more} class="slds-m-left_x-small" onclick={resetFilters}></lightning-button-icon>
-	            <lightning-button if:false={filterJson.iconReset} variant="brand" label={config.resetFilterLabel} title={config.resetFilterLabel} class="slds-m-left_x-small" onclick={resetFilters}></lightning-button>
+            <lightning-button-icon if:true={config.applyIcon} icon-name={config.applyIcon} variant={config.applyVariant} title={config.applyLabel} class="slds-m-left_x-small" onclick={applyFilter}></lightning-button-icon>
+            <lightning-button if:false={config.applyIcon} icon-name={config.applyIcon} variant={config.applyVariant} label={config.applyLabel} title={config.applyLabel} class="slds-m-left_x-small" onclick={applyFilter}></lightning-button>
+            <span if:false={filterJson.hideReset}>
+				<lightning-button-icon if:true={config.resetFilterIcon} icon-name={config.resetFilterIcon} variant={config.resetFilterVariant} title={config._LABELS.lbl_more} class="slds-m-left_x-small" onclick={resetFilters}></lightning-button-icon>
+	            <lightning-button if:false={config.resetFilterIcon} variant={config.resetFilterVariant} label={config.resetFilterLabel} title={config.resetFilterLabel} class="slds-m-left_x-small" onclick={resetFilters}></lightning-button>
 			</span>
         </div>        
         <div if:true={count} class="slds-size_12-of-12" style={countStyle}>
