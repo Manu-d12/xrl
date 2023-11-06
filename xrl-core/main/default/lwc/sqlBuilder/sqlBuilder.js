@@ -188,7 +188,6 @@ export default class SqlBuilder extends LightningElement {
                     ];
                 }
                 if(selectedField.type === 'reference'){
-                    selectedField._editOptions = [];
                     selectedField._editOptions = JSON.parse(JSON.stringify(libs.getMacros()));
                     await libs.remoteAction(this, 'query', {
                         fields: ['Id','Name'],
