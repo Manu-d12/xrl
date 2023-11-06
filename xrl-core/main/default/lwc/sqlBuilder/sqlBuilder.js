@@ -32,6 +32,11 @@ export default class SqlBuilder extends LightningElement {
         this.config.sqlBuilder.allFields = this.config.sqlBuilder.fields;
         this.config.sqlBuilder.filterableFields = this.filterableFields();
         this.config.sqlBuilder.sortableFields = this.sortableFields();
+
+        this.config.sqlBuilder.conditions.forEach((el) => {
+            el._formattedValue = this.formatConditionValue(el, el.value);
+            el._formattedValueRange = el.valueRange ? this.formatConditionValue(el, el.valueRange) : undefined;
+        });
     
         this.ElementList = this.config.sqlBuilder.selectedFields.map(el => el.fieldName) || [...this.Data];
     }
@@ -184,6 +189,7 @@ export default class SqlBuilder extends LightningElement {
                 }
                 if(selectedField.type === 'reference'){
                     selectedField._editOptions = [];
+                    selectedField._editOptions = JSON.parse(JSON.stringify(libs.getMacros()));
                     await libs.remoteAction(this, 'query', {
                         fields: ['Id','Name'],
                         relField: '',
@@ -312,11 +318,12 @@ export default class SqlBuilder extends LightningElement {
                     { label: 'Contains', value: 'cn' },
                     { label: 'Is Equal', value: 'eq' },
                     { label: 'Not Is Equal', value: 'neq' },
-                ];
+                ];  
             }
             this.config.sqlBuilder.currentCondition= selectedCondition;
             if(this.config.sqlBuilder.currentCondition.fieldType === 'reference'){
-                this.config.sqlBuilder.currentCondition._editOptions = [];
+                this.config.sqlBuilder.currentCondition._editOptions = JSON.parse(JSON.stringify(libs.getMacros()));
+
                 await libs.remoteAction(this, 'query', {
                     fields: ['Id','Name'],
                     relField: '',
@@ -327,6 +334,7 @@ export default class SqlBuilder extends LightningElement {
                         });
                     })
                 });
+                this.config.sqlBuilder.fields.find((el) => el.fieldName === this.config.sqlBuilder.currentCondition.field)._editOptions = this.config.sqlBuilder.currentCondition._editOptions;
             }
             this.config.sqlBuilder.openConditionInput = {
                 isPicklist: this.config.sqlBuilder.currentCondition.fieldType === 'picklist' ? true : false,
