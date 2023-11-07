@@ -584,6 +584,9 @@ export let libs = {
 		}
 		return message;
 	},
+	getMacros: function(){
+		return [{"label":'recordId',"value":'%%recordId%%'}];
+	},
 	showToast : function(scope, params) {
 		const event = new ShowToastEvent(params);
 		scope.dispatchEvent(event);

@@ -8,36 +8,40 @@ export default class SqlBuilder extends LightningElement {
     @api cfg;
     Data = [];
     @track ElementList = [];
-    connectedCallback(){
+    connectedCallback() {
         this.config = libs.getGlobalVar(this.cfg);
-        this.config.describeMap = {};
-        this.config.describeMap[this.config.sObjApiName] = this.config.describe;
-        this.config.sqlBuilder = {};
-        this.config.sqlBuilder.fields = [];
-        this.config.sqlBuilder.selectedFields = this.config.dialog.listViewConfig.colModel;
-        this.config.sqlBuilder.conditions = this.config.dialog.listViewConfig?.conditionMap ?? [];
+        const { sObjApiName, describe, dialog, _LABELS } = this.config;
+        this.config.describeMap = { [sObjApiName]: describe };
+        this.config.sqlBuilder = {
+            selectedFields: dialog.listViewConfig.colModel,
+            conditions: dialog.listViewConfig?.conditionMap || [],
+            orderings: dialog.listViewConfig.orderMap || [],
+            conditionOrdering: dialog.listViewConfig.conditionOrdering || '',
+            sortOrderOptions: [
+                { label: _LABELS.lbl_ascending, value: 'ASC' },
+                { label: _LABELS.lbl_descending, value: 'DESC' },
+            ],
+            emptyFieldOptions: [
+                { label: _LABELS.lbl_beginning, value: 'NULLS FIRST' },
+                { label: _LABELS.lbl_end, value: 'NULLS LAST' },
+            ],
+            _objectStack: [{ relationShip: sObjApiName, referredObj: sObjApiName }],
+        };
+    
+        this.config.sqlBuilder.fields = JSON.parse(JSON.stringify(libs.sortRecords(this.generateFields(describe), 'label', true)));
+        this.config.sqlBuilder.allFields = this.config.sqlBuilder.fields;
+        this.config.sqlBuilder.filterableFields = this.filterableFields();
+        this.config.sqlBuilder.sortableFields = this.sortableFields();
+
         this.config.sqlBuilder.conditions.forEach((el) => {
             el._formattedValue = this.formatConditionValue(el, el.value);
             el._formattedValueRange = el.valueRange ? this.formatConditionValue(el, el.valueRange) : undefined;
         });
-        this.config.sqlBuilder.orderings = this.config.dialog.listViewConfig.orderMap ? this.config.dialog.listViewConfig.orderMap : [];
-        this.config.sqlBuilder.conditionOrdering = this.config.dialog.listViewConfig.conditionOrdering ? this.config.dialog.listViewConfig.conditionOrdering : '';
-        this.config.sqlBuilder.sortOrderOptions = [{label: this.config._LABELS.lbl_ascending, value:'ASC'},
-                                                    {label: this.config._LABELS.lbl_descending, value:'DESC'}];
-        this.config.sqlBuilder.emptyFieldOptions = [{label:this.config._LABELS.lbl_beginning, value:'NULLS FIRST'},
-                                                    {label:this.config._LABELS.lbl_end, value:'NULLS LAST'}];
-        this.config.sqlBuilder._objectStack = [{relationShip:this.config.sObjApiName,referredObj:this.config.sObjApiName}];
-        this.config.sqlBuilder.fields = libs.sortRecords(this.generateFields(this.config.describe), 'label', true);
-        this.config.sqlBuilder.allFields = this.config.sqlBuilder.fields;
-
-
-        this.config.sqlBuilder.selectedFields.forEach((el)=>{
-            this.ElementList.push(el.fieldName);
-        });
-        if(!this.ElementList){
-            this.ElementList = [...this.Data]
-        }
+    
+        this.ElementList = this.config.sqlBuilder.selectedFields.map(el => el.fieldName) || [...this.Data];
     }
+    
+    
     get breadcrumb(){
         let breadCrumbStr = ''; 
         this.config.sqlBuilder._objectStack.forEach((el)=>{
@@ -184,7 +188,7 @@ export default class SqlBuilder extends LightningElement {
                     ];
                 }
                 if(selectedField.type === 'reference'){
-                    selectedField._editOptions = [];
+                    selectedField._editOptions = JSON.parse(JSON.stringify(libs.getMacros()));
                     await libs.remoteAction(this, 'query', {
                         fields: ['Id','Name'],
                         relField: '',
@@ -313,11 +317,12 @@ export default class SqlBuilder extends LightningElement {
                     { label: 'Contains', value: 'cn' },
                     { label: 'Is Equal', value: 'eq' },
                     { label: 'Not Is Equal', value: 'neq' },
-                ];
+                ];  
             }
             this.config.sqlBuilder.currentCondition= selectedCondition;
             if(this.config.sqlBuilder.currentCondition.fieldType === 'reference'){
-                this.config.sqlBuilder.currentCondition._editOptions = [];
+                this.config.sqlBuilder.currentCondition._editOptions = JSON.parse(JSON.stringify(libs.getMacros()));
+
                 await libs.remoteAction(this, 'query', {
                     fields: ['Id','Name'],
                     relField: '',
@@ -328,6 +333,7 @@ export default class SqlBuilder extends LightningElement {
                         });
                     })
                 });
+                this.config.sqlBuilder.fields.find((el) => el.fieldName === this.config.sqlBuilder.currentCondition.field)._editOptions = this.config.sqlBuilder.currentCondition._editOptions;
             }
             this.config.sqlBuilder.openConditionInput = {
                 isPicklist: this.config.sqlBuilder.currentCondition.fieldType === 'picklist' ? true : false,
@@ -557,13 +563,13 @@ export default class SqlBuilder extends LightningElement {
         }
         return fields;
     }
-    get filterableFields(){
+    filterableFields(){
         return this.config.sqlBuilder.fields.filter((el) => {
             if(el.filterable === true) return true;
             else return false;
         });
     }
-    get sortableFields(){
+    sortableFields(){
         return this.config.sqlBuilder.fields.filter((el) => {
             if(el.sortable === true) return true;
             else return false;
@@ -632,6 +638,7 @@ export default class SqlBuilder extends LightningElement {
         return this.ElementList
     }
     tabChanged(event){
+        if(this.config._tabs.currentOpenedTab === "1") return;
         this.config.sqlBuilder.isBackNeeded = false;
         this.loadFields(this.config.sObjApiName);
         this.config.sqlBuilder._objectStack = [{relationShip:this.config.sObjApiName,referredObj:this.config.sObjApiName}];

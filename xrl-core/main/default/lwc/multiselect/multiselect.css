@@ -33,3 +33,9 @@
        border-radius: 10px;
        background: rgba(0,0,0,0.4);
    }
+.slds-button_brand{
+    justify-content: left;
+} 
+.optionBtn{
+    padding-left:0;
+}
