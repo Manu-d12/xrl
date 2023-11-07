@@ -315,6 +315,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				return;
 			}
 		}
+		if(this.config?._advanced?.showListViewDropdownCallback){
+			this.config.isDisabledListView = this.config._advanced.showListViewDropdownCallback(this,libs,this.listViews,this.config.listView);
+		}
 		console.log('this.config', this.config);
 		this.loadRecords();		
 	}
