@@ -684,8 +684,17 @@ export let libs = {
 				case '13': //Apply Ordering
 					url += labels.hlpUrl_sqlBuilderApplyOrdering;
 					break;
+				case '2': //Field Settings
+					url += labels.hlpUrl_fieldSettings;
+					break;
+				case '3': //Table Settings
+					url += labels.hlpUrl_tableSettings;
+					break;
 				case '4': //Locked fields
 					url += labels.hlpUrl_lockedFields;
+					break;
+				case '5': //Actions
+					url += labels.hlpUrl_actions;
 					break;
 				default:
 					url = baseUrl;
