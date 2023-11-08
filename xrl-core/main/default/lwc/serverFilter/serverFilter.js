@@ -29,6 +29,9 @@ export default class ServerFilter extends LightningElement {
 			}
 		});
         libs.setGlobalVar(this.cfg, this.config);
+        this.setApplyButton();
+        this.setMoreButton();
+        this.setResetFilterButton();
         this.sFilterfields = this.filterJson.sFilterCols ? this.filterJson.sFilterCols : [];
         for (let key in this.config.describe) {
             if(this.config.describe[key].type !== 'textarea' && !this.config.describe[key].label.includes('Deprecated')){
@@ -52,6 +55,21 @@ export default class ServerFilter extends LightningElement {
 			return e.fieldName === colName
 		});
 	}
+    setApplyButton(){
+        this.config.applyLabel = this.filterJson?.buttons?.apply?.label ?? this.config._LABELS.lbl_apply;
+        this.config.applyIcon = this.filterJson?.buttons?.apply?.icon ?? false;
+        this.config.applyVariant = this.filterJson?.buttons?.apply?.variant ?? 'brand';
+    }
+    setMoreButton(){
+        this.config.moreLabel = this.filterJson?.buttons?.more?.label ?? this.config._LABELS.lbl_more;
+        this.config.moreIcon = this.filterJson?.buttons?.more?.icon ?? false;
+        this.config.moreVariant = this.filterJson?.buttons?.more?.variant ?? 'brand';
+    }
+    setResetFilterButton(){
+        this.config.resetFilterLabel = this.filterJson?.buttons?.resetFilter?.label ?? this.config._LABELS.lbl_resetFilters;
+        this.config.resetFilterIcon = this.filterJson?.buttons?.resetFilter?.icon ?? false;
+        this.config.resetFilterVariant = this.filterJson?.buttons?.resetFilter?.variant ?? 'brand';
+    }
     async setFieldTypes(callback) {
         for (let element of this.sFilterfields) {
             if (element.type === 'picklist') {
