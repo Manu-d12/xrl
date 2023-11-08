@@ -192,7 +192,8 @@ export default class ServerFilter extends LightningElement {
             let colItem = this.getColItem(key);
             
             if (colItem.searchCallback && typeof colItem.searchCallback === 'function') {
-				condition += ' AND ' + colItem.searchCallback(this, libs, key, this.conditionMap);
+				let partCondition = colItem.searchCallback(this, libs, key, this.conditionMap);
+				condition += partCondition!=undefined && partCondition!='' ? ' AND ' + partCondition : '';
                 continue;
             }
             if (typeof this.conditionMap[key] === 'object' && JSON.parse(JSON.stringify(this.conditionMap[key])).length > 1 && colItem.type !== 'daterange') {
