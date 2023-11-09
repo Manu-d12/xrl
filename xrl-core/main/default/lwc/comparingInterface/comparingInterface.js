@@ -259,7 +259,7 @@ export default class ComparingInterface extends LightningElement {
                 let callback = this.config.json.parentsRecordsSelectionCallback?.[selectedFor];
                 if (callback !== undefined && callback !== '') {
                     try {
-                        this.config.objRecords[userSelection] = eval('(' + callback + ')')(data[nodeName].records);
+                        this.config.objRecords[userSelection] = eval('(' + callback + ')')(this,libs,data[nodeName].records);
                     } catch (e) {
                         console.error('Error', e);
                         this.config.objRecords[userSelection] = [];
