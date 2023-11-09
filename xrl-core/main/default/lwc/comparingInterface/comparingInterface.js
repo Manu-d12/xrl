@@ -9,7 +9,7 @@ export default class ComparingInterface extends LightningElement {
     @api recordId;
     @track name;
     async connectedCallback(){
-        this.name = 'cmp' + Math.floor(Math.random() * 10);
+        this.name = 'cmp' + libs.uuidv4();
         libs.setGlobalVar(this.name,{});
         this.config = libs.getGlobalVar(this.name);
         this.config.userSelections = {};
