@@ -17,7 +17,7 @@
                         <lightning-input disabled={disabled} required={required} class="inputBox" placeholder="Search..." onblur={blurEvent} onkeyup={filterOptions} variant="label-hidden" id="combobox-id-1" ></lightning-input>
                         <lightning-icon class="slds-input__icon" icon-name="utility:search" size="x-small" alternative-text="search"></lightning-icon>
                     </div>
-                    <ul class="slds-listbox slds-listbox_vertical recordListBox" role="presentation" style="display: block;max-height: 140px;margin: 0;padding: 0;">
+                    <ul class="slds-listbox slds-listbox_vertical recordListBox" role="presentation" style="display: block;margin: 0;padding: 0;">
                         <template if:false={mSelectConfig.message} >
                             <template for:each={mSelectConfig.optionData} for:item="option">
                                 <template if:true={option.isVisible}>
