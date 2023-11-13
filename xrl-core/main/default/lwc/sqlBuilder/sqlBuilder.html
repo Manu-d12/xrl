@@ -10,7 +10,7 @@
                     <div style="border:0.5px solid rgb(183, 180, 180);">
                         <ul if:true={config.sqlBuilder._objectStack} class="slds-has-dividers_around-space">
                             <li onclick={handleBuilderEvent} class="slds-item slds-theme_shade" >
-                                <lightning-input data-id="sqlBuilder:fieldSearch" onkeyup={handleBuilderEvent} value={config.sqlBuilder.searchTerm} variant="label-hidden" placeholder={config._LABELS.lbl_enterSearchTermHere} type="text"></lightning-input>
+                                <lightning-input data-id="sqlBuilder:fieldSearch" data-search-id="config" onkeyup={handleBuilderEvent} value={config.sqlBuilder.searchTerm} variant="label-hidden" placeholder={config._LABELS.lbl_enterSearchTermHere} type="text"></lightning-input>
                             </li>
                             <li if:true={config.sqlBuilder.isBackNeeded} data-id="sqlBuilder:back" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class="slds-item slds-theme_shade" ><lightning-icon if:true={config.sqlBuilder.isBackNeeded} data-id="sqlBuilder:back" size="small" icon-name="utility:reply" alternative-text={config._LABELS.lbl_back} title={config._LABELS.lbl_back}></lightning-icon> {config._LABELS.lbl_back}</li>
                         </ul>
@@ -57,7 +57,7 @@
                     <div style="border:0.5px solid rgb(183, 180, 180);">
                         <ul if:true={config.sqlBuilder._objectStack} class="slds-has-dividers_around-space">
                             <li onclick={handleBuilderEvent} class="slds-item slds-theme_shade" >
-                                <lightning-input data-id="sqlBuilder:fieldSearch" onkeyup={handleBuilderEvent} value={config.sqlBuilder.searchTerm} variant="label-hidden" placeholder={config._LABELS.lbl_enterSearchTermHere} type="text"></lightning-input>
+                                <lightning-input data-id="sqlBuilder:fieldSearch" data-search-id="applyConditions" onkeyup={handleBuilderEvent} value={config.sqlBuilder.searchTerm} variant="label-hidden" placeholder={config._LABELS.lbl_enterSearchTermHere} type="text"></lightning-input>
                             </li>
                             <li if:true={config.sqlBuilder.isBackNeeded} data-id="sqlBuilder:back" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class="slds-item slds-theme_shade" ><lightning-icon if:true={config.sqlBuilder.isBackNeeded} data-id="sqlBuilder:back" size="small" icon-name="utility:reply" alternative-text={config._LABELS.lbl_back} title={config._LABELS.lbl_back}></lightning-icon>  {config._LABELS.lbl_back}</li>
 
@@ -213,7 +213,7 @@
                     <div style="border:0.5px solid rgb(183, 180, 180);">
                         <ul if:true={config.sqlBuilder._objectStack} class="slds-has-dividers_around-space">
                             <li onclick={handleBuilderEvent} class="slds-item slds-theme_shade" >
-                                <lightning-input data-id="sqlBuilder:fieldSearch" onkeyup={handleBuilderEvent} value={config.sqlBuilder.searchTerm} variant="label-hidden" placeholder={config._LABELS.lbl_enterSearchTermHere} type="text"></lightning-input>
+                                <lightning-input data-id="sqlBuilder:fieldSearch" data-search-id="applyOrdering" onkeyup={handleBuilderEvent} value={config.sqlBuilder.searchTerm} variant="label-hidden" placeholder={config._LABELS.lbl_enterSearchTermHere} type="text"></lightning-input>
                             </li>
                             <li if:true={config.sqlBuilder.isBackNeeded} data-id="sqlBuilder:back" style="cursor: pointer;margin-top: 0px;padding:5px;" onclick={handleBuilderEvent} class="slds-item slds-theme_shade" ><lightning-icon if:true={config.sqlBuilder.isBackNeeded} data-id="sqlBuilder:back" size="small" icon-name="utility:reply" alternative-text={config._LABELS.lbl_back} title={config._LABELS.lbl_back}></lightning-icon>  {config._LABELS.lbl_back}</li>
                         </ul>
