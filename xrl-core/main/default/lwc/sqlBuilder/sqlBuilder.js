@@ -143,15 +143,15 @@ export default class SqlBuilder extends LightningElement {
             this.config.sqlBuilder.searchTerm = '';
         }
         if(val === "sqlBuilder:fieldSearch"){
-            this.config.sqlBuilder.searchTerm = event.target.value.toLowerCase();                
-            this.config.sqlBuilder.fields = [];
-            this.config.sqlBuilder.allFields.forEach((el)=>{
-                if((el.label != null && el.label.toString().toLowerCase().indexOf(this.config.sqlBuilder.searchTerm) != -1) 
-                ||(el.fieldName != null && el.fieldName.toString().toLowerCase().indexOf(this.config.sqlBuilder.searchTerm) != -1)
-                ||(el.type != null && el.type.toString().toLowerCase().indexOf(this.config.sqlBuilder.searchTerm) != -1)){
-                    this.config.sqlBuilder.fields.push(el);
-                }
-            });
+            let searchType= event.target.getAttribute('data-search-id');
+            this.config.sqlBuilder.searchTerm = event.target.value.toLowerCase();
+            if(searchType === "config"){
+                this.config.sqlBuilder.fields = this.searchFields();
+            }if(searchType === "applyConditions"){
+                this.config.sqlBuilder.filterableFields = this.searchFields("el.filterable === true");
+            }else if(searchType === "applyOrdering"){
+                this.config.sqlBuilder.sortableFields = this.searchFields("el.sortable === true");
+            }
         }
         if(val === "sqlBuilder:deleteSelectedField"){
             let field = event.target.getAttribute('data-val');   
@@ -563,6 +563,18 @@ export default class SqlBuilder extends LightningElement {
         }
         return fields;
     }
+    searchFields(conditionString){
+        let searchedFields = [];
+        let condition= (conditionString != null && conditionString.trim() !== "") ?  eval(`(el) => ${conditionString}`) : true;
+        this.config.sqlBuilder.allFields.forEach((el)=>{
+            if((el.label != null && el.label.toString().toLowerCase().indexOf(this.config.sqlBuilder.searchTerm) != -1) 
+            ||(el.fieldName != null && el.fieldName.toString().toLowerCase().indexOf(this.config.sqlBuilder.searchTerm) != -1)
+            ||(el.type != null && el.type.toString().toLowerCase().indexOf(this.config.sqlBuilder.searchTerm) != -1 && condition)){
+                searchedFields.push(el);
+            }
+        });
+        return searchedFields;
+    }
     filterableFields(){
         return this.config.sqlBuilder.fields.filter((el) => {
             if(el.filterable === true) return true;
@@ -638,7 +650,7 @@ export default class SqlBuilder extends LightningElement {
         return this.ElementList
     }
     tabChanged(event){
-        if(this.config._tabs.currentOpenedTab === "1") return;
+        //if(this.config._tabs.currentOpenedTab === "1") return;
         this.config.sqlBuilder.isBackNeeded = false;
         this.loadFields(this.config.sObjApiName);
         this.config.sqlBuilder._objectStack = [{relationShip:this.config.sObjApiName,referredObj:this.config.sObjApiName}];
