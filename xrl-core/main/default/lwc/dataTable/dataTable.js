@@ -970,16 +970,16 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				});
 				cItem.isEditableRegular = false;
 			}
+			let left = ((event.x - 60) + 320) > screen.availWidth ? (screen.availWidth - 380) : (event.x - 60);
+			let rec = recId ===  null ? this.records[calculatedInd] : libs.findRecordWithChild(this.records, recId);
 			//options callback
 			if(cItem?._advanced?.optionsCallback !== undefined && cItem?._advanced?.optionsCallback !== ""){ 
 				try{
-					cItem.options = await cItem._advanced.optionsCallback(this,libs,cItem,this.getSelectedRecords());
+					cItem.options = await cItem._advanced.optionsCallback(this,libs,cItem,rec);
 				}catch(e){
 					this.config._errors = libs.formatCallbackErrorMessages(e,'field','Options callback');
 				}
 			}
-			let left = ((event.x - 60) + 320) > screen.availWidth ? (screen.availWidth - 380) : (event.x - 60);
-			let rec = recId ===  null ? this.records[calculatedInd] : libs.findRecordWithChild(this.records, recId);
 			this.config._bulkEdit = {
 				rowId : calculatedInd,
 				cItem : cItem,
@@ -1007,15 +1007,16 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				if(libs.getGlobalVar(this.cfg).optionsForMultiselect === undefined){
 					libs.getGlobalVar(this.cfg).optionsForMultiselect = new Map();
 				}
-				//options callback
-				if(cItem?._advanced?.optionsCallback !== undefined && cItem?._advanced?.optionsCallback !== ""){ 
-					try{
-						cItem.options = await cItem._advanced.optionsCallback(this,libs,cItem,Array.from([record]));
-					}catch(e){
-						this.config._errors = libs.formatCallbackErrorMessages(e,'field','Options callback');
-					}
-				}
 				this.config.colModel.forEach(async (el) => {
+					//options callback
+					if(el?._advanced?.optionsCallback !== undefined && el?._advanced?.optionsCallback !== ""){ 
+						try{
+							el.options = await el._advanced.optionsCallback(this,libs,el,record);
+						}catch(e){
+							this.config._errors = libs.formatCallbackErrorMessages(e,'field','Options callback');
+						}
+					}
+					console.log('options',el.options);
 					if(el._showEditableIcon && el.type === 'reference' && !el._editOptions){
 						el._editOptions = [];
 						if(cItem.nillable === true){
