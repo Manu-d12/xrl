@@ -1511,6 +1511,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 		if (this.hasGrouping) this.setGroupRecords();
 		this.config.isSpinner = false;
+
+		this.connectedCallback(); //BUN-46 - This is solving the problem but I can't find any root cause of this
 	}
 	get isDragDropEnabledForRecords(){
 		return this.config.isRecordsDragDropEnabled;
