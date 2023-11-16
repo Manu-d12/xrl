@@ -835,42 +835,46 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 	rowCallback(event) {
 
-		let colName = event.srcElement.getAttribute('data-colname') !== null ?
-			event.srcElement.getAttribute('data-colname') :
-			event.srcElement.parentNode.getAttribute('data-colname');
+		try{
+			let colName = event.srcElement?.getAttribute('data-colname') !== null ?
+				event.srcElement.getAttribute('data-colname') :
+				event.srcElement.parentNode.getAttribute('data-colname');
 
-		if (colName === 'actions') return; // Not need process this column
+			if (colName === 'actions') return; // Not need process this column
 
-		let rowId = event.srcElement.getAttribute('data-rowind') != null ?
-			event.srcElement.getAttribute('data-rowind') :
-			event.srcElement.parentNode.getAttribute('data-rowind');
+			let rowId = event.srcElement?.getAttribute('data-rowind') != null ?
+				event.srcElement.getAttribute('data-rowind') :
+				event.srcElement.parentNode.getAttribute('data-rowind');
 
-		/*if (rowInd != null && this.cmpConfig.inlineEdit !== rowInd) {
-			//this.inlineEditRecord = JSON.parse(JSON.stringify(this.records[rowInd]));
-			this.records[this.cmpConfig.inlineEdit] = this.inlineEditRecord;
-			this.records[this.cmpConfig.inlineEdit]._isEditable = false;
-			this.cmpConfig.inlineEdit = undefined
-		}*/
-		let cItem = this.getColItem(colName);
-		let record;
-		if (this.config._advanced?.rowCallback !== undefined) {
-			try{
-				record = libs.findRecordWithChild(this.records,event.target.getAttribute('data-recid'));
-				let fn = this.config._advanced.rowCallback(this,libs,record, colName);
-			}catch(e){
-				// console.error('Exception in row callback', e);
-				this.config._errors = libs.formatCallbackErrorMessages(e,'table','Row Callback');
+			/*if (rowInd != null && this.cmpConfig.inlineEdit !== rowInd) {
+				//this.inlineEditRecord = JSON.parse(JSON.stringify(this.records[rowInd]));
+				this.records[this.cmpConfig.inlineEdit] = this.inlineEditRecord;
+				this.records[this.cmpConfig.inlineEdit]._isEditable = false;
+				this.cmpConfig.inlineEdit = undefined
+			}*/
+			let cItem = this.getColItem(colName);
+			let record;
+			if (this.config._advanced?.rowCallback !== undefined) {
+				try{
+					record = libs.findRecordWithChild(this.records,event.target.getAttribute('data-recid'));
+					let fn = this.config._advanced.rowCallback(this,libs,record, colName);
+				}catch(e){
+					// console.error('Exception in row callback', e);
+					this.config._errors = libs.formatCallbackErrorMessages(e,'table','Row Callback');
+				}
+			}	
+
+			if (cItem && cItem._advanced?.cellCallback) {
+				try{
+					if(record === undefined) record = libs.findRecordWithChild(this.records,event.target.getAttribute('data-recid'));
+					let fn = cItem._advanced.cellCallback(this,libs,this.calcRowIndex(rowId), colName,record);
+				}catch(e){
+					// console.error('Exception in cell callback', e);
+					this.config._errors = libs.formatCallbackErrorMessages(e,'table','Cell Callback');
+				}
 			}
-		}	
-
-		if (cItem && cItem._advanced?.cellCallback) {
-			try{
-				if(record === undefined) record = libs.findRecordWithChild(this.records,event.target.getAttribute('data-recid'));
-				let fn = cItem._advanced.cellCallback(this,libs,this.calcRowIndex(rowId), colName,record);
-			}catch(e){
-				// console.error('Exception in cell callback', e);
-				this.config._errors = libs.formatCallbackErrorMessages(e,'table','Cell Callback');
-			}
+		}catch(e){
+			console.log('Exception in row callback', e);
 		}
 		//console.log('row click', event, colName, rowId);
 	}

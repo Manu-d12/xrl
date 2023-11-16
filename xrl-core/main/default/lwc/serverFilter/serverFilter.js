@@ -189,6 +189,7 @@ export default class ServerFilter extends LightningElement {
             }
         });
         for (let key in this.conditionMap) {
+            if(this.conditionMap[key] === '' || this.conditionMap[key].length === 0) continue;
             let colItem = this.getColItem(key);
             
             if (colItem.searchCallback && typeof colItem.searchCallback === 'function') {
