@@ -209,6 +209,9 @@ export default class Multiselect extends LightningElement {
         this.mSelectConfig.searchString = 'Select a option';
         this.mSelectConfig.badgeValue = 0;
         this.template.querySelector('.optionBtn').focus();
+        this.mSelectConfig.value = '';
+        this.mSelectConfig.values = [];
+        this.blurEvent('',true);
     }
     closeDropdown(event){
         if(event.relatedTarget === undefined){
