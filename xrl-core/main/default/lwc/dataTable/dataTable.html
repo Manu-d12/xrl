@@ -2,7 +2,7 @@
 	
 	
 	<lightning-formatted-rich-text if:true={config._errors} value={config._errors}></lightning-formatted-rich-text>
-	<div style="height: 100%; position: relative;" ondropdownevent={handleDropDownEvents}>
+	<div style={config._tableStyle} ondropdownevent={handleDropDownEvents}>
 		<div class="slds-grid slds-m-around_xx-small">
 			<div class="slds-size_7-of-12 recordInfo">
 			  {title}{recordInfo} {updateInfo}
@@ -18,7 +18,7 @@
 				</div>
 			</div>
 		</div>
-		<div style="overflow-x: auto;">
+		<div>
 		<table role="grid" if:true={tableRecords} class="slds-table slds-table_bordered slds-table_col-bordered extRelList" style="table-layout: fixed;">
 			<thead>
 				<tr class="slds-line-height_reset" style="height:50px;" ondrop={Drop} ondragstart={DragStart} ondragover={DragOver}>

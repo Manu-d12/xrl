@@ -12,9 +12,9 @@
                 <!-- <span>{mSelectConfig.searchString}</span> -->
             </div>
             <template if:true={mSelectConfig.showDropdown}>
-                <div id="listbox-id-1" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid">
+                <div id="listbox-id-1" class={mSelectConfig.dropdownClass}>
                     <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none" style="margin-top: -5px;">
-                        <lightning-input disabled={disabled} required={required} class="inputBox" placeholder="Search..." onblur={blurEvent} onkeyup={filterOptions} variant="label-hidden" id="combobox-id-1" ></lightning-input>
+                        <lightning-input disabled={disabled} required={required} class="inputBox" placeholder="Search...'Esc' to Close" onblur={blurEvent} onkeyup={filterOptions} variant="label-hidden" id="combobox-id-1" ></lightning-input>
                         <lightning-icon class="slds-input__icon" icon-name="utility:search" size="x-small" alternative-text="search"></lightning-icon>
                     </div>
                     <ul class="slds-listbox slds-listbox_vertical recordListBox" role="presentation" style="display: block;margin: 0;padding: 0;">

@@ -96,6 +96,7 @@ export default class Multiselect extends LightningElement {
         this.mSelectConfig.optionLength = optionData.length;
         this.mSelectConfig.optionData = optionData.sort((a, b) => {return a.selected ? -1 : 1}).slice(0,this.listsize);
         this.mSelectConfig.allOptions = optionData;
+        this.mSelectConfig.dropdownClass = this.dropdownClass();
     }
     get searchString() {
         return this.mSelectConfig.searchString ?? 'Select a option';
@@ -198,7 +199,15 @@ export default class Multiselect extends LightningElement {
             this.mSelectConfig.optionData = options.sort((a, b) => {return a.selected ? -1 : 1}).slice(0,this.listsize);
         }
 	}
-
+    dropdownClass(){
+        let defaultClass = 'slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid';
+        if(libs.getGlobalVar(this.cfg) && libs.getGlobalVar(this.cfg).openMultiselectAtBottom !== undefined) {
+            defaultClass = defaultClass +  (libs.getGlobalVar(this.cfg).openMultiselectAtBottom ? ' slds-dropdown_left' : ' slds-dropdown_bottom');
+        }else{
+            defaultClass = defaultClass + ' slds-dropdown_left';
+        }
+        return defaultClass;
+    }
     clearSelection(){
         let options = JSON.parse(JSON.stringify(this.mSelectConfig.optionData));
         for(let i = 0; i < options.length; i++) {

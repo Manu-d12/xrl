@@ -607,6 +607,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		this.config._originalURL = window.location.href;
 		this.config._isShowRowCallbackTooltip = this.config._advanced?.rowCallback !== undefined;
 		this.config._rowCallbackTooltipText = this.config._advanced?.rowCallbackTooltipText ?? this.config._LABELS.msg_rowCallbackEnabled; //added this so if rowCallback not defined it will use the default one.
+		this.config._tableStyle = 'height: 100%; position: relative;overflow-x: auto;';
 	}
 	get isCheckboxDisabled(){
 		return this.config?._advanced?.isSelectAllDisabled;
@@ -703,6 +704,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			}
 		}
 		if (this.hasGrouping) this.setGroupRecords();
+		this.config._tableStyle = 'height: 100%; position: relative;overflow-x: auto;';
 	}
 
 	changeRecord(id) {
@@ -1000,6 +1002,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				let record = recId ===  null ? this.records[calculatedInd] : libs.findRecordWithChild(this.records, recId);
 				record._isEditable = true;
 				record._focus = colName;
+				//for multiselect to open on top or bottom
+				this.setMultiselectPosition(record.sl);
+				
 				if (this.config._inlineEdit !== undefined) {
 					record._isEditable = false;
 					if (this.hasGrouping) {
@@ -1053,6 +1058,22 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				}
 		}
 	}
+	}
+	setMultiselectPosition(recordIndex){
+		let recordPositionOnPage = recordIndex % parseInt(this.config.pager.pageSize);
+		let midPoint = (parseInt(this.config.pager.pageSize)/2);
+		if(recordPositionOnPage !== 0 && recordPositionOnPage < (midPoint + 1)){
+			libs.getGlobalVar(this.cfg).openMultiselectAtBottom = true; 
+		}else{
+			libs.getGlobalVar(this.cfg).openMultiselectAtBottom = false; 
+		}
+		if (this.config.pager.pageSize === "5") {
+			// Check if min-height property already exists
+			if (!this.config._tableStyle.includes("min-height")) {
+				// Add min-height property if it doesn't exist
+				this.config._tableStyle += "min-height: 430px;";
+			}
+		}
 	}
 
 	handleDropDownEvents(event) {
