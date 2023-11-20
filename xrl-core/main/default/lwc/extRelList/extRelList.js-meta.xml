@@ -8,6 +8,9 @@
         <target>lightning__RecordPage</target>
         <target>lightning__HomePage</target>
         <target>lightning__FlowScreen</target>
+        <target>lightningCommunity__Default</target>
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Page_Layout</target>
     </targets>
     <targetConfigs>
         <targetConfig targets="lightning__RecordPage">
@@ -21,6 +24,15 @@
         </targetConfig>
         <targetConfig targets="lightning__FlowScreen">
             <property required="true" default="" name="apiName" type="String" label="Related List" description="Choose Needed RelatedList."/>
+        </targetConfig>
+        <targetConfig targets="lightningCommunity__Default">
+            <property required="true" default="" name="apiName" type="String" label="Related List" description="Choose Needed RelatedList." datasource="apex://getRelListsPicklist"/>
+        </targetConfig>
+        <targetConfig targets="lightningCommunity__Page">
+            <property required="true" default="" name="apiName" type="String" label="Related List" description="Choose Needed RelatedList." datasource="apex://getRelListsPicklist"/>
+        </targetConfig>
+        <targetConfig targets="lightningCommunity__Page_Layout">
+            <property required="true" default="" name="apiName" type="String" label="Related List" description="Choose Needed RelatedList." datasource="apex://getRelListsPicklist"/>
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>
