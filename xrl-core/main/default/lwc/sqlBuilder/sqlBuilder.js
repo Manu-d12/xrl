@@ -318,12 +318,13 @@ export default class SqlBuilder extends LightningElement {
             // if(selectedCondition.fieldType === 'picklist'){
             //     this.config.sqlBuilder.currentCondition.fieldOptions = selectedCondition.options;
             // }
-            this.config.sqlBuilder.openConditionInput = {
-                isPicklist: true,
-                _isLookUp: false,
-                isMultiSelect: false,
-                isRange: false
-            };
+
+            // this.config.sqlBuilder.openConditionInput = {
+            //     isPicklist: true,
+            //     _isLookUp: false,
+            //     isMultiSelect: false,
+            //     isRange: false
+            // };
             if(sqlBuilderLibs[selectedCondition.fieldType + 'FilterActions']){
                 sqlBuilderLibs[selectedCondition.fieldType + 'FilterActions'](this.config._LABELS).forEach((el)=>{
                     this.config.sqlBuilder.conditionOperations.push(el);
@@ -362,6 +363,9 @@ export default class SqlBuilder extends LightningElement {
                 this.config.sqlBuilder.currentCondition.value = values;
             }
             this.config.sqlBuilder.currentCondition.valueRange = this.config.sqlBuilder.openConditionInput.isRange ? this.config.sqlBuilder.currentCondition.valueRange : false;
+            let multiselect = this.template.querySelector('c-multiselect');
+            multiselect?.setOptions(this.config.sqlBuilder.currentCondition.fieldOptions);
+            multiselect?.setValue(this.config.sqlBuilder.currentCondition.value);
         }
         if(val === "sqlBuilder:conditions:orderingConditions"){
             console.log('sqlBuilder:conditions:orderingConditions', event.target.value);
@@ -435,6 +439,10 @@ export default class SqlBuilder extends LightningElement {
             this.config.dialog.listViewConfig.orderMap = this.config.sqlBuilder.orderings;
             this.dialogValues(true);
         }
+    }
+    closePicklist(){
+        if(this.config.sqlBuilder.openConditionInput)
+            this.config.sqlBuilder.openConditionInput.isPicklist =  false;
     }
     isConditionExists(obj, arr) {
         const copyArr = arr.map(item => ({
