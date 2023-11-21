@@ -230,13 +230,13 @@ export let sqlBuilderLibs = {
         /* eslint-disable */
         switch (filter.operator.value) {
             case 'cn':
-				return filter.field + " ='" +  filter.value + "'";
+				return filter.field + " IN (" +  filter.value + ")";
 			case 'ncn': 
-				return 'NOT ' + filter.field + " Like '%" +  filter.value + "%'";
+				return filter.field + " NOT IN (" +  filter.value + ")";
 			case 'eq':
-				return filter.field + " ='" +  filter.value + "'";
+				return filter.field + " IN (" +  filter.value + ")";
 			case 'neq':
-				return filter.field + " !='" +  filter.value + "'";
+				return filter.field + " NOT IN (" +  filter.value + ")";
 			case 'em': 
 				return filter.field + " = NULL";
 			case 'nem': 
