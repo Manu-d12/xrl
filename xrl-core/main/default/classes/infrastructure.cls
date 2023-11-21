@@ -23,7 +23,7 @@ global with sharing class infrastructure {
 			}
 
 			if (!system.test.isRunningTest()) {
-				list < PermissionSetAssignment > permission = [SELECT Id,PermissionSet.Name FROM PermissionSetAssignment WHERE AssigneeId =: UserInfo.getUserId() AND (PermissionSet.Name = 'XRL_Admin' OR PermissionSet.Name = 'XRL_StandardUser')];
+				list < PermissionSetAssignment > permission = [SELECT Id,PermissionSet.Name FROM PermissionSetAssignment WHERE AssigneeId =: UserInfo.getUserId() AND (PermissionSet.Name = 'XRL_Admin' OR PermissionSet.Name = 'XRL_StandardUser' OR PermissionSet.Name = 'XRL_CommunityUser')];
 				// if (permission.size() != 0) isAdminAccess = true;
 				
 				if (permission.size() == 0){

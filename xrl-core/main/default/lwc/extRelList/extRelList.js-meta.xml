@@ -28,11 +28,5 @@
         <targetConfig targets="lightningCommunity__Default">
             <property required="true" default="" name="apiName" type="String" label="Related List" description="Choose Needed RelatedList." datasource="apex://getRelListsPicklist"/>
         </targetConfig>
-        <targetConfig targets="lightningCommunity__Page">
-            <property required="true" default="" name="apiName" type="String" label="Related List" description="Choose Needed RelatedList." datasource="apex://getRelListsPicklist"/>
-        </targetConfig>
-        <targetConfig targets="lightningCommunity__Page_Layout">
-            <property required="true" default="" name="apiName" type="String" label="Related List" description="Choose Needed RelatedList." datasource="apex://getRelListsPicklist"/>
-        </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>
