@@ -358,12 +358,17 @@ export default class SqlBuilder extends LightningElement {
                 _isLookUp: this.config.sqlBuilder.currentCondition.fieldType === 'reference',
                 isMultiSelect: this.config.sqlBuilder.currentCondition.fieldType === 'picklist'
             };
-            if(this.config.sqlBuilder.currentCondition.fieldType === 'picklist'){
+            if(this.config.sqlBuilder.currentCondition.fieldType === 'picklist' && typeof this.config.sqlBuilder.currentCondition.value === 'string'){
                 let values= this.config.sqlBuilder.currentCondition.value.replace(/'/g, '').split(',');
-                this.config.sqlBuilder.currentCondition.value = values;
+                this.config.sqlBuilder.currentCondition.value = values;  
             }
             this.config.sqlBuilder.currentCondition.valueRange = this.config.sqlBuilder.openConditionInput.isRange ? this.config.sqlBuilder.currentCondition.valueRange : false;
             let multiselect = this.template.querySelector('c-multiselect');
+            if(this.config.sqlBuilder.currentCondition.fieldType === 'picklist' && multiselect!= undefined){
+                multiselect.multiselect = true;
+            }else if(multiselect!= undefined){
+               multiselect.multiselect= false;
+            }
             multiselect?.setOptions(this.config.sqlBuilder.currentCondition.fieldOptions);
             multiselect?.setValue(this.config.sqlBuilder.currentCondition.value);
         }
