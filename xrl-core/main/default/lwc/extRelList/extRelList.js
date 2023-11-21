@@ -201,7 +201,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 							"isEditable": false,
 							"isFilterable": true,
 							"isSortable": true,
-							"index": 4
+							"index": 4,
+							"helpText": "CreatedDate (datetime)",
 					},
 					"emptyField": "NULLS FIRST",
 					"sortOrder": "DESC"
