@@ -255,7 +255,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		// }
 		console.log('ListViews ', data[cmd].listViews);
 		if(data[cmd].listViews.length !== 0){
-			this.listViews = data[cmd].listViews.map(v => {return {label: v.label ? v.label + ' - ' + v.createdBy : v.name, value: v.name};});		
+			this.listViews = data[cmd].listViews.map(v => ({
+				...v, //keeping all the properties of the list views
+				label: v.label ? v.label + ' - ' + v.createdBy : v.name,
+				value: v.name,
+			}));	
 		}else{
 			this.config.listView = {
 				'hasEditAccess':true
@@ -317,7 +321,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 		if(this.config?._advanced?.isShowListViewDropdownCallback){
 			try{
-				this.config.isDisabledListView = !this.config._advanced.isShowListViewDropdownCallback(this,libs,this.listViews,this.config.listView); //making the value negative to make it meaningful with variable name 'isDisabledListView'
+				this.listViews = this.config._advanced.isShowListViewDropdownCallback(this,libs,this.listViews,this.config.listView); //should return an array of list views
+				this.config.isDisabledListView = this.listViews.length === 0;
 			}catch(e){
 				this.config._errors = libs.formatCallbackErrorMessages(e,'table','ListView Dropdown Callback');
 			}
