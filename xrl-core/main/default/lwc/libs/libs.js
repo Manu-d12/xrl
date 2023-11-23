@@ -596,7 +596,7 @@ export let libs = {
 		return message;
 	},
 	getMacros: function(){
-		return [{"label":'recordId',"value":'%%recordId%%'}];
+		return [{"label":'recordId',"value":'%%recordId%%'}, {"label":'userId',"value":'%%userId%%'},{"label":'sObjApiName',"value":'%%sObjApiName%%'},{"label":'urlParam',"value":'%%urlParam%%'}];
 	},
 	showToast : function(scope, params) {
 		const event = new ShowToastEvent(params);
