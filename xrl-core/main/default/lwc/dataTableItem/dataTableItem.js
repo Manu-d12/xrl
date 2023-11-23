@@ -137,7 +137,7 @@ export default class dataTableItem extends LightningElement {
 
 			if (this.col.isNameField === true) {
 				//console.log(this.col.fieldName, JSON.stringify(row), val);
-				return libs.formatStr(refTmp,[this.col.fieldName.split('.')[1] !== undefined && row[this.col.fieldName.split('.')[0]] !== undefined ? row[this.col.fieldName.split('.')[0]].Id : row.Id, val]);
+				return libs.formatStr(refTmp,[libs.portalUrl(), this.col.fieldName.split('.')[1] !== undefined && row[this.col.fieldName.split('.')[0]] !== undefined ? row[this.col.fieldName.split('.')[0]].Id : row.Id, val]);
 			}
 			if(this.col.type === 'address'){
 				return libs.formatAddress(val,this.locale);

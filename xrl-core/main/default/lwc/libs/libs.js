@@ -79,7 +79,8 @@ export let libs = {
 		console.log('GLOBAL VARS', globalVars);
 	},
 	getGlobalVarsCount : function() {
-		libs.setGlobalVar('portalUrl') = (window.location.pathname.indexOf('/s/')>-1 ? window.location.pathname.replace(/\/(.*?\/s\/).*/,'$1'); : '');
+		let url = (window.location.pathname.indexOf('/s/')>-1 ? window.location.pathname.replace(/\/(.*?\/)s\/.*/,'$1') : '');
+		libs.setGlobalVar('portalUrl', url);
 		return Object.keys(globalVars).length;
 	},
 	getGlobalVar: function(varName) {
