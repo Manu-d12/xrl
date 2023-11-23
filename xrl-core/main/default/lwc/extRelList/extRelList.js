@@ -1969,10 +1969,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 						if((col.formatter === undefined || col.formatter==="")){
 							//in case it is a reference and no formatting is defined, otherwise treat it as normal string value
 							const [lookupRow, lookupId] = libs.getLookupRow(rec, col.fieldName);
+							const baseUrl = window.location.origin + (window.location.pathname.indexOf('/s/')>-1 ?  : window.location.pathname.replace(/\/s\/.*/,'') + '/s' : '');
 							ws[cell_ref].v = lookupRow.Name || '';
 							ws[cell_ref].l = {
-							Target: window.location.origin + '/' + lookupId,
-							Tooltip: window.location.origin + '/' + lookupId
+							Target: baseUrl + '/' + lookupId,
+							Tooltip: baseUrl + '/' + lookupId
 							};
 						}else{
 							ws[cell_ref].v = fieldValue;
