@@ -276,14 +276,7 @@ export default class ComparingInterface extends LightningElement {
     handleSelect(event){
         let selectedObj = event.detail.payload.values;
         let selectedFor = event.target.getAttribute('data-id');
-        JSON.parse(JSON.stringify(selectedObj)).forEach(el => {
-            if(this.config.userSelections[selectedFor] === undefined){
-                this.config.userSelections[selectedFor] = [];
-            }
-            if(!this.config.userSelections[selectedFor].includes(el)){
-                this.config.userSelections[selectedFor].push(el);
-            }
-        });
+        this.config.userSelections[selectedFor] = selectedObj;
         libs.getGlobalVar(this.config.json.dataTable.uniqueName).userSelections = JSON.parse(JSON.stringify(this.config.userSelections)); //need to store to to use it in the callbacks
     }
     //handling all the events here
