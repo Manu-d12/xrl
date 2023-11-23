@@ -10,7 +10,7 @@ export let libs = {
 	},
 	getNameSpace: function(){
 		//it will be helpful for development
-		return 'XRL';
+		return 'XRL__';
 	},
 	loadConfig: function(uniqKey) {
 		let localConfig = localStorage.getItem(uniqKey);

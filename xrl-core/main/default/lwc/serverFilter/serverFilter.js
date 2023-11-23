@@ -232,6 +232,9 @@ export default class ServerFilter extends LightningElement {
                     else if (colItem.type === 'id') {
                         condition += 'AND ' + key + "='" + this.conditionMap[key] + "' ";
                     }
+                    else if(colItem.type === 'picklist'){
+                        condition += 'AND ' + key + " LIKE '" + this.conditionMap[key] + "' ";
+                    }
                     else {
                         // condition += 'AND ' + key + " LIKE '%" + this.conditionMap[key] + "%' ";
                         condition += ' AND ' + this.generateLikeCondition(key,this.conditionMap[key]);
