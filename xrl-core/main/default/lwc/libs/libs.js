@@ -5,6 +5,9 @@ import { loadScript, loadStyle } from 'lightning/platformResourceLoader';
 let globalVars = {};
 
 export let libs = {
+	portalUrl : function(){
+		return libs.getGlobalVar('portalUrl');
+	},
 	getNameSpace: function(){
 		//it will be helpful for development
 		return 'XRL';
@@ -76,6 +79,7 @@ export let libs = {
 		console.log('GLOBAL VARS', globalVars);
 	},
 	getGlobalVarsCount : function() {
+		libs.setGlobalVar('portalUrl') = (window.location.pathname.indexOf('/s/')>-1 ? window.location.pathname.replace(/\/(.*?\/s\/).*/,'$1'); : '');
 		return Object.keys(globalVars).length;
 	},
 	getGlobalVar: function(varName) {

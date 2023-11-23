@@ -38,7 +38,7 @@ export default class dataTableItem extends LightningElement {
 
 	@api
 	get value() {
-		let refTmp = '<a href="/{0}" target="_blank" title="{1}">{1}</a>';
+		let refTmp = '<a href="/{0}{1}" target="_blank" title="{2}">{2}</a>';
 		//console.log('type', this.col.type, this.col.fieldName)
 		this.locale = libs.getGlobalVar(this.cfg).userInfo.locale;
 		//console.log(this.col.fieldName, JSON.stringify(this.row), this.row[this.col.fieldName]);
@@ -125,7 +125,7 @@ export default class dataTableItem extends LightningElement {
 			}
 
 			if (this.col.type === 'reference'){
-				return libs.formatStr(refTmp,[val, row.Name ? row.Name : row[config.objectNameFieldsMap?.get(this.col.referenceTo)] ? row[config.objectNameFieldsMap?.get(this.col.referenceTo)] : '']); // Need to investigate this line. Why sometimes for reference we have 'Invalid Name'
+				return libs.formatStr(refTmp,[libs.portalUrl(), val, row.Name ? row.Name : row[config.objectNameFieldsMap?.get(this.col.referenceTo)] ? row[config.objectNameFieldsMap?.get(this.col.referenceTo)] : '']); // Need to investigate this line. Why sometimes for reference we have 'Invalid Name'
 			}
 			if (this.col.type === 'boolean'){
 				this.isBool = true;
