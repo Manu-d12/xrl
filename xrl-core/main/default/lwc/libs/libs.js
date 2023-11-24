@@ -81,6 +81,12 @@ export let libs = {
 	getGlobalVarsCount : function() {
 		let url = (window.location.pathname.indexOf('/s/')>-1 ? window.location.pathname.replace(/\/(.*?\/)s\/.*/,'$1') : '');
 		libs.setGlobalVar('portalUrl', url);
+		let pathSegments=  window.location.href.split('/');
+		let urlParam ={};
+		if(pathSegments[7]=='view'){
+			urlParam[pathSegments[5]]= pathSegments[6];
+		}
+		libs.setGlobalVar('urlParam', urlParam);
 		return Object.keys(globalVars).length;
 	},
 	getGlobalVar: function(varName) {
@@ -601,7 +607,7 @@ export let libs = {
 		return message;
 	},
 	getMacros: function(){
-		return [{"label":'recordId',"value":'%%recordId%%'}, {"label":'userId',"value":'%%userId%%'},{"label":'sObjApiName',"value":'%%sObjApiName%%'},{"label":'urlParam',"value":'%%urlParam%%'}];
+		return [{"label":'recordId',"value":'%%recordId%%'}, {"label":'userId',"value":'%%userInfo.id%%'},{"label":'sObjApiName',"value":'%%sObjApiName%%'},{"label":'urlParam',"value":'%%urlParam%%'}];
 	},
 	showToast : function(scope, params) {
 		const event = new ShowToastEvent(params);
@@ -724,10 +730,19 @@ export let libs = {
 	replaceLiteralsInStr : function(str, name){
 		if (str === undefined) return str;
 		let GLOBALVARS = globalVars[name];
+		let temp=str;
 		const regex = /%%.*?%%/g;
+		const regex2 = /(\w+)\s*='%%urlParam%%'/g;
+		let value;
+
 		let result = str.replace(regex, function(x){
 			let field = x.replaceAll('%','');
-			let value = libs.getLookupValue(GLOBALVARS, field);
+			if(field === "urlParam"){
+				const match= regex2.exec(temp);
+				value = libs.getLookupValue(globalVars, "urlParam."+match[1]);
+			}else{
+				value = libs.getLookupValue(GLOBALVARS, field);
+			}
 			return value;
 		});
 		return result;
