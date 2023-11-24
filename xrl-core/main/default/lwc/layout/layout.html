@@ -29,6 +29,8 @@
                                 onmessage={handleChildMessage}></c-chevron>
                             <c-action-Bar if:true={component.isActionBar} style={component.cmpStyle} actionscfg={component.config}
                                 data-name={component.uniqueName}></c-action-Bar>
+                            <c-comparing-Interface if:true={component.isComparisonInterface} onmessage={handleChildMessage} name={component.uniqueName} 
+                            style={component.cmpStyle} data-name={component.uniqueName}></c-comparing-Interface>
                         </template>
                         <template if:true={component.isCollapsible}>
                             <div class="slds-section" data-id={component.uniqueName}>
@@ -51,6 +53,8 @@
                                         onmessage={handleChildMessage}></c-chevron>
                                     <c-action-Bar if:true={component.isActionBar} style={component.cmpStyle} actionscfg={component.config}
                                         data-name={component.uniqueName}></c-action-Bar>
+                                    <c-comparing-Interface if:true={component.isComparisonInterface} onmessage={handleChildMessage} name={component.uniqueName} 
+                                    style={component.cmpStyle} data-name={component.uniqueName}></c-comparing-Interface>
                                 </div>
                             </div>
                         </template>

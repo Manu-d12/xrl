@@ -1,11 +1,5 @@
 <template>
-    <lightning-card class=" slds-card_boundary" style="padding:5px; display:block">
-    <!-- Object Selection -->   
-    <div class="slds-grid slds-gutters">
-        <div class="slds-col slds-size_1-of-1">
-            <c-multiselect if:true={config.showConfigSelection} data-id="configId" listsize=20 onselect={handleEvent} options={config.extConfigs} selectedvalue="" label="Select a Config"></c-multiselect>
-        </div>
-    </div>
+    <!-- <lightning-card class=" slds-card_boundary" style="padding:5px; display:block"> -->
     <div class="slds-grid slds-gutters" style="padding:5px;">
         <!-- For 1st object and record -->
         <div class="slds-col slds-size_5-of-12" if:true={config.objRecords.objOne}>
@@ -27,7 +21,7 @@
     <template if:true={config.showComparisonTable}>
         <div class="slds-section slds-is-open">
             <div aria-hidden="true" class="slds-section__content" id="expando-unique-id">
-                <c-action-Bar if:true={config.actionsBar} actionscfg={config.actionsBar}></c-action-Bar><br>
+                <!-- <c-action-Bar if:true={config.actionsBar} actionscfg={config.actionsBar}></c-action-Bar><br> -->
                 <table if:true={config.compareResult} class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered" aria-label="Example default base table of Opportunities">
                     <thead>
                         <tr class="slds-line-height_reset">
@@ -75,13 +69,13 @@
             </div>
         </div>
     </template>
-    <div if:true={config.showComparisonTable} class="slds-grid slds-gutters">
+    <!-- <div if:true={config.showComparisonTable} class="slds-grid slds-gutters">
         <div class="slds-col slds-size_1-of-1">
             <c-Data-Table style="width:100%; height:inherit" cfg={config.json.dataTable.uniqueName}></c-Data-Table>
         </div>
-    </div>
+    </div> -->
     <div if:true={config.isSpinner} class="spinner">
         <lightning-spinner size="medium" variant="brand"></lightning-spinner>
     </div>
-</lightning-card>
+<!-- </lightning-card> -->
 </template>
