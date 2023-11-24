@@ -332,6 +332,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 				cmp.isChart = cmp.cmpName === 'chart';
 				cmp.isChevron = cmp.cmpName === 'chevron';
 				cmp.isActionBar = cmp.cmpName === 'actionBar';
+				cmp.isComparisonInterface = cmp.cmpName === 'comparisonInterface';
 				
 				if(libs.getGlobalVar(this.tabConfigName).componentsInLayout === undefined) {
 					libs.getGlobalVar(this.tabConfigName).componentsInLayout = [{uniqueName: this.configId}];
@@ -383,6 +384,10 @@ export default class Layout extends NavigationMixin(LightningElement) {
 						'_cfgName': cmp.tableName,
 						'_barName': this.name
 					};
+				}else if(cmp.isComparisonInterface){
+					this.config.describe = libs.getGlobalVar(this.tabConfigName).describe;
+					this.config.userInfo = (libs.getGlobalVar(this.tabConfigName).userInfo) ? libs.getGlobalVar(this.tabConfigName).userInfo : {};
+					this.config.comparisonInterface = (cmp) ? JSON.parse(JSON.stringify([cmp]).replace(/\s{2,}/g, ' '))[0] : [];
 				}
 				libs.getGlobalVar(this.tabConfigName).tabularConfig.dataModel.push(cmp);
 				count++;

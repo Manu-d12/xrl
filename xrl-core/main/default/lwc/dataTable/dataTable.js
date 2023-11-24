@@ -1647,7 +1647,11 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			this.config.records = libs.getGlobalVar(this.cfg).records;
 			this.connectedCallback();		
 
-		} else if(event.detail.cmd.split(':')[1] === 'updateFields') {
+		}else if(event.detail.cmd.split(':')[1] === 'updateDatatableView' ) {
+
+			this.connectedCallback();		
+
+		}else if(event.detail.cmd.split(':')[1] === 'updateFields') {
 
 			this.additionalFields = [];
 			event.detail.fields.forEach(f => {
