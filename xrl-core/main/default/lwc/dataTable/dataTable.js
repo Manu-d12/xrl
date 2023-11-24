@@ -348,7 +348,6 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 	get groupColspan() {
 		let len = this.config.colModel.filter(col => !col.isHidden && !col._skipFieldFromDisplay).length;
-		len += !this.config.isShowNumeration ? -1 : 0;
 		return len;
 	}
 
@@ -375,13 +374,28 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		this.records.forEach(r => {
 		
 			let groupName;
-			if(this.config.groupingParams.field.split('.')[1] && r[this.config.groupingParams.field.split('.')[0]] !== undefined) {
-				groupName = r[this.config.groupingParams.field.split('.')[0]][this.config.groupingParams.field.split('.')[1]] || 'empty';
-			}else{
-				groupName = r[this.config.groupingParams.field] !== null && r[this.config.groupingParams.field] !== undefined ? r[this.config.groupingParams.field] : 'empty';
+
+			const splitFields = this.config.groupingParams.field.split('.');
+			const fieldName = splitFields[0];
+			const subFieldName = splitFields[1];
+
+			if (subFieldName && r[fieldName] !== undefined) {
+				groupName = r[fieldName][subFieldName] || 'empty';
+			} else {
+				const refFieldName = this.getRefFieldNameConsistsValue(this.config.groupingParams.field);
+
+				if (r[refFieldName] === undefined || r[refFieldName] === null) {
+					groupName = 'empty';
+				} else if (typeof r[refFieldName] === 'object') {
+					// In case of reference field
+					const objectName = libs.getGlobalVar(this.cfg)?.objectNameFieldsMap.get(refFieldName);
+					groupName = objectName ? r[refFieldName][objectName] : r[refFieldName].Name || 'empty';
+				} else {
+					groupName = r[refFieldName];
+				}
 			}
 			let group = result.has(groupName) ? result.get(groupName) : {
-				title: groupName,
+				title: '<b>'+groupName+ '</b>',
 				isChecked: false,
 				isOpened: true,
 				records: []
