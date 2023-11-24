@@ -22,12 +22,12 @@
 		<table role="grid" if:true={tableRecords} class="slds-table slds-table_bordered slds-table_col-bordered extRelList" style="table-layout: fixed;">
 			<thead>
 				<tr class="slds-line-height_reset" style="height:50px;" ondrop={Drop} ondragstart={DragStart} ondragover={DragOver}>
-					<template if:true={hasGrouping}>
+					<!-- <template if:true={hasGrouping}>
 						<th scope="col" style="width: 5rem;">
 							<div class="slds-truncate">
 							</div>
 						</th>
-					</template>
+					</template> -->
 					<th scope="col" if:true={config.isShowNumeration} style="width: 3rem;">
 					</th>
 					<th scope="col" if:true={config.isShowCheckBoxes} style="width: 2rem;">
@@ -261,23 +261,26 @@
 
 				<template if:true={hasGrouping} for:each={tableRecords} for:item="group">
 					<tr key={group.title} class="groupRow" data-groupind={group.title}>
-						<td scope="col" style="width: 2rem;" class="slds-truncate toggle" colspan="2">
-							<lightning-button-icon if:true={group.isOpened} icon-name="utility:dash"  variant="bare" alternative-text={config._LABELS.altTxt_collapse} title={config._LABELS.title_collapse} onclick={toggleGroup} data-groupind={group.title}></lightning-button-icon>
-							<lightning-button-icon if:false={group.isOpened} icon-name="utility:add"  variant="bare" alternative-text={config._LABELS.altTxt_expand} title={config._LABELS.title_expand} onclick={toggleGroup} data-groupind={group.title}></lightning-button-icon>
-							<lightning-formatted-rich-text value={group.title} title={group.title}></lightning-formatted-rich-text>
+						<td scope="col" if:true={config.isShowNumeration} style="width: 2rem;" data-rowind={index} class="numeration">
+							&nbsp;
 						</td>
 						<td scope="col" if:true={config.isShowCheckBoxes} style="width: 2rem;" data-groupind={group.title}>
 							<lightning-input type="checkbox" data-groupind={group.title} onchange={checkGroup} checked={group.isChecked}></lightning-input>
 						</td>
-						<td scope="col" data-groupind={group.title} colspan={groupColspan}>
-							<!-- <lightning-formatted-rich-text value={group.title}></lightning-formatted-rich-text> -->
+						<td scope="col" style="width: 2rem;" class="slds-truncate toggle" colspan={groupColspan}>
+							<lightning-button-icon if:true={group.isOpened} icon-name="utility:dash"  variant="bare" alternative-text={config._LABELS.altTxt_collapse} title={config._LABELS.title_collapse} onclick={toggleGroup} data-groupind={group.title}></lightning-button-icon>
+							<lightning-button-icon if:false={group.isOpened} icon-name="utility:add"  variant="bare" alternative-text={config._LABELS.altTxt_expand} title={config._LABELS.title_expand} onclick={toggleGroup} data-groupind={group.title}></lightning-button-icon>
+							<lightning-formatted-rich-text value={group.title} title={group.title}></lightning-formatted-rich-text>
 						</td>
+						<!-- <td scope="col" data-groupind={group.title} colspan={groupColspan}>
+							<lightning-formatted-rich-text value={group.title}></lightning-formatted-rich-text>
+						</td> -->
 					</tr>
 					<template if:true={group.isOpened} for:each={group.records} for:item="dItem" for:index="index">			
 						<tr key={dItem.Id} style={dItem._rowStyle} data-rowind={index} data-recid={dItem.Id} data-groupind={group.title}>
-							<td scope="col" style="width: 2rem;" data-rowind={index} class="numeration">
+							<!-- <td scope="col" style="width: 2rem;" data-rowind={index} class="numeration">
 								&nbsp;
-							</td>
+							</td> -->
 							<td scope="col" if:true={config.isShowNumeration} style="width: 2rem;text-lign:right" data-rowind={index} class="numeration">
 								{dItem.index}
 							</td>
