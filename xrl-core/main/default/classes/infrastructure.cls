@@ -19,7 +19,7 @@ global with sharing class infrastructure {
 		try {
 			Organization orgDetails = [SELECT Id, InstanceName, IsSandbox, Name, OrganizationType FROM Organization];
 			if(orgDetails.OrganizationType != 'Developer Edition' && !orgDetails.IsSandbox && !isUserLicensed()){
-				throw new InfrastructureException(null,label.msg_packageLicenseExpired, Infrastructure.exceptionType.GENERAL);
+				throw new InfrastructureException(null,'License is expired', Infrastructure.exceptionType.GENERAL);
 			}
 
 			if (!system.test.isRunningTest()) {

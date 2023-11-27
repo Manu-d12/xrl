@@ -564,14 +564,14 @@ export let libs = {
 					scope.config.isExceptionInRemoteAction = true;
 					console.error(result.exception, result.log);
 					//HYPER-247
-					let formattedErrMsg = this.formatErrMessage(result.exception.message);				
+					let formattedErrMsg = libs.formatErrMessage(result.exception.message);				
 					const event = new ShowToastEvent({
 						title: result.exception.title,
 						message: formattedErrMsg,
 						variant: 'error'
 					});
-					if (!formattedErrMsg.includes('License is expired') && !formattedErrMsg.includes('Permission Set')) {
-						scope.dispatchEvent(event);
+					if (formattedErrMsg.includes('License is expired')) {
+						scope.config._tableLevelErrors = '<b style="color:red">XRL:</b> Package License Expired';
 					}
 					else if(formattedErrMsg.includes('Permission Set')){
 						scope.config._tableLevelErrors = '<b>XRL:</b> No permission set assigned';
