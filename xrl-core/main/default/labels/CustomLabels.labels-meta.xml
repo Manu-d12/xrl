@@ -2012,6 +2012,14 @@ Once you are done editing the pattern, click outside the input box.</value>
         <value>data-lookup-filter-and-search/hypergrid-globalsearch-article</value>
     </labels>
     <labels>
+        <fullName>hlpUrl_extRelListInterfaceUnderstanding</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_extRelListInterfaceUnderstanding</shortDescription>
+        <value>getting-started-with-hypergrid-20/hypergrid-understanding-the-xrl-interface</value>
+    </labels>
+    <labels>
         <fullName>hlpUrl_sqlBuilderFieldSelection</fullName>
         <categories>XRL</categories>
         <language>en_US</language>
