@@ -200,13 +200,25 @@ public class packageTest {
         // System.assertEquals(true, res.size()>0);
     }
     static testMethod void testPostInstall() {
-        Test.startTest();
-        	postInstallClass postinstall = new postInstallClass();
-	        Test.testInstall(postinstall, null);
-    	    // Test.testInstall(postinstall, new Version(1,0), true);   
-	        List<extRelListConfig__c> a = [SELECT Id FROM extRelListConfig__c];
-	        // System.assertEquals(a.size(), 2, 'Msg');            
-        Test.stopTest();
+        User user = [select Fields(standard) from user where isactive=true limit 1];
+        user = user.clone(false, false, false);
+        user.username=user.username+'1';
+        user.FederationIdentifier=null;
+        user.Alias+='1';
+        user.CommunityNickname+='1';
+        System.runAs(user) {
+            Test.startTest();
+        	    postInstallClass postinstall = new postInstallClass();
+	            Test.testInstall(postinstall, null);
+    	        // Test.testInstall(postinstall, new Version(1,0), true);   
+	            List<extRelListConfig__c> a = [SELECT Id FROM extRelListConfig__c];
+	            System.assertEquals(a.size(), 2, 'Msg');            
+                List<PermissionSetAssignment> psa = [SELECT Id,PermissionSetId FROM PermissionSetAssignment WHERE AssigneeId = :UserInfo.getUserId() LIMIT 1];
+                System.assertNotEquals(null, psa, 'Permission Set not assigned to the user');
+                List<PermissionSet>  testPermissionSet= [SELECT Id FROM PermissionSet WHERE Name = 'XRL_Admin' LIMIT 1];
+                System.assertEquals(testPermissionSet[0].Id, psa[0].PermissionSetId, 'Permission Set assigned');
+            Test.stopTest();
+        }
     }
     @isTest
     static void testCustomSoql() {

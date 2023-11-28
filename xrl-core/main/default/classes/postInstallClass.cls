@@ -16,6 +16,12 @@ global with sharing class postInstallClass implements InstallHandler {
 
             SObjectAccessDecision securityDecision = Security.stripInaccessible( AccessType.CREATABLE, newLists);
             insert securityDecision.getRecords(); //setting config on Case object
+
+            PermissionSetAssignment psa = new PermissionSetAssignment(
+            AssigneeId = UserInfo.getUserId(),
+            PermissionSetId = [SELECT Id FROM PermissionSet WHERE Name = 'XRL_Admin' LIMIT 1].Id );
+
+            insert psa;
         }
     }
 }
