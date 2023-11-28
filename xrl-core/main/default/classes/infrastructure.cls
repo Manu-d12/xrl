@@ -754,6 +754,7 @@ global with sharing class infrastructure {
 			'hlpUrl_groupFieldName'=>label.hlpUrl_groupFieldName,
 			'hlpUrl_isGlobalSearch'=>label.hlpUrl_isGlobalSearch,
 			'hlpUrl_sqlBuilderFieldSelection'=>label.hlpUrl_sqlBuilderFieldSelection,
+			'hlpUrl_extRelListInterfaceUnderstanding' => label.hlpUrl_extRelListInterfaceUnderstanding,
 			'hlpUrl_sqlBuilderApplyCondition'=>label.hlpUrl_sqlBuilderApplyCondition,
 			'hlpUrl_sqlBuilderApplyOrdering'=>label.hlpUrl_sqlBuilderApplyOrdering,
 			'hlpUrl_lockedFields'=>label.hlpUrl_lockedFields,

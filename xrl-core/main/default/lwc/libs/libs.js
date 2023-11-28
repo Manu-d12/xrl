@@ -689,7 +689,7 @@ export let libs = {
 		if(articleUrl === undefined){
 			switch(index.split(':')[1]){
 				case 'extRelList':
-					url = baseUrl;
+					url += labels.hlpUrl_extRelListInterfaceUnderstanding;
 					break;
 				case '11': //Configure
 					url += labels.hlpUrl_sqlBuilderFieldSelection;
