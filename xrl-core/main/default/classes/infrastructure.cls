@@ -89,7 +89,10 @@ global with sharing class infrastructure {
 				}
 				when 'getStaticResource' {
 					resultMethod = getStaticResource();
-				}				
+				}
+                when 'httpRequest' {
+					resultMethod = httpRequest(data);
+				}
 				
 				when
 				else {
@@ -119,25 +122,28 @@ global with sharing class infrastructure {
                 'input' => data
 			});
 		}
-		result.put(cmd + 'Result', resultMethod);
-
-		User userDetails = [SELECT Id, Name, Profile.Name, UserRole.Name, Email FROM User where Id =: userinfo.getUserId()];
-		list < PermissionSetAssignment > permissionSets = [SELECT Id, PermissionSet.Name FROM PermissionSetAssignment WHERE AssigneeId =: UserInfo.getUserId()];
-		List < Group > publicGroups = getGroupsForUser(userinfo.getUserId());
-		System.debug(publicGroups);
-
-		result.put('userInfo', new map < string, object > {
-			'id'=> userinfo.getUserId(),
-			'name'=> userDetails.Name,
-			'email' => userDetails.Email,
-			'timezone'=>UserInfo.getTimeZone().getID(),
-			'locale' => userInfo.getLocale().replaceAll('_', '-').replace('-EURO', ''),
-			'isAdminAccess' => isAdminAccess,
-			'profileName' => userDetails.Profile.Name,
-			'roleName' => userDetails.UserRole.Name,
-			'publicGroups' => publicGroups,
-			'permissionSets' => permissionSets
-		});
+		
+        result.put(cmd + 'Result', resultMethod);
+        
+        if (cmd.startsWith('getConfig')) {
+            User userDetails = [SELECT Id, Name, Profile.Name, UserRole.Name, Email FROM User where Id =: userinfo.getUserId()];
+            list < PermissionSetAssignment > permissionSets = [SELECT Id, PermissionSet.Name FROM PermissionSetAssignment WHERE AssigneeId =: UserInfo.getUserId()];
+            List < Group > publicGroups = getGroupsForUser(userinfo.getUserId());
+            System.debug(publicGroups);
+    
+            result.put('userInfo', new map < string, object > {
+                'id'=> userinfo.getUserId(),
+                'name'=> userDetails.Name,
+                'email' => userDetails.Email,
+                'timezone'=>UserInfo.getTimeZone().getID(),
+                'locale' => userInfo.getLocale().replaceAll('_', '-').replace('-EURO', ''),
+                'isAdminAccess' => isAdminAccess,
+                'profileName' => userDetails.Profile.Name,
+                'roleName' => userDetails.UserRole.Name,
+                'publicGroups' => publicGroups,
+                'permissionSets' => permissionSets
+            });
+        }
 		if (isDebug == true){
 			result.put('DEBUGLOG', debugLog);
 		}
@@ -1198,6 +1204,56 @@ global with sharing class infrastructure {
 			lst.add(url_file_ref );    
         }
 		return lst;
+    }
+    
+    private static map<string, object> httpRequest(map<string, object> data) {
+
+        // Instantiate a new http object
+        string endPoint = (string) data.get('endPoint');
+        string method = (string) data.get('method');
+        string sid = (string) data.get('sid');
+        string body = (string) data.get('body');
+        integer timeout = (integer) data.get('timeout');
+        map<string, string> header = (map<string, string>) JSON.deserialize(JSON.serialize(data.get('header')), map<string, string>.class);
+        Http h = new Http();
+    
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint(endPoint);
+        req.setTimeout((TimeOut == null ? 120 : TimeOut) * 1000);
+        req.setMethod(method != null ? method : 'GET');
+        
+        if (req.getMethod() == 'GET') req.setHeader('Content-Type', 'application/json');
+        if (req.getMethod() == 'POST') req.setBody(body);
+        if (sid == null) {
+            req.setHeader('Authorization', 'Bearer ' + sid);
+            //req.setHeader('Authorization','Bearer {!$Credential.OAuthToken}');
+        }
+        
+        if (Header != null) {
+            
+			for (String key: Header.keyset()) {
+				if (Header.get(Key) != null) req.setHeader(Key, header.get(Key));
+			}
+        }
+        
+        HttpResponse res = h.send(req);
+        
+        map<string, string> resHeaders = new map<string, string>();
+        for(string i : res.getHeaderKeys()) {
+            resHeaders.put(i, res.getHeader(i));
+        }
+    
+        
+        return new map<string, object>{
+            'endPoint' => endPoint,
+            'method' => method,
+            'inBody' => req.getBody(),
+            'body' => res.getBody(),
+            'header' => resHeaders,
+            'status' => res.getStatus(),
+            'statusCode' => res.getStatusCode(),
+            'sessionId' => sid
+        };
     }
 
 	global static void addDebugLog(string key, object value) {
