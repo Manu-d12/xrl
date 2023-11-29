@@ -19,7 +19,7 @@ global with sharing class infrastructure {
 		try {
 			Organization orgDetails = [SELECT Id, InstanceName, IsSandbox, Name, OrganizationType FROM Organization];
 			if(orgDetails.OrganizationType != 'Developer Edition' && !orgDetails.IsSandbox && !isUserLicensed()){
-				throw new InfrastructureException(null,'License is expired', Infrastructure.exceptionType.GENERAL);
+				throw new InfrastructureException(null,label.msg_packageLicenseExpired, Infrastructure.exceptionType.GENERAL);
 			}
 
 			if (!system.test.isRunningTest()) {
@@ -91,7 +91,7 @@ global with sharing class infrastructure {
 					resultMethod = getStaticResource();
 				}
                 when 'httpRequest' {
-					resultMethod = httpRequest(data);
+					resultMethod = sendRequest(data);
 				}
 				
 				when
@@ -1206,7 +1206,7 @@ global with sharing class infrastructure {
 		return lst;
     }
     
-    private static map<string, object> httpRequest(map<string, object> data) {
+    private static map<string, object> sendRequest(map<string, object> data) {
 
         // Instantiate a new http object
         string endPoint = (string) data.get('endPoint');
@@ -1214,7 +1214,9 @@ global with sharing class infrastructure {
         string sid = (string) data.get('sid');
         string body = (string) data.get('body');
         integer timeout = (integer) data.get('timeout');
+
         map<string, string> header = (map<string, string>) JSON.deserialize(JSON.serialize(data.get('header')), map<string, string>.class);
+		if (header == null) header = new map<string, string>();
         Http h = new Http();
     
         HttpRequest req = new HttpRequest();
@@ -1222,11 +1224,10 @@ global with sharing class infrastructure {
         req.setTimeout((TimeOut == null ? 120 : TimeOut) * 1000);
         req.setMethod(method != null ? method : 'GET');
         
-        if (req.getMethod() == 'GET') req.setHeader('Content-Type', 'application/json');
+        if (req.getMethod() == 'GET') header.put('Content-Type', 'application/json');
         if (req.getMethod() == 'POST') req.setBody(body);
-        if (sid == null) {
-            req.setHeader('Authorization', 'Bearer ' + sid);
-            //req.setHeader('Authorization','Bearer {!$Credential.OAuthToken}');
+        if (sid != null) {
+            header.put('Authorization', 'Bearer ' + sid);
         }
         
         if (Header != null) {
@@ -1246,8 +1247,9 @@ global with sharing class infrastructure {
         
         return new map<string, object>{
             'endPoint' => endPoint,
-            'method' => method,
+            'method' => req.getMethod(),
             'inBody' => req.getBody(),
+			'inHeader' => header,
             'body' => res.getBody(),
             'header' => resHeaders,
             'status' => res.getStatus(),
