@@ -595,6 +595,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					});
 				})
 			});
+			if(refFieldsObject.includes('LoginGeo')){
+				this.config.objectNameFieldsMap.set('LoginGeo', 'Id'); //Had to hard code this as there is no Name field on the LoginGeo sObject
+			}
 			console.log('this.config.objectNameFieldsMap: ', this.config.objectNameFieldsMap);
 		}
 		
