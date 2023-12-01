@@ -476,6 +476,8 @@ export default class SqlBuilder extends LightningElement {
         if(this.config.describeMap[sObjName]){
             this.config.sqlBuilder.fields = this.generateFields(this.config.describeMap[sObjName],objStr);
             this.config.sqlBuilder.fields = libs.sortRecords(this.config.sqlBuilder.fields, 'label', true);
+            this.config.sqlBuilder.filterableFields = this.config.sqlBuilder.fields;
+            this.config.sqlBuilder.sortableFields =this.config.sqlBuilder.fields;
             this.config.sqlBuilder.allFields = this.config.sqlBuilder.fields;
         }else{
             libs.remoteAction(this, 'objectFieldList', { sObjApiName: sObjName, 
@@ -484,6 +486,8 @@ export default class SqlBuilder extends LightningElement {
                     this.config.describeMap[sObjName] = objectFields;
                     this.config.sqlBuilder.fields = this.generateFields(objectFields,objStr,sObjName);   
                     this.config.sqlBuilder.fields = libs.sortRecords(this.config.sqlBuilder.fields, 'label', true);
+                    this.config.sqlBuilder.filterableFields = this.config.sqlBuilder.fields;
+                    this.config.sqlBuilder.sortableFields =this.config.sqlBuilder.fields;
                     this.config.sqlBuilder.allFields = this.config.sqlBuilder.fields;    
                 } });
         }
