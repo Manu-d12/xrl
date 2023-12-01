@@ -2325,4 +2325,12 @@ return records;
         <shortDescription>hlpUrl_actions</shortDescription>
         <value>getting-started-with-hypergrid-20/hypergrid-understanding-the-xrl-interface#actions-9</value>
     </labels>
+    <labels>
+        <fullName>lbl_selectAnOption</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_selectAnOption</shortDescription>
+        <value>Select an Option</value>
+    </labels>
 </CustomLabels>
