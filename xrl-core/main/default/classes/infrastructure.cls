@@ -889,6 +889,7 @@ global with sharing class infrastructure {
 			'lbl_advancedTableSettings'=>label.lbl_advancedTableSettings,
 			'lbl_advancedActionSettings'=>label.lbl_advancedActionSettings,
 			'lbl_externalJS' => label.lbl_externalJS,
+			'lbl_selectAnOption' => label.lbl_selectAnOption,
 			'msg_enterUniqueActionId'=>label.msg_enterUniqueActionId,
 			'msg_lisViewWasUpdated' => label.msg_lisViewWasUpdated,
 			'msg_requestWasSent' => label.msg_requestWasSent,

@@ -44,6 +44,8 @@ export default class Multiselect extends LightningElement {
     }
 
     connectedCallback() {
+        this.mSelectConfig.labels = libs.getGlobalVar(this.cfg)?._LABELS ?? {};
+        this.mSelectConfig.labels.lbl_selectAnOption = 'Select an Option'; //hardcoding this value to avoid any unnecessary error because of this.cfg === undefined
         this.setSelect();
     }
     renderedCallback(){
@@ -88,7 +90,7 @@ export default class Multiselect extends LightningElement {
             // if(this.multiselect)
             //     this.mSelectConfig.searchString = 'Select a option';
             // else
-            this.mSelectConfig.searchString = searchString !== undefined ? searchString : 'Select a option';
+            this.mSelectConfig.searchString = searchString !== undefined ? searchString : this.mSelectConfig.labels.lbl_selectAnOption;
             this.mSelectConfig.badgeValue = count;
         }
         this.mSelectConfig.value = value;
@@ -99,7 +101,7 @@ export default class Multiselect extends LightningElement {
         this.mSelectConfig.dropdownClass = this.dropdownClass();
     }
     get searchString() {
-        return this.mSelectConfig.searchString ?? 'Select a option';
+        return this.mSelectConfig.searchString ?? this.mSelectConfig.labels.lbl_selectAnOption;
     }
 
     get badgeValue(){
@@ -179,7 +181,7 @@ export default class Multiselect extends LightningElement {
                 this.mSelectConfig.showDropdown = false;
                 this.blurEvent('',true);
             }
-            this.mSelectConfig.searchString = searchString !== undefined ? searchString : 'Select a option';
+            this.mSelectConfig.searchString = searchString !== undefined ? searchString : this.mSelectConfig.labels.lbl_selectAnOption;
             this.mSelectConfig.badgeValue = count;
         }
     }
@@ -215,7 +217,7 @@ export default class Multiselect extends LightningElement {
         }
         this.mSelectConfig.optionData = options;
         this.mSelectConfig.allOptions = JSON.parse(JSON.stringify(options));
-        this.mSelectConfig.searchString = 'Select a option';
+        this.mSelectConfig.searchString = this.mSelectConfig.labels.lbl_selectAnOption;
         this.mSelectConfig.badgeValue = 0;
         this.template.querySelector('.optionBtn').focus();
         this.mSelectConfig.value = '';
@@ -242,7 +244,7 @@ export default class Multiselect extends LightningElement {
             }
         }
         if(this.multiselect){
-            this.mSelectConfig.searchString = searchString !== undefined ? searchString : 'Select a option';
+            this.mSelectConfig.searchString = searchString !== undefined ? searchString : this.mSelectConfig.labels.lbl_selectAnOption;
             this.mSelectConfig.badgeValue = count;
             // this.mSelectConfig.searchString = count + ' Option(s) Selected';
             if(shouldDispatchEvent !== undefined){
