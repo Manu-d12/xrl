@@ -190,7 +190,7 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>lbl_chooseOperation</shortDescription>
-        <value>Choose operation</value>
+        <value>Select an Option</value>
     </labels>
     <labels>
         <fullName>lbl_enterListViewLabel</fullName>
