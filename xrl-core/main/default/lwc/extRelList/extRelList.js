@@ -675,7 +675,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 	}
 	async processFile(file){
-		if(!(file?.sObjApiName.includes('extRelListConfig__c') && this.config.sObjApiName.includes('extRelListConfig__c'))) return;
+		if(file?.sObjApiName.includes('PermissionSetAssignment') && this.config.sObjApiName.includes('PermissionSetAssignment')) this.handlePermissionSetAssignmentImport(file);
+		if(!(file?.sObjApiName.includes('extRelListConfig__c') && this.config.sObjApiName.includes('extRelListConfig__c'))) {
+			console.log('Import NOT SUPPORTED');
+			return;
+		}
 		this.config.namespace = 'XRL';
 		let recordsWithParents = [];
 		let recordsWithoutParents = [];
@@ -726,6 +730,32 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				}
 			});
 		}
+	}
+	async handlePermissionSetAssignmentImport(file){
+		file.records.forEach((record) => {
+			delete record.Id;
+			delete record.sl;
+		});
+		await libs.remoteAction(this, 'saveRecords', { records: file.records, 
+			sObjApiName: this.config.sObjApiName,
+			callback: function(nodename,data){
+				console.log('Permission set saving result', data[nodename].records,data[nodename].listOfErrors);
+				if(data[nodename].listOfErrors.length > 0){
+					libs.showToast(this,{
+						title: 'Error',
+						message: 'Error in assigning permission set',
+						variant: 'error'
+					});
+				}else{
+					libs.showToast(this,{
+						title: 'Success',
+						message: 'Successfully Permission set Assigned '+ data[nodename].records.length +' records.',
+						variant: 'success'
+					});
+					this.loadCfg(); // refreshing the grid
+				}
+			}
+		});
 	}
 
 	dragOverHandler(ev) {
