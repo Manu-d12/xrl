@@ -116,17 +116,18 @@ export default class ComparingInterface extends LightningElement {
                 ? this.config.json.parentsRecordsSelectionCallback?.[selectedFor + 'FieldsToRetrieve']
                 : ['Id', 'Name'],
             relField: '',
-            callback: (nodeName, data) => {
-                this.config.objRecords[userSelection] = [];
+            callback: async (nodeName, data) => {
                 let callback = this.config.json.parentsRecordsSelectionCallback?.[selectedFor];
                 if (callback !== undefined && callback !== '') {
                     try {
-                        this.config.objRecords[userSelection] = eval('(' + callback + ')')(this,libs,data[nodeName].records);
+                        let func = eval('(' + callback + ')');
+                        this.config.objRecords[userSelection] = await func(this,libs,data[nodeName].records);
                     } catch (e) {
                         console.error('Error', e);
                         this.config.objRecords[userSelection] = [];
                     }
                 } else {
+                    this.config.objRecords[userSelection] = [];
                     data[nodeName].records.forEach(el => {
                         this.config.objRecords[userSelection].push({ 'label': el.Name, 'value': el.Id });
                     });
