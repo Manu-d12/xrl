@@ -94,6 +94,9 @@ export let sqlBuilderLibs = {
 			? actions.find( el => { return el.value === key})
 			: actions;
 	},
+	multipicklistFilterActions(labels,key) {
+		return this.picklistFilterActions(labels,key);
+	},
 	booleanFilterActions(labels,key) {
 		const actions = [
 			{ label: labels.lbl_isEqual, value: 'eq' },
@@ -242,6 +245,10 @@ export let sqlBuilderLibs = {
 			case 'nem': 
 				return filter.field + " != NULL";
         }
+    },
+	multipicklist__condition(filter) {
+        /* eslint-disable */
+        return this.picklist__condition(filter);
     },
     double__condition(filter) {
         /* eslint-disable */

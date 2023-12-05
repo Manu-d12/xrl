@@ -178,7 +178,7 @@ export default class SqlBuilder extends LightningElement {
                 this.config.sqlBuilder.currentCondition.fieldType = selectedField.type;
                 this.config.sqlBuilder.currentCondition.referenceTo = selectedField.referenceTo;
                 this.config.sqlBuilder.noOperationError = false;
-                if(selectedField.type === 'picklist'){
+                if(selectedField.type === 'picklist' || selectedField.type === 'multipicklist'){
                     this.config.sqlBuilder.currentCondition.fieldOptions = selectedField.options;
                 }
                 if(selectedField.type === 'boolean'){
@@ -230,10 +230,10 @@ export default class SqlBuilder extends LightningElement {
             this.config.sqlBuilder.currentCondition.operator = sqlBuilderLibs[this.config.sqlBuilder.currentCondition.fieldType + 'FilterActions'](this.config._LABELS).find((el)=> el.value === operator);
             console.log(this.config.sqlBuilder.currentCondition._editOptions);
             this.config.sqlBuilder.openConditionInput = {
-                isPicklist: this.config.sqlBuilder.currentCondition.fieldType === 'picklist' || this.config.sqlBuilder.currentCondition.fieldType === 'boolean' ? true : false,
+                isPicklist: this.config.sqlBuilder.currentCondition.fieldType === 'picklist' || this.config.sqlBuilder.currentCondition.fieldType === 'boolean' || this.config.sqlBuilder.currentCondition.fieldType === 'multipicklist' ? true : false,
                 isRange: operator === 'rg' ? true : false,
                 _isLookUp: this.config.sqlBuilder.currentCondition.fieldType === 'reference',
-                isMultiSelect: this.config.sqlBuilder.currentCondition.fieldType === 'picklist'
+                isMultiSelect: this.config.sqlBuilder.currentCondition.fieldType === 'picklist' || this.config.sqlBuilder.currentCondition.fieldType === 'multipicklist' ? true : false ,
             };
             this.config.sqlBuilder.currentCondition.valueRange = this.config.sqlBuilder.openConditionInput.isRange ? this.config.sqlBuilder.currentCondition.valueRange : false;
         }
@@ -259,6 +259,14 @@ export default class SqlBuilder extends LightningElement {
                     }
                 }else{
                     let fieldInd = this.config.sqlBuilder.conditions.findIndex((el)=> el.index.toString() === this.config.sqlBuilder.currentCondition.index);
+                    if((this.config.sqlBuilder.currentCondition.fieldType === 'picklist' || this.config.sqlBuilder.currentCondition.fieldType === 'multipicklist') && typeof this.config.sqlBuilder.currentCondition.value === 'object'){
+                        let values='';
+                        this.config.sqlBuilder.currentCondition.value.forEach((val)=>{
+                            values+="'"+ val +"'"+","
+                        });
+                        values= values.substring(0,values.length - 1);
+                         this.config.sqlBuilder.currentCondition.value = values;
+                    }
                     this.config.sqlBuilder.conditions[fieldInd] = this.config.sqlBuilder.currentCondition;
                 }
                 this.dialogValues(true);
@@ -280,7 +288,7 @@ export default class SqlBuilder extends LightningElement {
                 selectedField = this.config.sqlBuilder.fields.find((el) => el.fieldName === this.config.sqlBuilder.currentCondition.field);
                 record = selectedField._editOptions.find(el => el.value === value);
                 this.config.sqlBuilder.currentCondition.referenceValueLabel = record.label;
-            } else if(this.config.sqlBuilder.currentCondition.fieldType === 'picklist') {
+            } else if(this.config.sqlBuilder.currentCondition.fieldType === 'picklist' || this.config.sqlBuilder.currentCondition.fieldType === "multipicklist") {
                 // Non-reference field
                 let values='';
                 event.detail.payload.values.forEach((val)=>{
@@ -353,24 +361,24 @@ export default class SqlBuilder extends LightningElement {
                 this.config.sqlBuilder.fields.find((el) => el.fieldName === this.config.sqlBuilder.currentCondition.field)._editOptions = this.config.sqlBuilder.currentCondition._editOptions;
             }
             this.config.sqlBuilder.openConditionInput = {
-                isPicklist: this.config.sqlBuilder.currentCondition.fieldType === 'picklist'  || this.config.sqlBuilder.currentCondition.fieldType === 'boolean' ? true : false,
+                isPicklist: this.config.sqlBuilder.currentCondition.fieldType === 'picklist' || this.config.sqlBuilder.currentCondition.fieldType === 'boolean' || this.config.sqlBuilder.currentCondition.fieldType === 'multipicklist' ? true : false,
                 isRange: this.config.sqlBuilder.currentCondition.operator.value === 'rg' ? true : false,
                 _isLookUp: this.config.sqlBuilder.currentCondition.fieldType === 'reference',
-                isMultiSelect: this.config.sqlBuilder.currentCondition.fieldType === 'picklist'
+                isMultiSelect: this.config.sqlBuilder.currentCondition.fieldType === 'picklist' || this.config.sqlBuilder.currentCondition.fieldType === 'multipicklist' ? true : false 
             };
-            if(this.config.sqlBuilder.currentCondition.fieldType === 'picklist' && typeof this.config.sqlBuilder.currentCondition.value === 'string'){
+            if((this.config.sqlBuilder.currentCondition.fieldType === 'picklist' || this.config.sqlBuilder.currentCondition.fieldType === 'multipicklist') && typeof this.config.sqlBuilder.currentCondition.value === 'string'){
                 let values= this.config.sqlBuilder.currentCondition.value.replace(/'/g, '').split(',');
                 this.config.sqlBuilder.currentCondition.value = values;  
             }
             this.config.sqlBuilder.currentCondition.valueRange = this.config.sqlBuilder.openConditionInput.isRange ? this.config.sqlBuilder.currentCondition.valueRange : false;
             let multiselect = this.template.querySelector('c-multiselect');
-            if(this.config.sqlBuilder.currentCondition.fieldType === 'picklist' && multiselect!= undefined){
+            if((this.config.sqlBuilder.currentCondition.fieldType === 'picklist' || this.config.sqlBuilder.currentCondition.fieldType === 'multipicklist') && multiselect!= undefined){
                 multiselect.multiselect = true;
             }else if(multiselect!= undefined){
                multiselect.multiselect= false;
             }
             multiselect?.setOptions(this.config.sqlBuilder.currentCondition.fieldOptions);
-            multiselect?.setValue(this.config.sqlBuilder.currentCondition.value);
+            //multiselect?.setValue(this.config.sqlBuilder.currentCondition.value);
         }
         if(val === "sqlBuilder:conditions:orderingConditions"){
             console.log('sqlBuilder:conditions:orderingConditions', event.target.value);
