@@ -626,8 +626,12 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	get isCheckboxDisabled(){
 		return this.config?._advanced?.isSelectAllDisabled;
 	}
-	newValValidation(newValue){
-		return newValue === 'NONE' ? null : newValue;
+	newValValidation(newValue, column){
+		//return newValue === 'NONE' ? null : newValue;
+		if(newValue === 'NONE')
+			return null;
+
+		return column.options.find(op=>{return op.value === newValue}).label;
 	}
 
 	saveEditCallback(isNeedSave, rowName, value) {
@@ -637,9 +641,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				this.config._inlineEditRow : JSON.parse(JSON.stringify(libs.findRecordWithChild(this.records,this.config._inlineEdit)));
 				let cItem = this.getColItem(rowName);
 				if(cItem.type === 'reference' && cItem._editOptions){
-					this.config._inlineEditRow[cItem.fieldName] = this.newValValidation(value);
+					this.config._inlineEditRow[cItem.fieldName] = this.newValValidation(value,cItem);
 					const referenceFieldName = this.getRefFieldNameConsistsValue(cItem.fieldName);
-					if(this.config._inlineEditRow[referenceFieldName] && this.newValValidation(value) === null){
+					if(this.config._inlineEditRow[referenceFieldName] && this.newValValidation(value,cItem) === null){
 						this.config._inlineEditRow[referenceFieldName] = null;
 					}
 					if(this.config._inlineEditRow[cItem.fieldName] !== null){
@@ -664,7 +668,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					}
 					
 				}else{
-					this.config._inlineEditRow[rowName] = this.newValValidation(value);
+					this.config._inlineEditRow[rowName] = this.newValValidation(value,cItem);
 				}
 			} else {
 				let isNeedSaveData = this.config._inlineEditRow !== undefined && JSON.stringify(libs.findRecordWithChild(this.records,this.config._inlineEdit)) !== JSON.stringify(this.config._inlineEditRow);
@@ -1486,8 +1490,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			
 			// let origItem = origRecords.find(elem => {return elem.Id === item.Id});
 			let origItem = that.origRecords.get(item.Id);
-			item[fieldName] = that.newValValidation(v);
-			origItem[fieldName] = that.newValValidation(v);
+			let cItem = that.getColItem(fieldName);
+			item[fieldName] = that.newValValidation(v,cItem);
+			origItem[fieldName] = that.newValValidation(v,cItem);
 			if (refNode !== undefined) {
 				//console.log('REFERENCE', refNode, refNodeValue);
 				item[refNode] = refNodeValue;

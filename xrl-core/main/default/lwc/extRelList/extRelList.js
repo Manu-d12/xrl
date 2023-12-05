@@ -798,6 +798,13 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			this.config.listViewConfig[0]._changedRecords = undefined;
 			this.config.records.forEach((record) => {
 				delete record._cellCss;
+				for (let [key, value] of this.config.picklistToIndexMap.entries()) {
+					if(record[key] !== undefined){
+						let option= this.config.dataTableConfig.colModel[value].options.find(op => {return op.value === record[key]});
+						if(option !== undefined)
+							record[key] = option.label;
+					}
+				}
 			});
 			libs.getGlobalVar(this.name).records = this.config.records;
 		}
@@ -1111,6 +1118,27 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				}
 			});
 		}
+
+		let picklistToIndexMap= new Map();
+		let ind=0;
+		this.config.dataTableConfig.colModel.forEach(col =>{
+			if(col.type === 'picklist'){
+				picklistToIndexMap.set(col.fieldName,ind);
+			}
+			ind++;
+		});
+
+		if(picklistToIndexMap.size > 0){
+			changedItems.forEach(rec =>{
+				for (let [key, value] of picklistToIndexMap.entries()) {
+					if(rec[key] !== undefined){
+						rec[key] = this.config.dataTableConfig.colModel[value].options.find(op => {return op.label === rec[key]}).value;
+					}
+				}
+			});
+	
+		}
+		this.config.picklistToIndexMap =picklistToIndexMap;
 
 		let saveChunk = this.config.listViewConfig[0].saveChunkSize ? this.config.listViewConfig[0].saveChunkSize : 200; //200 is the default value for saveChunk
 		let index = 0;
