@@ -71,6 +71,9 @@
                 <div if:false={config.isLoaded} class="spinnerDiv">
                     <lightning-spinner size="medium" variant="brand" alternative-text="Loading"></lightning-spinner>
                 </div>
+                <div if:true={config.isSpinner} class="spinner">
+                    <lightning-spinner size="medium" variant="brand" alternative-text={config._LABELS.altTxt_loading}></lightning-spinner>
+                </div>
             </div>
         </template>
     </div>
