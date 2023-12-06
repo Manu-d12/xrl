@@ -1,4 +1,4 @@
-global without sharing class postInstallClass implements InstallHandler {
+global class postInstallClass implements InstallHandler {
 /* BEFORE SECURITY REVIEW NEED FIX and use "global with sharing class"
 
     global void onInstall(InstallContext context) {
