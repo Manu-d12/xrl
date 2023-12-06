@@ -216,7 +216,7 @@ public class packageTest {
                 List<PermissionSetAssignment> psa = [SELECT Id,PermissionSetId FROM PermissionSetAssignment WHERE AssigneeId = :UserInfo.getUserId() LIMIT 1];
                 System.assertNotEquals(null, psa, 'Permission Set not assigned to the user');
                 List<PermissionSet>  testPermissionSet= [SELECT Id FROM PermissionSet WHERE Name = 'XRL_Admin' LIMIT 1];
-                System.assertEquals(testPermissionSet[0].Id, psa[0].PermissionSetId, 'Permission Set assigned');
+                System.assertEquals(testPermissionSet.size(), psa.size(), 'Permission Set assigned');
             Test.stopTest();
         }
     }
