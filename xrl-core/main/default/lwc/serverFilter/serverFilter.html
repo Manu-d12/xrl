@@ -1,10 +1,10 @@
 <template>
     <div class="slds-grid slds-wrap" style="padding: 5px;">
         <template if:true={sFilterfields} for:each={sFilterfields} for:item="field" for:index="index">
-            <div if:false={field.isHidden} class="slds-col slds-size_2-of-12" key={field.fieldName} style="padding: 2px;">
+            <div if:false={field.isHidden} class={field.class} key={field.fieldName} style="padding: 2px;">
                 <lightning-input if:true={field.inputTypeStr} type="text" label={field.label} id={field.fieldName}
                     data-id={field.fieldName} onfocusout={handleChange}></lightning-input>
-                <c-multiselect if:true={field.inputTypeComboBox} multiselect={field.multiselect} listsize=10000 onselect={handleSelect} id={field.fieldName} 
+                <c-multiselect if:true={field.inputTypeComboBox} multiselect={field.multiselect} button-style="width:100%;max-width:100%;" listsize=10000 onselect={handleSelect} id={field.fieldName} 
                     data-id={field.fieldName} options={field.options} selectedvalues={field.value} selectedvalue={field.value} label={field.label}></c-multiselect>
                 <lightning-input if:true={field.inputTypeDate} type="date" label={field.label} id={field.fieldName}
                     data-id={field.fieldName} onfocusout={handleChange}></lightning-input>
