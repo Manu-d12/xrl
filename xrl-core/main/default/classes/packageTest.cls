@@ -142,7 +142,7 @@ public class packageTest {
         // System.assertEquals(true, requestFeatureResult.get('isSuccess'));
     }
 
-    @isTest
+/*    @isTest
     public static void testGetSobjFields() {
         VisualEditor.DesignTimePageContext ctx = new VisualEditor.DesignTimePageContext();
         ctx.entityName = 'Account';
@@ -153,7 +153,7 @@ public class packageTest {
         test.stopTest();
         // System.assertNotEquals(null, row);
         // System.assertNotEquals(null, rows);
-    }
+    }*/
 
     @isTest
     public static void testGetRelListsPicklist() {

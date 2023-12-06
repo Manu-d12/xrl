@@ -1,4 +1,5 @@
-global with sharing class postInstallClass implements InstallHandler {
+global without sharing class postInstallClass implements InstallHandler {
+/* BEFORE SECURITY REVIEW NEED FIX and use "global with sharing class"
 
     global void onInstall(InstallContext context) {
         if(context.previousVersion() == null) {
@@ -17,15 +18,15 @@ global with sharing class postInstallClass implements InstallHandler {
             SObjectAccessDecision securityDecision = Security.stripInaccessible( AccessType.CREATABLE, newLists);
             insert securityDecision.getRecords(); //setting config on Case object
 
-			assignPermissionSets();
+			assignPermissionSets(context.installerID());
         }
     }
 
 	@future
-    public static void assignPermissionSets() {
+    public static void assignPermissionSets(id userId) {
 		PermissionSet[] pId = [SELECT Id FROM PermissionSet WHERE Name = 'XRL_Admin' LIMIT 1];
         PermissionSetAssignment psa = new PermissionSetAssignment(
-        AssigneeId = UserInfo.getUserId(),
+        AssigneeId = userId,
         PermissionSetId = pId[0].Id);
 
         insert psa;
