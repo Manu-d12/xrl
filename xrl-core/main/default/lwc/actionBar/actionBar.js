@@ -48,7 +48,7 @@ export default class ActionBar extends LightningElement {
         this.config.visibleActions = libs.sortRecords(JSON.parse(JSON.stringify(this.config.visibleActions)), 'actionOrder', true);
         return this.config.visibleActions;
     }
-    handleEventClick(event){
+    async handleEventClick(event){
         
         let actionId = event.target.getAttribute('data-id');
         let actionDetails;
@@ -78,7 +78,8 @@ export default class ActionBar extends LightningElement {
                 try{
 					let selectedRecords = this.config.dataTable?._selectedRecords();
 					let records = libs.getGlobalVar(this.actionscfg._cfgName)?.records;
-                    let fn = actionDetails._advanced.actionCallBack(this, libs, selectedRecords.length > 0 ? selectedRecords : records); 
+                    let fn = await actionDetails._advanced.actionCallBack(this, libs, selectedRecords.length > 0 ? selectedRecords : records); 
+                    console.log('after callback');
 					this.config.dataTable?._updateView();
                 }catch(err){
                     console.log('EXCEPTION', err);
