@@ -14,6 +14,7 @@ export default class Multiselect extends LightningElement {
     @api cfg;
     @api optionsfromglobalvar;
     @api col;
+    @api buttonStyle;
 
     @track mSelectConfig = {};
 
@@ -46,6 +47,7 @@ export default class Multiselect extends LightningElement {
     connectedCallback() {
         this.mSelectConfig.labels = libs.getGlobalVar(this.cfg)?._LABELS ?? {};
         this.mSelectConfig.labels.lbl_selectAnOption = 'Select an Option'; //hardcoding this value to avoid any unnecessary error because of this.cfg === undefined
+        this.mSelectConfig.buttonStyle = this.buttonStyle || '';
         this.setSelect();
     }
     renderedCallback(){

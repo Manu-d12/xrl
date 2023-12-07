@@ -71,7 +71,9 @@ export default class ServerFilter extends LightningElement {
         this.config.resetFilterVariant = this.filterJson?.buttons?.resetFilter?.variant ?? 'brand';
     }
     async setFieldTypes(callback) {
+        let colClass = 'slds-col slds-size_2-of-12';
         for (let element of this.sFilterfields) {
+            element.class = colClass;
             if (element.type === 'picklist') {
                 element.inputTypeComboBox = true;
                 if (element.options && typeof element.options === 'function') {
@@ -80,6 +82,7 @@ export default class ServerFilter extends LightningElement {
                 if (element.options[0].value !== 'All' && element.hasAll) {
                     element.options.splice(0, 0, { label: "All", value: "All" });
                 }
+                element.class = 'slds-col slds-size_1-of-12';
             } else if (element.type === 'boolean') {
                 element.inputTypeComboBox = true;
                 element.options = [];
