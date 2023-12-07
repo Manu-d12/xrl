@@ -631,7 +631,10 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if(newValue === 'NONE')
 			return null;
 
-		return column.options.find(op=>{return op.value === newValue}).label;
+		if(column?.type && column.type === 'picklist'){
+			return column?.options?.find(op=>{return op.value === newValue}).label;
+		}
+		return newValue;
 	}
 
 	saveEditCallback(isNeedSave, rowName, value) {
