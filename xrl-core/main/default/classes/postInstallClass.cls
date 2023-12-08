@@ -1,5 +1,5 @@
 global class postInstallClass implements InstallHandler {
-/* BEFORE SECURITY REVIEW NEED FIX and use "global with sharing class"
+/* BEFORE SECURITY REVIEW NEED FIX and use "global with sharing class" https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_install_handler.htm*/
 
     global void onInstall(InstallContext context) {
         if(context.previousVersion() == null) {
