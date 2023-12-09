@@ -1,11 +1,14 @@
 global with sharing class infrastructure {
 	private static id recordId;
 	private static boolean isAdminAccess = false;
-	private static map<string, object[]> debugLog;
-	private static boolean isDebug = false;
+	public static map<string, object[]> debugLog;
+	public static boolean isDebug = false;
     
     global abstract class handler {
         global abstract object execute(map < string, object > data);
+        global virtual boolean isExecutable(map < string, object > data){
+        	return true;   
+        }
     }
 
 	@AuraEnabled(Cacheable = false)
@@ -1271,6 +1274,7 @@ global with sharing class infrastructure {
 		if (debugLog == null) debugLog = new map<string, object[]>();
 		if (!debugLog.containsKey(key)) debugLog.put(key, new object[]{});
 		debugLog.get(key).add(value);
+        system.debug(LoggingLevel.Error, 'DEBUG:' + key + ' - ' + value);
 	}
 	global class InfrastructureException extends Exception {
 		public ExceptionType eType;
