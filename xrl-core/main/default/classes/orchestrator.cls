@@ -158,6 +158,7 @@ global with sharing class QuoteValidator {
 						when ROOTVALIDATION, VALIDATION {
                             validationResult vResult = (validationResult) handlerResult;
                             if (vResult.code != validationResultCode.OK) {
+                                this.orcResp.invalidCount ++;
                                 string errorMessage = String.format(ePart.errorTemplate, vResult.dynamicValues);
                                 log__c l = this.prepareLogRecord(operation, obj);
                                 l.errorMessage__c = errorMessage;
@@ -189,7 +190,8 @@ global with sharing class QuoteValidator {
         }
         
         infrastructure.isDebug = oldDebug;
-        system.debug(LoggingLevel.Error, 'DEBUG ' + infrastructure.debugLog);
+        this.orcResp.isFailed =  this.orcResp.invalidCount > 0;
+        this.orcResp.recordsCount = this.orcReq.relatedRecordIds.size();
     }
     
     private log__c prepareLogRecord(string operation, sObject relatedRecord) {
@@ -394,6 +396,12 @@ global with sharing class QuoteValidator {
     }
     
     public class orchestratorResponse {
+         @AuraEnabled
+        public boolean isFailed;
+         @AuraEnabled
+        public integer invalidCount = 0;
+         @AuraEnabled
+        public integer recordsCount;
     }
     
     private static string getNameField(string sObjApiName) {
