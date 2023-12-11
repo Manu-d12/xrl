@@ -173,16 +173,16 @@ global with sharing class QuoteValidator {
                 } catch (Exception e) {
                     system.debug(LoggingLevel.Error, 'EXCEPTION:' + e.getMessage());
                     log__c l = this.prepareLogRecord(operation, obj);
-                    l.errorMessage__c = e.getMessage();
-                    l.errCode__c = 'EXCEPTION:' +  ePart.className;
-                    l.info__c = e.getStackTraceString();
+                    l.errorMessage__c = ePart.className;
+                    l.errCode__c = 'EXCEPTION';
+                    l.info__c = 'EXCEPTION: ' + e.getMessage() + '\n\n STACK: ' + e.getStackTraceString();
                     logs.add(l);
                 }
             }
             if (infrastructure.debugLog!= null) {
                 log__c l = this.prepareLogRecord(operation, null);
                 l.errorMessage__c = 'DEBUG';
-                l.errCode__c = 'DEBUG:';
+                l.errCode__c = 'DEBUG';
                 l.info__c = JSON.serializePretty(infrastructure.debugLog);
                 logs.add(l);
             }
@@ -190,7 +190,6 @@ global with sharing class QuoteValidator {
         }
         
         infrastructure.isDebug = oldDebug;
-        this.orcResp.isFailed =  this.orcResp.invalidCount > 0;
         this.orcResp.recordsCount = this.orcReq.relatedRecordIds.size();
     }
     
@@ -209,6 +208,13 @@ global with sharing class QuoteValidator {
     
     private void sendEmail(string operation) {
         if (this.config.isNeedSendEmail!= true) return;
+        // Need deside about email if we have an error in a table
+        log__c[] errors = [
+            SELECT ID 
+            FROM log__c 
+            WHERE operation__c = :operation AND rootRecordId__c =:this.orcReq.rootRecordId AND errCode__c !='DEBUG' AND errCode__c !='EXCEPTION'
+        ]; // Need filterout EXCEPTIONS and DEBUG
+        if (errors.size() ==0) return;
         
         emailTemplate et = [
             SELECT Id,Name,Description,HtmlValue,Body,Subject,DeveloperName 
@@ -396,8 +402,6 @@ global with sharing class QuoteValidator {
     }
     
     public class orchestratorResponse {
-         @AuraEnabled
-        public boolean isFailed;
          @AuraEnabled
         public integer invalidCount = 0;
          @AuraEnabled
