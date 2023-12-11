@@ -1629,9 +1629,28 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if(event.detail.cmd.split(':')[1] === 'refresh' && event.detail.cmd.split(':')[0] === 'filter') {
 
 			let sourceConf = libs.getGlobalVar(event.detail.source);
-			let fields = new Set(this.defaultFields);
-			this.additionalFields.forEach(f => fields.add(f.fieldName));
-			sourceConf.fields.forEach(f => fields.add(f));
+			//let fields = new Set(this.defaultFields);
+			// this.additionalFields.forEach(f => fields.add(f.fieldName));
+			// sourceConf.fields.forEach(f => fields.add(f));
+			let fields= new Set();
+			this.config.colModel.forEach((e)=> {
+				if(e.type==="picklist" && e.fieldName !== 'CurrencyIsoCode'){ 
+					fields.add('toLabel(' +e.fieldName + ')');
+				}else{
+					fields.add(e.fieldName);
+				}
+			});
+			
+			this.additionalFields.forEach(f =>{
+				if(!fields.has(f.fieldName) && !fields.has('toLabel(' +f.fieldName + ')')){
+					fields.add(f.fieldName);
+				}
+			});
+			sourceConf.fields.forEach(f =>{
+				if(!fields.has(f) && !fields.has('toLabel(' +f + ')')){
+					fields.add(f)
+				}
+			});
 
 			libs.remoteAction(this, 'query', {
 				isNeedDescribe: true,
