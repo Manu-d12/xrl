@@ -2014,11 +2014,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					}else {
 					fieldValue = (rec[col.fieldName] || rec[col.fieldName]==0) ? rec[col.fieldName] : '';
 					}
-					if (col.formatter !== undefined && col.formatter!=="") {
+					if (col?._advanced?.formatter !== undefined && col?._advanced?.formatter !== "") {
 						let row,val;
 						[row,val] = libs.getLookupRow(rec, col.fieldName);
 						try{
-							fieldValue = eval('(' + col.formatter + ')')(row, col, val);
+							fieldValue = col._advanced?.formatter(row, col, val);
 						}catch(e) {
 							fieldValue = fieldValue;
 							console.error(e);
@@ -2027,7 +2027,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 					switch (col.type) {
 					case 'reference':
-						if((col.formatter === undefined || col.formatter==="")){
+						if((col?._advanced?.formatter === undefined || col?._advanced?.formatter ==="")){
 							//in case it is a reference and no formatting is defined, otherwise treat it as normal string value
 							const [lookupRow, lookupId] = libs.getLookupRow(rec, col.fieldName);
 							const baseUrl = window.location.origin + (window.location.pathname.indexOf('/s/')>-1 ? window.location.pathname.replace(/\/s\/.*/,'') + '/s' : '');
