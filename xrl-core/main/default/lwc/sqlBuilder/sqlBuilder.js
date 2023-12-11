@@ -61,7 +61,8 @@ export default class SqlBuilder extends LightningElement {
         const orderByClause = sqlBuilder.orderings.length > 0
           ? ` ORDER BY ${sqlBuilder.orderings.map(({ field: { fieldName }, sortOrder, emptyField }) => `${fieldName} ${sortOrder} ${emptyField}`).join(", ")}`
           : "";
-      
+        
+        this.config.selectedFieldsLength = this.config.sqlBuilder.selectedFields.length;
         return `SELECT ${selectedFields} FROM ${sObjApiName}${whereClause}${orderByClause}`;
       }
       
@@ -98,8 +99,9 @@ export default class SqlBuilder extends LightningElement {
             console.log(event.target.getAttribute('data-val'));
             let refObj = event.target.getAttribute('data-ref');
             if( refObj === null){
-                //adding the validation of 20 max columns
-                if(this.config.sqlBuilder.selectedFields.length < 20){
+                //adding the validation of 20 max columns if load chunk size is not defined
+                let loadChunkSize = this.config?.dialog?.listViewConfig?.loadChunkSize;
+                if(loadChunkSize || this.config.sqlBuilder.selectedFields.length < 20){
                     event.target.classList.add('slds-theme_alt-inverse');
                     let col = this.config.sqlBuilder.fields.find((el) => el.fieldName === event.target.getAttribute('data-val'));
                     if(col !== undefined){
