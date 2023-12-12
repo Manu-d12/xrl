@@ -1085,12 +1085,12 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 	async prepareRecordsForSave(){
 		let records = [];
-		if(this.config.listViewConfig[0].isRecordsDragDropEnabled && this.config?._advanced?.afterloadTransformation !== undefined && this.config?._advanced?.afterloadTransformation !== ""){
+		if(this.config?._advanced?.recordsDragDropCallback !== undefined && this.config?._advanced?.recordsDragDropCallback !== "" && this.config?._advanced?.afterloadTransformation !== undefined && this.config?._advanced?.afterloadTransformation !== ""){
 			records = libs.flattenRecordsWithChildren(this.template.querySelector('c-Data-Table').getRecords());
 		}else{
 			records = this.template.querySelector('c-Data-Table').getRecords();
 		}
-		if(this.config.listViewConfig[0].isRecordsDragDropEnabled && this.config.listViewConfig[0].fieldToMapToIndex !== undefined && this.config.listViewConfig[0].fieldToMapToIndex !== ""){
+		if(this.config?._advanced?.recordsDragDropCallback !== undefined && this.config?._advanced?.recordsDragDropCallback !== "" && this.config.listViewConfig[0].fieldToMapToIndex !== undefined && this.config.listViewConfig[0].fieldToMapToIndex !== ""){
 			records = this.mapSerialNumberField(records, this.config.listViewConfig[0].fieldToMapToIndex);
 		}
 		let changedItems = records.filter(el => {
