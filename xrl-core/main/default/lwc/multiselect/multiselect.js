@@ -145,6 +145,28 @@ export default class Multiselect extends LightningElement {
         }
     }
 
+    customSort(a, b) {
+        const aValue = a.selected === true ? 1 : 0;
+        const bValue = b.selected === true ? 1 : 0;
+      
+        if (aValue === bValue) {
+            const labelA = a.label.toUpperCase(); // Convert to uppercase for case-insensitive sorting
+            const labelB = b.label.toUpperCase();
+        
+            if (labelA < labelB) {
+              return -1; // 'a' comes before 'b'
+            } else if (labelA > labelB) {
+              return 1; // 'b' comes before 'a'
+            } else {
+              return 0; // 'label' values are also equal
+            }
+        } else if (aValue > bValue) {
+          return -1;
+        } else {
+          return 1;
+        }
+      }
+
     selectItem(event) {
         var selectedVal = event.currentTarget.dataset.id;
         if(selectedVal) {
@@ -173,7 +195,7 @@ export default class Multiselect extends LightningElement {
             //updating the allOptions
             let op = this.mSelectConfig.allOptions.find((el) => el.value === selectedVal);
             op.selected = op.selected ? false : true; 
-            this.mSelectConfig.optionData = options;
+            this.mSelectConfig.optionData = this.multiselect === true ? options.sort(this.customSort) : options;
             if(this.multiselect)
                 this.mSelectConfig.searchString = '+' + count;
             if(this.multiselect){
