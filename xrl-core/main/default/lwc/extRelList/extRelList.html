@@ -65,6 +65,7 @@
 	<c-ext-Rel-List-Settings if:true={config.dialog} cfg={name}></c-ext-Rel-List-Settings>
 
 	<c-dialog if:true={showDialog} cfg={dialogCfg} data-id={dialogCfg.data_id} onaction={handleEvent}></c-dialog>
+	<!-- <c-dev-cmp-dialog if:true={showDialog} cfg={dialogCfg} data-id={dialogCfg.data_id} onaction={handleEvent}></c-dev-cmp-dialog> -->
 
 	<template if:true={config.flowApiName}>
 		<section role="alertdialog" tabindex="0" class="slds-modal slds-fade-in-open slds-modal_prompt slds-modal_small" aria-modal="true">

@@ -533,7 +533,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 						variant: 'neutral'
 					},
 					{
-						name: 'delete',
+						name: 'btn:delete',
 						label: _LABELS.title_delete,
 						variant: 'brand',
 						class: 'slds-m-left_x-small'
