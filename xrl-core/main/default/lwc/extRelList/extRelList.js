@@ -1257,7 +1257,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 							variant: 'neutral'
 						},
 						{
-							name: 'Delete',
+							name: 'btn:Delete',
 							label: this.config._LABELS.title_delete,
 							variant: 'brand',
 							class: 'slds-m-left_x-small'
@@ -1657,7 +1657,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 								variant: 'neutral'
 							},
 							{
-								name: 'Delete',
+								name: 'btn:Delete',
 								label: this.config._LABELS.title_delete,
 								variant: 'brand',
 								class: 'slds-m-left_x-small'

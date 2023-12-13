@@ -1,99 +1,26 @@
 <template>
-    <section role="dialog" tabindex="0" class="slds-modal slds-fade-in-open slds-modal_prompt" aria-modal="true">
-		<div class="slds-modal__container">
-			<header class={headerStyle}>
-				<button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" data-id="cancel" style="display:block" onclick={handleClick}>
-					<svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
-						<use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#close"></use>
-					</svg>
-					<span class="slds-assistive-text">Close</span>
-				</button>
-                <h1 if:true={title} class="slds-modal__title slds-hyphenate">{title}</h1>
-			</header>
-			<div class="slds-modal__content slds-p-around_medium slds-is-relative">                
-                <div if:true={isLoading}>
-                    <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
-                </div>
-                <template for:each={contents} for:item="item">
-                    <div if:true={item.isIframe} key={item.name}>
-                        <iframe style={item.style} src={item.url}></iframe>
-                    </div>
-                    <div if:true={item.isMessage} key={item.name}>
-                        {item.text}
-                    </div>
-                    <div if:true={item.isInput} key={item.name}>
-                        <lightning-input
-                            type={item.type}
-                            label={item.label}
-                            value={item.value}
-                            data-id={item.name}
-                            variant={item.variant}
-                            checked={item.checked}
-                            disabled={item.disabled}
-                            required={item.required}
-                            placeholder={item.placeholder}
-                            message-when-value-missing={item.messageWhenValueMissing}
-                            onchange={handleChange}
-                            class="inputs">
-                        </lightning-input>
-                    </div>
-                    <div if:true={item.isTextarea} key={item.name}>
-                        <lightning-textarea
-                            label={item.label}
-                            value={item.value}
-                            data-id={item.name}
-                            variant={item.variant}
-                            disabled={item.disabled}
-                            required={item.required}
-                            placeholder={item.placeholder}
-                            message-when-value-missing={item.messageWhenValueMissing}
-                            onchange={handleChange}
-                            class="inputs">
-                        </lightning-textarea>
-                    </div>
-                    <div if:true={item.isCombobox} key={item.name}>
-                        <c-multiselect 
-                            id={item.name} 
-                            label={item.label} 
-                            data-id={item.name}
-                            options={item.options} 
-                            disabled={item.disabled}
-                            required={item.required}
-                            selectedvalue={item.value}
-                            selectedvalues={item.value} 
-                            multiselect={item.multiselect} 
-                            onselect={handleChange}
-                            listsize=10000
-                            class="inputs"
-                            data-type="select">
-                        </c-multiselect>                        
-                    </div>
-                    <div if:true={item.isSwitch} key={item.name}>
-                        <lightning-button
-                            label={item.label}
-                            title={item.label}
-                            class={item.class}
-                            data-id={item.name}
-                            variant={item.variant}
-                            onclick={handleClick}>
-                        </lightning-button>
-                    </div>
-                </template>
+	<template if:true={isLoading}>
+		<section role="dialog" tabindex="-1" aria-modal="true" class="slds-modal slds-fade-in-open" ><!--onkeydown={handleEvents}-->
+			<div class="slds-modal__container">
+				<lightning-button-icon if:true={config.modalCss} data-cmd="cancel" icon-name="utility:close" variant="bare-inverse" onclick={handleEvents} alternative-text="Close window" class="slds-modal__close" onkeydown={handleEvents}>
+				</lightning-button-icon>
+				<div if:true={config.modalCss} class={config.modalCss}>
+					<h1 class="slds-modal__title slds-hyphenate">{config.title}</h1>
+				</div>
+				<div class="slds-modal__content slds-p-around_medium">
+					<template if:false={config.fields}>
+						{config.content.text}
+					</template>
+					<c-Dialog-Item if:true={config.fields} cfg={config.fields} onkeydown={handleEvents} onchildaction={handleEvents}></c-Dialog-Item>
+				</div>
+				<footer class="slds-modal__footer slds-theme_default">
+					<template if:true={config.buttons} for:each={config.buttons} for:item="btn" for:index="index">
+						<lightning-button key={btn.cmd} variant={btn.variant} label={btn.label} data-cmd={btn.name} disabled={btn.isDisabled}
+							icon-name={btn.icon} onclick={handleEvents} class="slds-m-around_small"></lightning-button>
+					</template>
+				</footer>
 			</div>
-			<footer class="slds-modal__footer">
-                <template for:each={buttons} for:item="item">
-                    <lightning-button
-                        key={item.name}
-                        label={item.label}
-                        title={item.label}
-                        class={item.class}
-                        data-id={item.name}
-                        variant={item.variant}
-                        onclick={handleClick}>
-                    </lightning-button>
-                </template>
-			</footer>
-		</div>
-	</section>
-	<div class="slds-backdrop slds-backdrop_open"></div>
+		</section>
+		<div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+	</template>
 </template>

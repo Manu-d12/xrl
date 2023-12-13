@@ -1,9 +1,11 @@
-import { LightningElement, api } from 'lwc';
+import { LightningElement, api, track } from 'lwc';
+// import { devLib } from 'c/devLib';
 import { libs } from 'c/libs';
 
-export default class Dialog extends LightningElement {
+export default class dialog extends LightningElement {
 
     _cfg;
+    @track config = {};
 
     @api 
     get cfg() {
@@ -18,124 +20,60 @@ export default class Dialog extends LightningElement {
         this.isLoading = v;
     }
 
-    title;
-    buttons;
-    contents;
-    isLoading = true;
-    values = {};
-    headerStyle;
-
     async setDialog() {
+        Object.assign(this.config, this._cfg);
         this.title = this._cfg?.title;
-        this.headerStyle = this._cfg?.headerStyle;
-        if (this._cfg?.contents) this.contents = this._cfg?.contents.map(el => Object.assign({}, el));
-        else this.contents = [];
-        this.buttons = this._cfg?.buttons || [];
+        this.config.modalCss = this._cfg?.headerStyle;
+        if (this._cfg?.contents) this.config.content = JSON.parse(JSON.stringify(this._cfg?.contents))[0];
+        else if (this._cfg?.fields) this.config.fields = this._cfg?.fields;
+        this.config.buttons = this._cfg?.buttons || [];
         this.values = {};
-        if (this._cfg) await this.setInputFields();
-        this.isLoading = this._cfg ? false : true;
+        this.config.result = {};
+        // if (this._cfg) await this.setInputFields();
+        this.isLoading = this._cfg ? true : false;
     }
 
-    handleClick(e) {
-        let inputs = this.template.querySelectorAll('.inputs');
-        let inputValues = {};
-        if (e.target.dataset.id !== 'cancel' && !e.target.dataset.id.startsWith('switch')) {
-            for (let input of inputs) {
-                inputValues[input.dataset.id] = input.value || input.selectedvalue || input.selectedvalues;
-
-                let valid = input.checkValidity();
-                if (!valid) {
-                    input.reportValidity();
-                    return;
-                }
-            }
-        }        
-        if (this._cfg.callback && typeof this._cfg.callback === 'function') {
-            this._cfg.callback({ action: e.target.dataset.id, data: inputValues });
-        } else {
-            this.dispatchEvent(new CustomEvent('action', { detail: { action: e.target.dataset.id, data: inputValues } }));
-        }
-    } 
+    connectedCallback() {
+        // libs.registerLWC(this);
+        // let configs = {};
+        // if ( this.cfg.type in configs) this.config = configs[this.cfg.type];
+        // Object.assign(this.config, this.cfg);
+        // this.config.modalCss = 'slds-modal__header slds-theme_{1} slds-theme_alert-texture'.replace('{1}', this.config.variant);
+        // this.config.content = libs.evalFunction(this, this.config.contentTemplate);
+        // this.config.result = {};
+        
+    }  
     
-    handleChange(e) {
-        this.values[e.target.dataset.id] = e.target.value || e.target.checked;
-        if (e.target.type === 'checkbox') {
-            e.target.value = e.target.checked ? 'true' : 'false';
-        } else if (e.target.dataset.type === 'select') {
-            let value = e.detail.payload.value || e.detail.payload.values;
-            this.values[e.target.dataset.id] = value;
-
-            for (let el of this.contents) {
-                let input = this.template.querySelector(`[data-id="${el.name}"]`);
-                if (el.updateOptions && typeof el.updateOptions === 'function') {
-                    el.options = el.updateOptions(this, libs, el);
-                    input?.setOptions(el.options);
-                }
-                if (el.name === e.target.dataset.id) el.value = value;
-                if (el.value && el.options.find(opt => opt.value === el.value)) {
-                    this.values[el.name] = el.value;
-                    input?.setValue(el.value);
-                } else {
-                    this.values[el.name] = undefined;
-                    el.value = undefined;
-                }	
+    @api
+    handleEvents(event) {
+        //event.preventDefault();
+        let cmd = event.value ? event.value : event.srcElement?.getAttribute('data-cmd');
+        
+        if (event.detail.cmd == ':updateFromChild') {
+            console.log('event from child', event.detail.data);
+            // let node = this.config.result;
+            // if (event.detail.parent!=undefined && !this.config.result[event.detail.parent]) {
+            //     node[event.detail.parent] = {};
+            // }
+            // if (event.detail.parent!=undefined) node = node[event.detail.parent];
+            // node[event.detail.name] = event.detail.value;
+            // this.config.buttons.forEach(btn => {
+            //     btn.isDisabled = libs.evalFunction(this, btn.isDisabledTemplate);
+            // });
+            this.config.result[event.detail.data.name] = event.detail.data?.value;
+            return;
+        }
+        if (cmd?.startsWith('btn') || cmd === 'cancel') {
+            // Need to send event to parent only in case of button click
+            let btn = this.config.buttons?.find(el=> {return el.name == cmd});
+            if (btn && this.config.callback && typeof this.config.callback === 'function') {
+                let result = this.config.callback({ action: cmd, data: this.config.result });
+                console.log('RESULT', result);
             }
+            
+            // this.config.parent.handleEvents({detail : {cmd : this.cfg.type + 'Result.' + cmd, detail : this.config.result}}); 
+            this.dispatchEvent(new CustomEvent('action', { detail: { action: cmd, data: this.config.result } }));
         }
     }
-    
-	async setInputFields() {
-		for (let el of this.contents) {
-			if (el.isCombobox && el.sObject) {
-				await this.referenceOperations(el);
-			}
-			if (el.defaultValue) {
-                el.value = typeof el.defaultValue === 'function' ? el.defaultValue(this, libs, el.options) : el.defaultValue;
-			}			
-		}
-        for (let el of this.contents) {
-			if (el.updateOptions && typeof el.updateOptions === 'function') {
-                el.options = el.updateOptions(this, libs, el);
-            }
-            if (el.isCombobox) {
-                let input = this.template.querySelector(`[data-id="${el.name}"]`);
-                input?.setOptions(el.options);
-                if (el.value && el.options.find(opt => opt.value === el.value)) {
-                    this.values[el.name] = el.value;
-                    input?.setValue(el.value);
-                } else {
-                    this.values[el.name] = undefined;
-                    el.value = undefined;
-                }               
-            }
-            if (el.isDisabled && typeof el.isDisabled === 'function') {
-                el.disabled = el.isDisabled(this, libs, el);
-                if (el.isCombobox) {
-                    let input = this.template.querySelector(`[data-id="${el.name}"]`);
-                    input?.setDisabled(el.disabled);
-                }
-            }	
-		}
-	}
 
-	async referenceOperations(element) {
-		element.options = [];
-		const { sObject, referenceSoql, formatter } = element;
-
-		const query = referenceSoql !== undefined
-			? { isNeedDescribe: true, sObjApiName: sObject, SOQL: typeof referenceSoql === 'function' ? referenceSoql(this, libs, element) : referenceSoql }
-			: { isNeedDescribe: true, sObjApiName: sObject, relField: '', fields: ['Id', 'Name'], limit: 'LIMIT 10000' };
-
-		await libs.remoteAction(this, referenceSoql !== undefined ? 'customSoql' : 'query', {
-			...query,
-			callback: (nodeName, responseData) => {
-                element.data = responseData[nodeName].records;
-				if (formatter) {
-                    element.options = formatter(responseData[nodeName]);
-				} else {
-					element.options = element.data.length > 0 ? element.data.map(e => ({ label: e.Name, value: e.Id })) : undefined;
-				}
-				element._actualType = responseData[nodeName].describe ? JSON.parse(responseData[nodeName].describe)[element.name]?.type : undefined;
-			}
-		});
-	}
 }
