@@ -687,9 +687,10 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let recordsWithParents = [];
 		let recordsWithoutParents = [];
 		//storing with parent and without parent records in different array as we need to insert without parents records first to get the records Id.
-		file.records.forEach((record) => {
+		file.records.forEach((record, ind) => {
 			delete record.Id;
 			if(record[this.config.namespace +'__Parent__c'] === undefined) {
+				if (record.Name == undefined) record.Name = ind;
 				recordsWithoutParents.push(record);
 			}else{
 				recordsWithParents.push(record);

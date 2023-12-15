@@ -6,26 +6,35 @@ export default class dialogItem extends LightningElement {
     @api parent;
     @track config = {};
 
-    connectedCallback() {
+     connectedCallback() {
         this.config.fields = JSON.parse(JSON.stringify(this.cfg));
         this.config.result = {};
+        this.prepareData();
+    }
+
+    @api prepareData() {
         if (this.config.fields) this.config.fields.forEach(e => {
+            if (e.isAlreadyPrepared == true) return;
+            e.isAlreadyPrepared = true;
             if (e.defaultValue) {
                 e.value = typeof e.defaultValue === 'function' ? e.defaultValue(this, libs, e.options) : e.defaultValue;
 			}
-			e.isPicklist = (e.type === 'combobox');
+			e.isPicklist = (e.type === 'picklist');
+            e.isCombobox = (e.type === 'combobox');
 			e.isTextArea = (e.type === 'textarea');
             e.isSwitch = (e.type === 'switch');
             e.isSection = (e.type === 'section');
-			e.isInput = (e.isTextArea === false && e.isPicklist === false && e.isSection === false);
+			e.isInput = (e.isTextArea === false && e.isPicklist === false && e.isSection === false && e.isCombobox === false);
             e.isOutsideSection = e.isSection === false && e.fields;
-            if (e.updateOptions && typeof e.updateOptions === 'function') {
-                e.options = e.updateOptions(this, libs, e);
+            if (e.updateOptions) {
+                let _advanced = eval('['+e.updateOptions + ']')[0];
+                e.options = _advanced(this, libs, e);
+                e.isDisabled = e.options == undefined;
             }
-            // e.options = libs.evalFunction(this, e.options);
-            //console.log('ITEM', e);
 		});
     }
+
+
 
     onChangeDynamicField(event) {
         
@@ -36,19 +45,15 @@ export default class dialogItem extends LightningElement {
 			return e.name === target;
 		});
 
-        //field.fields = undefined;
 		field.value = this.config.result[target];
         field.parent = this.parent;
         
         if (field.options) {
-            //field.fields = undefined;
-            field.isOutsideSection = false;
-            /* eslint-disable */
-            setTimeout(()=>{
-                const fields = field.options.find((e)=>{ return e.value == this.config.result[target]})?.fields;;
-                field.fields = fields;
-                field.isOutsideSection = fields !== undefined;
-            }, 30);
+            field.addInfo = field.options.find((e)=>{ return e.value == field.value});
+        }
+        if (field.onClick) { // implement onClick 
+            let _advanced = eval('['+ field.onClick + ']')[0];
+            _advanced(this, libs, field);
         }
 
         this.dispatchEvent(new CustomEvent('childaction', { detail: { cmd: ':updateFromChild', data: field } }));
@@ -57,4 +62,5 @@ export default class dialogItem extends LightningElement {
     passEventToParent(event){
         this.dispatchEvent(new CustomEvent('childaction', { detail: { cmd: ':updateFromChild', data: event.detail.data } }));
     }
+
 }

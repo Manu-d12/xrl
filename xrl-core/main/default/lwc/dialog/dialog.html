@@ -1,26 +1,49 @@
 <template>
-	<template if:true={isLoading}>
-		<section role="dialog" tabindex="-1" aria-modal="true" class="slds-modal slds-fade-in-open" ><!--onkeydown={handleEvents}-->
-			<div class="slds-modal__container">
-				<lightning-button-icon if:true={config.modalCss} data-cmd="cancel" icon-name="utility:close" variant="bare-inverse" onclick={handleEvents} alternative-text="Close window" class="slds-modal__close" onkeydown={handleEvents}>
-				</lightning-button-icon>
-				<div if:true={config.modalCss} class={config.modalCss}>
-					<h1 class="slds-modal__title slds-hyphenate">{config.title}</h1>
+	<template if:false={config.withoutHeader}>
+		<template if:true={isLoading}>
+			<section role="dialog" tabindex="-1" aria-modal="true" class="slds-modal slds-fade-in-open">
+				<div class="slds-modal__container">
+					<lightning-button-icon if:true={config.modalCss} data-cmd="cancel" icon-name="utility:close"
+						variant="bare-inverse" onclick={handleEvents} alternative-text="Close window"
+						class="slds-modal__close" onkeydown={handleEvents}>
+					</lightning-button-icon>
+					<div if:true={config.modalCss} class={config.modalCss}>
+						<h1 class="slds-modal__title slds-hyphenate">{config.title}</h1>
+					</div>
+					<div class="slds-modal__content slds-p-around_medium">
+						<template if:false={config.fields}>
+							<span if:true={config.content}>{config.content.text}</span>
+						</template>
+						<c-Dialog-Item if:true={config.fields} cfg={config.fields} onkeydown={handleEvents}
+							onchildaction={handleEvents}></c-Dialog-Item>
+					</div>
+					<footer class="slds-modal__footer slds-theme_default">
+						<template if:true={config.buttons} for:each={config.buttons} for:item="btn" for:index="index">
+							<lightning-button key={btn.cmd} variant={btn.variant} label={btn.label} data-cmd={btn.name}
+								disabled={btn.isDisabled} icon-name={btn.icon} onclick={handleEvents}
+								class="slds-m-around_small"></lightning-button>
+						</template>
+					</footer>
 				</div>
-				<div class="slds-modal__content slds-p-around_medium">
-					<template if:false={config.fields}>
-						{config.content.text}
-					</template>
-					<c-Dialog-Item if:true={config.fields} cfg={config.fields} onkeydown={handleEvents} onchildaction={handleEvents}></c-Dialog-Item>
-				</div>
-				<footer class="slds-modal__footer slds-theme_default">
-					<template if:true={config.buttons} for:each={config.buttons} for:item="btn" for:index="index">
-						<lightning-button key={btn.cmd} variant={btn.variant} label={btn.label} data-cmd={btn.name} disabled={btn.isDisabled}
-							icon-name={btn.icon} onclick={handleEvents} class="slds-m-around_small"></lightning-button>
-					</template>
-				</footer>
+			</section>
+			<div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+		</template>
+	</template>
+
+	<template if:true={config.withoutHeader}>
+		<lightning-quick-action-panel header={config.title} style={config.headerStyle}>
+			<template if:false={config.fields}>
+				<span if:true={config.content}>{config.content.text}</span>
+			</template>
+			<c-Dialog-Item if:true={config.fields} cfg={config.fields} onkeydown={handleEvents}
+				onchildaction={handleEvents}></c-Dialog-Item>
+			<div slot="footer">
+				<template if:true={config.buttons} for:each={config.buttons} for:item="btn" for:index="index">
+					<lightning-button key={btn.cmd} variant={btn.variant} label={btn.label} data-cmd={btn.name}
+						disabled={btn.isDisabled} icon-name={btn.icon} onclick={handleEvents}
+						class="slds-m-around_small"></lightning-button>
+				</template>
 			</div>
-		</section>
-		<div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+		</lightning-quick-action-panel>
 	</template>
 </template>

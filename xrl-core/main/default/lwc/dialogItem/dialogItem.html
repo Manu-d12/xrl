@@ -4,6 +4,17 @@
             <!--{fld.isInput}|{fld.isPicklist}|{fld.isTextArea}|{fld.isSection}[{fld.type}] - {fld.name}-->
             <lightning-input if:true={fld.isInput} required={fld.isRequired} onchange={onChangeDynamicField} value={fld.value} checked={fld.value} data-id={fld.name} label={fld.label} placeholder={fld.placeholder} type={fld.type}	field-level-help={fld.help}></lightning-input>
             <!-- <lightning-combobox if:true={fld.isPicklist} required={fld.isRequired} onchange={onChangeDynamicField} data-type="picklist" data-id={fld.name} label={fld.label} placeholder={fld.placeholder} options={fld.options} field-level-help={fld.help}></lightning-combobox> -->
+            <lightning-combobox 
+                if:true={fld.isCombobox} 
+                required={fld.isRequired} 
+                onchange={onChangeDynamicField} 
+                data-type="picklist" 
+                data-id={fld.name} 
+                label={fld.label} 
+                placeholder={fld.placeholder} 
+                options={fld.options} 
+                field-level-help={fld.help}>
+            </lightning-combobox>
             <c-multiselect if:true={fld.isPicklist}
                 id={fld.name} 
                 label={fld.label} 
