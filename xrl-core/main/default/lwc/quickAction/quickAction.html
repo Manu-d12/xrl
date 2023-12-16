@@ -1,0 +1,10 @@
+<template>
+ <div if:false={config.UI}>
+   <lightning-card title="Bulk operations" icon-name="custom:custom14">
+     <div class="slds-m-around_medium">
+        LOADING...
+     </div>
+   </lightning-card>
+ </div>
+ <c-dialog if:true={config.UI} cfg={config.UI} onaction={handleEvent}></c-dialog>
+</template>
