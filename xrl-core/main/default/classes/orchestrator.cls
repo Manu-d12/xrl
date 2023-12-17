@@ -137,13 +137,15 @@ global with sharing class QuoteValidator {
     
     private void mainLoop(string operation) {
         boolean oldDebug = infrastructure.isDebug;
-         
+
         for (executorConfigPart ePart : this.config.executors) {
             log__c[] logs = new log__c[]{};
             // I think need to write results after every validation.  It will prevent issue with more then 10.000 records
             sObject[] allRecords = this.config.getRecords(ePart);
-            
-            Type T = type.forName(ePart.className);			
+
+            ePart.className= (ePart.typeOf == executorType.CALCENGINE) ? this.prepareCalcMethodName(ePart.className) : ePart.className;  // Need for dynamic generate a apexName
+
+            Type T = type.forName(ePart.className);
 			if (T == null) throw new infrastructure.InfrastructureException(null, ('Can\'t find class {1}').replace('{1}', ePart.className), infrastructure.exceptionType.CLASS_NOT_FOUND);
 			infrastructure.handler handlerClass = (infrastructure.handler) T.newInstance();
             if (handlerClass.isExecutable(new  map<string, object>{'rootRecord' => this.config.rootRecord}) != true) continue;
@@ -166,9 +168,14 @@ global with sharing class QuoteValidator {
                                 logs.add(l);
                             }
                         }
+                        when CALCENGINE {
+                            //Need generate a method name by input params
+
+                        }
                         when EXECUTION {
                             //Need to add result to response in case of calc engine
                         } 
+
                     }
                 } catch (Exception e) {
                     system.debug(LoggingLevel.Error, 'EXCEPTION:' + e.getMessage());
@@ -191,6 +198,18 @@ global with sharing class QuoteValidator {
         
         infrastructure.isDebug = oldDebug;
         this.orcResp.recordsCount = this.orcReq.relatedRecordIds.size();
+    }
+
+    private string prepareCalcMethodName(string className) {
+
+        map<string, object> input = new map<string, object>{
+            'initialField' => this.orcReq.additionalParameters.get('initialField'),
+            'isRefresh' => this.orcReq.additionalParameters.get('isRefresh'),
+            'discMode' => this.orcReq.additionalParameters.get('discMode')
+        };
+        string methodName = Crypto.generateDigest('MD5', Blob.valueOf(JSON.serialize(input))).toString();
+
+        return className.replace('{method}',  methodName);
     }
     
     private log__c prepareLogRecord(string operation, sObject relatedRecord) {
@@ -387,6 +406,7 @@ global with sharing class QuoteValidator {
     public enum executorType {
 		VALIDATION,
 		ROOTVALIDATION,
+        CALCENGINE,
 		EXECUTION
 	}
     
