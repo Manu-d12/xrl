@@ -433,7 +433,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			console.log('Verifying loop', i);
 		}
 		console.log('All records Id fetched successfully', this.config.listOfRecordIds.length);
-		this.config.loadChunkSize = this.config.listViewConfig[0].loadChunkSize === undefined ? 20000 : this.config.listViewConfig[0].loadChunkSize;
+		//max chunk size will be 10000
+		this.config.loadChunkSize = this.config.listViewConfig[0].loadChunkSize === undefined || !isNaN(this.config.listViewConfig[0].loadChunkSize) || parseInt(this.config.listViewConfig[0].loadChunkSize) > 10000 || parseInt(this.config.listViewConfig[0].loadChunkSize) < 1 ? 10000 : this.config.listViewConfig[0].loadChunkSize;
 		this.config.listOfBulkRecords = [];
 		let startIndex = 0;
 		let endIndex = parseInt(this.config.loadChunkSize);
