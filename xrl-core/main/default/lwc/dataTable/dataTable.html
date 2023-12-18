@@ -75,7 +75,7 @@
 						<td for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="hIndex" data-recid={dItem.Id} key={hItem.fieldName} role="gridcell" data-rowind={index} data-colname={hItem.fieldName} onclick={rowCallback} ondblclick={rowDblCallback} style={dItem._cellCss}>
 							
 							<!-- Here _addSpace will be true because _addSpace is true only for the 0th column, so the tooltip will not show each for each column -->
-							<p if:true={hItem._addSpace}><span if:true={config._isShowRowCallbackTooltip} class="spnTooltip">
+							<p if:true={hItem._addSpace}><span if:true={dItem._isShowRowCallbackTooltip} class="spnTooltip">
 									<strong>{config._rowCallbackTooltipText}</strong>
 								</span>
 							</p>
