@@ -2001,8 +2001,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					groupNumber++;
 					i++;
 					const cell_ref = XLSX.utils.encode_cell({ c: 0, r: i });
-					ws[cell_ref] = {
-						v: rec.groupTitle, s: { bold: true, fgColor: { rgb: 272822 }, color: { rgb: 16777215 } }
+					ws[cell_ref] = { 
+						//removing any html tags from the title
+						v: rec.groupTitle.replace(/<\/?[^>]+(>|$)/g, ""), s: { bold: true, fgColor: { rgb: 272822 }, color: { rgb: 16777215 } }
 					}
 					const merge = {s: {c: 0, r: i}, e: {c: columns.length-1, r: i}};
 					merges.push(merge);
@@ -2010,7 +2011,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				}
 				columns.forEach(async (col, j) => {
 					if (i-groupNumber === 0) {
-						let cell_ref = XLSX.utils.encode_cell({ c: j, r: i-groupNumber }); // -groupNumber to skip the group title row without modyfying the existing logic
+						let cell_ref = XLSX.utils.encode_cell({ c: j, r: i-groupNumber }); // -groupNumber to skip the group title row without modifying the existing logic
 						ws[cell_ref] = {
 							v: col.label, s: { bold: true, fgColor: { rgb: 0 }, color: { rgb: 16777215 } }
 						}
