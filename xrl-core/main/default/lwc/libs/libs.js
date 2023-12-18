@@ -603,6 +603,9 @@ export let libs = {
 	getMacros: function(){
 		return [{"label":'recordId',"value":'%%recordId%%'}, {"label":'userId',"value":'%%userId%%'},{"label":'sObjApiName',"value":'%%sObjApiName%%'},{"label":'urlParam',"value":'%%urlParam%%'}];
 	},
+	getDateLiterals: function(){
+		return [{"label":'CUSTOM',"value":'CUSTOM'},{"label":'YESTERDAY',"value":'YESTERDAY'},{"label":'TODAY',"value":'TODAY'},{"label":'TOMORROW',"value":'TOMORROW'},{"label":'LAST WEEK',"value":'LAST_WEEK'},{"label":'THIS WEEK',"value":'THIS_WEEK'},{"label":'LAST MONTH',"value":'LAST_MONTH'},{"label":'THIS MONTH',"value":'THIS_MONTH'},{"label":'THIS YEAR',"value":'THIS_YEAR'},{"label":'LAST YEAR',"value":'LAST_YEAR'}];
+	},
 	showToast : function(scope, params) {
 		const event = new ShowToastEvent(params);
 		scope.dispatchEvent(event);
