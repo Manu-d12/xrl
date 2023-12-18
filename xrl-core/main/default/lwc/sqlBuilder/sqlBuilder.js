@@ -183,6 +183,9 @@ export default class SqlBuilder extends LightningElement {
                 if(selectedField.type === 'picklist' || selectedField.type === 'multipicklist'){
                     this.config.sqlBuilder.currentCondition.fieldOptions = selectedField.options;
                 }
+                if(selectedField.type === 'date' || selectedField.type === 'datetime'){
+                    this.config.sqlBuilder.currentCondition.fieldOptions = JSON.parse(JSON.stringify(libs.getDateLiterals()));
+                }
                 if(selectedField.type === 'boolean'){
                     this.config.sqlBuilder.currentCondition.fieldOptions = [
                         {label:"True",value:"True"},
@@ -236,7 +239,10 @@ export default class SqlBuilder extends LightningElement {
                 isRange: operator === 'rg' ? true : false,
                 _isLookUp: this.config.sqlBuilder.currentCondition.fieldType === 'reference',
                 isMultiSelect: this.config.sqlBuilder.currentCondition.fieldType === 'picklist' || this.config.sqlBuilder.currentCondition.fieldType === 'multipicklist' ? true : false ,
+                isCustomDateInput: (this.config.sqlBuilder.currentCondition.fieldType === 'date' || this.config.sqlBuilder.currentCondition.fieldType === 'datetime' && this.config.sqlBuilder.currentCondition.value && !Number.isNaN(Number(this.config.sqlBuilder.currentCondition.value[0]))=== true || operator === 'rg') ? true : false,
+                isDate: (this.config.sqlBuilder.currentCondition.fieldType === 'date' || this.config.sqlBuilder.currentCondition.fieldType === 'datetime' && this.config.sqlBuilder.currentCondition.operator.value !== 'rg')  ? true : false,
             };
+            this.config.sqlBuilder.openConditionInput.isOtherFields= this.config.sqlBuilder.openConditionInput.isPicklist !== true && this.config.sqlBuilder.openConditionInput.isDate !== true && this.config.sqlBuilder.openConditionInput.isCustomDateInput !== true? true : false;
             this.config.sqlBuilder.currentCondition.valueRange = this.config.sqlBuilder.openConditionInput.isRange ? this.config.sqlBuilder.currentCondition.valueRange : false;
         }
         if(val === "sqlBuilder:conditions:addCondition"){
@@ -300,6 +306,15 @@ export default class SqlBuilder extends LightningElement {
                 value = values;
             }else if(this.config.sqlBuilder.currentCondition.fieldType === 'boolean'){
                 value = event.detail.payload.value;
+            }else if(this.config.sqlBuilder.currentCondition.fieldType === 'date' || this.config.sqlBuilder.currentCondition.fieldType === 'datetime' && event.detail.payload !== undefined){
+                //value = event.detail.payload.value !== undefined ? event.detail.payload.value : event.target.value;
+                if(event.detail.payload.value === 'CUSTOM'){
+                    this.config.sqlBuilder.openConditionInput.isCustomDateInput= true;
+                }else{
+                    value = event.detail.payload.value;
+                    this.config.sqlBuilder.openConditionInput.isCustomDateInput= false;
+                }
+                this.config.sqlBuilder.currentCondition.customValue= event.detail.payload.value;
             }else{
                 value = event.target.value;
             }
@@ -366,8 +381,11 @@ export default class SqlBuilder extends LightningElement {
                 isPicklist: this.config.sqlBuilder.currentCondition.fieldType === 'picklist' || this.config.sqlBuilder.currentCondition.fieldType === 'boolean' || this.config.sqlBuilder.currentCondition.fieldType === 'multipicklist' ? true : false,
                 isRange: this.config.sqlBuilder.currentCondition.operator.value === 'rg' ? true : false,
                 _isLookUp: this.config.sqlBuilder.currentCondition.fieldType === 'reference',
-                isMultiSelect: this.config.sqlBuilder.currentCondition.fieldType === 'picklist' || this.config.sqlBuilder.currentCondition.fieldType === 'multipicklist' ? true : false 
+                isMultiSelect: this.config.sqlBuilder.currentCondition.fieldType === 'picklist' || this.config.sqlBuilder.currentCondition.fieldType === 'multipicklist' ? true : false,
+                isCustomDateInput: (this.config.sqlBuilder.currentCondition.fieldType === 'date' || this.config.sqlBuilder.currentCondition.fieldType === 'datetime' && this.config.sqlBuilder.currentCondition.value && !Number.isNaN(Number(this.config.sqlBuilder.currentCondition.value[0]))=== true) || this.config.sqlBuilder.currentCondition.operator.value === 'rg'  ? true : false,
+                isDate: (this.config.sqlBuilder.currentCondition.fieldType === 'date' || this.config.sqlBuilder.currentCondition.fieldType === 'datetime' && this.config.sqlBuilder.currentCondition.operator.value !== 'rg')  ? true : false,
             };
+            this.config.sqlBuilder.openConditionInput.isOtherFields= this.config.sqlBuilder.openConditionInput.isPicklist !== true && this.config.sqlBuilder.openConditionInput.isDate !== true && this.config.sqlBuilder.openConditionInput.isCustomDateInput !== true? true : false;
             if((this.config.sqlBuilder.currentCondition.fieldType === 'picklist' || this.config.sqlBuilder.currentCondition.fieldType === 'multipicklist') && typeof this.config.sqlBuilder.currentCondition.value === 'string'){
                 let values= this.config.sqlBuilder.currentCondition.value.replace(/'/g, '').split(',');
                 this.config.sqlBuilder.currentCondition.value = values;  
@@ -485,7 +503,7 @@ export default class SqlBuilder extends LightningElement {
         }
     }
     formatConditionValue(field,value){
-        if(field.fieldType === 'date'){
+        if(field.fieldType === 'date' && typeof value !== 'string'){
             let formattedDate = new Date(value).toLocaleString(this.config.userInfo.locale,{
                 month : "2-digit",
                 day : "2-digit",
@@ -493,7 +511,7 @@ export default class SqlBuilder extends LightningElement {
             });
             return formattedDate;
         }
-        else if(field.fieldType === 'datetime'){
+        else if(field.fieldType === 'datetime' && typeof value !== 'string'){
             let formattedDate = new Date(value).toLocaleString(this.config.userInfo.locale,{
                 month : "2-digit",
                 day : "2-digit",
