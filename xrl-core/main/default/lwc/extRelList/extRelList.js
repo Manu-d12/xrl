@@ -683,13 +683,12 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			console.log('Import NOT SUPPORTED');
 			return;
 		}
-		this.config.namespace = 'XRL';
 		let recordsWithParents = [];
 		let recordsWithoutParents = [];
 		//storing with parent and without parent records in different array as we need to insert without parents records first to get the records Id.
 		file.records.forEach((record, ind) => {
 			delete record.Id;
-			if(record[this.config.namespace +'__Parent__c'] === undefined) {
+			if(record[libs.getNameSpace() +'Parent__c'] === undefined) {
 				if (record.Name == undefined) record.Name = ind;
 				recordsWithoutParents.push(record);
 			}else{
@@ -699,41 +698,60 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		//saving the without parent records
 		await libs.remoteAction(this, 'saveRecords', { records: recordsWithoutParents, 
 			sObjApiName: this.config.sObjApiName,
-			uniqueFieldNameForUpsert: this.config.namespace +'__extRelListConfig__c.'+ this.config.namespace +'__uniqKey__c',
+			uniqueFieldNameForUpsert: libs.getNameSpace() +'extRelListConfig__c.'+ libs.getNameSpace() +'uniqKey__c',
 			callback: function(nodename,data){
-				console.log('saved without parents', data[nodename].records);
-				recordsWithoutParents = data[nodename].records;
-				libs.showToast(this,{
-					title: 'Success',
-					message: 'Successfully inserted without parent '+ recordsWithoutParents.length +' records.',
-					variant: 'success'
-				});
+				if(parseInt(data[nodename].countOfFailedRecords) === 0){
+					console.log('saved without parents', data[nodename].records);
+					recordsWithoutParents = data[nodename].records;
+					libs.showToast(this,{
+						title: 'Success',
+						message: 'Successfully inserted without parent '+ recordsWithoutParents.length +' records.',
+						variant: 'success'
+					});
+				}else{
+					libs.showToast(this,{
+						title: 'Error',
+						message: 'Error in inserting ' + data[nodename].countOfFailedRecords +' without parent records. '+ (data[nodename].records.length - parseInt(data[nodename].countOfFailedRecords))+' inserted successfully. Please check console for more information',
+						variant: 'info'
+					});
+					console.error('error', data[nodename].listOfErrors);
+				}
 			}
 		});
 		// updating the with parent records with new parent__c Id
 		recordsWithParents.forEach((record) => {
-			let newParentRecord = recordsWithoutParents.find((el) => el[this.config.namespace + '__uniqKey__c'] === record[this.config.namespace +'__Parent__r'][this.config.namespace +'__uniqKey__c']);
+			let newParentRecord = recordsWithoutParents.find((el) => el[libs.getNameSpace() + 'uniqKey__c'] === record[libs.getNameSpace() +'Parent__r'][libs.getNameSpace() +'uniqKey__c']);
 			if(newParentRecord !== undefined){
-				record[this.config.namespace +'__Parent__c'] = newParentRecord.Id;
+				record[libs.getNameSpace() +'Parent__c'] = newParentRecord.Id;
 			}else{
-				delete record[this.config.namespace +'__Parent__c'];
+				delete record[libs.getNameSpace() +'Parent__c'];
 			}
 		});
 		//now updating the with parent records with the new parent Id
 		if(recordsWithParents.length > 0){
 			await libs.remoteAction(this, 'saveRecords', { records: recordsWithParents, 
 				sObjApiName: this.config.sObjApiName,
-				uniqueFieldNameForUpsert: this.config.namespace +'__extRelListConfig__c.'+ this.config.namespace +'__uniqKey__c',
+				uniqueFieldNameForUpsert: libs.getNameSpace() +'extRelListConfig__c.'+ libs.getNameSpace() +'uniqKey__c',
 				callback: function(nodename,data){
-					console.log('saved with parents', data[nodename].records);
-					libs.showToast(this,{
-						title: 'Success',
-						message: 'Successfully inserted with parent '+ data[nodename].records.length +' records.',
-						variant: 'success'
-					});
+					if(parseInt(data[nodename].countOfFailedRecords) === 0){
+						console.log('saved with parents', data[nodename].records);
+						libs.showToast(this,{
+							title: 'Success',
+							message: 'Successfully inserted with parent '+ data[nodename].records.length +' records.',
+							variant: 'success'
+						});
+					}else{
+						libs.showToast(this,{
+							title: 'Error',
+							message: 'Error in inserting ' + data[nodename].countOfFailedRecords +' with parent records. '+ (data[nodename].records.length - parseInt(data[nodename].countOfFailedRecords))+' inserted successfully. Please check console for more information',
+							variant: 'info'
+						});
+						console.error('error', data[nodename].listOfErrors);
+					}
 				}
 			});
 		}
+		this.loadCfg();
 	}
 	async handlePermissionSetAssignmentImport(file){
 		file.records.forEach((record) => {
