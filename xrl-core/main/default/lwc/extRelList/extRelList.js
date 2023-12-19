@@ -1188,7 +1188,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if(chunkCount === this.config.saveStatus)
 			this.resetChangedRecords(changedItems.length);
 	}
-	async saveRecords(scope,chunkIn){
+	async saveRecords(scope,chunkIn,isFirstChunk,isLastChunk){
 		try{
 			//[DR] in case of saving custom settings need delete all nested attributes inside records, otherwise we will get EXCEPTION "Cannot deserialize instance of <unknown> from null value null or request may be missing a required field"
 			let chunk = libs.stripChunk(chunkIn);
@@ -1196,6 +1196,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				sObjApiName: scope.config.sObjApiName,
 				rollback:scope.config.listViewConfig[0].rollBack ? scope.config.listViewConfig[0].rollBack : false,
 				beforeSaveAction: scope.config.listViewConfig[0].beforeSaveApexAction ? scope.config.listViewConfig[0].beforeSaveApexAction : '',
+				isFirstChunk: isFirstChunk,
+				isLastChunk: isLastChunk,
 				callback: function(nodename,data){
 					scope.config.saveStatus += 1;
 					scope.config.countOfFailedRecords += parseInt(data[nodename].countOfFailedRecords);
