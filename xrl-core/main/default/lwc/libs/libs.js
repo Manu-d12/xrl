@@ -549,8 +549,10 @@ export let libs = {
 		delete outParams.callback;
 		if(cmd === 'invokeApex' && outParams._chunkSize !== undefined){ //if it is invokeApex and chunk size is defined then we will split the records into chunks before sending it into apex
 			let allRecords = JSON.parse(JSON.stringify(outParams.data.records));
-			this.splitRecordsIntoChunks(scope,allRecords,parseInt(outParams._chunkSize),async function(scope,chunk){
+			this.splitRecordsIntoChunks(scope,allRecords,parseInt(outParams._chunkSize),async function(scope,chunk,isFirstChunk,isLastChunk) {
 				outParams.data.records = chunk;
+				outParams.data.isFirstChunk = isFirstChunk;
+				outParams.data.isLastChunk = isLastChunk;
 				await callToApexInterface();
 			});
 		}else{
@@ -1037,12 +1039,17 @@ export let libs = {
 	splitRecordsIntoChunks: async function (scope,records,chunkSize, callback) {
 		let index = 0;
 		let chunkCount = 0;
+		let isFirstChunk = false;
+		let isLastChunk = false;
 		while(records.length > 0 && index < records.length){
 			let lIndex = records[(parseInt(index)+parseInt(chunkSize))] ? (parseInt(index)+parseInt(chunkSize)) : (records.length);
 			let chunk = records.slice(index,lIndex);
 			index += records[(parseInt(index)+parseInt(chunkSize))] ? parseInt(chunkSize) : (records.length);
+			if(chunkCount === 0) isFirstChunk = true;
 			chunkCount +=1;
-			await callback(scope,chunk);
+			if(index > records.length) isLastChunk = true;
+			await callback(scope,chunk,isFirstChunk,isLastChunk);
+			isFirstChunk = false;
 		}
 		return chunkCount;
 	},
