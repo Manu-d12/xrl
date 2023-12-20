@@ -126,6 +126,7 @@ global with sharing class QuoteValidator {
             cfg = new config__mdt[]{tst};
         } else {
             cfg = [SELECT Id, JSON__c FROM config__mdt WHERE DeveloperName = :operation];
+            if (cfg.size() == 0) throw new infrastructure.InfrastructureException(null, ('Can\'t meta config {1}').replace('{1}', operation), infrastructure.exceptionType.CLASS_NOT_FOUND);
         }
         this.config = (orchestratorConfig) JSON.deserialize(cfg[0].JSON__c, orchestratorConfig.class);
         this.config.init(operation, orcReq);

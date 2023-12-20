@@ -1191,6 +1191,20 @@ global with sharing class infrastructure {
 		}
 		return result;
     }
+	private static object orchestrator(map<string, object> data) {        
+        string operation = (string) data.get('operation');
+		orchestrator.orchestratorRequest orcReq = (orchestrator.orchestratorRequest) JSON.deserialize(JSON.serialize(data.get('orchestratorRequest')), orchestrator.orchestratorRequest.class);
+            //new orchestrator.orchestratorRequest();
+		//orcReq.rootRecordId = (string) data.get(rootRecordId);
+		//orcReq.relatedRecordIds = new Id[]{'5005i00000Kiy9BAAR','5005i00000Kiy9CAAR'};
+		//orcReq.isFirstChunk = true;    
+		//orcReq.isLastChunk = true;
+
+		object result = new orchestrator(operation,orcReq).getResults();
+		System.debug(result);
+		System.debug('DONE');
+		return result;
+    }
 
 	private static string[] getIntrLst() {
         List<ApexClass[]> searchList = [
