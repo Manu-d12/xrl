@@ -43,6 +43,8 @@ export default class customAction extends LightningElement {
             callback: ((nodeName, data) => {
                 console.log('List of child Ids', data[nodeName]);
                 let relatedRecords = data[nodeName].records[0][this.config.orchestrator.childObjApiName];
+                if (relatedRecords == undefined) this.handleEvent();
+                
                 relatedRecords.length = this.config.orchestrator?.limits?.chunkSize ? this.config.orchestrator?.limits?.chunkSize : 200;
                 libs.remoteAction(this, 'orchestrator', {
                     isDebug: false,
@@ -61,8 +63,11 @@ export default class customAction extends LightningElement {
     }
 
 
-    @api handleEvent(){
-        this.dispatchEvent(new CloseActionScreenEvent());
+    @api handleEvent(event){
+
+        let target = event?.detail?.action;
+        if (target == 'getRecordsAndSend') this.getRecordsAndSend();
+        else this.dispatchEvent(new CloseActionScreenEvent());
     }
 
     parseUrlParams() {
