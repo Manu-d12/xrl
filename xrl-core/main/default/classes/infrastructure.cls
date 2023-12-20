@@ -1191,20 +1191,6 @@ global with sharing class infrastructure {
 		}
 		return result;
     }
-	private static object orchestrator(map<string, object> data) {
-
-		orchestrator.orchestratorRequest orcReq = new orchestrator.orchestratorRequest();
-		orcReq.rootRecordId = '0015i000008dvp9AAA';
-		orcReq.relatedRecordIds = new Id[]{'5005i00000Kiy9BAAR','5005i00000Kiy9CAAR'};
-		orcReq.isFirstChunk = true;    
-		orcReq.isLastChunk = true;
-
-		object result = new orchestrator('Test_Account_Validate',orcReq).getResults();
-		// result = 
-		System.debug(result);
-		System.debug('DONE');
-		return result;
-    }
 
 	private static string[] getIntrLst() {
         List<ApexClass[]> searchList = [
