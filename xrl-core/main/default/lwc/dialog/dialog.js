@@ -29,7 +29,7 @@ export default class dialog extends LightningElement {
         this.config.buttons = this._cfg?.buttons || [];
         this.values = {};
 
-        if (this.config.callback.startsWith('function(')) {
+        if (this.config.callback?.startsWith('function(')) {
             this.config.callback = eval('[' + this.config.callback + ']')[0];
         }
 

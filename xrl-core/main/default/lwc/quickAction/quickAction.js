@@ -6,7 +6,8 @@ import { CloseActionScreenEvent } from 'lightning/actions';
 export default class customAction extends LightningElement {
 
 
-    actionName = location.pathname.replace(/\/.*\/(.*)$/, "$1").replaceAll(/__c\./ig,'.').replaceAll(/__/ig,'');
+    actionName = location.pathname.replace(/\/.*\/(.*)$/, "$1");
+    cfgName = this.actionName.replaceAll(/__c\./ig,'.').replaceAll(/__/ig,'').replace('.', '_');
     @track config = {}
     urlParams = this.parseUrlParams();
     @track result = '';
@@ -19,10 +20,10 @@ export default class customAction extends LightningElement {
 
         
         libs.remoteAction(this, 'getMetaConfigByName', {
-            cfgName: this.actionName.replace('.', '_'),
+            cfgName: cfgName,
             callback: ((nodeName, data) => {
                 this.config = JSON.parse(data[nodeName]);
-                if (this.config.UI !=undefined) {
+                if (this.config.UI == undefined) {
                     this.getRecordsAndSend();                
                 }
             })
@@ -33,7 +34,8 @@ export default class customAction extends LightningElement {
 
     getRecordsAndSend() {
         //Need to get a name of related list
-        let SOQL = "SELECT Id, (SELECT Id FROM " + this.config.orchestrator.childObjApiName + ") FROM " + this.actionName.replace(/^(.*?)\..*?$/, "$1") + " WHERE Id='" + this.urlParams.recordId + "'";
+        let objName = this.actionName.replace(/^(.*?)\..*?$/, "$1");
+        let SOQL = "SELECT Id, (SELECT Id FROM " + this.config.orchestrator.childObjApiName + ") FROM " + objName + " WHERE Id='" + this.urlParams.recordId + "'";
 
         console.log(this.config, SOQL, this.urlParams);
         libs.remoteAction(this, 'customSoql', {
@@ -44,7 +46,7 @@ export default class customAction extends LightningElement {
                 relatedRecords.length = this.config.orchestrator?.limits?.chunkSize ? this.config.orchestrator?.limits?.chunkSize : 200;
                 libs.remoteAction(this, 'orchestrator', {
                     isDebug: false,
-                    operation: this.actionName.replace('.', '_'),
+                    operation: cfgName,
                     orchestratorRequest: {
                         rootRecordId: this.urlParams.recordId,
                         relatedRecordIds: Array.from(relatedRecords, function (entry) { return entry.Id; })
