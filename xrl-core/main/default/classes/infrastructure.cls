@@ -96,6 +96,13 @@ global with sharing class infrastructure {
                 when 'httpRequest' {
 					resultMethod = sendRequest(data);
 				}
+                when 'getMetaConfigByName' {
+					resultMethod = getMetaConfigByName(data);
+				}
+                
+				when 'orchestrator' {
+					resultMethod = orchestrator(data);
+				}
 				
 				when
 				else {
@@ -233,6 +240,13 @@ global with sharing class infrastructure {
 		return result;
 		//https://salesforce.stackexchange.com/questions/116688/lightning-get-sobject-tab-icon
 	}
+    
+    private static object getMetaConfigByName(map < string, object > data){
+        string cfgName = (string) data.get('cfgName');
+        config__mdt[] res  = [SELECT JSON__c FROM config__mdt WHERE DeveloperName = :cfgName];
+        return res.size()>0 ? res[0].JSON__c : null;
+    }
+        
 	private static object customSoql(map < string, object > data) {
 		string SOQL = (string) data.get('SOQL');
 		string sObjApiName = (string) data.get('sObjApiName');
@@ -1175,6 +1189,20 @@ global with sharing class infrastructure {
 			result.put('errorMessage', e.getMessage());
 			system.debug(LoggingLevel.Error, e.getMessage());
 		}
+		return result;
+    }
+	private static object orchestrator(map<string, object> data) {
+
+		orchestrator.orchestratorRequest orcReq = new orchestrator.orchestratorRequest();
+		orcReq.rootRecordId = '0015i000008dvp9AAA';
+		orcReq.relatedRecordIds = new Id[]{'5005i00000Kiy9BAAR','5005i00000Kiy9CAAR'};
+		orcReq.isFirstChunk = true;    
+		orcReq.isLastChunk = true;
+
+		object result = new orchestrator('Test_Account_Validate',orcReq).getResults();
+		// result = 
+		System.debug(result);
+		System.debug('DONE');
 		return result;
     }
 

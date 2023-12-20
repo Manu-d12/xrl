@@ -1,4 +1,4 @@
-public class orchestrator {
+public with sharing class orchestrator {
 
     /*  
      * 1. Custom  metadata "Config"
@@ -207,9 +207,11 @@ global with sharing class QuoteValidator {
             'isRefresh' => this.orcReq.additionalParameters.get('isRefresh'),
             'discMode' => this.orcReq.additionalParameters.get('discMode')
         };
-        string methodName = Crypto.generateDigest('MD5', Blob.valueOf(JSON.serialize(input))).toString();
+        string methodName = EncodingUtil.convertToHex(Crypto.generateDigest('MD5', Blob.valueOf(JSON.serialize(input))));
+        Pattern startWithDigit = Pattern.compile('[0-9]');
 
-        return className.replace('{method}',  methodName);
+
+        return className.replace('{method}',  methodName.replaceAll('^(\\d{1})','calc_' + '$1'));
     }
     
     private log__c prepareLogRecord(string operation, sObject relatedRecord) {
