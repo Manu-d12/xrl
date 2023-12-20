@@ -20,7 +20,7 @@ export default class customAction extends LightningElement {
 
         
         libs.remoteAction(this, 'getMetaConfigByName', {
-            cfgName: cfgName,
+            cfgName: this.cfgName,
             callback: ((nodeName, data) => {
                 this.config = JSON.parse(data[nodeName]);
                 if (this.config.UI == undefined) {
@@ -46,7 +46,7 @@ export default class customAction extends LightningElement {
                 relatedRecords.length = this.config.orchestrator?.limits?.chunkSize ? this.config.orchestrator?.limits?.chunkSize : 200;
                 libs.remoteAction(this, 'orchestrator', {
                     isDebug: false,
-                    operation: cfgName,
+                    operation: this.cfgName,
                     orchestratorRequest: {
                         rootRecordId: this.urlParams.recordId,
                         relatedRecordIds: Array.from(relatedRecords, function (entry) { return entry.Id; })
