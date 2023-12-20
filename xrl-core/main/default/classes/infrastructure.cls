@@ -1325,6 +1325,24 @@ global with sharing class infrastructure {
 			this.setMessage(message);
 		}
 	}
+    
+    global enum validationResultCode {
+        OK,
+        ERR,
+        WARN
+    }
+    
+    global class validationResult {
+        global validationResultCode code;
+        global object[] dynamicValues; //  Need for errorMessage representation
+    }
+    
+    global validationResult validationResult(validationResultCode resCode, object[] dynamicValues){
+        validationResult result = new validationResult();
+        result.code = resCode;
+        result.dynamicValues = dynamicValues;
+        return result;
+    }
 
 	global enum exceptionType {
 		GENERAL,

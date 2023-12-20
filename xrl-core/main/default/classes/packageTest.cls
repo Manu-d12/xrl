@@ -310,4 +310,12 @@ public class packageTest {
         //System.assertEquals('new subject', csNew.Subject);
         //System.assertEquals(cs.AccountId, csNew.AccountId);
     }
+    @isTest
+	public static void testOrchestrators() {
+        test.startTest();
+	        //map < string, object > res = infrastructure.dispatcherAura('cloneRecords', data);
+			orchestrator.fakeTest();
+        test.stopTest();
+
+	}
 }
