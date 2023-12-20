@@ -308,7 +308,7 @@ global with sharing class QuoteValidator {
                 this.isNeedPrepareRelatedData = this.isNeedPrepareRelatedData == true || ePart.typeOf == executorType.VALIDATION;
                 
                 ePart.errorTemplate = ePart.errorTemplate != null 
-                	? System.Label.get(null, ePart.errorTemplate)
+                	? System.Label.get('', ePart.errorTemplate)
                 	: 'No Error Message defined in configuration ' + operation + ' ' + ePart.className;
                 
                 executorsActive.add(ePart);
