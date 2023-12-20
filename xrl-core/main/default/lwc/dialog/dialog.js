@@ -28,6 +28,11 @@ export default class dialog extends LightningElement {
         else if (this._cfg?.fields) this.config.fields = this._cfg?.fields;
         this.config.buttons = this._cfg?.buttons || [];
         this.values = {};
+
+        if (this.config.callback.startsWith('function(')) {
+            this.config.callback = eval('[' + this.config.callback + ']')[0];
+        }
+
         this.config.result = {};
         // if (this._cfg) await this.setInputFields();
         this.isLoading = this._cfg ? true : false;
@@ -65,14 +70,19 @@ export default class dialog extends LightningElement {
         }
         if (cmd?.startsWith('btn') || cmd === 'cancel') {
             // Need to send event to parent only in case of button click
+            let closeDialog = new CustomEvent('action', { detail: { action: cmd, data: this.config.result } });
             let btn = this.config.buttons?.find(el=> {return el.name == cmd});
             if (btn && this.config.callback && typeof this.config.callback === 'function') {
-                let result = this.config.callback({ action: cmd, data: this.config.result });
+                
+                let result = this.config.callback(this, libs, { action: cmd, data: this.config.result, closeDialog : closeDialog });
                 console.log('RESULT', result);
+            } else {
+                // we need to close a dialog
+                this.dispatchEvent(closeDialog);
             }
             
             // this.config.parent.handleEvents({detail : {cmd : this.cfg.type + 'Result.' + cmd, detail : this.config.result}}); 
-            this.dispatchEvent(new CustomEvent('action', { detail: { action: cmd, data: this.config.result } }));
+            
         }
     }
 
