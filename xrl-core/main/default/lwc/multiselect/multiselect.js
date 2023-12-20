@@ -249,7 +249,7 @@ export default class Multiselect extends LightningElement {
         this.blurEvent('',true);
     }
     closeDropdown(event){
-        if(event.relatedTarget === undefined){
+        if(event.relatedTarget === undefined || event.relatedTarget.label !== undefined || event.relatedTarget.name === undefined){
             this.mSelectConfig.showDropdown = false;
         }
     }
