@@ -1191,16 +1191,16 @@ global with sharing class infrastructure {
 		}
 		return result;
     }
-	private static object orchestrator(map<string, object> data) {
+	private static object orchestrator(map<string, object> data) {        
+        string operation = (string) data.get('operation');
+		orchestrator.orchestratorRequest orcReq = (orchestrator.orchestratorRequest) JSON.deserialize(JSON.serialize(data.get('orchestratorRequest')), orchestrator.orchestratorRequest.class);
+            //new orchestrator.orchestratorRequest();
+		//orcReq.rootRecordId = (string) data.get(rootRecordId);
+		//orcReq.relatedRecordIds = new Id[]{'5005i00000Kiy9BAAR','5005i00000Kiy9CAAR'};
+		//orcReq.isFirstChunk = true;    
+		//orcReq.isLastChunk = true;
 
-		orchestrator.orchestratorRequest orcReq = new orchestrator.orchestratorRequest();
-		orcReq.rootRecordId = '0015i000008dvp9AAA';
-		orcReq.relatedRecordIds = new Id[]{'5005i00000Kiy9BAAR','5005i00000Kiy9CAAR'};
-		orcReq.isFirstChunk = true;    
-		orcReq.isLastChunk = true;
-
-		object result = new orchestrator('Test_Account_Validate',orcReq).getResults();
-		// result = 
+		object result = new orchestrator(operation,orcReq).getResults();
 		System.debug(result);
 		System.debug('DONE');
 		return result;
@@ -1325,6 +1325,31 @@ global with sharing class infrastructure {
 			this.setMessage(message);
 		}
 	}
+    
+    global enum validationResultCode {
+        OK,
+        ERR,
+        WARN
+    }
+    
+    global class validationResult {
+        global validationResultCode code;
+        global object[] dynamicValues; //  Need for errorMessage representation
+    }
+    
+    global static validationResult resultOfvalidation(validationResultCode resCode, object[] dynamicValues){
+        validationResult result = new validationResult();
+        result.code = resCode;
+        result.dynamicValues = dynamicValues;
+        return result;
+    }
+    
+    global validationResult validationResult(validationResultCode resCode, object[] dynamicValues){
+        validationResult result = new validationResult();
+        result.code = resCode;
+        result.dynamicValues = dynamicValues;
+        return result;
+    }
 
 	global enum exceptionType {
 		GENERAL,

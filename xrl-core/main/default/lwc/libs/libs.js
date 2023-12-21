@@ -547,14 +547,17 @@ export let libs = {
 			outParams.loadChunkSize = scope.config.dataTableConfig.loadChunkSize;
 		}
 		delete outParams.callback;
-		if(cmd === 'invokeApex' && outParams._chunkSize !== undefined){ //if it is invokeApex and chunk size is defined then we will split the records into chunks before sending it into apex
-			let allRecords = JSON.parse(JSON.stringify(outParams.data.records));
+		if((cmd === 'invokeApex' || cmd === 'orchestrator') && outParams._chunkSize !== undefined){ //if it is invokeApex and chunk size is defined then we will split the records into chunks before sending it into apex
+			let allRecords = outParams?.recordsPath ? JSON.parse(JSON.stringify(outParams[outParams.recordsPath.split('.')[0]][outParams.recordsPath.split('.')[1]])) : JSON.parse(JSON.stringify(outParams.data.records));
 			this.splitRecordsIntoChunks(scope,allRecords,parseInt(outParams._chunkSize),async function(scope,chunk,isFirstChunk,isLastChunk) {
+				if(outParams.data === undefined) {
+					outParams.data = {};
+				}
 				outParams.data.records = chunk;
 				outParams.data.isFirstChunk = isFirstChunk;
 				outParams.data.isLastChunk = isLastChunk;
 				await callToApexInterface();
-			});
+			},outParams?.finishCallback);
 		}else{
 			await callToApexInterface();
 		}
@@ -1039,7 +1042,7 @@ export let libs = {
 		});
 		return updatedURL;
 	},
-	splitRecordsIntoChunks: async function (scope,records,chunkSize, callback) {
+	splitRecordsIntoChunks: async function (scope,records,chunkSize, callback, finishCallback) {
 		let index = 0;
 		let chunkCount = 0;
 		let isFirstChunk = false;
@@ -1053,6 +1056,11 @@ export let libs = {
 			if(index > records.length) isLastChunk = true;
 			await callback(scope,chunk,isFirstChunk,isLastChunk);
 			isFirstChunk = false;
+		}
+		// function(scope,libs,allResults) {
+		let allResults = globalVars.orchestratorResult;
+		if(finishCallback){
+			eval( '(' + finishCallback + ')' )(scope,libs,allResults);
 		}
 		return chunkCount;
 	},
