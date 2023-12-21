@@ -1067,9 +1067,9 @@ export let libs = {
 			isFirstChunk = false;
 		}
 		// function(scope,libs,allResults) {
-		let allResults = globalVars.orchestratorResult;
+		//let allResults = globalVars.orchestratorResult;
 		if(finishCallback){
-			eval( '(' + finishCallback + ')' )(scope,libs,allResults);
+			eval( '(' + finishCallback + ')' )(scope,libs,libs.orchestratorResult());
 		}
 		return chunkCount;
 	},
@@ -1095,7 +1095,7 @@ export let libs = {
 		return message;
 	},
 	orchestratorResult : function(data) {
-		if (data == null) libs.setGlobalVar('orchestratorResult',{totalRecords : 0, errorRecords : 0, results:[]});
+		if (data === null) libs.setGlobalVar('orchestratorResult',{totalRecords : 0, errorRecords : 0, results:[]});
 		else if (data!= undefined) {
 			if (libs.getGlobalVar('orchestratorResult') == undefined) libs.setGlobalVar('orchestratorResult',{totalRecords : 0, errorRecords : 0, results:[]});
 			libs.getGlobalVar('orchestratorResult').results.push(data);
