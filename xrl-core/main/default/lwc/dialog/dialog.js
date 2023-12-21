@@ -32,6 +32,11 @@ export default class dialog extends LightningElement {
         if (this.config.callback?.startsWith('function(')) {
             this.config.callback = eval('[' + this.config.callback + ']')[0];
         }
+        this.config.buttons?.forEach(btn => {
+            if (btn.disableCallback && btn.disableCallback.startsWith('function(')) {
+                btn.disableCallback = eval('[' + btn.disableCallback + ']')[0];
+            }
+        });
 
         this.config.result = {};
         // if (this._cfg) await this.setInputFields();
@@ -56,6 +61,12 @@ export default class dialog extends LightningElement {
         if (event.detail.cmd == ':updateFromChild') {
             console.log('event from child', event.detail.data);
             this.config.result[event.detail.data.name] = event.detail.data?.value;
+            // Need also rerender buttons
+            this.config.buttons.forEach(btn => {
+                if (btn.disableCallback && typeof btn.disableCallback === 'function') {
+                    btn.isDisabled = btn.disableCallback(this, libs, this.config.result);
+                }
+            });
             return;
         }
         let closeDialog = new CustomEvent('action', { detail: { action: cmd, data: this.config.result } });
