@@ -244,7 +244,21 @@ global with sharing class infrastructure {
     private static object getMetaConfigByName(map < string, object > data){
         string cfgName = (string) data.get('cfgName');
         config__mdt[] res  = [SELECT JSON__c FROM config__mdt WHERE DeveloperName = :cfgName];
-        return res.size()>0 ? res[0].JSON__c : null;
+        return res.size()>0 ? replaceLabels(res[0].JSON__c) : null;
+    }
+    
+    private static string replaceLabels(string input) {
+        String regExp = '(?im)(\\$Label\\.(\\w+))';
+        Pattern p = Pattern.compile(regExp);      
+        Matcher m = p.matcher(input);
+            while (m.find() == true) {
+                string term = m.group(1).trim();
+                string replacement = System.Label.get('', term.replace('$Label.',''));
+                input = input.replace(term, replacement); // need to fix issue with replaceAll
+                input = input.replace(term, replacement);
+                input = input.replace(term, replacement);
+            } 
+        return input;
     }
         
 	private static object customSoql(map < string, object > data) {
