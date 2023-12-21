@@ -557,7 +557,9 @@ export let libs = {
 					outParams.data = {};
 				}
 				if(cmd === 'orchestrator'){
-					outParams.orchestratorRequest.relatedRecordIds = JSON.parse(JSON.stringify(chunk));
+					outParams.orchestratorRequest.relatedRecordIds = chunk;
+					outParams.orchestratorRequest.isFirstChunk = isFirstChunk;
+					outParams.orchestratorRequest.isLastChunk = isLastChunk;
 				}
 				// outParams.data.records = chunk;
 				outParams.data.isFirstChunk = isFirstChunk;
@@ -1060,7 +1062,7 @@ export let libs = {
 			index += records[(parseInt(index)+parseInt(chunkSize))] ? parseInt(chunkSize) : (records.length);
 			if(chunkCount === 0) isFirstChunk = true;
 			chunkCount +=1;
-			if(index > records.length) isLastChunk = true;
+			if(index >= records.length) isLastChunk = true;
 			await callback(scope,chunk,isFirstChunk,isLastChunk);
 			isFirstChunk = false;
 		}
