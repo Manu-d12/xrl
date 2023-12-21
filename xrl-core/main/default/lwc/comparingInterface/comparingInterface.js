@@ -224,7 +224,7 @@ export default class ComparingInterface extends LightningElement {
         }));
     }
     async fetchAndSetChildRecords(objectNum, userSelection, configRecord, recordType, relFields, fields) {
-        if (recordType === 'CurrentRecord' || recordType === undefined || this.config[configRecord] === undefined || this.config.json.QueryFromConfig.returnType !== 'child') {
+        if (recordType === 'CurrentRecord' || recordType === 'recordId'  || recordType === undefined || this.config[configRecord] === undefined || this.config.json.QueryFromConfig.returnType !== 'child') {
             const relatedRecords = await libs.remoteAction(this, 'query', {
                 sObjApiName: this.config.json.childApiNames[objectNum],
                 fields: fields,
