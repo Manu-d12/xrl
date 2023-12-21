@@ -47,7 +47,8 @@ export default class customAction extends LightningElement {
                 
                 // relatedRecords.length = this.config.orchestrator?.limits?.chunkSize ? this.config.orchestrator?.limits?.chunkSize : 200;
                 //chunking
-                libs.setGlobalVar('orchestratorResult',[]);
+
+                libs.setGlobalVar('orchestratorRequestCount',relatedRecords.length);
                 libs.remoteAction(this, 'orchestrator', {
                     isDebug: this.config.UI?.isDebug,
                     operation: this.cfgName,
@@ -60,8 +61,12 @@ export default class customAction extends LightningElement {
                     },
                     callback: ((nodeName, data) => {
                         console.log(nodeName, data);
-                        this.result = data[nodeName];
-                        libs.getGlobalVar('orchestratorResult').push(this.result); 
+                        let res = libs.orchestratorResult(data[nodeName]); 
+                        
+                        if (this.config.UI) {
+                            let title = "Processed {0} from {1}. Errors count is {2}".replace('{1}', libs.getGlobalVar('orchestratorRequestCount')).replace('{0}',res.totalRecords).replace('{2}', res.errorRecords);
+                            this.template.querySelector('c-dialog').disableButtons(title,  !data.isLastChunk);
+                        }
                     })
                 })
             })

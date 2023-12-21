@@ -586,6 +586,7 @@ export let libs = {
 					}
 				} else {
 					if (typeof(params.callback) === 'function') {
+						result.isLastChunk = outParams.data?.isLastChunk;
 						params.callback.bind(scope)(cmd + 'Result', result);
 					}
 				}
@@ -1087,6 +1088,15 @@ export let libs = {
 			return '<b style="color:red;">#ERROR:</b> in "' + errorJSONName + '". Check console for more details';
 		}
 		return message;
+	},
+	orchestratorResult : function(data) {
+		if (data!= undefined) {
+			if (libs.getGlobalVar('orchestratorResult') == undefined) libs.setGlobalVar('orchestratorResult',{totalRecords : 0, errorRecords : 0, results:[]});
+			libs.getGlobalVar('orchestratorResult').results.push(data);
+			libs.getGlobalVar('orchestratorResult').totalRecords += data.recordsCount;
+			libs.getGlobalVar('orchestratorResult').errorRecords += data.invalidCount;
+		}
+		return libs.getGlobalVar('orchestratorResult');
 	},
 	currencyMap: function(cur) {
 		let map = {

@@ -83,4 +83,16 @@ export default class dialog extends LightningElement {
         if (cmd === 'cancel') this.dispatchEvent(closeDialog);
     }
 
+    @api disableButtons(newTitle, spinner) {
+
+        this.config.buttons?.forEach(btn => {
+            btn.isDisabled = btn.name!= 'cancel';
+        });
+
+        this.config.title = newTitle && spinner == true ? newTitle : this._cfg.title;
+        this.config.isSpinner = spinner;
+
+    }
+
 }
+
