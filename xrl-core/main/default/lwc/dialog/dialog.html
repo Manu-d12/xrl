@@ -37,13 +37,13 @@
 			</template>
 			<c-Dialog-Item if:true={config.fields} cfg={config.fields} onkeydown={handleEvents}
 				onchildaction={handleEvents}></c-Dialog-Item>
-			<div slot="footer">
-				<template if:true={config.buttons} for:each={config.buttons} for:item="btn" for:index="index">
+		</lightning-quick-action-panel>
+		<div class="slds-modal__footer">
+			<template if:true={config.buttons} for:each={config.buttons} for:item="btn" for:index="index">
 					<lightning-button key={btn.cmd} variant={btn.variant} label={btn.label} data-cmd={btn.name}
 						disabled={btn.isDisabled} icon-name={btn.icon} onclick={handleEvents}
 						class="slds-m-around_small"></lightning-button>
 				</template>
-			</div>
-		</lightning-quick-action-panel>
+		</div>
 	</template>
 </template>

@@ -433,7 +433,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			console.log('Verifying loop', i);
 		}
 		console.log('All records Id fetched successfully', this.config.listOfRecordIds.length);
-		this.config.loadChunkSize = this.config.listViewConfig[0].loadChunkSize === undefined ? 20000 : this.config.listViewConfig[0].loadChunkSize;
+		//max chunk size will be 10000
+		this.config.loadChunkSize = this.config.listViewConfig[0].loadChunkSize === undefined || !isNaN(this.config.listViewConfig[0].loadChunkSize) || parseInt(this.config.listViewConfig[0].loadChunkSize) > 10000 || parseInt(this.config.listViewConfig[0].loadChunkSize) < 1 ? 10000 : this.config.listViewConfig[0].loadChunkSize;
 		this.config.listOfBulkRecords = [];
 		let startIndex = 0;
 		let endIndex = parseInt(this.config.loadChunkSize);
@@ -683,13 +684,12 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			console.log('Import NOT SUPPORTED');
 			return;
 		}
-		this.config.namespace = 'XRL';
 		let recordsWithParents = [];
 		let recordsWithoutParents = [];
 		//storing with parent and without parent records in different array as we need to insert without parents records first to get the records Id.
 		file.records.forEach((record, ind) => {
 			delete record.Id;
-			if(record[this.config.namespace +'__Parent__c'] === undefined) {
+			if(record[libs.getNameSpace() +'Parent__c'] === undefined) {
 				if (record.Name == undefined) record.Name = ind;
 				recordsWithoutParents.push(record);
 			}else{
@@ -699,41 +699,60 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		//saving the without parent records
 		await libs.remoteAction(this, 'saveRecords', { records: recordsWithoutParents, 
 			sObjApiName: this.config.sObjApiName,
-			uniqueFieldNameForUpsert: this.config.namespace +'__extRelListConfig__c.'+ this.config.namespace +'__uniqKey__c',
+			uniqueFieldNameForUpsert: libs.getNameSpace() +'extRelListConfig__c.'+ libs.getNameSpace() +'uniqKey__c',
 			callback: function(nodename,data){
-				console.log('saved without parents', data[nodename].records);
-				recordsWithoutParents = data[nodename].records;
-				libs.showToast(this,{
-					title: 'Success',
-					message: 'Successfully inserted without parent '+ recordsWithoutParents.length +' records.',
-					variant: 'success'
-				});
+				if(parseInt(data[nodename].countOfFailedRecords) === 0){
+					console.log('saved without parents', data[nodename].records);
+					recordsWithoutParents = data[nodename].records;
+					libs.showToast(this,{
+						title: 'Success',
+						message: 'Successfully inserted without parent '+ recordsWithoutParents.length +' records.',
+						variant: 'success'
+					});
+				}else{
+					libs.showToast(this,{
+						title: 'Error',
+						message: 'Error in inserting ' + data[nodename].countOfFailedRecords +' without parent records. '+ (data[nodename].records.length - parseInt(data[nodename].countOfFailedRecords))+' inserted successfully. Please check console for more information',
+						variant: 'info'
+					});
+					console.error('error', data[nodename].listOfErrors);
+				}
 			}
 		});
 		// updating the with parent records with new parent__c Id
 		recordsWithParents.forEach((record) => {
-			let newParentRecord = recordsWithoutParents.find((el) => el[this.config.namespace + '__uniqKey__c'] === record[this.config.namespace +'__Parent__r'][this.config.namespace +'__uniqKey__c']);
+			let newParentRecord = recordsWithoutParents.find((el) => el[libs.getNameSpace() + 'uniqKey__c'] === record[libs.getNameSpace() +'Parent__r'][libs.getNameSpace() +'uniqKey__c']);
 			if(newParentRecord !== undefined){
-				record[this.config.namespace +'__Parent__c'] = newParentRecord.Id;
+				record[libs.getNameSpace() +'Parent__c'] = newParentRecord.Id;
 			}else{
-				delete record[this.config.namespace +'__Parent__c'];
+				delete record[libs.getNameSpace() +'Parent__c'];
 			}
 		});
 		//now updating the with parent records with the new parent Id
 		if(recordsWithParents.length > 0){
 			await libs.remoteAction(this, 'saveRecords', { records: recordsWithParents, 
 				sObjApiName: this.config.sObjApiName,
-				uniqueFieldNameForUpsert: this.config.namespace +'__extRelListConfig__c.'+ this.config.namespace +'__uniqKey__c',
+				uniqueFieldNameForUpsert: libs.getNameSpace() +'extRelListConfig__c.'+ libs.getNameSpace() +'uniqKey__c',
 				callback: function(nodename,data){
-					console.log('saved with parents', data[nodename].records);
-					libs.showToast(this,{
-						title: 'Success',
-						message: 'Successfully inserted with parent '+ data[nodename].records.length +' records.',
-						variant: 'success'
-					});
+					if(parseInt(data[nodename].countOfFailedRecords) === 0){
+						console.log('saved with parents', data[nodename].records);
+						libs.showToast(this,{
+							title: 'Success',
+							message: 'Successfully inserted with parent '+ data[nodename].records.length +' records.',
+							variant: 'success'
+						});
+					}else{
+						libs.showToast(this,{
+							title: 'Error',
+							message: 'Error in inserting ' + data[nodename].countOfFailedRecords +' with parent records. '+ (data[nodename].records.length - parseInt(data[nodename].countOfFailedRecords))+' inserted successfully. Please check console for more information',
+							variant: 'info'
+						});
+						console.error('error', data[nodename].listOfErrors);
+					}
 				}
 			});
 		}
+		this.loadCfg();
 	}
 	async handlePermissionSetAssignmentImport(file){
 		file.records.forEach((record) => {
@@ -1086,12 +1105,12 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 	async prepareRecordsForSave(){
 		let records = [];
-		if(this.config.listViewConfig[0].isRecordsDragDropEnabled && this.config?._advanced?.afterloadTransformation !== undefined && this.config?._advanced?.afterloadTransformation !== ""){
+		if(this.config?._advanced?.recordsDragDropCallback !== undefined && this.config?._advanced?.recordsDragDropCallback !== "" && this.config?._advanced?.afterloadTransformation !== undefined && this.config?._advanced?.afterloadTransformation !== ""){
 			records = libs.flattenRecordsWithChildren(this.template.querySelector('c-Data-Table').getRecords());
 		}else{
 			records = this.template.querySelector('c-Data-Table').getRecords();
 		}
-		if(this.config.listViewConfig[0].isRecordsDragDropEnabled && this.config.listViewConfig[0].fieldToMapToIndex !== undefined && this.config.listViewConfig[0].fieldToMapToIndex !== ""){
+		if(this.config?._advanced?.recordsDragDropCallback !== undefined && this.config?._advanced?.recordsDragDropCallback !== "" && this.config.listViewConfig[0].fieldToMapToIndex !== undefined && this.config.listViewConfig[0].fieldToMapToIndex !== ""){
 			records = this.mapSerialNumberField(records, this.config.listViewConfig[0].fieldToMapToIndex);
 		}
 		let changedItems = records.filter(el => {
@@ -1169,7 +1188,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if(chunkCount === this.config.saveStatus)
 			this.resetChangedRecords(changedItems.length);
 	}
-	async saveRecords(scope,chunkIn){
+	async saveRecords(scope,chunkIn,isFirstChunk,isLastChunk){
 		try{
 			//[DR] in case of saving custom settings need delete all nested attributes inside records, otherwise we will get EXCEPTION "Cannot deserialize instance of <unknown> from null value null or request may be missing a required field"
 			let chunk = libs.stripChunk(chunkIn);
@@ -1177,6 +1196,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				sObjApiName: scope.config.sObjApiName,
 				rollback:scope.config.listViewConfig[0].rollBack ? scope.config.listViewConfig[0].rollBack : false,
 				beforeSaveAction: scope.config.listViewConfig[0].beforeSaveApexAction ? scope.config.listViewConfig[0].beforeSaveApexAction : '',
+				isFirstChunk: isFirstChunk,
+				isLastChunk: isLastChunk,
 				callback: function(nodename,data){
 					scope.config.saveStatus += 1;
 					scope.config.countOfFailedRecords += parseInt(data[nodename].countOfFailedRecords);
@@ -1983,8 +2004,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					groupNumber++;
 					i++;
 					const cell_ref = XLSX.utils.encode_cell({ c: 0, r: i });
-					ws[cell_ref] = {
-						v: rec.groupTitle, s: { bold: true, fgColor: { rgb: 272822 }, color: { rgb: 16777215 } }
+					ws[cell_ref] = { 
+						//removing any html tags from the title
+						v: rec.groupTitle.replace(/<\/?[^>]+(>|$)/g, ""), s: { bold: true, fgColor: { rgb: 272822 }, color: { rgb: 16777215 } }
 					}
 					const merge = {s: {c: 0, r: i}, e: {c: columns.length-1, r: i}};
 					merges.push(merge);
@@ -1992,7 +2014,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				}
 				columns.forEach(async (col, j) => {
 					if (i-groupNumber === 0) {
-						let cell_ref = XLSX.utils.encode_cell({ c: j, r: i-groupNumber }); // -groupNumber to skip the group title row without modyfying the existing logic
+						let cell_ref = XLSX.utils.encode_cell({ c: j, r: i-groupNumber }); // -groupNumber to skip the group title row without modifying the existing logic
 						ws[cell_ref] = {
 							v: col.label, s: { bold: true, fgColor: { rgb: 0 }, color: { rgb: 16777215 } }
 						}

@@ -330,4 +330,12 @@ public class packageTest {
         // System.assertNotEquals(null, res.size());
         System.assertNotEquals(null, results);
     }
+    @isTest
+	public static void testOrchestrators() {
+        test.startTest();
+	        //map < string, object > res = infrastructure.dispatcherAura('cloneRecords', data);
+			orchestrator.fakeTest();
+        test.stopTest();
+
+	}
 }

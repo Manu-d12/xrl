@@ -96,6 +96,13 @@ global with sharing class infrastructure {
                 when 'httpRequest' {
 					resultMethod = sendRequest(data);
 				}
+                when 'getMetaConfigByName' {
+					resultMethod = getMetaConfigByName(data);
+				}
+                
+				when 'orchestrator' {
+					resultMethod = orchestrator(data);
+				}
 				
 				when
 				else {
@@ -233,6 +240,13 @@ global with sharing class infrastructure {
 		return result;
 		//https://salesforce.stackexchange.com/questions/116688/lightning-get-sobject-tab-icon
 	}
+    
+    private static object getMetaConfigByName(map < string, object > data){
+        string cfgName = (string) data.get('cfgName');
+        config__mdt[] res  = [SELECT JSON__c FROM config__mdt WHERE DeveloperName = :cfgName];
+        return res.size()>0 ? res[0].JSON__c : null;
+    }
+        
 	private static object customSoql(map < string, object > data) {
 		string SOQL = (string) data.get('SOQL');
 		string sObjApiName = (string) data.get('sObjApiName');
@@ -1177,6 +1191,20 @@ global with sharing class infrastructure {
 		}
 		return result;
     }
+	private static object orchestrator(map<string, object> data) {        
+        string operation = (string) data.get('operation');
+		orchestrator.orchestratorRequest orcReq = (orchestrator.orchestratorRequest) JSON.deserialize(JSON.serialize(data.get('orchestratorRequest')), orchestrator.orchestratorRequest.class);
+            //new orchestrator.orchestratorRequest();
+		//orcReq.rootRecordId = (string) data.get(rootRecordId);
+		//orcReq.relatedRecordIds = new Id[]{'5005i00000Kiy9BAAR','5005i00000Kiy9CAAR'};
+		//orcReq.isFirstChunk = true;    
+		//orcReq.isLastChunk = true;
+
+		object result = new orchestrator(operation,orcReq).getResults();
+		System.debug(result);
+		System.debug('DONE');
+		return result;
+    }
 
 	private static string[] getIntrLst() {
         List<ApexClass[]> searchList = [
@@ -1297,6 +1325,32 @@ global with sharing class infrastructure {
 			this.setMessage(message);
 		}
 	}
+    
+    global enum validationResultCode {
+        OK,
+        ERR,
+        WARN
+    }
+    
+    global class validationResult {
+        global validationResultCode code;
+        global object[] dynamicValues; //  Need for errorMessage representation
+    }
+
+    global static validationResult resultOfvalidation(validationResultCode resCode, object[] dynamicValues){
+        validationResult result = new validationResult();
+        result.code = resCode;
+        result.dynamicValues = dynamicValues;
+        return result;
+    }
+
+	@deprecated    
+    global validationResult validationResult(validationResultCode resCode, object[] dynamicValues){
+        validationResult result = new validationResult();
+        result.code = resCode;
+        result.dynamicValues = dynamicValues;
+        return result;
+    }
 
 	global enum exceptionType {
 		GENERAL,

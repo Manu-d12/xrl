@@ -75,7 +75,7 @@
 						<td for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="hIndex" data-recid={dItem.Id} key={hItem.fieldName} role="gridcell" data-rowind={index} data-colname={hItem.fieldName} onclick={rowCallback} ondblclick={rowDblCallback} style={dItem._cellCss}>
 							
 							<!-- Here _addSpace will be true because _addSpace is true only for the 0th column, so the tooltip will not show each for each column -->
-							<p if:true={hItem._addSpace}><span if:true={config._isShowRowCallbackTooltip} class="spnTooltip">
+							<p if:true={hItem._addSpace}><span if:true={dItem._isShowRowCallbackTooltip} class="spnTooltip">
 									<strong>{config._rowCallbackTooltipText}</strong>
 								</span>
 							</p>
@@ -268,9 +268,9 @@
 							<lightning-input type="checkbox" data-groupind={group.title} onchange={checkGroup} checked={group.isChecked}></lightning-input>
 						</td>
 						<td scope="col" style="width: 2rem;" class="slds-truncate toggle" colspan={groupColspan}>
-							<lightning-button-icon if:true={group.isOpened} icon-name="utility:dash"  variant="bare" alternative-text={config._LABELS.altTxt_collapse} title={config._LABELS.title_collapse} onclick={toggleGroup} data-groupind={group.title}></lightning-button-icon>
-							<lightning-button-icon if:false={group.isOpened} icon-name="utility:add"  variant="bare" alternative-text={config._LABELS.altTxt_expand} title={config._LABELS.title_expand} onclick={toggleGroup} data-groupind={group.title}></lightning-button-icon>
-							<lightning-formatted-rich-text value={group.title} title={group.title}></lightning-formatted-rich-text>
+							<lightning-button-icon if:true={group.isOpened} icon-name="utility:jump_to_bottom" size="large"  variant="bare" alternative-text={config._LABELS.altTxt_collapse} title={config._LABELS.title_collapse} onclick={toggleGroup} data-groupind={group.title}></lightning-button-icon>
+							<lightning-button-icon if:false={group.isOpened} icon-name="utility:jump_to_right" size="large"  variant="bare" alternative-text={config._LABELS.altTxt_expand} title={config._LABELS.title_expand} onclick={toggleGroup} data-groupind={group.title}></lightning-button-icon>
+							&nbsp;&nbsp;<lightning-formatted-rich-text value={group.title} title={group.title}></lightning-formatted-rich-text>
 						</td>
 						<!-- <td scope="col" data-groupind={group.title} colspan={groupColspan}>
 							<lightning-formatted-rich-text value={group.title}></lightning-formatted-rich-text>

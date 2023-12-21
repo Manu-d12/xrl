@@ -222,6 +222,11 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if((this.config.isRecordsDragDropEnabled === undefined || this.config.isRecordsDragDropEnabled === false) && (this.config.fieldToMapToIndex === undefined || this.config.fieldToMapToIndex === "")){
 			this.records.forEach((el,ind) =>{
 				el.sl = ind + 1;
+				try{
+					el._isShowRowCallbackTooltip = this.config._advanced?.showRowCallbackTooltipText(this,libs,el);
+				}catch(e){
+					this.config._errors = libs.formatCallbackErrorMessages(e,'table','show row callback tooltip');
+				}
 				if(el.childRecords?.length > 0) {
 					el._hasChildRecords = true;
 					this.config.isAnyRecordsHaveChildren = true;
@@ -1562,7 +1567,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		this.connectedCallback(); //BUN-46 - This is solving the problem but I can't find any root cause of this
 	}
 	get isDragDropEnabledForRecords(){
-		return this.config.isRecordsDragDropEnabled;
+		return this.config?._advanced?.recordsDragDropCallback !== undefined && this.config?._advanced?.recordsDragDropCallback !== "";
 	}
 
 	DragStart(event) {
