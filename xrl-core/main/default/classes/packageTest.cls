@@ -310,6 +310,26 @@ public class packageTest {
         //System.assertEquals('new subject', csNew.Subject);
         //System.assertEquals(cs.AccountId, csNew.AccountId);
     }
+    
+    @isTest
+    public static void testorchestratorGetRecords() {
+        Account acc = [SELECT Id FROM Account WHERE Name = 'test acc' LIMIT 1];
+        Case cs1 = new Case(Subject = 'Test Case1', AccountId = acc.Id);
+        insert cs1;
+        Case cs2 = new Case(Subject = 'Test Case2', AccountId = acc.Id);
+        insert cs2;
+        orchestrator.orchestratorRequest orcReq = new orchestrator.orchestratorRequest();
+        orcReq.rootRecordId = acc.Id;
+        orcReq.relatedRecordIds = new Id[]{cs1.Id,cs2.Id};
+        orcReq.isFirstChunk = true;    
+        orcReq.isLastChunk = true;
+        test.startTest();
+            orchestrator.orchestratorResponse results = new orchestrator('Test Metadata', orcReq).getResults();
+        test.stopTest();
+        system.debug('Test data'+results);
+        // System.assertNotEquals(null, res.size());
+        System.assertNotEquals(null, results);
+    }
     @isTest
 	public static void testOrchestrators() {
         test.startTest();
