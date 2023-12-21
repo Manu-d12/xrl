@@ -20,15 +20,14 @@ export default class dialog extends LightningElement {
         this.isLoading = v;
     }
 
-    async setDialog() {
+    setDialog() {
         Object.assign(this.config, this._cfg);
         this.title = this._cfg?.title;
         this.config.modalCss = this._cfg?.headerStyle;
         if (this._cfg?.contents) this.config.content = JSON.parse(JSON.stringify(this._cfg?.contents))[0];
         else if (this._cfg?.fields) this.config.fields = this._cfg?.fields;
-        this.config.buttons = this._cfg?.buttons || [];
-        this.values = {};
-
+        this.config.buttons = JSON.parse(JSON.stringify(this._cfg?.buttons)) || [];
+        this.config.result = {};
         if (this.config.callback?.startsWith('function(')) {
             this.config.callback = eval('[' + this.config.callback + ']')[0];
         }
@@ -38,7 +37,7 @@ export default class dialog extends LightningElement {
             }
         });
 
-        this.config.result = {};
+        
         // if (this._cfg) await this.setInputFields();
         this.isLoading = this._cfg ? true : false;
     }
