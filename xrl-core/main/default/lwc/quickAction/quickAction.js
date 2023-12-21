@@ -45,10 +45,15 @@ export default class customAction extends LightningElement {
                 let relatedRecords = data[nodeName].records[0][this.config.orchestrator.childObjApiName];
                 if (relatedRecords == undefined) this.handleEvent();
                 
-                relatedRecords.length = this.config.orchestrator?.limits?.chunkSize ? this.config.orchestrator?.limits?.chunkSize : 200;
+                // relatedRecords.length = this.config.orchestrator?.limits?.chunkSize ? this.config.orchestrator?.limits?.chunkSize : 200;
+                //chunking
+                libs.setGlobalVar('orchestratorResult',[]);
                 libs.remoteAction(this, 'orchestrator', {
-                    isDebug: false,
+                    isDebug: true,
                     operation: this.cfgName,
+                    recordsPath: "orchestratorRequest.relatedRecordIds",
+                    _chunkSize: this.config.orchestrator?.limits?.chunkSize ? this.config.orchestrator?.limits?.chunkSize : 200,
+                    finishCallback: this.config.orchestrator?.noErrorCallback?.UI,
                     orchestratorRequest: {
                         rootRecordId: this.urlParams.recordId,
                         relatedRecordIds: Array.from(relatedRecords, function (entry) { return entry.Id; })
@@ -56,6 +61,7 @@ export default class customAction extends LightningElement {
                     callback: ((nodeName, data) => {
                         console.log(nodeName, data);
                         this.result = data[nodeName];
+                        libs.getGlobalVar('orchestratorResult').push(this.result); 
                     })
                 })
             })

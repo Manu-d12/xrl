@@ -1336,6 +1336,7 @@ global with sharing class infrastructure {
         global validationResultCode code;
         global object[] dynamicValues; //  Need for errorMessage representation
     }
+    
 
     global static validationResult resultOfvalidation(validationResultCode resCode, object[] dynamicValues){
         validationResult result = new validationResult();
@@ -1343,6 +1344,7 @@ global with sharing class infrastructure {
         result.dynamicValues = dynamicValues;
         return result;
     }
+    
 
 	@deprecated    
     global validationResult validationResult(validationResultCode resCode, object[] dynamicValues){
