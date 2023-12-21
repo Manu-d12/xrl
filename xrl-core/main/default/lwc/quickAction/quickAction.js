@@ -49,7 +49,7 @@ export default class customAction extends LightningElement {
                 //chunking
                 libs.setGlobalVar('orchestratorResult',[]);
                 libs.remoteAction(this, 'orchestrator', {
-                    isDebug: true,
+                    isDebug: this.config.UI?.isDebug,
                     operation: this.cfgName,
                     recordsPath: "orchestratorRequest.relatedRecordIds",
                     _chunkSize: this.config.orchestrator?.limits?.chunkSize ? this.config.orchestrator?.limits?.chunkSize : 200,
