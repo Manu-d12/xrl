@@ -553,7 +553,10 @@ export let libs = {
 				if(outParams.data === undefined) {
 					outParams.data = {};
 				}
-				outParams.data.records = chunk;
+				if(cmd === 'orchestrator'){
+					outParams.orchestratorRequest.relatedRecordIds = JSON.parse(JSON.stringify(chunk));
+				}
+				// outParams.data.records = chunk;
 				outParams.data.isFirstChunk = isFirstChunk;
 				outParams.data.isLastChunk = isLastChunk;
 				await callToApexInterface();
