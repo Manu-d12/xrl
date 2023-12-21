@@ -547,6 +547,9 @@ export let libs = {
 			outParams.loadChunkSize = scope.config.dataTableConfig.loadChunkSize;
 		}
 		delete outParams.callback;
+		if(cmd === 'orchestrator'){
+			libs.orchestratorResult(null);
+		}
 		if((cmd === 'invokeApex' || cmd === 'orchestrator') && outParams._chunkSize !== undefined){ //if it is invokeApex and chunk size is defined then we will split the records into chunks before sending it into apex
 			let allRecords = outParams?.recordsPath ? JSON.parse(JSON.stringify(outParams[outParams.recordsPath.split('.')[0]][outParams.recordsPath.split('.')[1]])) : JSON.parse(JSON.stringify(outParams.data.records));
 			this.splitRecordsIntoChunks(scope,allRecords,parseInt(outParams._chunkSize),async function(scope,chunk,isFirstChunk,isLastChunk) {
@@ -1090,7 +1093,8 @@ export let libs = {
 		return message;
 	},
 	orchestratorResult : function(data) {
-		if (data!= undefined) {
+		if (data == null) libs.setGlobalVar('orchestratorResult',{totalRecords : 0, errorRecords : 0, results:[]});
+		else if (data!= undefined) {
 			if (libs.getGlobalVar('orchestratorResult') == undefined) libs.setGlobalVar('orchestratorResult',{totalRecords : 0, errorRecords : 0, results:[]});
 			libs.getGlobalVar('orchestratorResult').results.push(data);
 			libs.getGlobalVar('orchestratorResult').totalRecords += data.recordsCount;
