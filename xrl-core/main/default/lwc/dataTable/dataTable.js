@@ -380,6 +380,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		
 			let groupName;
 
+			let col = this.getColItem(this.config.groupingParams.field);
+
 			const splitFields = this.config.groupingParams.field.split('.');
 			const fieldName = splitFields[0];
 			const subFieldName = splitFields[1];
@@ -387,7 +389,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			if (subFieldName && r[fieldName] !== undefined) {
 				groupName = r[fieldName][subFieldName] || 'empty';
 			} else {
-				const refFieldName = this.getRefFieldNameConsistsValue(this.config.groupingParams.field);
+				const refFieldName = col.type==='reference' ? this.getRefFieldNameConsistsValue(this.config.groupingParams.field) : this.config.groupingParams.field;
 
 				if (r[refFieldName] === undefined || r[refFieldName] === null) {
 					groupName = 'empty';
