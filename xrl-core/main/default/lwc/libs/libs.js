@@ -1057,7 +1057,7 @@ export let libs = {
 		let isFirstChunk = false;
 		let isLastChunk = false;
 		while(records.length > 0 && index < records.length){
-			if(libs.getGlobalVar(outParams.operation) !== undefined && !libs.getGlobalVar(outParams.operation).isQuickActionDialogOpen) break;
+			if(outParams?.operation && libs.getGlobalVar(outParams.operation) !== undefined && !libs.getGlobalVar(outParams.operation).isQuickActionDialogOpen) break;
 			let lIndex = records[(parseInt(index)+parseInt(chunkSize))] ? (parseInt(index)+parseInt(chunkSize)) : (records.length);
 			let chunk = records.slice(index,lIndex);
 			index += records[(parseInt(index)+parseInt(chunkSize))] ? parseInt(chunkSize) : (records.length);
@@ -1069,7 +1069,7 @@ export let libs = {
 		}
 		// function(scope,libs,allResults) {
 		//let allResults = globalVars.orchestratorResult;
-		if(libs.getGlobalVar(outParams.operation) !== undefined && libs.getGlobalVar(outParams.operation).isQuickActionDialogOpen && outParams?.finishCallback){
+		if(outParams?.operation && libs.getGlobalVar(outParams.operation) !== undefined && libs.getGlobalVar(outParams.operation).isQuickActionDialogOpen && outParams?.finishCallback){
 			eval( '(' + outParams.finishCallback + ')' )(scope,libs,libs.orchestratorResult());
 		}
 		return chunkCount;
