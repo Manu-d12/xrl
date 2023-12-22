@@ -565,7 +565,7 @@ export let libs = {
 				outParams.data.isFirstChunk = isFirstChunk;
 				outParams.data.isLastChunk = isLastChunk;
 				await callToApexInterface();
-			},outParams?.finishCallback);
+			},outParams);
 		}else{
 			await callToApexInterface();
 		}
@@ -1051,13 +1051,13 @@ export let libs = {
 		});
 		return updatedURL;
 	},
-	splitRecordsIntoChunks: async function (scope,records,chunkSize, callback, finishCallback) {
+	splitRecordsIntoChunks: async function (scope,records,chunkSize, callback, outParams) {
 		let index = 0;
 		let chunkCount = 0;
 		let isFirstChunk = false;
 		let isLastChunk = false;
 		while(records.length > 0 && index < records.length){
-			if(libs.getGlobalVar('quickAction') !== undefined && !libs.getGlobalVar('quickAction').isQuickActionDialogOpen) break;
+			if(libs.getGlobalVar(outParams.operation) !== undefined && !libs.getGlobalVar(outParams.operation).isQuickActionDialogOpen) break;
 			let lIndex = records[(parseInt(index)+parseInt(chunkSize))] ? (parseInt(index)+parseInt(chunkSize)) : (records.length);
 			let chunk = records.slice(index,lIndex);
 			index += records[(parseInt(index)+parseInt(chunkSize))] ? parseInt(chunkSize) : (records.length);
@@ -1069,8 +1069,8 @@ export let libs = {
 		}
 		// function(scope,libs,allResults) {
 		//let allResults = globalVars.orchestratorResult;
-		if(libs.getGlobalVar('quickAction') !== undefined && libs.getGlobalVar('quickAction').isQuickActionDialogOpen && finishCallback){
-			eval( '(' + finishCallback + ')' )(scope,libs,libs.orchestratorResult());
+		if(libs.getGlobalVar(outParams.operation) !== undefined && libs.getGlobalVar(outParams.operation).isQuickActionDialogOpen && outParams?.finishCallback){
+			eval( '(' + outParams.finishCallback + ')' )(scope,libs,libs.orchestratorResult());
 		}
 		return chunkCount;
 	},
