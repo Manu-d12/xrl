@@ -30,7 +30,9 @@ export default class customAction extends LightningElement {
             })
         });
 
-
+        libs.setGlobalVar('quickAction',{
+            isQuickActionDialogOpen: true
+        });
     }
 
     getRecordsAndSend() {
@@ -81,7 +83,10 @@ export default class customAction extends LightningElement {
 
         let target = event?.detail?.action;
         if (target == 'getRecordsAndSend') this.getRecordsAndSend();
-        else this.dispatchEvent(new CloseActionScreenEvent());
+        else {
+            this.dispatchEvent(new CloseActionScreenEvent());
+            libs.getGlobalVar('quickAction').isQuickActionDialogOpen = false;
+        }
     }
 
     parseUrlParams() {
