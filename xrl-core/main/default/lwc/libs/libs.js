@@ -547,6 +547,9 @@ export let libs = {
 			outParams.loadChunkSize = scope.config.dataTableConfig.loadChunkSize;
 		}
 		delete outParams.callback;
+		if(cmd === 'orchestrator'){
+			libs.orchestratorResult(null);
+		}
 		if((cmd === 'invokeApex' || cmd === 'orchestrator') && outParams._chunkSize !== undefined){ //if it is invokeApex and chunk size is defined then we will split the records into chunks before sending it into apex
 			let allRecords = outParams?.recordsPath ? JSON.parse(JSON.stringify(outParams[outParams.recordsPath.split('.')[0]][outParams.recordsPath.split('.')[1]])) : JSON.parse(JSON.stringify(outParams.data.records));
 			this.splitRecordsIntoChunks(scope,allRecords,parseInt(outParams._chunkSize),async function(scope,chunk,isFirstChunk,isLastChunk) {
@@ -554,7 +557,9 @@ export let libs = {
 					outParams.data = {};
 				}
 				if(cmd === 'orchestrator'){
-					outParams.orchestratorRequest.relatedRecordIds = JSON.parse(JSON.stringify(chunk));
+					outParams.orchestratorRequest.relatedRecordIds = chunk;
+					outParams.orchestratorRequest.isFirstChunk = isFirstChunk;
+					outParams.orchestratorRequest.isLastChunk = isLastChunk;
 				}
 				// outParams.data.records = chunk;
 				outParams.data.isFirstChunk = isFirstChunk;
@@ -586,6 +591,7 @@ export let libs = {
 					}
 				} else {
 					if (typeof(params.callback) === 'function') {
+						result.isLastChunk = outParams.data?.isLastChunk;
 						params.callback.bind(scope)(cmd + 'Result', result);
 					}
 				}
@@ -1051,19 +1057,20 @@ export let libs = {
 		let isFirstChunk = false;
 		let isLastChunk = false;
 		while(records.length > 0 && index < records.length){
+			if(libs.getGlobalVar('quickAction') !== undefined && !libs.getGlobalVar('quickAction').isQuickActionDialogOpen) break;
 			let lIndex = records[(parseInt(index)+parseInt(chunkSize))] ? (parseInt(index)+parseInt(chunkSize)) : (records.length);
 			let chunk = records.slice(index,lIndex);
 			index += records[(parseInt(index)+parseInt(chunkSize))] ? parseInt(chunkSize) : (records.length);
 			if(chunkCount === 0) isFirstChunk = true;
 			chunkCount +=1;
-			if(index > records.length) isLastChunk = true;
+			if(index >= records.length) isLastChunk = true;
 			await callback(scope,chunk,isFirstChunk,isLastChunk);
 			isFirstChunk = false;
 		}
 		// function(scope,libs,allResults) {
-		let allResults = globalVars.orchestratorResult;
-		if(finishCallback){
-			eval( '(' + finishCallback + ')' )(scope,libs,allResults);
+		//let allResults = globalVars.orchestratorResult;
+		if(libs.getGlobalVar('quickAction') !== undefined && libs.getGlobalVar('quickAction').isQuickActionDialogOpen && finishCallback){
+			eval( '(' + finishCallback + ')' )(scope,libs,libs.orchestratorResult());
 		}
 		return chunkCount;
 	},
@@ -1087,6 +1094,16 @@ export let libs = {
 			return '<b style="color:red;">#ERROR:</b> in "' + errorJSONName + '". Check console for more details';
 		}
 		return message;
+	},
+	orchestratorResult : function(data) {
+		if (data === null) libs.setGlobalVar('orchestratorResult',{totalRecords : 0, errorRecords : 0, results:[]});
+		else if (data!= undefined) {
+			if (libs.getGlobalVar('orchestratorResult') == undefined) libs.setGlobalVar('orchestratorResult',{totalRecords : 0, errorRecords : 0, results:[]});
+			libs.getGlobalVar('orchestratorResult').results.push(data);
+			libs.getGlobalVar('orchestratorResult').totalRecords += data.recordsCount;
+			libs.getGlobalVar('orchestratorResult').errorRecords += data.invalidCount;
+		}
+		return libs.getGlobalVar('orchestratorResult');
 	},
 	currencyMap: function(cur) {
 		let map = {
