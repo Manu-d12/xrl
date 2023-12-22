@@ -132,23 +132,23 @@ global with sharing class QuoteValidator {
         this.config.init(operation, orcReq);
         infrastructure.addDebugLog('orchestrator:in', this.orcReq);
         
-        if (this.orcReq.rootRecordId != null) { // need delete all old records only in case of firstChunk
-			integer cnt = this.orcReq.relatedRecordIds.size();
-        	delete [SELECT Id FROM log__c WHERE operation__c =: operation AND rootRecordId__c =:this.orcReq.rootRecordId AND CreatedDate <  :this.orcReq.timeStamp	LIMIT :cnt];
-        }
-        
         this.mainLoop(operation);
         if (this.orcReq.isLastChunk == true) {
             log__c[] errors = [
                 SELECT ID 
                 FROM log__c 
-                WHERE operation__c = :operation AND rootRecordId__c =:this.orcReq.rootRecordId AND errCode__c !='DEBUG' AND errCode__c !='EXCEPTION'
+                WHERE operation__c = :operation AND rootRecordId__c =:this.orcReq.rootRecordId AND errCode__c !='DEBUG' AND errCode__c !='EXCEPTION' AND CreatedDate >= :this.orcReq.timeStamp
+				LIMIT 10
             ]; // Need filterout EXCEPTIONS and DEBUG
             if (errors.size() > 0) this.sendEmail(operation);
             else {
                 //need return a UI callback or run apex class if defined
                 this.orcResp.noErrorCallback = this.config.orchestrator.noErrorCallback;
             }
+        }
+		if (this.orcReq.rootRecordId != null) { // need delete all old records only in case of firstChunk
+			integer cnt = limits.getLimitDMLRows() - limits.getDMLRows();
+        	delete [SELECT Id FROM log__c WHERE operation__c =: operation AND rootRecordId__c =:this.orcReq.rootRecordId AND CreatedDate <  :this.orcReq.timeStamp	LIMIT :cnt];
         }
     }
     
