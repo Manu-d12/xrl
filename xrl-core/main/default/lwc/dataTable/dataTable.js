@@ -223,7 +223,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			this.records.forEach((el,ind) =>{
 				el.sl = ind + 1;
 				try{
-					el._isShowRowCallbackTooltip = this.config._advanced?.showRowCallbackTooltipText(this,libs,el);
+					if(this.config._advanced?.showRowCallbackTooltipText) {
+						el._isShowRowCallbackTooltip = this.config._advanced?.showRowCallbackTooltipText(this,libs,el);
+					}
 				}catch(e){
 					this.config._errors = libs.formatCallbackErrorMessages(e,'table','show row callback tooltip');
 				}
