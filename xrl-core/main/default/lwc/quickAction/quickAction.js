@@ -30,7 +30,7 @@ export default class customAction extends LightningElement {
             })
         });
 
-        libs.setGlobalVar('quickAction',{
+        libs.setGlobalVar(this.cfgName,{
             isQuickActionDialogOpen: true
         });
     }
@@ -86,7 +86,7 @@ export default class customAction extends LightningElement {
         if (target == 'getRecordsAndSend') this.getRecordsAndSend();
         else {
             this.dispatchEvent(new CloseActionScreenEvent());
-            libs.getGlobalVar('quickAction').isQuickActionDialogOpen = false;
+            libs.getGlobalVar(this.cfgName).isQuickActionDialogOpen = false;
         }
     }
 
