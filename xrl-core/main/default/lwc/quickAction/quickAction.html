@@ -7,7 +7,4 @@
 		</lightning-card>
 	</div>
  	<c-dialog if:true={config.UI} cfg={config.UI} onaction={handleEvent}></c-dialog>
-	<div if:true={config.isSpinner} class="spinner">
-		<lightning-spinner size="medium" variant="brand" alternative-text="loading"></lightning-spinner>
-	</div>
 </template>
