@@ -48,6 +48,7 @@ export default class customAction extends LightningElement {
                 let relatedRecords = data[nodeName].records[0][this.config.orchestrator.childObjApiName];
                 if (relatedRecords == undefined) this.handleEvent();
                 
+                
                 //chunking
                 let suggestedChunckSize = 10000 / (relatedRecords.length + 1) * 2 / this.config.executors ;// *2 because we also need delete old records    
                 let chunkSize = this.config.orchestrator?.limits?.chunkSize ? this.config.orchestrator?.limits?.chunkSize : 200;

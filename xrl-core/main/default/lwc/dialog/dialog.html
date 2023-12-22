@@ -32,18 +32,20 @@
 
 	<template if:true={config.withoutHeader}>
 		<lightning-quick-action-panel header={config.title} style={config.headerStyle}>
+			<div  style="position:relative;">
 			<template if:false={config.fields}>
 				<span if:true={config.content}>{config.content.text}</span>
 			</template>
-			<c-Dialog-Item if:true={config.fields} cfg={config.fields} onkeydown={handleEvents}
-				onchildaction={handleEvents}></c-Dialog-Item>
+			<c-Dialog-Item if:true={config.fields} cfg={config.fields} onkeydown={handleEvents} onchildaction={handleEvents}></c-Dialog-Item>
+			<lightning-spinner if:true={config.isSpinner} alternative-text="Loading"></lightning-spinner>
+			</div>
 		</lightning-quick-action-panel>
 		<div class="slds-modal__footer">
 			<template if:true={config.buttons} for:each={config.buttons} for:item="btn" for:index="index">
-					<lightning-button key={btn.cmd} variant={btn.variant} label={btn.label} data-cmd={btn.name}
-						disabled={btn.isDisabled} icon-name={btn.icon} onclick={handleEvents}
-						class="slds-m-around_small"></lightning-button>
-				</template>
+				<lightning-button key={btn.cmd} variant={btn.variant} label={btn.label} data-cmd={btn.name}
+					disabled={btn.isDisabled} icon-name={btn.icon} onclick={handleEvents} class="slds-m-around_small">
+				</lightning-button>
+			</template>
 		</div>
 	</template>
 </template>
