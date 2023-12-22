@@ -132,8 +132,8 @@ global with sharing class QuoteValidator {
         this.config.init(operation, orcReq);
         infrastructure.addDebugLog('orchestrator:in', this.orcReq);
         
-        if (this.orcReq.rootRecordId != null && this.orcReq.isFirstChunk == true) { // need delete all old records only in case of firstChunk
-        	delete [SELECT Id FROM log__c WHERE operation__c =: operation AND rootRecordId__c =:this.orcReq.rootRecordId];
+        if (this.orcReq.rootRecordId != null) { // need delete all old records only in case of firstChunk
+        	delete [SELECT Id FROM log__c WHERE operation__c =: operation AND rootRecordId__c =:this.orcReq.rootRecordId AND CreatedDate <  :this.orcReq.timeStamp	];
         }
         
         this.mainLoop(operation);
@@ -426,6 +426,7 @@ global with sharing class QuoteValidator {
         
         public boolean isFirstChunk;
         public boolean isLastChunk;
+		public dateTime timeStamp;
     }
     
     public enum executorType {

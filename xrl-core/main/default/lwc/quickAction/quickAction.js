@@ -22,7 +22,8 @@ export default class customAction extends LightningElement {
         libs.remoteAction(this, 'getMetaConfigByName', {
             cfgName: this.cfgName,
             callback: ((nodeName, data) => {
-                this.config = JSON.parse(data[nodeName]);
+                this.config = JSON.parse(data[nodeName].cfg);
+                this.config._timeStamp = data[nodeName].timeStamp;
                 if (this.config.UI == undefined) {
                     this.getRecordsAndSend();                
                 }
@@ -45,25 +46,28 @@ export default class customAction extends LightningElement {
                 let relatedRecords = data[nodeName].records[0][this.config.orchestrator.childObjApiName];
                 if (relatedRecords == undefined) this.handleEvent();
                 
-                // relatedRecords.length = this.config.orchestrator?.limits?.chunkSize ? this.config.orchestrator?.limits?.chunkSize : 200;
+                
                 //chunking
+                let suggestedChunckSize = 10000 / (relatedRecords.length + 1) * 2 / this.config.executors ;// *2 because we also need delete old records    
+                let chunkSize = this.config.orchestrator?.limits?.chunkSize ? this.config.orchestrator?.limits?.chunkSize : 200;
 
                 libs.setGlobalVar('orchestratorRequestCount',relatedRecords.length);
                 libs.remoteAction(this, 'orchestrator', {
                     isDebug: this.config.UI?.isDebug,
                     operation: this.cfgName,
                     recordsPath: "orchestratorRequest.relatedRecordIds",
-                    _chunkSize: this.config.orchestrator?.limits?.chunkSize ? this.config.orchestrator?.limits?.chunkSize : 200,
+                    _chunkSize: chunkSize > suggestedChunckSize ? suggestedChunckSize : chunkSize,// we have a limitation for a SF 10.000 records in a same transaction
                     finishCallback: this.config.orchestrator?.noErrorCallback?.UI,
                     orchestratorRequest: {
                         rootRecordId: this.urlParams.recordId,
-                        relatedRecordIds: Array.from(relatedRecords, function (entry) { return entry.Id; })
+                        relatedRecordIds: Array.from(relatedRecords, function (entry) { return entry.Id; }),
+                        timeStamp : this.config._timeStamp
                     },
                     callback: ((nodeName, data) => {
                         console.log(nodeName, data);
                         let res = libs.orchestratorResult(data[nodeName]); 
                         
-                        if (this.config.UI) {
+                        if (this.config.UI){
                             let title = "Processed {0} from {1}. Errors count is {2}".replace('{1}', libs.getGlobalVar('orchestratorRequestCount')).replace('{0}',res.totalRecords).replace('{2}', res.errorRecords);
                             this.template.querySelector('c-dialog').disableButtons(title,  !data.isLastChunk);
                         }
