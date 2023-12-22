@@ -245,7 +245,7 @@ global with sharing class infrastructure {
         string cfgName = (string) data.get('cfgName');
         config__mdt[] res  = [SELECT JSON__c FROM config__mdt WHERE DeveloperName = :cfgName];
         return new map<string, object> {
-            'cfg' =>res.size()>0 ? res[0].JSON__c : null,
+            'cfg' =>res.size()>0 && res[0].JSON__c!=null ? replaceLabels(res[0].JSON__c) : null,
             'timeStamp' => system.now()
         };
 

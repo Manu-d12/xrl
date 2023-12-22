@@ -30,7 +30,7 @@ export default class customAction extends LightningElement {
             })
         });
 
-        libs.setGlobalVar('quickAction',{
+        libs.setGlobalVar(this.cfgName,{
             isQuickActionDialogOpen: true
         });
     }
@@ -48,8 +48,9 @@ export default class customAction extends LightningElement {
                 let relatedRecords = data[nodeName].records[0][this.config.orchestrator.childObjApiName];
                 if (relatedRecords == undefined) this.handleEvent();
                 
+                
                 //chunking
-                let suggestedChunckSize = 10000 / (relatedRecords.length + 1) * 2 / this.config.executors.length ;// *2 because we also need delete old records    
+                let suggestedChunckSize = 10000 / 2 / this.config.executors.length ;// *2 because we also need delete old records    
                 let chunkSize = this.config.orchestrator?.limits?.chunkSize ? this.config.orchestrator?.limits?.chunkSize : 200;
 
                 libs.setGlobalVar('orchestratorRequestCount',relatedRecords.length);
@@ -85,7 +86,7 @@ export default class customAction extends LightningElement {
         if (target == 'getRecordsAndSend') this.getRecordsAndSend();
         else {
             this.dispatchEvent(new CloseActionScreenEvent());
-            libs.getGlobalVar('quickAction').isQuickActionDialogOpen = false;
+            libs.getGlobalVar(this.cfgName).isQuickActionDialogOpen = false;
         }
     }
 

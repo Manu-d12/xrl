@@ -133,7 +133,8 @@ global with sharing class QuoteValidator {
         infrastructure.addDebugLog('orchestrator:in', this.orcReq);
         
         if (this.orcReq.rootRecordId != null) { // need delete all old records only in case of firstChunk
-        	delete [SELECT Id FROM log__c WHERE operation__c =: operation AND rootRecordId__c =:this.orcReq.rootRecordId AND CreatedDate <  :this.orcReq.timeStamp	];
+			integer cnt = 10000 / 2 / this.orcReq.relatedRecordIds.size() / this.config.executors.size();
+        	delete [SELECT Id FROM log__c WHERE operation__c =: operation AND rootRecordId__c =:this.orcReq.rootRecordId AND CreatedDate <  :this.orcReq.timeStamp	LIMIT :cnt];
         }
         
         this.mainLoop(operation);
