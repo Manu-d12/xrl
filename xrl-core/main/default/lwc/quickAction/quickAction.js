@@ -39,7 +39,10 @@ export default class customAction extends LightningElement {
         //Need to get a name of related list
         let objName = this.actionName.replace(/^(.*?)\..*?$/, "$1");
         let SOQL = "SELECT Id, (SELECT Id FROM " + this.config.orchestrator.childObjApiName + ") FROM " + objName + " WHERE Id='" + this.urlParams.recordId + "'";
-
+        if (this.config.UI){
+            let title = this.config.UI.loadRecordsLabel;
+            this.template.querySelector('c-dialog').disableButtons(title, true);
+        }
         console.log(this.config, SOQL, this.urlParams);
         libs.remoteAction(this, 'customSoql', {
             SOQL: SOQL,
@@ -70,7 +73,7 @@ export default class customAction extends LightningElement {
                         let res = libs.orchestratorResult(data[nodeName]); 
                         
                         if (this.config.UI){
-                            let title = "Processed {0} from {1}. Errors count is {2}".replace('{1}', libs.getGlobalVar('orchestratorRequestCount')).replace('{0}',res.totalRecords).replace('{2}', res.errorRecords);
+                            let title = this.config.UI.processRecordsLabel.replace('{1}', libs.getGlobalVar('orchestratorRequestCount')).replace('{0}',res.totalRecords).replace('{2}', res.errorRecords);
                             this.template.querySelector('c-dialog').disableButtons(title,  !data.isLastChunk);
                         }
                     })

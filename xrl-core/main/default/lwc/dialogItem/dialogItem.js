@@ -41,8 +41,9 @@ export default class dialogItem extends LightningElement {
                 e.isTextArea = (e.type === 'textarea');
                 e.isSwitch = (e.type === 'switch');
                 e.isSection = (e.type === 'section');
-                e.isInput = (e.isTextArea === false && e.isPicklist === false && e.isSection === false && e.isCombobox === false);
-                e.isOutsideSection = e.isSection === false && e.fields;
+                e.isFile = (e.type === 'file');
+                e.isInput = (e.isTextArea === false && e.isPicklist === false && e.isSection === false && e.isCombobox === false && e.isFile === false);
+                e.isOutsideSection = e.isSection === false && e.fields;    
                 if (e.updateOptions) {
                     let _advanced = eval('[' + e.updateOptions + ']')[0];
                     e.options = _advanced(this, libs, e);
@@ -57,7 +58,7 @@ export default class dialogItem extends LightningElement {
     onChangeDynamicField(event) {
 
         let target = event.target.getAttribute('data-id');
-        this.config.result[target] = event.target.value.trim() || event.target.checked;
+        this.config.result[target] = event.target.value?.trim() || event.target.checked || event.detail.files;
 
         let field = this.config.fields.find(e => {
             return e.name === target;
@@ -71,7 +72,7 @@ export default class dialogItem extends LightningElement {
         }
         if (field.onClick) { // implement onClick 
             let _advanced = eval('[' + field.onClick + ']')[0];
-            _advanced(this, libs, field);
+            _advanced(this, libs, field)
         }
 
         this.dispatchEvent(new CustomEvent('childaction', { detail: { cmd: ':updateFromChild', data: field } }));
