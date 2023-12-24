@@ -6,13 +6,16 @@ export default class dialogItem extends LightningElement {
     @api parent;
     @track config = {};
 
+    
     connectedCallback() {
-        this.config.fields = JSON.parse(JSON.stringify(this.cfg));
+        this.config.fields = JSON.parse(JSON.stringify(this.cfg));//.filter(el => {return el.isDisabled!=true});
+        console.log('DIALOG ITEM ',this.parent, this.config.fields);         
+        if (this.config.fields.length == 0) return;
         this.config.result = {};
         this.prepareData();
     }
 
-    prepareData(newData) {
+    prepareData(newData) { //Dynamic insert a new input elements
 
         if (this.config.fields) {
             if (newData != undefined) {
@@ -43,39 +46,66 @@ export default class dialogItem extends LightningElement {
                 e.isSection = (e.type === 'section');
                 e.isFile = (e.type === 'file');
                 e.isInput = (e.isTextArea === false && e.isPicklist === false && e.isSection === false && e.isCombobox === false && e.isFile === false);
-                e.isOutsideSection = e.isSection === false && e.fields;    
+                if (e.type==='checkbox') e.style="padding-top:7px";
                 if (e.updateOptions) {
                     let _advanced = eval('[' + e.updateOptions + ']')[0];
                     e.options = _advanced(this, libs, e);
                     e.isDisabled = e.options == undefined;
                 }
+                e.fields = e.fields?.filter(el => {return el.isDisabled!=true});
+                if (e.fields && e.fields.length == 0) e.fields = undefined;
+                console.log('fields', e.fields);
             });
         }
     }
 
+    @api
+    updateChild(input) {
+        this.config.fields = JSON.parse(JSON.stringify(input));
+        this.prepareData();
+    }
 
 
     onChangeDynamicField(event) {
-
+        event.stopImmediatePropagation();
         let target = event.target.getAttribute('data-id');
         this.config.result[target] = event.target.value?.trim() || event.target.checked || event.detail.files;
 
-        let field = this.config.fields.find(e => {
+        let fldIndex = this.config.fields.findIndex(e => {
             return e.name === target;
         });
 
-        field.value = this.config.result[target];
-        field.parent = this.parent;
+        if (fldIndex>-1) {
 
-        if (field.options) {
-            field.addInfo = field.options.find((e) => { return e.value == field.value });
-        }
-        if (field.onClick) { // implement onClick 
-            let _advanced = eval('[' + field.onClick + ']')[0];
-            _advanced(this, libs, field)
-        }
+            let field = JSON.parse(JSON.stringify(this.cfg))[fldIndex];
+            
+            field.value = this.config.result[target];
+            field.parent = this.parent;
+            this.config.fields[fldIndex].value = field.value; //result propagation
 
-        this.dispatchEvent(new CustomEvent('childaction', { detail: { cmd: ':updateFromChild', data: field } }));
+            if (field.options) {
+                field.addInfo = field.options.find((e) => { return e.value == field.value });
+            }
+            if (field.onClick) { // implement onClick 
+                let _advanced = eval('[' + field.onClick + ']')[0];
+                _advanced(this, libs, field)
+            }
+            if (field.fields) {
+                field.fields = field.fields.filter(el=> {
+                     el.isDisabled = Array.isArray(el.parentValue) 
+                        ? el.parentValue.indexOf(this.config.result[target]) == -1
+                        : el.parentValue != this.config.result[target];
+
+                        return !el.isDisabled;
+                })
+                let child = this.template.querySelector('c-dialog-Item ');
+                if (child) child.updateChild(field.fields);
+                else this.config.fields[fldIndex].fields = field.fields;
+                
+            } 
+            this.dispatchEvent(new CustomEvent('childaction', { detail: { cmd: ':updateFromChild', data: this.config.fields[fldIndex] } }));
+        }
+        
     }
 
     passEventToParent(event) {
