@@ -47,12 +47,12 @@ export default class dialogItem extends LightningElement {
                 e.isFile = (e.type === 'file');
                 e.isInput = (e.isTextArea === false && e.isPicklist === false && e.isSection === false && e.isCombobox === false && e.isFile === false);
                 if (e.type==='checkbox') e.style="padding-top:7px";
-                if (e.updateOptions) {
-                    let _advanced = eval('[' + e.updateOptions + ']')[0];
+                if (typeof e.options == 'string' && e.options.startsWith('function(')) {
+                    let _advanced = eval('[' + e.options + ']')[0];
                     e.options = _advanced(this, libs, e);
                     e.isDisabled = e.options == undefined;
                 }
-                e.fields = e.fields?.filter(el => {return el.isDisabled!=true});
+                //e.fields = e.fields?.filter(el => {return el.isDisabled!=true});
                 if (e.fields && e.fields.length == 0) e.fields = undefined;
                 console.log('fields', e.fields);
             });
@@ -67,7 +67,7 @@ export default class dialogItem extends LightningElement {
 
 
     onChangeDynamicField(event) {
-        event.stopImmediatePropagation();
+        //sevent.stopImmediatePropagation();
         let target = event.target.getAttribute('data-id');
         this.config.result[target] = event.target.value?.trim() || event.target.checked || event.detail.files;
 
@@ -77,18 +77,18 @@ export default class dialogItem extends LightningElement {
 
         if (fldIndex>-1) {
 
-            let field = JSON.parse(JSON.stringify(this.cfg))[fldIndex];
+            let field = JSON.parse(JSON.stringify(this.config.fields[fldIndex]));//JSON.parse(JSON.stringify(this.cfg))[fldIndex];
             
             field.value = this.config.result[target];
             field.parent = this.parent;
             this.config.fields[fldIndex].value = field.value; //result propagation
 
-            if (field.options) {
-                field.addInfo = field.options.find((e) => { return e.value == field.value });
+            if (this.config.fields[fldIndex].options) {
+                field.addInfo = this.config.fields[fldIndex].options.find((e) => { return e.value == field.value });
             }
             if (field.onClick) { // implement onClick 
                 let _advanced = eval('[' + field.onClick + ']')[0];
-                _advanced(this, libs, field)
+                _advanced(this, libs, field)      
             }
             if (field.fields) {
                 field.fields = field.fields.filter(el=> {
