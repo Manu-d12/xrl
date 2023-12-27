@@ -254,15 +254,20 @@ export default class Layout extends NavigationMixin(LightningElement) {
 			}
 		});
 	}
-	handleChildMessage(event){
+	async handleChildMessage(event){
+		if(event?.detail?.action === 'cancel'){
+			this.config.UI = false;
+			return;
+		}
 		if(event.detail.cmd.startsWith('filter:')) {
-			let comp = this.config.tabularConfig.dataModel.find(cmp => cmp.uniqueName === event.detail.source);
+			let comp = libs.getGlobalVar(this.tabConfigName).componentsInLayout.find(cmp => cmp.uniqueName === event.detail.source);
 			this.template.querySelectorAll('c-Data-Table')?.forEach(ch => {
 				if (comp?.targets?.includes(ch.cfg) || event.detail.targets?.includes(ch.cfg)) ch.handleEventMessage(event);
 			});
-			if (event.detail.cmd.split(':')[1] === 'refresh') this.template.querySelectorAll('c-chartjs')?.forEach(ch => {
-				if (comp?.targets?.includes(ch.name) || event.detail.targets?.includes(ch.cfg)) ch.handleEventMessage(event);
+			if (event.detail.cmd.split(':')[1] === 'refresh') this.template.querySelectorAll('c-chartjs')?.forEach(async ch => {
+				if (comp?.targets?.includes(ch.name) || event.detail.targets?.includes(ch.cfg)) await ch.handleEventMessage(event);
 			});
+			this.config.UI = false;
 		} else if(event.detail.cmd.startsWith('chart:')) {
 			this.template.querySelectorAll('c-Data-Table')?.forEach(ch => {
 				ch.handleEventMessage(event);
@@ -338,6 +343,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 					libs.getGlobalVar(this.tabConfigName).componentsInLayout = [{uniqueName: this.configId}];
 				}
 				libs.getGlobalVar(this.tabConfigName).componentsInLayout.push({uniqueName: cmp.uniqueName});
+				cmp.parentUniqueName = this.tabConfigName;
 				// Set component configuration
 				this.name = cmp.uniqueName;
 				let configUniqueName = cmp.configUniqueName;
@@ -370,6 +376,9 @@ export default class Layout extends NavigationMixin(LightningElement) {
 					// await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
 					// 	this.config.chartConfig = (data[cmd].userConfig) ? JSON.parse(data[cmd].userConfig.replace(/\s{2,}/g, ' ')) : [];
 					// } });
+					if(libs.getLocalStorageVar(this.tabConfigName) === null){
+						libs.setLocalStorageVar(this.tabConfigName,JSON.stringify({}));
+					}
 					this.config.chartConfig = (cmp) ? JSON.parse(JSON.stringify([cmp]).replace(/\s{2,}/g, ' '))[0] : [];
 				} else if (cmp.isChevron) {
 					// await libs.remoteAction(this, 'getConfigByUniqueName', { uniqueName: configUniqueName, callback: function(cmd, data) {
@@ -384,6 +393,8 @@ export default class Layout extends NavigationMixin(LightningElement) {
 						'_cfgName': cmp.tableName,
 						'_barName': this.name
 					};
+					let comp = libs.getGlobalVar(this.tabConfigName).componentsInLayout.find(cmp => cmp.uniqueName === this.name);
+					comp.targets = this.config.actionsBar[0].targets || [];
 				}else if(cmp.isComparisonInterface){
 					this.config.describe = libs.getGlobalVar(this.tabConfigName).describe;
 					this.config.userInfo = (libs.getGlobalVar(this.tabConfigName).userInfo) ? libs.getGlobalVar(this.tabConfigName).userInfo : {};
@@ -633,6 +644,15 @@ export default class Layout extends NavigationMixin(LightningElement) {
 		if (actionId === 'std:untie') {
 			table.listViewConfig[0].isShowCheckBoxes = !table.listViewConfig[0].isShowCheckBoxes;
 			table.listViewConfig[0]._updateView();
+		}
+		if (actionId.includes('dialog')) {
+			//need to open dialog
+			try{
+				let _advanced= eval('[' + action.advanced + ']')[0];
+				_advanced.actionCallBack(this,libs,[]);
+			}catch(e){
+				console.error(e);
+			}
 		}
 	}
 	async prepareRecordsForSave(scope){

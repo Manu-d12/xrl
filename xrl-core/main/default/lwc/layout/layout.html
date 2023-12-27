@@ -24,7 +24,7 @@
                             <c-Data-Table if:true={component.isDataTable} style={component.cmpStyle} data-name={component.uniqueName}
                                 cfg={component.uniqueName}></c-Data-Table>
                             <c-chartjs if:true={component.isChart} style={component.cmpStyle} name={component.uniqueName}
-                                onmessage={handleChildMessage} data-name={component.uniqueName}></c-chartjs>
+                                onmessage={handleChildMessage} cfg={component.uniqueName} data-name={component.uniqueName}></c-chartjs>
                             <c-chevron if:true={component.isChevron} style={component.cmpStyle} name={component.uniqueName}
                                 onmessage={handleChildMessage}></c-chevron>
                             <c-action-Bar if:true={component.isActionBar} style={component.cmpStyle} actionscfg={component.config}
@@ -48,7 +48,7 @@
                                     <c-Data-Table if:true={component.isDataTable} style={component.cmpStyle} data-name={component.uniqueName}
                                         cfg={component.uniqueName}></c-Data-Table>
                                     <c-chartjs if:true={component.isChart} style={component.cmpStyle} name={component.uniqueName}
-                                        onmessage={handleChildMessage} data-name={component.uniqueName}></c-chartjs>
+                                        onmessage={handleChildMessage} cfg={component.uniqueName} data-name={component.uniqueName}></c-chartjs>
                                     <c-chevron if:true={component.isChevron} style={component.cmpStyle} name={component.uniqueName}
                                         onmessage={handleChildMessage}></c-chevron>
                                     <c-action-Bar if:true={component.isActionBar} style={component.cmpStyle} actionscfg={component.config}
@@ -76,6 +76,7 @@
                 </div>
             </div>
         </template>
+        <c-dialog if:true={config.UI} cfg={config.UI} onaction={handleChildMessage}></c-dialog>
     </div>
 
 	<c-dialog if:true={showDialog} cfg={dialogCfg} data-id={dialogCfg.data_id}></c-dialog>
