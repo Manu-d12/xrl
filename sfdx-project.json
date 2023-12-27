@@ -6,8 +6,8 @@
       "package": "Extended Related List",
       "versionDescription": "Initial release",
       "postInstallScript": "postInstallClass",
-      "versionName": "3.133.0 Release",
-      "versionNumber": "3.133.0.NEXT",
+      "versionName": "3.153.0 Release",
+      "versionNumber": "3.153.0.NEXT",
       "definitionFile": "config/scratch-org-def.json",
       "ancestorVersion": "HIGHEST"
     }
@@ -364,6 +364,28 @@
     "Extended Related List@3.130.0-1": "04t8d000000hfHiAAI",
     "Extended Related List@3.131.0-1": "04t8d000000hfHnAAI",
     "Extended Related List@3.132.0-1": "04t8d000000hfHsAAI",
-    "Extended Related List@3.133.0-1": "04t8d000000hfHxAAI"
+    "Extended Related List@3.133.0-1": "04t8d000000hfHxAAI",
+    "Extended Related List@3.134.0-2": "04t8d000000hfI7AAI",
+    "Extended Related List@3.135.0-1": "04t8d000000hfICAAY",
+    "Extended Related List@3.136.0-1": "04t8d000000hfIHAAY",
+    "Extended Related List@3.137.0-1": "04t8d000000hfJKAAY",
+    "Extended Related List@3.137.0-2": "04t8d000000hfJPAAY",
+    "Extended Related List@3.138.0-1": "04t8d000000hfJUAAY",
+    "Extended Related List@3.139.0-1": "04t8d000000hfJZAAY",
+    "Extended Related List@3.140.0-1": "04t8d000000hfJeAAI",
+    "Extended Related List@3.141.0-1": "04t8d000000hfJjAAI",
+    "Extended Related List@3.142.0-1": "04t8d000000hfJoAAI",
+    "Extended Related List@3.143.0-1": "04t8d000000hfJtAAI",
+    "Extended Related List@3.144.0-1": "04t8d000000hfJyAAI",
+    "Extended Related List@3.145.0-1": "04t8d000000hfK3AAI",
+    "Extended Related List@3.146.0-1": "04t8d000000hfK8AAI",
+    "Extended Related List@3.147.0-1": "04t8d000000hfKDAAY",
+    "Extended Related List@3.148.0-1": "04t8d000000hfKIAAY",
+    "Extended Related List@3.148.0-2": "04t8d000000hfKNAAY",
+    "Extended Related List@3.149.0-1": "04t8d000000hfKSAAY",
+    "Extended Related List@3.150.0-1": "04t8d000000hfKXAAY",
+    "Extended Related List@3.151.0-1": "04t8d000000hfKmAAI",
+    "Extended Related List@3.152.0-1": "04t8d000000hfOzAAI",
+    "Extended Related List@3.153.0-1": "04t8d000000hfP4AAI"
   }
 }
