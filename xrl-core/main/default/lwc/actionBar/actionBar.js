@@ -7,7 +7,7 @@ export default class ActionBar extends LightningElement {
     @api actionscfg;
     @track config = {};
     connectedCallback(){
-        this.config.dataTable = libs.getGlobalVar(this.actionscfg._cfgName)?.listViewConfig[0];
+        this.config.dataTable = libs.getGlobalVar(this.actionscfg._cfgName)?.listViewConfig ? libs.getGlobalVar(this.actionscfg._cfgName)?.listViewConfig[0] : []; //Need to check how we can send dataTable or Chart config
         this.config.actions = [...this.actionscfg.actions];
         let cmpWidth = libs.getGlobalVar(this.actionscfg._cfgName).componentWidth;
         this.config.showActionDropdown = this.visibleActions.length > 2 && (cmpWidth === 'MEDIUM' || cmpWidth === 'SMALL');

@@ -69,8 +69,15 @@ export default class ChartJS extends LightningElement {
     }
 
     loadData() {
+        let soql = this.config.soql;
+        if(this.config.parentUniqueName && this.config.generateSoql){
+            let localStorageVar = JSON.parse(libs.getLocalStorageVar(this.config.parentUniqueName));
+            if(this.config.generateSoql && typeof this.config.generateSoql === 'function'){
+                soql = this.config.generateSoql(this,libs,localStorageVar[this._name]);
+            }
+        }
         libs.remoteAction(this, 'customSoql', {
-            SOQL: this.config.soql,
+            SOQL: soql,
             sObjApiName: this.config.sObjApiName,
             callback: ((nodeName, data) => {
                 let records = data[nodeName].records.length > 0 ? data[nodeName].records : [];
@@ -87,6 +94,12 @@ export default class ChartJS extends LightningElement {
     }
 
     drawChart() {
+        if(this.config.parentUniqueName){
+            let localStorageVar = JSON.parse(libs.getLocalStorageVar(this.config.parentUniqueName));
+            if(this.config.changeChartType && typeof this.config.changeChartType === 'function'){
+                this.config.chart.type = this.config.changeChartType(this,libs,localStorageVar[this._name]);
+            }
+        }
         if (this._chart) {
             this._chart.update(this.config.chart);
         } else {
@@ -97,10 +110,19 @@ export default class ChartJS extends LightningElement {
 
     @api handleEventMessage(event) {
 
-        let sourceConf = libs.getGlobalVar(event.detail.source);
+        let sourceConf = libs.getGlobalVar(event.detail.source)?.actionsBar ? this.config : libs.getGlobalVar(event.detail.source);
         let sourceCause = sourceConf.condition;
-        let chartCause = this.config.whereCause ? (typeof this.config.whereCause === 'function' ? this.config.whereCause(this, sourceConf) : this.config.whereCause) : '';
+        let chartCause = this.config.whereCause ? (typeof this.config.whereCause === 'function' ? this.config.whereCause(this, sourceConf,event) : this.config.whereCause) : '';
         libs.getGlobalVar(this._name).source = event.detail.source;
+        if(event.detail.isStoreOnLocalStorage){
+            let localStorageVar = JSON.parse(libs.getLocalStorageVar(event.detail.isStoreOnLocalStorage));
+            let eventData = JSON.parse(JSON.stringify(event.detail.data));
+            if(localStorageVar[this._name] === undefined){
+                localStorageVar[this._name] = {};
+            }
+            localStorageVar[this._name][eventData.action] = eventData.data;
+            libs.setLocalStorageVar(event.detail.isStoreOnLocalStorage,JSON.stringify(localStorageVar));
+        }
 
         libs.remoteAction(this, 'query', {
             isNeedDescribe: true,

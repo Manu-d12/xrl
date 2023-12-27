@@ -6,7 +6,7 @@
 				type={fld.type} field-level-help={fld.help}></lightning-input>
 			<lightning-combobox if:true={fld.isCombobox} required={fld.isRequired} onchange={onChangeDynamicField}
 				data-type="picklist" data-id={fld.name} label={fld.label} placeholder={fld.placeholder}
-				options={fld.options} field-level-help={fld.help}>
+				options={fld.options} field-level-help={fld.help} value={fld.value}>
 			</lightning-combobox>
 			<c-multiselect if:true={fld.isPicklist} id={fld.name} label={fld.label} data-id={fld.name}
 				options={fld.options} disabled={fld.disabled} required={fld.required} selectedvalue={fld.value}
@@ -28,7 +28,7 @@
 				</lightning-accordion-section>
 			</lightning-accordion>
 			<template if:false={fld.isSection}>
-				<c-dialog-Item  if:true={fld.fields} cfg={fld.fields} parent={fld.name}></c-dialog-Item>
+				<c-dialog-Item  if:true={fld.fields} cfg={fld.fields} parent={fld.name} onchildaction={passEventToParent}></c-dialog-Item>
 			</template>
 		</div>
 	</template>
