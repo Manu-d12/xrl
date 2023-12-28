@@ -1969,7 +1969,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_isFilterable</shortDescription>
-        <value>data-lookup-filter-and-search/client-side-filters-in-hypergrid-xrl#column-filters-3</value>
+        <value>data-lookup-filter-and-search-copy-94/client-side-filters-in-hypergrid-xrl-release3b</value>
     </labels>
     <labels>
         <fullName>hlpUrl_isSortable</fullName>
@@ -1977,7 +1977,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_isSortable</shortDescription>
-        <value>data-lookup-filter-and-search/client-side-filters-in-hypergrid-xrl#sorting-columns-4</value>
+        <value>data-lookup-filter-and-search-copy-94/client-side-filters-in-hypergrid-xrl-release3b#sorting-columns-4</value>
     </labels>
     <labels>
         <fullName>hlpUrl_beforeDeleteValidation</fullName>
@@ -2001,7 +2001,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_groupFieldName</shortDescription>
-        <value>related-list-view-setup-and-customization/1892316-hypergrid-customization-tablesettings-article#grouped-records-5</value>
+        <value>related-list-view-setup-and-customization-release3b/1892316-hypergrid-customization-tablesettings-article-release-3b#grouped-records-5</value>
     </labels>
     <labels>
         <fullName>hlpUrl_isGlobalSearch</fullName>
@@ -2009,7 +2009,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_isGlobalSearch</shortDescription>
-        <value>data-lookup-filter-and-search/hypergrid-globalsearch-article</value>
+        <value>data-lookup-filter-and-search-copy-94/hypergrid-globalsearch-article-release3b</value>
     </labels>
     <labels>
         <fullName>hlpUrl_extRelListInterfaceUnderstanding</fullName>
@@ -2017,7 +2017,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_extRelListInterfaceUnderstanding</shortDescription>
-        <value>getting-started-with-hypergrid-20/hypergrid-understanding-the-xrl-interface</value>
+        <value>getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b</value>
     </labels>
     <labels>
         <fullName>hlpUrl_sqlBuilderFieldSelection</fullName>
@@ -2025,7 +2025,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_sqlBuilderFieldSelection</shortDescription>
-        <value>getting-started-with-hypergrid-20/hypergrid-advanced-configuration-of-extended-related-lists#reconfigure-columns-2</value>
+        <value>getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#field-selection-63</value>
     </labels>
     <labels>
         <fullName>hlpUrl_sqlBuilderApplyCondition</fullName>
@@ -2049,7 +2049,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_lockedFields</shortDescription>
-        <value>related-list-view-setup-and-customization/1892316-hypergrid-customization-tablesettings-article#locked-fields-1</value>
+        <value>getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#locked-fields-66</value>
     </labels>
     <labels>
         <fullName>hlpUrl_deleteView</fullName>
@@ -2057,7 +2057,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_deleteView</shortDescription>
-        <value>related-list-view-setup-and-customization/how-to-share-and-delete-xrl-view#delete-an-xrl-configuration-6</value>
+        <value>related-list-view-setup-and-customization-release3b/how-to-share-and-delete-xrl-view-r3b</value>
     </labels>
     <labels>
         <fullName>altTxt_hlpUrl</fullName>
@@ -2073,7 +2073,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_shareView</shortDescription>
-        <value>related-list-view-setup-and-customization/how-to-share-and-delete-xrl-view#share-an-xrl-configuration-among-users-3</value>
+        <value>related-list-view-setup-and-customization-release3b/how-to-share-and-delete-xrl-view-r3b</value>
     </labels>
     <labels>
         <fullName>hlpUrl_saveAsView</fullName>
@@ -2081,7 +2081,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_saveAsView</shortDescription>
-        <value>related-list-view-setup-and-customization/1890088-hypergrid-multipleviews-article</value>
+        <value>related-list-view-setup-and-customization-release3b/1890088-hypergrid-multipleviews-article-r3b</value>
     </labels>
     <labels>
         <fullName>hlpUrl_isEditable</fullName>
@@ -2089,7 +2089,31 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_isEditable</shortDescription>
-        <value>data-editingupdate-operations/how-to-edit-fields-hypergrid-xrl</value>
+        <value>data-editingupdate-operations-Release-3b/how-to-edit-fields-hypergrid-xrl-copy-789</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_fieldSettingsAdvanced</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_fieldSettingsAdvanced</shortDescription>
+        <value>customize-rows-and-columns/1948866-customize-column-settings</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_tableSettingsAdvanced</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_tableSettingsAdvanced</shortDescription>
+        <value>customize-rows-and-columns/customize-rows-in-xrl-using-conditional-formatting</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_loadChunkSize</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_loadChunkSize</shortDescription>
+        <value>related-list-view-setup-and-customization-release3b/how-to-get-related-list-view-with-more-than-50k-record</value>
     </labels>
     <labels>
         <fullName>hlpUrl_isShowCheckBoxes</fullName>
@@ -2097,7 +2121,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_isShowCheckBoxes</shortDescription>
-        <value>related-list-view-setup-and-customization/1892316-hypergrid-customization-tablesettings-article#enable-record-selection-and-bulk-actions-9</value>
+        <value>related-list-view-setup-and-customization-release3b/1892316-hypergrid-customization-tablesettings-article-release-3b#enable-record-selection-and-bulk-actions-9</value>
     </labels>
     <labels>
         <fullName>hlpUrl_pagerTop</fullName>
@@ -2105,7 +2129,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_pagerTop</shortDescription>
-        <value>related-list-view-setup-and-customization/1892316-hypergrid-customization-tablesettings-article#enable-pagination-12</value>
+        <value>related-list-view-setup-and-customization-release3b/1892316-hypergrid-customization-tablesettings-article-release-3b</value>
     </labels>
     <labels>
         <fullName>url_reqFeature</fullName>
@@ -2307,7 +2331,7 @@ return records;
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_fieldSettings</shortDescription>
-        <value>getting-started-with-hypergrid-20/hypergrid-understanding-the-xrl-interface#field-settings-6</value>
+        <value>getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#field-settings-64</value>
     </labels>
     <labels>
         <fullName>hlpUrl_tableSettings</fullName>
@@ -2315,7 +2339,7 @@ return records;
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_tableSettings</shortDescription>
-        <value>getting-started-with-hypergrid-20/hypergrid-understanding-the-xrl-interface#table-settings-7</value>
+        <value>getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#table-settings-65</value>
     </labels>
     <labels>
         <fullName>hlpUrl_actions</fullName>
@@ -2323,7 +2347,7 @@ return records;
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_actions</shortDescription>
-        <value>getting-started-with-hypergrid-20/hypergrid-understanding-the-xrl-interface#actions-9</value>
+        <value>getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#locked-fields-66</value>
     </labels>
     <labels>
         <fullName>lbl_selectAnOption</fullName>

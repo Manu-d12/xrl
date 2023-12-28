@@ -355,6 +355,7 @@ export let libs = {
 				"tooltip": _labels.tooltip_loadChunkSize,
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
+				"helpArticleUrl": _labels.hlpUrl_loadChunkSize,
 			},
 			// "beforeSaveValidation": {
 			// 	"type": "function",
