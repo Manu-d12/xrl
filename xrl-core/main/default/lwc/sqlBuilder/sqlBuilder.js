@@ -334,7 +334,12 @@ export default class SqlBuilder extends LightningElement {
             var regExp = new RegExp(' *?(OR|AND)*? *?' + index + ' *?(OR|AND)*? *?','gi');
             this.config.sqlBuilder.conditionOrdering = this.config.sqlBuilder.conditionOrdering.replace(regExp,'');
             console.log('DELETING condition', index, this.config.sqlBuilder.conditionOrdering);
-            this.dialogValues(true);
+            if(this.isStrAllowed(this.config.sqlBuilder.conditionOrdering.trim())){
+                this.config.sqlBuilder.conditionOrdering =this.config.sqlBuilder.conditionOrdering;
+                this.dialogValues(true);
+            }else{
+                this.config.sqlBuilder.showError = true;
+            }
         }
         if(val === "sqlBuilder:conditions:editSelectedCondition"){
             let indexVal = event.target.getAttribute('data-val'); 
@@ -402,6 +407,8 @@ export default class SqlBuilder extends LightningElement {
         }
         if(val === "sqlBuilder:conditions:orderingConditions"){
             console.log('sqlBuilder:conditions:orderingConditions', event.target.value);
+            this.config.sqlBuilder.errorMessage= '';
+            this.config.sqlBuilder.showError = false;
             if(event.target.value == '' &&  this.config.dialog.listViewConfig.conditionMap.length > 0){
                 const toast = new ShowToastEvent({
                     title: 'Error',
@@ -411,9 +418,12 @@ export default class SqlBuilder extends LightningElement {
                 this.dispatchEvent(toast);
                 event.target.value = this.config.sqlBuilder.conditionOrdering;
             }else{
-                if(this.isStrAllowed(event.target.value)){
+                //This is temporary fixed we need to improve this
+                if(this.isStrAllowed(event.target.value.trim())){
                     this.config.sqlBuilder.conditionOrdering = event.target.value;
                     this.dialogValues(true);
+                }else{
+                    this.config.sqlBuilder.showError = true;
                 }
             }
 
@@ -472,6 +482,9 @@ export default class SqlBuilder extends LightningElement {
             this.config.dialog.listViewConfig.orderMap = this.config.sqlBuilder.orderings;
             this.dialogValues(true);
         }
+    }
+    get errorClass() {
+        return this.config.sqlBuilder.showError ? 'slds-form-element slds-has-error' : 'slds-form-element';
     }
     closePicklist(){
         if(this.config.sqlBuilder.openConditionInput)
@@ -728,19 +741,43 @@ export default class SqlBuilder extends LightningElement {
     isStrAllowed(expression) {
         const validChars = [' ', 'AND', 'OR', '(', ')', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '#'];
         const stack = [];
-        let i = 0;
+        let i = 0, operationIndex=0;
+
+        const indexSet = new Set();
+        const operationMap =new Map();
+        let operations=0;
+        let isOropearation =false;
+        this.config.sqlBuilder.conditions.forEach((con) =>{
+            indexSet.add(con.index);
+        });
     
         while (i < expression.length) {
             const char = expression[i];
     
             if (char === '(') {
                 stack.push(char);
+                operationMap.set(operationIndex++ ,{"isOropearation" : isOropearation, "operations" : operations});
+                operations= 0;
+                isOropearation= false;
+
             } else if (char === ')') {
+                if(expression[i-1] === '('){
+                    console.log('Invalid expression parentheses');
+                    this.config.sqlBuilder.errorMessage= 'Invalid expression parentheses';
+                    return false;
+                }
                 if (stack.length === 0) {
                     console.log('Invalid expression: Mismatched parentheses');
+                    this.config.sqlBuilder.errorMessage= 'Invalid expression: Mismatched parentheses';
                     return false;
                 }
                 stack.pop();
+                if(operationIndex-1 >=0){
+                    operationIndex--;
+                    let operation=operationMap.get(operationIndex);
+                    isOropearation= operation["isOropearation"];
+                    operations= operation["operations"];
+                }
             } else if (!validChars.includes(char)) {
                 let j = i;
                 while (j < expression.length && expression[j] !== ' ') {
@@ -749,21 +786,74 @@ export default class SqlBuilder extends LightningElement {
                 const word = expression.substring(i, j);
                 if (!validChars.includes(word)) {
                     console.log(`Invalid character: "${word}"`);
+                    this.config.sqlBuilder.errorMessage= `Invalid character: "${word}"`;
                     return false;
+                }
+                let x = i-1, y=i, leftCond= false, rightCond= false;
+                y+= word === 'AND' ? 3 : 2 ;
+                if(i === 0 || i === expression.length-2 || i === expression.length-3 ){
+                    console.log('Invalid OR or AND opeartions');
+                    this.config.sqlBuilder.errorMessage= 'Invalid OR or AND opeartions';
+                    return false;
+                }
+
+                while(x >=0 && y< expression.length){
+                    if(((/[0-9]/.test(expression[x])) && x-1>=0 && expression[x-1] === '#')){
+                        leftCond = true;
+                    }else if(leftCond === false && ((expression[x] === 'D' || expression[x] === 'd') && x-3>=0 && (expression.substring(x-3, x) === 'AND' || expression.substring(x-3, x) === 'and')) || ((expression[x] === 'R' || expression[x] === 'r') && x-2>=0 && (expression.substring(x-2, x) === 'OR' || expression.substring(x-2, x) === 'or'))){
+                        console.log('Invalid OR or AND opeartions');
+                        this.config.sqlBuilder.errorMessage= 'Invalid OR or AND opeartions';
+                        return false;
+                    }
+                    
+                    if(expression[y] === "#" && y+1 < expression.length && (/[0-9]/.test(expression[y+1]))){
+                        rightCond = true;
+                    }else if(rightCond === false && ((expression[y] === 'A' || expression[y] === 'a') && x+3 < expression.length && (expression.substring(y, y+3) === 'AND' || expression.substring(y, y+3) === 'and')) || ((expression[y] === 'O' ||expression[y] === 'o' ) && x+2 < expression.length && (expression.substring(y, y+2) === 'OR' || expression.substring(y, y+2) === 'or'))){
+                        console.log('Invalid OR or AND opeartions');
+                        this.config.sqlBuilder.errorMessage= 'Invalid OR or AND opeartions';
+                        return false;
+                    }
+
+                    if(leftCond && rightCond)
+                        break;
+                    
+                    leftCond === false ? x-- : '';
+                    rightCond === false ? y++ : '';
+                }
+
+                if(word === "AND"){
+                    operations++;
+                }else if(word === "OR"){
+                    isOropearation= true;
                 }
                 i = j - 1;
             } else if (char === '#') {
                 if (i === expression.length - 1 || !(/[0-9]/.test(expression[i+1]))) {
                     console.log('Invalid expression: "#" must be followed by a number');
+                    this.config.sqlBuilder.errorMessage= 'Invalid expression: "#" must be followed by a number';
                     return false;
+                }else if(indexSet.has('#'+expression[i+1])){
+                    indexSet.delete('#'+expression[i+1]);
                 }
             }
     
+            if(operations > 0 && isOropearation === true){
+                console.log('Invalid OR or AND opeartions');
+                this.config.sqlBuilder.errorMessage= 'Invalid OR or AND opeartions';
+                return false;
+            }
             i++;
+        }
+
+        if(indexSet.size > 0){
+            console.log('Invalid Applied condition');
+            this.config.sqlBuilder.errorMessage= 'Invalid Applied condition';
+            return false;
         }
     
         if (stack.length !== 0) {
             console.log('Invalid expression: Mismatched parentheses');
+            this.config.sqlBuilder.errorMessage= 'Invalid expression: Mismatched parentheses';
             return false;
         }
     
