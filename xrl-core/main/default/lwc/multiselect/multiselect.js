@@ -249,7 +249,7 @@ export default class Multiselect extends LightningElement {
         this.blurEvent('',true);
     }
     closeDropdown(event){
-        if(event.relatedTarget === undefined || event.relatedTarget.label !== undefined || event.relatedTarget.name === undefined){
+        if(event.relatedTarget === undefined || event.relatedTarget === null || event.relatedTarget.label !== undefined || event.relatedTarget.localName === 'section'){
             this.mSelectConfig.showDropdown = false;
         }
     }
@@ -289,7 +289,10 @@ export default class Multiselect extends LightningElement {
             this.mSelectConfig.searchString = previousLabel;
             //if someone presses Enter without selecting anything. 
             //To prevent NoErrorObjectAvailable Script error
-            if(event.target?.value === "") return; 
+            if(event.target?.value === ""){
+                this.mSelectConfig.showDropdown = false;
+                return; 
+            }
             this.dispatchEvent(new CustomEvent('select', {
                 detail: {
                     'payloadType' : 'multi-select',
