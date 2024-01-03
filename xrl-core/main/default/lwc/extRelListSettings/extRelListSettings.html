@@ -47,11 +47,21 @@
 									<span if:true={param.isAdvanced}>
 							            <lightning-accordion allow-multiple-sections-open active-section-name="" >
 											<lightning-accordion-section name="advanced" label="Advanced section">
-												<lightning-textarea field-level-help={param.tooltip} key={param.paramName} data-type={param.type} label={param.label} value={param.value} data-id="dialog:setFieldParam" data-param={param.paramName} onchange={config.dialog.handleEvent} placeholder={param.placeHolder}></lightning-textarea>
+												<lightning-textarea key={param.paramName} data-type={param.type} value={param.value} data-id="dialog:setFieldParam" data-param={param.paramName} onchange={config.dialog.handleEvent} placeholder={param.placeHolder}></lightning-textarea>
+												<span>
+													<p data-id={param.helpId} class="helpLink slds-m-left_xx-small" style="top: 46px;left: 10px;position: absolute;color: rgb(74, 75, 77,1);font-size: 12px;">
+														{param.helpLabel}
+														<lightning-helptext style="cursor: pointer;"
+															onclick={config.dialog.handleHelpEvent} data-id={param.helpId} data-url={param.helpArticleUrl}
+															onmouseenter={changeIcon} onmouseleave={changeIconAgain}
+															class="inlineHelpIcon" content={param.helpTooltip} alternative-text={config._LABELS.altTxt_hlpUrl}>
+														</lightning-helptext>
+													</p>
+												</span>
 											</lightning-accordion-section>
 										</lightning-accordion>
 									</span>
-									<span>
+									<span if:false={param.isAdvanced}>
 										<p if:true={param.helpArticleUrl} 
 										data-id={param.helpId} 
 										class="helpLink slds-m-left_xx-small" style={param.helpStyle}>
@@ -82,6 +92,16 @@
 							            <lightning-accordion allow-multiple-sections-open active-section-name="" >
 											<lightning-accordion-section name="advanced" label="Advanced section">
 												<lightning-textarea if:true={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} data-type={param.type} label={param.label} value={param.value} data-id={param.cmd} data-param={param.paramName} onchange={config.dialog.handleEvent} placeholder={param.placeHolder}></lightning-textarea>		
+												<span>
+													<p data-id={param.helpId} class="helpLink slds-m-left_xx-small" style="top: 46px;left: 10px;position: absolute;color: rgb(74, 75, 77,1);font-size: 12px;">
+														{param.helpLabel}
+														<lightning-helptext style="cursor: pointer;"
+															onclick={config.dialog.handleHelpEvent} data-id={param.helpId} data-url={param.helpArticleUrl}
+															onmouseenter={changeIcon} onmouseleave={changeIconAgain}
+															class="inlineHelpIcon" content={param.helpTooltip} alternative-text={config._LABELS.altTxt_hlpUrl}>
+														</lightning-helptext>
+													</p>
+												</span>
 											</lightning-accordion-section>
 										</lightning-accordion>
 									</span>
@@ -90,7 +110,7 @@
 									<lightning-combobox key={param.paramName} field-level-help={param.tooltip} label={param.label} placeholder={param.placeHolder} disabled={param.isDisabled} value={param.value} data-id={param.cmd} onchange={config.dialog.handleEvent} data-param={param.paramName} options={param.options}>
 									</lightning-combobox>
 								</template>
-								<span>
+								<span if:false={param.isAdvanced}>
 									<p if:true={param.helpArticleUrl} 
 										data-id={param.helpId} 
 										data-url={param.helpArticleUrl}
@@ -143,7 +163,17 @@
 							<span if:true={param.isAdvanced} key={param.paramName}>
 								<lightning-accordion allow-multiple-sections-open active-section-name="" >
 									<lightning-accordion-section name="advanced" label="Advanced section">
-										<lightning-textarea field-level-help={param.tooltip} key={param.paramName} data-type={param.type} label={param.label} value={param.value} data-id="dialog:setActionParam" data-param={param.paramName} onchange={config.dialog.handleEvent} placeholder={param.placeHolder}></lightning-textarea>
+										<lightning-textarea key={param.paramName} data-type={param.type} label={param.label} value={param.value} data-id="dialog:setActionParam" data-param={param.paramName} onchange={config.dialog.handleEvent} placeholder={param.placeHolder}></lightning-textarea>
+										<span>
+											<p data-id={param.helpId} class="helpLink slds-m-left_xx-small" style="top: 46px;left: 10px;position: absolute;color: rgb(74, 75, 77,1);font-size: 12px;">
+												{param.helpLabel}
+												<lightning-helptext style="cursor: pointer;"
+													onclick={config.dialog.handleHelpEvent} data-id={param.helpId} data-url={param.helpArticleUrl}
+													onmouseenter={changeIcon} onmouseleave={changeIconAgain}
+													class="inlineHelpIcon" content={param.helpTooltip} alternative-text={config._LABELS.altTxt_hlpUrl}>
+												</lightning-helptext>
+											</p>
+										</span>
 									</lightning-accordion-section>
 								</lightning-accordion>
 							</span>

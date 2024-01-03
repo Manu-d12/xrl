@@ -810,6 +810,7 @@ global with sharing class infrastructure {
 			'hlpUrl_fieldSettings' => label.hlpUrl_fieldSettings,
 			'hlpUrl_fieldSettingsAdvanced' =>label.hlpUrl_fieldSettingsAdvanced,
 			'hlpUrl_tableSettingsAdvanced' => label.hlpUrl_tableSettingsAdvanced,
+			'hlpUrl_actionsAdvanced' => label.hlpUrl_actionsAdvanced,
 			'hlpUrl_loadChunkSize' => label.hlpUrl_loadChunkSize,
 			'lbl_additionalConditionForWhereClause' => label.lbl_additionalConditionForWhereClause,
 			'lbl_chooseField' => label.lbl_chooseField,
