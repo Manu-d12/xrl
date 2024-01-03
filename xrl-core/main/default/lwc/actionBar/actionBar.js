@@ -34,6 +34,9 @@ export default class ActionBar extends LightningElement {
                     isActionVisibleByShowHideCallback = _advanced?.actionShowHideCallback(this,libs,records);
                     return isActionVisibleByShowHideCallback;
                 }
+                if (el.actionId === 'std:save' || el.actionId === 'std:discardChanges') {
+                    return false;
+                }
             }catch(e){
                 console.error(e);
             }
@@ -43,6 +46,13 @@ export default class ActionBar extends LightningElement {
             this.config.visibleActions = this.config.visibleActions.filter((el) => {
                 return el.actionVisibleOnRecordSelection === undefined ||el.actionVisibleOnRecordSelection === false;           
             });
+        }
+        //showing std:save action if only some records have been changed.
+        if(this.config.dataTable?._changedRecords){
+            let saveDiscardActions = this.config.actions.filter((el) => { return el.actionId === 'std:save' || el.actionId === 'std:discardChanges' });
+            if(saveDiscardActions){
+                this.config.visibleActions = this.config.visibleActions.concat(saveDiscardActions);
+            }
         }
         //Sorts the actions, so that it will appear in the order in the UI
         this.config.visibleActions = libs.sortRecords(JSON.parse(JSON.stringify(this.config.visibleActions)), 'actionOrder', true);
