@@ -37,6 +37,10 @@ export default class SqlBuilder extends LightningElement {
             el._formattedValue = this.formatConditionValue(el, el.value);
             el._formattedValueRange = el.valueRange ? this.formatConditionValue(el, el.valueRange) : undefined;
         });
+
+        this.config.sqlBuilder.newVirtualField = {
+            isVirtual: true
+        }; 
     
         this.ElementList = this.config.sqlBuilder.selectedFields.map(el => el.fieldName) || [...this.Data];
     }
@@ -737,6 +741,51 @@ export default class SqlBuilder extends LightningElement {
         console.log('sqlBuilder tab changed', event.target.value);
         this.config._tabs.currentOpenedTab = event.target.value;
         this.config._tabs.sqlBuilderTab = event.target.value;
+    }
+    handleVirtualFieldEvents(event){
+        //handling all the functions related to adding a virtual field
+        let changedInput = event.target.getAttribute('data-id');
+        //handling different change events for the new field
+        if(changedInput === 'fieldLabel'){
+            this.config.sqlBuilder.newVirtualField.label = event.target.value;
+        }else if(changedInput === 'fieldApiName'){
+            this.config.sqlBuilder.newVirtualField.fieldName = event.target.value;
+        }else if(changedInput === 'fieldAdvancedJSON'){
+            this.config.sqlBuilder.newVirtualField.advanced = event.target.value;
+        }
+
+        if(changedInput === 'saveVirtualField'){
+            if(this.config.sqlBuilder.newVirtualField.fieldName === undefined || this.config.sqlBuilder.newVirtualField.fieldName === '') {
+                libs.showToast(this, {
+					title: 'Error',
+					message: this.config._LABELS.msg_virtualFieldApiNameBlank,
+					variant: 'error'
+				});
+                return;
+            }
+            let isThisApiNameExists = this.config.sqlBuilder.selectedFields.find(field => field.fieldName === this.config.sqlBuilder.newVirtualField.fieldName);
+            //if field with same api name does not exists
+            if(!isThisApiNameExists){
+                this.config.sqlBuilder.selectedFields.push(this.config.sqlBuilder.newVirtualField);
+                this.template.querySelector('[data-id="fieldLabel"]').value = '';
+                this.template.querySelector('[data-id="fieldApiName"]').value = '';
+                this.template.querySelector('[data-id="fieldAdvancedJSON"]').value = '';
+                this.config.sqlBuilder.newVirtualField = {
+                    isVirtual: true
+                };
+                libs.showToast(this, {
+					title: 'Success',
+					message: this.config._LABELS.msg_virtualFieldAddedSuccessfully,
+					variant: 'success'
+				});
+            }else{
+                libs.showToast(this, {
+					title: 'Error',
+					message: this.config._LABELS.msg_virtualFieldAlreadyExists,
+					variant: 'error'
+				});
+            }
+        }
     }
     isStrAllowed(expression) {
         const validChars = [' ', 'AND', 'OR', '(', ')', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '#'];

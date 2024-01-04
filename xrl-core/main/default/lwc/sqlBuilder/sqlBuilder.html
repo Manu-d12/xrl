@@ -264,6 +264,37 @@
                 </div>
             </div>
         </lightning-tab>
+        <!-- Virtual Tab Starts -->
+        <lightning-tab label={config._LABELS.lbl_addVirtualField} value="14" onactive={tabChanged}>
+            <div style="border:0.5px solid rgb(183, 180, 180);">
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_6-of-12">
+                        <div class="slds-p-around_medium">
+                            <lightning-input type="text" label={config._LABELS.lbl_addVirtualFieldLabel} id="fieldLabel" data-id="fieldLabel" onchange={handleVirtualFieldEvents}></lightning-input>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_6-of-12">
+                        <div class="slds-p-around_medium">
+                            <lightning-input required="true" type="text" label={config._LABELS.lbl_addVirtualFieldApiName} data-id="fieldApiName" onchange={handleVirtualFieldEvents}></lightning-input>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_12-of-12">
+                        <div class="slds-p-around_medium">
+                            <lightning-textarea name="input1" label={config._LABELS.lbl_addVirtualFieldAdvancedJSON} data-id="fieldAdvancedJSON" onchange={handleVirtualFieldEvents}></lightning-textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_12-of-12">
+                        <lightning-button variant="brand" label="Save Virtual Field" title="Primary action" data-id="saveVirtualField" onclick={handleVirtualFieldEvents} class="slds-m-left_x-small"></lightning-button>
+                        <br/>
+                    </div>
+                </div>
+            </div>
+        </lightning-tab>
+        <!-- Virtual Tab Ends -->
 			
     </lightning-tabset>
     <p style="float: left;" if:true={config.sqlBuilder.selectedFields}>{config._LABELS.lbl_liveQuery} <b>{livequery}</b></p>
