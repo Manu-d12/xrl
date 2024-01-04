@@ -62,8 +62,8 @@ export let libs = {
 		records.sort((x, y) => {
 			let xKeyValue = keyValue(x);
 			let yKeyValue = keyValue(y);
-			x = xKeyValue ? (typeof xKeyValue === 'number' ? xKeyValue : xKeyValue.toLowerCase()) : ''; // handling null values
-			y = yKeyValue ? (typeof yKeyValue === 'number' ? yKeyValue : yKeyValue.toLowerCase()) : '';
+			x = xKeyValue ? (typeof xKeyValue === 'number' || typeof xKeyValue === 'boolean' ? xKeyValue : xKeyValue.toLowerCase()) : ''; // handling null values
+			y = yKeyValue ? (typeof yKeyValue === 'number' || typeof xKeyValue === 'boolean' ? yKeyValue : yKeyValue.toLowerCase()) : '';
 			return isReverse * ((x > y) - (y > x));
 		});
 
