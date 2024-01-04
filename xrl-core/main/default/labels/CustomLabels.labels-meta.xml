@@ -2108,6 +2108,14 @@ Once you are done editing the pattern, click outside the input box.</value>
         <value>customize-rows-and-columns/customize-rows-in-xrl-using-conditional-formatting</value>
     </labels>
     <labels>
+        <fullName>hlpUrl_actionsAdvanced</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_actionsAdvanced</shortDescription>
+        <value>custom-actions-release3b/how-to-customize-actions-advanced-sections-xrl-r3b</value>
+    </labels>
+    <labels>
         <fullName>hlpUrl_loadChunkSize</fullName>
         <categories>XRL</categories>
         <language>en_US</language>
@@ -2347,7 +2355,7 @@ return records;
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_actions</shortDescription>
-        <value>getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#locked-fields-66</value>
+        <value>getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#actions-67</value>
     </labels>
     <labels>
         <fullName>lbl_selectAnOption</fullName>

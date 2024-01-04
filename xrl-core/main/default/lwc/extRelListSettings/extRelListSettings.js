@@ -220,7 +220,7 @@ export default class extRelListSettings extends LightningElement {
 			result.push({
 				"paramName" : item,
 				"type" : tmp[item].type,
-				"label" : tmp[item].label,
+				"label" : tmp[item].helpArticleUrl === undefined ? tmp[item].label : '',
 				"isTextArea" : (tmp[item].type === 'function'),
 				"isText" : (tmp[item].type !== 'combobox' && tmp[item].type !== 'function'),
 				"options" : options,
@@ -232,6 +232,9 @@ export default class extRelListSettings extends LightningElement {
 				"useExample": tmp[item].useExample,
 				"isCombo" : (tmp[item].type === 'combobox' && options != undefined),
 				"isAdvanced" : tmp[item].isAdvanced,
+				"helpLabel": tmp[item].label,
+				"helpTooltip" : tmp[item].tooltip,
+				"helpArticleUrl": tmp[item].helpArticleUrl !== undefined ? tmp[item].helpArticleUrl : false,
 			})
 		}
 		return result;
