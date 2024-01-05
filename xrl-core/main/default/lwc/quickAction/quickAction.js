@@ -30,10 +30,18 @@ export default class customAction extends LightningElement {
         libs.remoteAction(this, 'getMetaConfigByName', {
             cfgName: this.cfgName,
             callback: ((nodeName, data) => {
-                this.config = JSON.parse(data[nodeName].cfg);
-                this.config._timeStamp = data[nodeName].timeStamp;
-                if (this.config.UI == undefined) {
+                let config = JSON.parse(data[nodeName].cfg);
+                config._timeStamp = data[nodeName].timeStamp;
+                if (config.UI == undefined) {
+                    this.config = config;
                     this.getRecordsAndSend();                
+                } else {
+                    if (config.UI.initCallback) {
+                        config.UI.initCallback = eval('[' + config.UI.initCallback + ']')[0];
+                        config.UI.initCallback(this, libs, config);
+                    } else {
+                        this.config = config;
+                    }
                 }
             })
         });
