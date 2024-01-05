@@ -1,11 +1,12 @@
 import { LightningElement, wire, api, track } from 'lwc';
 import { libs } from 'c/libs';
 import { CloseActionScreenEvent } from 'lightning/actions';
+//import { CurrentPageReference } from 'lightning/navigation';
 
 
 export default class customAction extends LightningElement {
 
-
+    //@api recordId;
     actionName = location.pathname.replace(/\/.*\/(.*)$/, "$1");
     cfgName = this.actionName.replaceAll(/__c\./ig,'.').replaceAll(/__/ig,'').replace('.', '_');
     @track config = {}
@@ -13,9 +14,16 @@ export default class customAction extends LightningElement {
     @track result = '';
 
 
+    /*@wire(CurrentPageReference)
+    getStateParameters(currentPageReference) {
+        if (currentPageReference) {
+            this.recordId = currentPageReference.state.recordId;
+            console.log('STATE', currentPageReference.state);
+        }
+    }*/
 
-    connectedCallback() {
-
+    constructor() {
+        super();
         console.log('Custom LWC', this.actionName, this.modal, this.template)//code
 
         
@@ -35,8 +43,11 @@ export default class customAction extends LightningElement {
         });
     }
 
+
+    connectedCallback() {     
+    }
+
     getRecordsAndSend() {
-        //Need to get a name of related list
         let objName = this.actionName.replace(/^(.*?)\..*?$/, "$1");
         let SOQL = "SELECT Id, (SELECT Id FROM " + this.config.orchestrator.childObjApiName + ") FROM " + objName + " WHERE Id='" + this.urlParams.recordId + "'";
         if (this.config.UI){
@@ -50,7 +61,6 @@ export default class customAction extends LightningElement {
                 console.log('List of child Ids', data[nodeName]);
                 let relatedRecords = data[nodeName].records[0][this.config.orchestrator.childObjApiName];
                 if (relatedRecords == undefined) this.handleEvent();
-                
                 
                 //chunking
                 let suggestedChunckSize = (10000 / 2 / this.config.executors.length) - this.config.executors.length;// *2 because we also need delete old records    
