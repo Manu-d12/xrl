@@ -7,11 +7,12 @@ import { CloseActionScreenEvent } from 'lightning/actions';
 export default class customAction extends LightningElement {
 
     //@api recordId;
+    @track result = '';
+
     actionName = location.pathname.replace(/\/.*\/(.*)$/, "$1");
     cfgName = this.actionName.replaceAll(/__c\./ig,'.').replaceAll(/__/ig,'').replace('.', '_');
     @track config = {}
     urlParams = this.parseUrlParams();
-    @track result = '';
 
 
     /*@wire(CurrentPageReference)
@@ -26,11 +27,16 @@ export default class customAction extends LightningElement {
         super();
         console.log('Custom LWC', this.actionName, this.modal, this.template)//code
 
-        
+        libs.setGlobalVar(this.cfgName,{
+            isQuickActionDialogOpen: true,
+            recordId : this.urlParams.recordId
+
+        });
+
         libs.remoteAction(this, 'getMetaConfigByName', {
             cfgName: this.cfgName,
             callback: ((nodeName, data) => {
-                let config = JSON.parse(data[nodeName].cfg);
+                let config = JSON.parse(libs.replaceLiteralsInStr(data[nodeName].cfg,this.cfgName));
                 config._timeStamp = data[nodeName].timeStamp;
                 if (config.UI == undefined) {
                     this.config = config;
@@ -46,9 +52,7 @@ export default class customAction extends LightningElement {
             })
         });
 
-        libs.setGlobalVar(this.cfgName,{
-            isQuickActionDialogOpen: true
-        });
+        
     }
 
 

@@ -323,7 +323,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		// need eval all advanced sections for actions
 		this.config.listViewConfig[0]?.actions.forEach(action => {
 			try{
-				action._advanced = eval('['+ action.advanced + ']')[0];
+				action._advanced = eval('['+ libs.replaceLiteralsInStr(action.advanced,this.name) + ']')[0];
 			}catch(e){
 				this.config._errors = libs.formatCallbackErrorMessages(e,'action','Action Advanced JSON');
 				return;
