@@ -1712,6 +1712,12 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				let defValue = {};
 				defValue[this.config.relField] = this.recordId;
 
+				if (action?._advanced?.defValues) {
+					Object.assign(defValue, action?._advanced?.defValues);
+				}
+
+
+
 				this[NavigationMixin.Navigate]({
 					type: 'standard__objectPage',
 					attributes: {

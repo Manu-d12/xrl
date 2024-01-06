@@ -610,8 +610,8 @@ export default class Layout extends NavigationMixin(LightningElement) {
 		if (actionId === 'std:new') {
 				let defValue = {};
 				defValue[this.config.relField] = this.recordId;
-				if (action?.defValues) {
-					Object.assign(defValue, action.defValues);
+				if (action?._advanced?.defValues) {
+					Object.assign(defValue, action?._advanced?.defValues);
 				}
 				this[NavigationMixin.Navigate]({
 					type: 'standard__objectPage',
