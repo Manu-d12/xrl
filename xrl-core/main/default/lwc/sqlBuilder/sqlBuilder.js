@@ -750,8 +750,6 @@ export default class SqlBuilder extends LightningElement {
             this.config.sqlBuilder.newVirtualField.label = event.target.value;
         }else if(changedInput === 'fieldApiName'){
             this.config.sqlBuilder.newVirtualField.fieldName = event.target.value;
-        }else if(changedInput === 'fieldAdvancedJSON'){
-            this.config.sqlBuilder.newVirtualField.advanced = event.target.value;
         }
 
         if(changedInput === 'saveVirtualField'){
@@ -769,7 +767,6 @@ export default class SqlBuilder extends LightningElement {
                 this.config.sqlBuilder.selectedFields.push(this.config.sqlBuilder.newVirtualField);
                 this.template.querySelector('[data-id="fieldLabel"]').value = '';
                 this.template.querySelector('[data-id="fieldApiName"]').value = '';
-                this.template.querySelector('[data-id="fieldAdvancedJSON"]').value = '';
                 this.config.sqlBuilder.newVirtualField = {
                     isVirtual: true
                 };
