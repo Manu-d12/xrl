@@ -16,7 +16,7 @@
 				data-id={fld.name} variant={fld.variant} onclick={onChangeDynamicField}>
 			</lightning-button>
 			<lightning-file-upload if:true={fld.isFile} label={fld.label} name={fld.name} data-id={fld.name} required={fld.isRequired}
-				accept={fld.acceptedFormats} onuploadfinished={onChangeDynamicField} multiple={fld.isMultiple}>
+				accept={fld.acceptedFormats} onuploadfinished={onChangeDynamicField} multiple={fld.isMultiple} record-id={fld.recordId}>
 			</lightning-file-upload>
 			<lightning-textarea if:true={fld.isTextArea} required={fld.isRequired} onchange={onChangeDynamicField}
 				value={fld.value} data-id={fld.name} label={fld.label} placeholder={fld.placeholder} style={fld.style}>

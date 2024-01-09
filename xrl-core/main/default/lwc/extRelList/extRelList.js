@@ -320,6 +320,16 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				return;
 			}
 		}
+		// need eval all advanced sections for actions
+		this.config.listViewConfig[0]?.actions.forEach(action => {
+			try{
+				action._advanced = eval('['+ libs.replaceLiteralsInStr(action.advanced,this.name) + ']')[0];
+			}catch(e){
+				this.config._errors = libs.formatCallbackErrorMessages(e,'action','Action Advanced JSON');
+				return;
+			}
+		})
+
 		if(this.config?._advanced?.isShowListViewDropdownCallback){
 			try{
 				this.listViews = this.config._advanced.isShowListViewDropdownCallback(this,libs,this.listViews,this.config.listView); //should return an array of list views
@@ -1708,9 +1718,12 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 		if (val.startsWith('std:new')) {
 			if(!this.isThereUnsavedRecords()){
-
+				let action = this.config.actionsBar.actions.find(item => {return item.actionId == val})
 				let defValue = {};
 				defValue[this.config.relField] = this.recordId;
+				if (action?._advanced?.defValues) {
+					Object.assign(defValue, action?._advanced?.defValues);
+				}
 
 				this[NavigationMixin.Navigate]({
 					type: 'standard__objectPage',

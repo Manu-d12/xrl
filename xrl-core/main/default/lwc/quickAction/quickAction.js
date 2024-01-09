@@ -1,42 +1,65 @@
 import { LightningElement, wire, api, track } from 'lwc';
 import { libs } from 'c/libs';
 import { CloseActionScreenEvent } from 'lightning/actions';
+//import { CurrentPageReference } from 'lightning/navigation';
 
 
 export default class customAction extends LightningElement {
 
+    //@api recordId;
+    @track result = '';
 
     actionName = location.pathname.replace(/\/.*\/(.*)$/, "$1");
     cfgName = this.actionName.replaceAll(/__c\./ig,'.').replaceAll(/__/ig,'').replace('.', '_');
     @track config = {}
     urlParams = this.parseUrlParams();
-    @track result = '';
 
 
+    /*@wire(CurrentPageReference)
+    getStateParameters(currentPageReference) {
+        if (currentPageReference) {
+            this.recordId = currentPageReference.state.recordId;
+            console.log('STATE', currentPageReference.state);
+        }
+    }*/
 
-    connectedCallback() {
-
+    constructor() {
+        super();
         console.log('Custom LWC', this.actionName, this.modal, this.template)//code
 
-        
+        libs.setGlobalVar(this.cfgName,{
+            isQuickActionDialogOpen: true,
+            recordId : this.urlParams.recordId
+
+        });
+
         libs.remoteAction(this, 'getMetaConfigByName', {
             cfgName: this.cfgName,
             callback: ((nodeName, data) => {
-                this.config = JSON.parse(data[nodeName].cfg);
-                this.config._timeStamp = data[nodeName].timeStamp;
-                if (this.config.UI == undefined) {
+                let config = JSON.parse(libs.replaceLiteralsInStr(data[nodeName].cfg,this.cfgName));
+                config._timeStamp = data[nodeName].timeStamp;
+                if (config.UI == undefined) {
+                    this.config = config;
                     this.getRecordsAndSend();                
+                } else {
+                    if (config.UI.initCallback) {
+                        config.UI.initCallback = eval('[' + config.UI.initCallback + ']')[0];
+                        config.UI.initCallback(this, libs, config);
+                    } else {
+                        this.config = config;
+                    }
                 }
             })
         });
 
-        libs.setGlobalVar(this.cfgName,{
-            isQuickActionDialogOpen: true
-        });
+        
+    }
+
+
+    connectedCallback() {     
     }
 
     getRecordsAndSend() {
-        //Need to get a name of related list
         let objName = this.actionName.replace(/^(.*?)\..*?$/, "$1");
         let SOQL = "SELECT Id, (SELECT Id FROM " + this.config.orchestrator.childObjApiName + ") FROM " + objName + " WHERE Id='" + this.urlParams.recordId + "'";
         if (this.config.UI){
@@ -50,7 +73,6 @@ export default class customAction extends LightningElement {
                 console.log('List of child Ids', data[nodeName]);
                 let relatedRecords = data[nodeName].records[0][this.config.orchestrator.childObjApiName];
                 if (relatedRecords == undefined) this.handleEvent();
-                
                 
                 //chunking
                 let suggestedChunckSize = (10000 / 2 / this.config.executors.length) - this.config.executors.length;// *2 because we also need delete old records    

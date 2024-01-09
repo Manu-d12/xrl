@@ -62,8 +62,8 @@ export let libs = {
 		records.sort((x, y) => {
 			let xKeyValue = keyValue(x);
 			let yKeyValue = keyValue(y);
-			x = xKeyValue ? (typeof xKeyValue === 'number' ? xKeyValue : xKeyValue.toLowerCase()) : ''; // handling null values
-			y = yKeyValue ? (typeof yKeyValue === 'number' ? yKeyValue : yKeyValue.toLowerCase()) : '';
+			x = xKeyValue ? (typeof xKeyValue === 'number' || typeof xKeyValue === 'boolean' ? xKeyValue : xKeyValue.toLowerCase()) : ''; // handling null values
+			y = yKeyValue ? (typeof yKeyValue === 'number' || typeof xKeyValue === 'boolean' ? yKeyValue : yKeyValue.toLowerCase()) : '';
 			return isReverse * ((x > y) - (y > x));
 		});
 
@@ -202,7 +202,8 @@ export let libs = {
 				"type": "function",
 				"label": _labels.lbl_advancedFieldSettings,
 				"tooltip" : _labels.tooltip_advancedFieldSettings,
-				"isAdvanced" : true
+				"isAdvanced" : true,
+				"helpArticleUrl": _labels.hlpUrl_fieldSettingsAdvanced,
 			}
 		};
 		if (colModelItem !== undefined) {
@@ -439,7 +440,8 @@ export let libs = {
 				"label": _labels.lbl_advancedTableSettings,
 				"tooltip" : _labels.tooltip_advancedTableSettings,
 				"cmd" : "dialog:setTableParam",
-				"isAdvanced" : true
+				"isAdvanced" : true,
+				"helpArticleUrl": _labels.hlpUrl_tableSettingsAdvanced,
 			}
 			
 			
@@ -539,7 +541,8 @@ export let libs = {
 				"type": "function",
 				"label": _labels.lbl_advancedActionSettings,
 				"tooltip" : _labels.tooltip_advancedActionSettings,
-				"isAdvanced" : true
+				"isAdvanced" : true,
+				"helpArticleUrl": _labels.hlpUrl_actionsAdvanced,
 			}
 		}
 		return defParams;

@@ -260,7 +260,8 @@ export default class Layout extends NavigationMixin(LightningElement) {
 			return;
 		}
 		if(event.detail.cmd.startsWith('filter:')) {
-			let comp = libs.getGlobalVar(this.tabConfigName).componentsInLayout.find(cmp => cmp.uniqueName === event.detail.source);
+			// let comp = libs.getGlobalVar(this.tabConfigName).componentsInLayout.find(cmp => cmp.uniqueName === event.detail.source);
+			let comp = this.config.tabularConfig.dataModel.find(cmp => cmp.uniqueName === event.detail.source);
 			this.template.querySelectorAll('c-Data-Table')?.forEach(ch => {
 				if (comp?.targets?.includes(ch.cfg) || event.detail.targets?.includes(ch.cfg)) ch.handleEventMessage(event);
 			});
@@ -603,11 +604,14 @@ export default class Layout extends NavigationMixin(LightningElement) {
 		if (actionId === 'std:save') {
 			this.prepareRecordsForSave(table);
 		}
+		if (actionId === 'std:discardChanges') {
+			this.discardRecordChanges(table,cfg);
+		}
 		if (actionId === 'std:new') {
 				let defValue = {};
 				defValue[this.config.relField] = this.recordId;
-				if (action?.defValues) {
-					Object.assign(defValue, action.defValues);
+				if (action?._advanced?.defValues) {
+					Object.assign(defValue, action?._advanced?.defValues);
 				}
 				this[NavigationMixin.Navigate]({
 					type: 'standard__objectPage',
@@ -654,6 +658,12 @@ export default class Layout extends NavigationMixin(LightningElement) {
 				console.error(e);
 			}
 		}
+	}
+	discardRecordChanges(table,sourceCfg){
+		table.records = JSON.parse(JSON.stringify(table.listViewConfig[0].records));
+		table.listViewConfig[0]._changedRecords = undefined;
+		table.listViewConfig[0]._updateView();
+		this.template.querySelector('c-action-Bar').refreshActionbar();
 	}
 	async prepareRecordsForSave(scope){
 		let records = [];
@@ -774,6 +784,7 @@ export default class Layout extends NavigationMixin(LightningElement) {
 				delete record._cellCss;
 			});
 		}
+		this.template.querySelector('c-action-Bar').refreshActionbar();
 	}
 
 	stripChunk(chunkIn) {
