@@ -59,7 +59,13 @@ export default class dialog extends LightningElement {
         
         if (event.detail.cmd == ':updateFromChild') {
             console.log('event from child', event.detail.data);
-            this.config.result[event.detail.data.name] = event.detail.data?.value;
+            if(event.detail.data?.value !== undefined){
+                this.config.result[event.detail.data.name] = event.detail.data?.value;
+            }else{
+                if(this.config.result[event.detail.data.name]){
+                    delete this.config.result[event.detail.data.name];
+                }
+            }
             // Need also rerender buttons
             this.config.buttons.forEach(btn => {
                 if (btn.disableCallback && typeof btn.disableCallback === 'function') {
@@ -95,4 +101,3 @@ export default class dialog extends LightningElement {
     }
 
 }
-

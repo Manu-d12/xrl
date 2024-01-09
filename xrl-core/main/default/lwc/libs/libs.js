@@ -621,6 +621,43 @@ export let libs = {
 		}
 		return message;
 	},
+	checkAllRequiredFieldsForBomImport: function(config,data){
+		let allData=[];
+		Object.entries(data.data).forEach(([key, value]) => {
+			allData.push(value);
+		});
+		config = JSON.parse(JSON.stringify(config));
+		const allFields = [];
+
+		config[0].fields.forEach((field)=>{
+			if(field.parentValue.includes(data.data.bomType)){
+				allFields.push(field);
+			}
+		});
+		
+		while(allFields.length > 0){
+			const current = allFields.pop();
+			let parentValueCheck= false;
+			if(current.parentValue){
+				for(let i=0; i< current.parentValue.length ;i++){
+					if(allData.includes(current.parentValue[i])){
+						parentValueCheck= true;
+						break;
+					}
+				}
+			}
+	
+			if(current.isRequired !== undefined && current.isRequired === true && data.data[current.name] === undefined && current.type !== 'section' && parentValueCheck){
+				return {"value": false, "message": current.name};
+			}
+
+			if(current.fields){
+				allFields.push(...current.fields);
+			}
+		}
+
+		return {"value": true, "message": "All fields have value"};
+	},
 	getMacros: function(){
 		return [{"label":'recordId',"value":'%%recordId%%'}, {"label":'userId',"value":'%%userInfo.id%%'},{"label":'sObjApiName',"value":'%%sObjApiName%%'},{"label":'urlParam',"value":'%%urlParam%%'}];
 	},

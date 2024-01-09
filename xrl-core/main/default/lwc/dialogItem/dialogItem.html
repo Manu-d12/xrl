@@ -2,7 +2,7 @@
 	<template if:true={config.fields} for:each={config.fields} for:item="fld" for:index="index">
 		<div key={fld.name} if:false={fld.isDisabled}>
 			<lightning-input if:true={fld.isInput} required={fld.isRequired} onchange={onChangeDynamicField}
-				value={fld.value} checked={fld.value} data-id={fld.name} label={fld.label} placeholder={fld.placeholder} style={fld.style}
+				value={fld.value} checked={fld.isChecked} data-id={fld.name} label={fld.label} placeholder={fld.placeholder} style={fld.style}
 				type={fld.type} field-level-help={fld.help}></lightning-input>
 			<lightning-combobox if:true={fld.isCombobox} required={fld.isRequired} onchange={onChangeDynamicField}
 				data-type="picklist" data-id={fld.name} label={fld.label} placeholder={fld.placeholder}
@@ -15,7 +15,7 @@
 			<lightning-button if:true={fld.isSwitch} label={fld.label} title={fld.label} class={fld.class}
 				data-id={fld.name} variant={fld.variant} onclick={onChangeDynamicField}>
 			</lightning-button>
-			<lightning-file-upload if:true={fld.isFile} label={fld.label} name={fld.name} data-id={fld.name} required={fld.required}
+			<lightning-file-upload if:true={fld.isFile} label={fld.label} name={fld.name} data-id={fld.name} required={fld.isRequired}
 				accept={fld.acceptedFormats} onuploadfinished={onChangeDynamicField} multiple={fld.isMultiple}>
 			</lightning-file-upload>
 			<lightning-textarea if:true={fld.isTextArea} required={fld.isRequired} onchange={onChangeDynamicField}
