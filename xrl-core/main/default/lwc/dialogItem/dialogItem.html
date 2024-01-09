@@ -1,6 +1,6 @@
 <template>
 	<template if:true={config.fields} for:each={config.fields} for:item="fld" for:index="index">
-		<div key={fld.name} if:false={fld.isDisabled}>
+		<div key={fld.name} if:false={fld.isDisabled} id={fld.name}>
 			<lightning-input if:true={fld.isInput} required={fld.isRequired} onchange={onChangeDynamicField}
 				value={fld.value} checked={fld.value} data-id={fld.name} label={fld.label} placeholder={fld.placeholder} style={fld.style}
 				type={fld.type} field-level-help={fld.help}></lightning-input>
