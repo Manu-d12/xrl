@@ -316,8 +316,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			try{
 				this.config._advanced = eval('['+ this.config.listViewConfig[0].advanced + ']')[0];
 			}catch(e){
-				this.config._errors = libs.formatCallbackErrorMessages(e,'table','Table Advanced JSON');
-				return;
+				// this.config._errors = libs.formatCallbackErrorMessages(e,'table','Table Advanced JSON');
+				console.log(e);
 			}
 		}
 		// need eval all advanced sections for actions
