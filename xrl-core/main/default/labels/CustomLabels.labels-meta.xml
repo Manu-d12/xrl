@@ -2057,7 +2057,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_deleteView</shortDescription>
-        <value>related-list-view-setup-and-customization-release3b/how-to-share-and-delete-xrl-view-r3b</value>
+        <value>related-list-view-setup-and-customization-release3b/how-to-share-and-delete-xrl-view-r3b#delete-an-xrl-configuration-6</value>
     </labels>
     <labels>
         <fullName>altTxt_hlpUrl</fullName>
@@ -2073,7 +2073,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_shareView</shortDescription>
-        <value>related-list-view-setup-and-customization-release3b/how-to-share-and-delete-xrl-view-r3b</value>
+        <value>related-list-view-setup-and-customization-release3b/how-to-share-and-delete-xrl-view-r3b#share-an-xrl-configuration-among-users-3</value>
     </labels>
     <labels>
         <fullName>hlpUrl_saveAsView</fullName>
