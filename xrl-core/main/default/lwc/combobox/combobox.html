@@ -1,0 +1,89 @@
+<template>
+  <div class="slds-form-element">
+    <div class="slds-form-element__control">
+      <div class="slds-combobox_container">
+        <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
+          <!-- <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+            <input
+              type="text"
+              class="slds-input slds-combobox__input slds-has-focus slds-combobox__input-value"
+              id="combobox-id-13"
+              role="combobox"
+              placeholder="Search..."
+              value=""
+              onchange={search}
+            />
+            <span class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right">
+              <svg class="slds-icon slds-icon slds-icon_x-small slds-icon-text-default" aria-hidden="true">
+                <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#search"></use>
+              </svg>
+            </span>
+          </div> -->
+          <lightning-input label="Searchable Combobox" type="search" onchange={search} value={selectedValue} onfocus={showOptions}></lightning-input>
+          <!-- Dropdown starts -->
+          <div if:true={config.searchResults} id="listbox-id-11" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid" role="listbox">
+            <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                <template for:each={config.searchResults} for:item="searchResult">
+                    <li key={searchResult.value} data-value={searchResult.value} onclick={selectSearchResult} role="presentation" class="slds-listbox__item">
+                        <div id={searchResult.value} class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small" role="option">
+                            <span if:true={searchResult.selected} class="slds-media__figure slds-listbox__option-icon">
+                                <span class="slds-icon_container slds-icon-utility-check slds-current-color">
+                                  <svg class="slds-icon slds-icon_x-small" aria-hidden="true">
+                                    <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#check"></use>
+                                  </svg>
+                                </span>
+                              </span>
+                            <span class="slds-media__body">
+                                <span class="slds-truncate" title={searchResult.label}>
+                                    {searchResult.label}
+                                </span>
+                            </span>
+                            <span if:false={searchResult.isHideEdit} onclick={editOption} data-value={searchResult.value} class="slds-icon_container slds-icon-utility-edit slds-align-middle" title="Has further options">
+                                <svg class="slds-icon slds-icon_x-small slds-icon-text-default" aria-hidden="true">
+                                  <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#edit"></use>
+                                </svg>
+                                <span class="slds-assistive-text">Edit</span>
+                            </span>
+                        </div>
+                    </li>
+                </template>
+            </ul>
+          </div>
+          <!-- Dialog for Edit options -->
+          <section if:true={config.selectedValueForEdit} aria-describedby="dialog-body-id-26" aria-label="Language Options" class="slds-popover slds-popover_full-width" id="popover-unique-id-01" role="dialog">
+            <div class="slds-popover__body slds-popover__body_small" id="dialog-body-id-26" tabindex="0" role="region">
+              <div class="slds-media">
+                <div class="slds-media__body">
+                    <div class="slds-form" role="list">
+                        <div class="slds-form__row">
+                          <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                              <label class="slds-form-element__label" for="single-form-element-id-02">Label</label>
+                              <div class="slds-form-element__control">
+                                <input type="text" id="single-form-element-id-02" data-id="label" onchange={handleEditOptionDialogOperation} placeholder="Placeholder text…" value={config.selectedLabelForEdit} class="slds-input" />
+                              </div>
+                            </div>
+                          </div>
+                          <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_horizontal slds-is-editing">
+                              <label class="slds-form-element__label" for="single-form-element-id-03">Value</label>
+                              <div class="slds-form-element__control">
+                                <input type="text" id="single-form-element-id-03" placeholder="Placeholder text…" value={config.selectedValueForEdit} class="slds-input" disabled/>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                </div>
+              </div>
+            </div>
+            <footer class="slds-popover__footer slds-popover__footer_form">
+              <button onclick={handleEditOptionDialogOperation} data-id="cancel" class="slds-button slds-button_neutral">Cancel</button>
+              <button onclick={handleEditOptionDialogOperation} data-id="save" class="slds-button slds-button_brand">Done</button>
+            </footer>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
