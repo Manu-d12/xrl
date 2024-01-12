@@ -613,6 +613,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 		
 		this.config.listViewConfig[0]?.colModel?.forEach(e => {
+			if(e.isVirtual) return;
 			let describe = this.config.describe[e.fieldName];
 			if (e.type === 'reference') {
 				let nameField = this.config.objectNameFieldsMap.get(e.referenceTo) ? '.'+this.config.objectNameFieldsMap.get(e.referenceTo) : '.Name';

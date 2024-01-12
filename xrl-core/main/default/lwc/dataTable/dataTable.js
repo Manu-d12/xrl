@@ -205,12 +205,6 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					el._rowStyle += eval('(' + this.config._advanced?.rowCss + ')')(el);
 				} catch (e) {
 					this.config._errors = libs.formatCallbackErrorMessages(e,'table','Row Css Callback');
-					// libs.showToast(this, {
-					// 	title: 'Error',
-					// 	message: e.toString(),
-					// 	variant: 'error',
-					// });
-					// console.error('Error', e);
 				}
 			}
 		});
@@ -238,12 +232,6 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					try {
 						el._rowStyle += eval('(' + this.config._advanced?.rowCss + ')')(el);
 					} catch (e) {
-						// libs.showToast(this, {
-						// 	title: 'Error',
-						// 	message: e.toString(),
-						// 	variant: 'error',
-						// });
-						// console.error('Error', e);
 						this.config._errors = libs.formatCallbackErrorMessages(e,'table','Row Css Callback');
 					}
 				}
@@ -298,35 +286,35 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			}
 			// Need for pagination;
 			return this.groupedRecords;
-		} else {
-			let isPager = this.config.pager;
-			if(!this.config.pager.pagerTop && !this.config.pager.pagerBottom){
-				let startIndex = 0;
-				let endIndex = this.records.length > 200 ? 200 : this.records.length;
-				let result = [];
-				for (let i = startIndex; i < endIndex; i++) {
-					result.push(this.records[i]);
-				}
-				this.displayedItemCount = this.recordInfo+ ' Showing only '+ endIndex  +' item(s)';
-				//console.log('result', JSON.parse(JSON.stringify(result)));
-				this.config._recordsToShow = result;
-				return result;
-			}
-			else if (isPager) {
-				let startIndex = (this.config.pager.curPage - 1) * this.config.pager.pageSize;
-				let endIndex = (startIndex + parseInt(this.config.pager.pageSize)) < this.records.length ? (startIndex + parseInt(this.config.pager.pageSize)) : this.records.length;
-				let result = [];
-				for (let i = startIndex; i < endIndex; i++) {
-					result.push(this.records[i]);
-				}
-				//console.log('result', JSON.parse(JSON.stringify(result)));
-				this.config._recordsToShow = result;
-				return result;
-			}
-			// Need for pagination;
-			this.config._recordsToShow = this.records;
-			return this.records;
 		}
+
+		let isPager = this.config.pager;
+		if(!this.config.pager.pagerTop && !this.config.pager.pagerBottom){
+			let startIndex = 0;
+			let endIndex = this.records.length > 200 ? 200 : this.records.length;
+			let result = [];
+			for (let i = startIndex; i < endIndex; i++) {
+				result.push(this.records[i]);
+			}
+			this.displayedItemCount = this.recordInfo+ ' Showing only '+ endIndex  +' item(s)';
+			//console.log('result', JSON.parse(JSON.stringify(result)));
+			this.config._recordsToShow = result;
+			return result;
+		}
+		else if (isPager) {
+			let startIndex = (this.config.pager.curPage - 1) * this.config.pager.pageSize;
+			let endIndex = (startIndex + parseInt(this.config.pager.pageSize)) < this.records.length ? (startIndex + parseInt(this.config.pager.pageSize)) : this.records.length;
+			let result = [];
+			for (let i = startIndex; i < endIndex; i++) {
+				result.push(this.records[i]);
+			}
+			//console.log('result', JSON.parse(JSON.stringify(result)));
+			this.config._recordsToShow = result;
+			return result;
+		}
+		// Need for pagination;
+		this.config._recordsToShow = this.records;
+		return this.records;
 	}
 
 	get recordInfo() {

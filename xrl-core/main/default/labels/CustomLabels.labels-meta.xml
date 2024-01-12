@@ -2365,4 +2365,60 @@ return records;
         <shortDescription>lbl_selectAnOption</shortDescription>
         <value>Select an Option</value>
     </labels>
+    <labels>
+        <fullName>lbl_addVirtualField</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_addVirtualField</shortDescription>
+        <value>Add Virtual Field</value>
+    </labels>
+    <labels>
+        <fullName>lbl_addVirtualFieldLabel</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_addVirtualFieldLabel</shortDescription>
+        <value>Virtual Field Label</value>
+    </labels>
+    <labels>
+        <fullName>lbl_addVirtualFieldApiName</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_addVirtualFieldApiName</shortDescription>
+        <value>Virtual Field Unique Name(Api Name)</value>
+    </labels>
+    <labels>
+        <fullName>lbl_addVirtualFieldAdvancedJSON</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_addVirtualFieldAdvancedJSON</shortDescription>
+        <value>Virtual Field Advanced JSON</value>
+    </labels>
+    <labels>
+        <fullName>msg_virtualFieldAddedSuccessfully</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_virtualFieldAddedSuccessfully</shortDescription>
+        <value>Virtual field added successfully</value>
+    </labels>
+    <labels>
+        <fullName>msg_virtualFieldAlreadyExists</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_virtualFieldAlreadyExists</shortDescription>
+        <value>Field with same api name already exists</value>
+    </labels>
+    <labels>
+        <fullName>msg_virtualFieldApiNameBlank</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_virtualFieldApiNameBlank</shortDescription>
+        <value>You can not keep virtual field API Name blank</value>
+    </labels>
 </CustomLabels>
