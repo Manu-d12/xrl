@@ -1203,10 +1203,11 @@ global with sharing class infrastructure {
         if (T == null) throw new InfrastructureException(null, ('Can\'t find method {1} in class ' + helperType).replace('{1}', helperType) + ':' + helperTypeClass, exceptionType.INSTANCE_CLASS_NOT_FOUND);
                 
         handler handlerClass = (handler) JSON.deserialize(JSON.serialize(data), T);*/
-
+		//map<string, object> innerData = (map<string, object>)JSON.deserializeUntyped(JSON.serialize(data.get('data')));
 		Type T = type.forName(helperType);			
 		if (T == null) throw new InfrastructureException(null, ('Can\'t find class {1}').replace('{1}', helperType), exceptionType.CLASS_NOT_FOUND);
-		handler handlerClass = (handler) T.newInstance();
+		//handler handlerClass = (handler) T.newInstance();
+        handler handlerClass = (handler) JSON.deserialize(JSON.serialize(data.get('data')), T);
 
 		map < string, object > result = new map < string, object > ();
 		try {
