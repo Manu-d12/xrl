@@ -160,15 +160,17 @@ global with sharing class QuoteValidator {
         boolean oldDebug = infrastructure.isDebug;
 
         for (executorConfigPart ePart : this.config.executors) {
+            map<string, object> innerData = new  map<string, object>{ 'rootRecord' => this.config.rootRecord};
             log__c[] logs = new log__c[]{};
             // I think need to write results after every validation.  It will prevent issue with more then 10.000 records
             sObject[] allRecords = this.config.getRecords(ePart);
-
+			
             ePart.className= (ePart.typeOf == executorType.CALCENGINE) ? this.prepareCalcMethodName(ePart.className) : ePart.className;  // Need for dynamic generate a apexName
 
             Type T = type.forName(ePart.className);
 			if (T == null) throw new infrastructure.InfrastructureException(null, ('Can\'t find class {1}').replace('{1}', ePart.className), infrastructure.exceptionType.CLASS_NOT_FOUND);
-			infrastructure.handler handlerClass = (infrastructure.handler) T.newInstance();
+			//infrastructure.handler handlerClass = (infrastructure.handler) T.newInstance();
+            infrastructure.handler handlerClass = (infrastructure.handler)JSON.deserialize(JSON.serialize(innerData), T);
             if (handlerClass.isExecutable(new  map<string, object>{'rootRecord' => this.config.rootRecord}) != true) continue;
             
 			//set global debug flag
@@ -176,7 +178,8 @@ global with sharing class QuoteValidator {
 
             for (sObject obj: allRecords) {
                 try {
-                    object handlerResult = handlerClass.execute(new  map<string, object>{ 'record'=> obj, 'rootRecord' => this.config.rootRecord});
+                    innerData.put('record', obj);
+                    object handlerResult = handlerClass.execute(innerData);
                     this.orcResp.responses.add(handlerResult);
                     switch on ePart.typeOf {
 						when ROOTVALIDATION, VALIDATION {
@@ -264,7 +267,7 @@ global with sharing class QuoteValidator {
         
         Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
         mail.setTemplateId(et.Id);
-        mail.setToAddresses(this.config.prepareEmailRecipients(this.config.rootRecord));
+        mail.setToAddresses(this.config.prepareEmailRecipients(this.config.rootRecord, orcReq.additionalParameters!=null ? (string) orcReq.additionalParameters.get('emails') : null));
         //mail.setSubject('test subject'); Subject must be provided by template, but in additional to this we can format a Subject
         mail.setTargetObjectId(userInfo.getUserId());// Need to change
         //mail.setWhatId(primaryAccount);
@@ -361,7 +364,7 @@ global with sharing class QuoteValidator {
             
         }
         
-        public string[] prepareEmailRecipients(sObject rootRecord) {
+        public string[] prepareEmailRecipients(sObject rootRecord, string additionalEmails) {
             string[] result = new string[]{};
             if (this.isNeedSendEmail == true) {
                 for (string rec : orchestrator.email.recipients) {
@@ -372,6 +375,7 @@ global with sharing class QuoteValidator {
                     // Also need to provide other transformation. For example a public group implementation
                     result.add(rec);
                 }
+                if (additionalEmails!=null) result.addAll(additionalEmails.split(' +, +'));
             }
             return result;
         }
