@@ -131,7 +131,20 @@ global with sharing class QuoteValidator {
         this.config = (orchestratorConfig) JSON.deserialize(cfg[0].JSON__c, orchestratorConfig.class);
         this.config.init(operation, orcReq);
         infrastructure.addDebugLog('orchestrator:in', this.orcReq);
-        
+        // Need run precheck
+        if (this.config.orchestrator.preCheck !=null) {
+            Type T = type.forName(this.config.orchestrator.preCheck.className);
+			if (T == null) throw new infrastructure.InfrastructureException(null, ('Can\'t find class {1}').replace('{1}', this.config.orchestrator.preCheck.className), infrastructure.exceptionType.CLASS_NOT_FOUND);
+			//infrastructure.handler handlerClass = (infrastructure.handler) T.newInstance();
+            infrastructure.handler handlerClass = (infrastructure.handler) T.newInstance();
+            infrastructure.validationResult handlerResult = (infrastructure.validationResult) handlerClass.execute(new map<string, object>{'initParams' => orcReq});
+            if (handlerResult.code != infrastructure.validationResultCode.OK) {
+                this.orcResp.responses.add(handlerResult);
+                return;
+            }
+            //infrastructure.validationResult vResult = (infrastructure.validationResult) handlerResult
+            //if (handlerResult == )
+        }
         this.mainLoop(operation);
         if (this.orcReq.isLastChunk == true) {
             log__c[] errors = [
@@ -163,7 +176,7 @@ global with sharing class QuoteValidator {
             map<string, object> innerData = new  map<string, object>{ 'rootRecord' => this.config.rootRecord};
             log__c[] logs = new log__c[]{};
             // I think need to write results after every validation.  It will prevent issue with more then 10.000 records
-            sObject[] allRecords = this.config.getRecords(ePart);
+            object[] allRecords = this.config.getRecords(ePart, orcReq);
 			
             ePart.className= (ePart.typeOf == executorType.CALCENGINE) ? this.prepareCalcMethodName(ePart.className) : ePart.className;  // Need for dynamic generate a apexName
 
@@ -176,7 +189,7 @@ global with sharing class QuoteValidator {
 			//set global debug flag
 			infrastructure.isDebug = ePart.isDebug;
 
-            for (sObject obj: allRecords) {
+            for (object obj: allRecords) {
                 try {
                     innerData.put('record', obj);
                     object handlerResult = handlerClass.execute(innerData);
@@ -192,6 +205,9 @@ global with sharing class QuoteValidator {
                                 l.errCode__c = ePart.className;
                                 logs.add(l);
                             }
+                        }
+                        when INBOUNDVALIDATION {
+                            
                         }
                         when CALCENGINE {
                             //Need generate a method name by input params
@@ -241,13 +257,13 @@ global with sharing class QuoteValidator {
         return className.replace('{method}',  methodName.replaceAll('^(\\d{1})','calc_' + '$1'));
     }
     
-    private log__c prepareLogRecord(string operation, sObject relatedRecord) {
+    private log__c prepareLogRecord(string operation, object relatedRecord) {
         
-        string relatedRecordName = relatedRecord == this.config.rootRecord || relatedRecord == null ? this.config.rootRecordName : (string) relatedRecord.get(getNameField(this.config.SObjAPIName));
+        string relatedRecordName = ((sObject) relatedRecord) == this.config.rootRecord || relatedRecord == null ? this.config.rootRecordName : (string) ((sObject)relatedRecord).get(getNameField(this.config.SObjAPIName));
         return new log__c(
             operation__c = operation,
             dateTimeStamp__c = system.now(),
-            relatedRecordId__c = relatedRecord!= null ? relatedRecord.Id : null,
+            relatedRecordId__c = relatedRecord!= null ? (string)((sObject)relatedRecord).get('Id') : null,
             relatedRecordName__c = relatedRecordName,
             rootRecordId__c = this.orcReq.rootRecordId,
             rootRecordName__c = this.config.rootRecordName
@@ -305,7 +321,7 @@ global with sharing class QuoteValidator {
         public boolean isNeedSendEmail;
         private boolean isNeedPrepareRelatedData = false;
                 
-        public void init(string operation,orchestratorRequest orcReq) {
+        public void init(string operation, orchestratorRequest orcReq) {
             executorConfigPart[] executorsActive = new executorConfigPart[]{};
             
             for (executorConfigPart ePart: this.executors) {
@@ -380,8 +396,8 @@ global with sharing class QuoteValidator {
             return result;
         }
         
-        public sObject[] getRecords(executorConfigPart ePart) {
-            sObject[] allRecords;
+        public object[] getRecords(executorConfigPart ePart, orchestratorRequest orcReq) {
+            object[] allRecords;
             if (ePart.typeOf == executorType.ROOTVALIDATION || ePart.typeOf == executorType.VALIDATION) {
             	allRecords = ePart.typeOf == executorType.ROOTVALIDATION
                     ? new sObject[]{this.rootRecord} 
@@ -390,6 +406,10 @@ global with sharing class QuoteValidator {
             if (ePart.typeOf == executorType.EXECUTION) {
                 //allRecords = this.orcReq.records;
             }
+            if (ePart.typeOf == executorType.INBOUNDVALIDATION) {
+                allRecords = orcReq.entities;
+            }
+            
             return allRecords;
         }
     }
@@ -408,6 +428,7 @@ global with sharing class QuoteValidator {
     public class orchestratorConfigPart {
         public orchestratorEmailConfigPart email;
         public noErrorCallbackPart noErrorCallback;
+        public executorConfigPart preCheck;
     }
     
     public class orchestratorEmailConfigPart {
@@ -426,8 +447,10 @@ global with sharing class QuoteValidator {
         public Id rootRecordId;
         public Id[] relatedRecordIds;
         public map<string, object> additionalParameters;
+        public object[] entities;
         public string initialField;
         public sObject[] records;
+        
         
         public boolean isFirstChunk;
         public boolean isLastChunk;
@@ -437,6 +460,7 @@ global with sharing class QuoteValidator {
     public enum executorType {
 		VALIDATION,
 		ROOTVALIDATION,
+        INBOUNDVALIDATION,
         CALCENGINE,
 		EXECUTION
 	}
