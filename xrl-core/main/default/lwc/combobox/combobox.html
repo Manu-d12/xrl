@@ -3,26 +3,26 @@
     <div class="slds-form-element__control">
       <div class="slds-combobox_container">
         <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
-          <!-- <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
-            <input
-              type="text"
-              class="slds-input slds-combobox__input slds-has-focus slds-combobox__input-value"
-              id="combobox-id-13"
-              role="combobox"
-              placeholder="Search..."
-              value=""
-              onchange={search}
-            />
-            <span class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right">
-              <svg class="slds-icon slds-icon slds-icon_x-small slds-icon-text-default" aria-hidden="true">
-                <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#search"></use>
-              </svg>
-            </span>
-          </div> -->
-          <lightning-input label="Searchable Combobox" type="search" onchange={search} value={selectedValue} onfocus={showOptions}></lightning-input>
+          <lightning-input label={label} type="search" onchange={search} value={selectedValue} onclick={showOptions} onfocusout={clearSearchResults}></lightning-input>
           <!-- Dropdown starts -->
           <div if:true={config.searchResults} id="listbox-id-11" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid" role="listbox">
             <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+              <li data-value="#new_value" onclick={selectSearchResult} role="presentation" class="slds-listbox__item" style="background: aliceblue;">
+                <div id="#new_value" class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small" role="option">
+                    <span class="slds-media__figure slds-listbox__option-icon">
+                      <span class="slds-icon_container slds-icon-utility-add slds-current-color">
+                        <svg class="slds-icon slds-icon_x-small" aria-hidden="true">
+                          <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#add"></use>
+                        </svg>
+                      </span>
+                    </span>
+                    <span class="slds-media__body">
+                        <span class="slds-truncate" title="New Option">
+                            New Option
+                        </span>
+                    </span>
+                </div>
+            </li>
                 <template for:each={config.searchResults} for:item="searchResult">
                     <li key={searchResult.value} data-value={searchResult.value} onclick={selectSearchResult} role="presentation" class="slds-listbox__item">
                         <div id={searchResult.value} class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small" role="option">
@@ -32,13 +32,20 @@
                                     <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#check"></use>
                                   </svg>
                                 </span>
+                            </span>
+                            <span if:true={searchResult.isNew} class="slds-media__figure slds-listbox__option-icon">
+                              <span class="slds-icon_container slds-icon-utility-add slds-current-color">
+                                <svg class="slds-icon slds-icon_x-small" aria-hidden="true">
+                                  <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#add"></use>
+                                </svg>
                               </span>
+                            </span>
                             <span class="slds-media__body">
                                 <span class="slds-truncate" title={searchResult.label}>
                                     {searchResult.label}
                                 </span>
                             </span>
-                            <span if:false={searchResult.isHideEdit} onclick={editOption} data-value={searchResult.value} class="slds-icon_container slds-icon-utility-edit slds-align-middle" title="Has further options">
+                            <span if:true={searchResult.isEditable} onclick={editOption} data-value={searchResult.value} class="slds-icon_container slds-icon-utility-edit slds-align-middle" title="Has further options">
                                 <svg class="slds-icon slds-icon_x-small slds-icon-text-default" aria-hidden="true">
                                   <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#edit"></use>
                                 </svg>
@@ -49,6 +56,11 @@
                 </template>
             </ul>
           </div>
+          <!-- Add New Option -->
+          <c-dialog if:true={config.UI} cfg={config.UI} onaction={handleEvent}></c-dialog>
+          <template if:true={config.showSfNewOptionCreation}>
+            <lightning-record-form object-api-name={config.sObjApiName} layout-type="Full" onsuccess={handleSuccess}></lightning-record-form>
+          </template>
           <!-- Dialog for Edit options -->
           <section if:true={config.selectedValueForEdit} aria-describedby="dialog-body-id-26" aria-label="Language Options" class="slds-popover slds-popover_full-width" id="popover-unique-id-01" role="dialog">
             <div class="slds-popover__body slds-popover__body_small" id="dialog-body-id-26" tabindex="0" role="region">
