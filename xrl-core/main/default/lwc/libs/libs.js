@@ -1124,6 +1124,40 @@ export let libs = {
 		}
 		return libs.getGlobalVar('orchestratorResult');
 	},
+	getBulkRecordsId:async function(scope,whereCondition,sObjApiName,relField){
+		await this.remoteAction(scope, 'query', {
+			isNeedDescribe: true,
+			sObjApiName: sObjApiName,
+			relField: relField,
+			addCondition: whereCondition,
+			orderBy: ' ORDER BY Id ASC',
+			fields: ['Id'],
+			listViewName: scope.config?.listView?.name,
+			callback: ((nodeName, data) => {
+				console.log('record Ids chunk size', data[nodeName].records);
+				scope.config.listOfRecordIds = scope.config.listOfRecordIds.concat(data[nodeName].records);
+			})
+		});
+	},
+	getBulkRecords: async function(scope,fields,sObjApiName,whereCondition,orderBy,limit,relField){
+		await this.remoteAction(scope, 'query', {
+			isNeedDescribe: true,
+			sObjApiName: sObjApiName,
+			relField: relField,
+			addCondition: whereCondition,
+			orderBy: orderBy,
+			fields: fields,
+			limit: 'LIMIT ' + limit,
+			listViewName: scope.config?.listView?.name,
+			callback: ((nodeName, data) => {
+				console.log('records chunk size', data[nodeName].records);
+				scope.config.inaccessibleFields= data[nodeName].removedFields;
+				scope.config.query = data[nodeName].SOQL;
+				scope.config.listOfBulkRecords = scope.config.listOfBulkRecords.concat(data[nodeName].records);
+				scope.config._loadingInfo = this.formatStr('{0}/{1} {2}',[scope.config.listOfBulkRecords.length,scope.config.totalRecordsCount,scope.config._LABELS.msg_recordLoadingStatus]);
+			})
+		});
+	},
 	currencyMap: function(cur) {
 		let map = {
 			AED: 'د.إ',
