@@ -1631,9 +1631,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			// sourceConf.fields.forEach(f => fields.add(f));
 			let fields= new Set();
 			this.config.colModel.forEach((e)=> {
-				if(e.type==="picklist" && e.fieldName !== 'CurrencyIsoCode'){ 
+				if(e.type==="picklist" && e.fieldName !== 'CurrencyIsoCode' && (e.isVirtual === undefined || e.isVirtual === false)){ 
 					fields.add('toLabel(' +e.fieldName + ')');
-				}else{
+				}else if(e.isVirtual === undefined || e.isVirtual === false){
 					fields.add(e.fieldName);
 				}
 			});
