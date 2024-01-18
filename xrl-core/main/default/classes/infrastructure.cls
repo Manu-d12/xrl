@@ -929,6 +929,10 @@ global with sharing class infrastructure {
 			'lbl_advancedActionSettings'=>label.lbl_advancedActionSettings,
 			'lbl_externalJS' => label.lbl_externalJS,
 			'lbl_selectAnOption' => label.lbl_selectAnOption,
+			'lbl_addVirtualField' => label.lbl_addVirtualField,
+			'lbl_addVirtualFieldLabel' => label.lbl_addVirtualFieldLabel,
+			'lbl_addVirtualFieldApiName' =>label.lbl_addVirtualFieldApiName,
+			'lbl_addVirtualFieldAdvancedJSON' => label.lbl_addVirtualFieldAdvancedJSON,
 			'msg_enterUniqueActionId'=>label.msg_enterUniqueActionId,
 			'msg_lisViewWasUpdated' => label.msg_lisViewWasUpdated,
 			'msg_requestWasSent' => label.msg_requestWasSent,
@@ -956,6 +960,9 @@ global with sharing class infrastructure {
 			'msg_onlyAcceptsPositiveNumbers'=>label.msg_onlyAcceptsPositiveNumbers,
 			'msg_rowCallbackEnabled'=>label.msg_rowCallbackEnabled,
 			'msg_recordLoadingStatus' => label.msg_recordLoadingStatus,
+			'msg_virtualFieldAddedSuccessfully' => label.msg_virtualFieldAddedSuccessfully,
+			'msg_virtualFieldAlreadyExists' => label.msg_virtualFieldAlreadyExists,
+			'msg_virtualFieldApiNameBlank' => label.msg_virtualFieldApiNameBlank,
 			'placeHolder_beforeSaveValidation'=>label.placeHolder_beforeSaveValidation,
 			'placeHolder_beforeDeleteValidation'=>label.placeHolder_beforeDeleteValidation,
 			'placeholder_actionCallback'=> label.placeholder_actionCallback,
@@ -1182,24 +1189,23 @@ global with sharing class infrastructure {
 	}
     
     private static map < string, object > invokeApex(string helperType, map<string, object> data) {
-		/*string nameSpacePrefix = (string) data.get('nameSpacePrefix');
-		string[] apexHelper = helperType.split('\\.');
 		
-        string helperTypeClass = apexHelper[0];// customActions.getPackage, customActions.getPackage, customActions, Stratavar.customActions
-    	
-        // check class exist or not
-        ApexClass[] A = [SELECT Id, NamespacePrefix FROM ApexClass WHERE Name =: helperTypeClass ORDER BY NamespacePrefix ASC NULLS FIRST LIMIT 1];
+        string[] apexHelper = helperType.split('\\.');
+	    string helperTypeClass = apexHelper[0];
+        infrastructure.addDebugLog('invokeApex', apexHelper);
         
-        if (A.size() == 0) throw new InfrastructureException(null, 'Can\'t find class {1}'.replace('{1}', helperType) + ':' + helperTypeClass, exceptionType.CLASS_NOT_FOUND);
-        
-        Type T = string.isEmpty(A[0].namespacePrefix) ? type.forName(helperType) : type.forName(A[0].namespacePrefix, helperType);
-        if (T == null) throw new InfrastructureException(null, ('Can\'t find method {1} in class ' + helperType).replace('{1}', helperType) + ':' + helperTypeClass, exceptionType.INSTANCE_CLASS_NOT_FOUND);
-                
-        handler handlerClass = (handler) JSON.deserialize(JSON.serialize(data), T);*/
-
-		Type T = type.forName(helperType);			
+   		ApexClass[] A = [SELECT Id, NamespacePrefix FROM ApexClass WHERE Name =: helperTypeClass ORDER BY NamespacePrefix ASC NULLS FIRST LIMIT 1];
+        if (A.size() == 0) throw new InfrastructureException(null, 'Can\'t find class {1}'.replace('{1}', helperTypeClass) + ':' + helperType, exceptionType.CLASS_NOT_FOUND);
+        Type T = string.isEmpty(A[0].namespacePrefix) ? system.type.forName(null,helperType) : system.type.forName(A[0].namespacePrefix, helperType);
 		if (T == null) throw new InfrastructureException(null, ('Can\'t find class {1}').replace('{1}', helperType), exceptionType.CLASS_NOT_FOUND);
-		handler handlerClass = (handler) T.newInstance();
+        infrastructure.addDebugLog('invokeApex', T.toString());
+        //handler handlerClass = (infrastructure.handler) JSON.deserialize(JSON.serialize(data.get('data')), T);
+        //handler handlerClass = (infrastructure.handler) T.newInstance();
+
+		/*
+			SALESFORCE BUG. helperTypeClass  must have API version 48 and not more!!! 
+		*/
+        handler handlerClass = (infrastructure.handler)JSON.deserialize(JSON.serialize(data.get('data')), T);
 
 		map < string, object > result = new map < string, object > ();
 		try {

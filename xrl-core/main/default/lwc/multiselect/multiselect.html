@@ -8,13 +8,13 @@
             <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
                 <!-- <lightning-input disabled={disabled} required={required} class="inputBox" placeholder="Search..." onblur={blurEvent} onclick={showOptions} onkeyup={filterOptions} value={mSelectConfig.searchString} variant="label-hidden" id="combobox-id-1" ></lightning-input>
                 <lightning-icon class="slds-input__icon" icon-name="utility:search" size="x-small" alternative-text="search"></lightning-icon> -->
-                <button class="slds-button slds-button_brand slds-truncate optionBtn" style={mSelectConfig.buttonStyle} onclick={showOptions} onblur={closeDropdown}>{searchString} &nbsp;<span if:true={badgeValue} class="slds-badge">{badgeValue}</span></button>
+                <button class="slds-button slds-button_brand slds-truncate optionBtn" style={mSelectConfig.buttonStyle} onclick={showOptions} onblur={closeDropdown}>{mSelectConfig.searchString} &nbsp;<span if:true={badgeValue} class="slds-badge">{badgeValue}</span></button>
                 <!-- <span>{mSelectConfig.searchString}</span> -->
             </div>
             <template if:true={mSelectConfig.showDropdown}>
                 <div id="listbox-id-1" class={mSelectConfig.dropdownClass}>
                     <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none" style="margin-top: -5px;">
-                        <lightning-input disabled={disabled} required={required} class="inputBox" placeholder="Search...'Esc' to Close" onblur={blurEvent} onkeyup={filterOptions} variant="label-hidden" id="combobox-id-1" ></lightning-input>
+                        <lightning-input disabled={disabled} required={required} class="inputBox" placeholder="Search...'Esc' to Close" onblur={blurEvent} onkeyup={filterOptions} value={mSelectConfig.searchValue} variant="label-hidden" id="combobox-id-1" ></lightning-input>
                         <lightning-icon class="slds-input__icon" icon-name="utility:search" size="x-small" alternative-text="search"></lightning-icon>
                     </div>
                     <ul class="slds-listbox slds-listbox_vertical recordListBox" role="presentation" style="display: block;margin: 0;padding: 0;">

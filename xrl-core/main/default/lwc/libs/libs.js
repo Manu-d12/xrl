@@ -662,7 +662,7 @@ export let libs = {
 		return {"value": true, "message": "All fields have value"};
 	},
 	getMacros: function(){
-		return [{"label":'recordId',"value":'%%recordId%%'}, {"label":'userId',"value":'%%userInfo.id%%'},{"label":'sObjApiName',"value":'%%sObjApiName%%'},{"label":'urlParam',"value":'%%urlParam%%'}];
+		return [{"label":'%%recordId%%',"value":'%%recordId%%'}, {"label":'%%userId%%',"value":'%%userInfo.id%%'},{"label":'%%sObjApiName%%',"value":'%%sObjApiName%%'},{"label":'%%urlParam%%',"value":'%%urlParam%%'}];
 	},
 	getDateLiterals: function(){
 		return [{"label":'CUSTOM',"value":'CUSTOM'},{"label":'YESTERDAY',"value":'YESTERDAY'},{"label":'TODAY',"value":'TODAY'},{"label":'TOMORROW',"value":'TOMORROW'},{"label":'LAST WEEK',"value":'LAST_WEEK'},{"label":'THIS WEEK',"value":'THIS_WEEK'},{"label":'LAST MONTH',"value":'LAST_MONTH'},{"label":'THIS MONTH',"value":'THIS_MONTH'},{"label":'THIS YEAR',"value":'THIS_YEAR'},{"label":'LAST YEAR',"value":'LAST_YEAR'}];
@@ -1160,6 +1160,40 @@ export let libs = {
 			libs.getGlobalVar('orchestratorResult').errorRecords += data.invalidCount;
 		}
 		return libs.getGlobalVar('orchestratorResult');
+	},
+	getBulkRecordsId:async function(scope,whereCondition,sObjApiName,relField){
+		await this.remoteAction(scope, 'query', {
+			isNeedDescribe: true,
+			sObjApiName: sObjApiName,
+			relField: relField,
+			addCondition: whereCondition,
+			orderBy: ' ORDER BY Id ASC',
+			fields: ['Id'],
+			listViewName: scope.config?.listView?.name,
+			callback: ((nodeName, data) => {
+				console.log('record Ids chunk size', data[nodeName].records);
+				scope.config.listOfRecordIds = scope.config.listOfRecordIds.concat(data[nodeName].records);
+			})
+		});
+	},
+	getBulkRecords: async function(scope,fields,sObjApiName,whereCondition,orderBy,limit,relField){
+		await this.remoteAction(scope, 'query', {
+			isNeedDescribe: true,
+			sObjApiName: sObjApiName,
+			relField: relField,
+			addCondition: whereCondition,
+			orderBy: orderBy,
+			fields: fields,
+			limit: 'LIMIT ' + limit,
+			listViewName: scope.config?.listView?.name,
+			callback: ((nodeName, data) => {
+				console.log('records chunk size', data[nodeName].records);
+				scope.config.inaccessibleFields= data[nodeName].removedFields;
+				scope.config.query = data[nodeName].SOQL;
+				scope.config.listOfBulkRecords = scope.config.listOfBulkRecords.concat(data[nodeName].records);
+				scope.config._loadingInfo = this.formatStr('{0}/{1} {2}',[scope.config.listOfBulkRecords.length,scope.config.totalRecordsCount,scope.config._LABELS.msg_recordLoadingStatus]);
+			})
+		});
 	},
 	currencyMap: function(cur) {
 		let map = {

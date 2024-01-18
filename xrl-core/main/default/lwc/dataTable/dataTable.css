@@ -5,3 +5,6 @@ tr .spnTooltip {
 tr:hover .spnTooltip{
     display:inline; position:absolute; color:#111;
     border:1px solid #DCA; background:#fffAF0;}
+.slds-spinner_container{
+    top:220px;
+}

@@ -42,10 +42,11 @@ export default class dialogItem extends LightningElement {
                 e.isPicklist = (e.type === 'picklist');
                 e.isCombobox = (e.type === 'combobox');
                 e.isTextArea = (e.type === 'textarea');
+                e.isRadioGroup =(e.type === 'radio');
                 e.isSwitch = (e.type === 'switch');
                 e.isSection = (e.type === 'section');
                 e.isFile = (e.type === 'file');
-                e.isInput = (e.isTextArea === false && e.isPicklist === false && e.isSection === false && e.isCombobox === false && e.isFile === false);
+                e.isInput = (e.isTextArea === false && e.isPicklist === false && e.isSection === false && e.isCombobox === false && e.isRadioGroup === false && e.isFile === false);
                 if (e.type==='checkbox') {
                     e.style="padding-top:7px";
                     e.isChecked = (e.value === true || e.value === false) ? e.value : false;
@@ -111,7 +112,14 @@ export default class dialogItem extends LightningElement {
 
                         return !el.isDisabled;
                 })
-                let child = this.template.querySelector('c-dialog-Item ');
+                let childrenArray = this.template.querySelectorAll('c-dialog-Item ');
+                // not sure why find function does not work
+                let child = false;
+                childrenArray.forEach((el) => {
+                    if(el.parent === target){
+                        child = el;
+                    }
+                });
                 if (child) child.updateChild(field.fields);
                 else {
                     //this.config.fields[fldIndex].fields = field.fields;

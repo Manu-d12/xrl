@@ -2033,7 +2033,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_sqlBuilderApplyCondition</shortDescription>
-        <value>data-lookup-filter-and-search/hypergrid-server-side-filters</value>
+        <value>getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#2-apply-conditions-64</value>
     </labels>
     <labels>
         <fullName>hlpUrl_sqlBuilderApplyOrdering</fullName>
@@ -2057,7 +2057,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_deleteView</shortDescription>
-        <value>related-list-view-setup-and-customization-release3b/how-to-share-and-delete-xrl-view-r3b</value>
+        <value>related-list-view-setup-and-customization-release3b/how-to-share-and-delete-xrl-view-r3b#delete-an-xrl-configuration-6</value>
     </labels>
     <labels>
         <fullName>altTxt_hlpUrl</fullName>
@@ -2073,7 +2073,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_shareView</shortDescription>
-        <value>related-list-view-setup-and-customization-release3b/how-to-share-and-delete-xrl-view-r3b</value>
+        <value>related-list-view-setup-and-customization-release3b/how-to-share-and-delete-xrl-view-r3b#share-an-xrl-configuration-among-users-3</value>
     </labels>
     <labels>
         <fullName>hlpUrl_saveAsView</fullName>
@@ -2355,7 +2355,7 @@ return records;
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_actions</shortDescription>
-        <value>getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#actions-67</value>
+        <value>getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#actions-69</value>
     </labels>
     <labels>
         <fullName>lbl_selectAnOption</fullName>
@@ -2364,5 +2364,61 @@ return records;
         <protected>true</protected>
         <shortDescription>lbl_selectAnOption</shortDescription>
         <value>Select an Option</value>
+    </labels>
+    <labels>
+        <fullName>lbl_addVirtualField</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_addVirtualField</shortDescription>
+        <value>Add Virtual Field</value>
+    </labels>
+    <labels>
+        <fullName>lbl_addVirtualFieldLabel</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_addVirtualFieldLabel</shortDescription>
+        <value>Virtual Field Label</value>
+    </labels>
+    <labels>
+        <fullName>lbl_addVirtualFieldApiName</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_addVirtualFieldApiName</shortDescription>
+        <value>Virtual Field Unique Name(Api Name)</value>
+    </labels>
+    <labels>
+        <fullName>lbl_addVirtualFieldAdvancedJSON</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_addVirtualFieldAdvancedJSON</shortDescription>
+        <value>Virtual Field Advanced JSON</value>
+    </labels>
+    <labels>
+        <fullName>msg_virtualFieldAddedSuccessfully</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_virtualFieldAddedSuccessfully</shortDescription>
+        <value>Virtual field added successfully</value>
+    </labels>
+    <labels>
+        <fullName>msg_virtualFieldAlreadyExists</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_virtualFieldAlreadyExists</shortDescription>
+        <value>Field with same api name already exists</value>
+    </labels>
+    <labels>
+        <fullName>msg_virtualFieldApiNameBlank</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_virtualFieldApiNameBlank</shortDescription>
+        <value>You can not keep virtual field API Name blank</value>
     </labels>
 </CustomLabels>

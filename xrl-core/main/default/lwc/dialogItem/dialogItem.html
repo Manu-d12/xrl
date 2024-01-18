@@ -1,6 +1,6 @@
 <template>
 	<template if:true={config.fields} for:each={config.fields} for:item="fld" for:index="index">
-		<div key={fld.name} if:false={fld.isDisabled}>
+		<div key={fld.name} if:false={fld.isDisabled} id={fld.name}>
 			<lightning-input if:true={fld.isInput} required={fld.isRequired} onchange={onChangeDynamicField}
 				value={fld.value} checked={fld.isChecked} data-id={fld.name} label={fld.label} placeholder={fld.placeholder} style={fld.style}
 				type={fld.type} field-level-help={fld.help}></lightning-input>
@@ -8,6 +8,10 @@
 				data-type="picklist" data-id={fld.name} label={fld.label} placeholder={fld.placeholder}
 				options={fld.options} field-level-help={fld.help} value={fld.value}>
 			</lightning-combobox>
+			<lightning-radio-group if:true={fld.isRadioGroup} required={fld.isRequired} onchange={onChangeDynamicField} 
+				data-type="radio" data-id={fld.name} label={fld.label} options={fld.options} field-level-help={fld.help} value={fld.value} 
+				type="radio">
+			</lightning-radio-group>
 			<c-multiselect if:true={fld.isPicklist} id={fld.name} label={fld.label} data-id={fld.name}
 				options={fld.options} disabled={fld.disabled} required={fld.required} selectedvalue={fld.value}
 				selectedvalues={fld.value} multiselect={fld.multiselect} onselect={onChangeDynamicField} listsize=10000>

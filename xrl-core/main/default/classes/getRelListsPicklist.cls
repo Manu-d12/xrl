@@ -27,9 +27,11 @@ global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickLi
 		system.debug(LoggingLevel.Error, 'GET RELLIsts getValues ' + this.context);
 		Map<String,Schema.SObjectType> gd = Schema.getGlobalDescribe();
 		picklistValues = new VisualEditor.DynamicPickListRows();
-		picklistValues.addRow(
-        	new VisualEditor.DataRow('[External Data Source]', '::_external_::')
-        );
+		List<ObjectCompare> ObjectCompareList = new List<ObjectCompare>();
+		// picklistValues.addRow(
+        // 	new VisualEditor.DataRow('[External Data Source]', '::_external_::')
+        // );
+		ObjectCompareList.add(new ObjectCompare('[External Data Source]', '::_external_::'));
 		if (context.pageType == 'RecordPage') {
 			Schema.DescribeSObjectResult describeResult = gd.get(context.entityName).getDescribe();
 			List < Schema.ChildRelationship > childRelationships = describeResult.getChildRelationships();
@@ -40,24 +42,27 @@ global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickLi
 					string sObjField = string.valueOf(thisChild.getField());
 					string sObjLabel = gd.get(sObjApiName).getDescribe().getLabelPlural();
 					if(gd.get(sObjApiName).getDescribe().isQueryable()){
-						picklistValues.addRow(
-							new VisualEditor.DataRow(sObjLabel + ' ('+ sObjField +')', sObjLabel + '::' + sObjApiName + '::' + sObjField)
-						);
+						// picklistValues.addRow(
+						// 	new VisualEditor.DataRow(sObjLabel + ' ('+ sObjField +')', sObjLabel + '::' + sObjApiName + '::' + sObjField)
+						// );
+						ObjectCompareList.add(new ObjectCompare(sObjLabel + ' ('+ sObjField +')', sObjLabel + '::' + sObjApiName + '::' + sObjField));
 						//only if the history object exists
 						if(gd.containsKey(sObjApiName + 'History') || gd.containsKey(sObjApiName.removeEnd('c') + 'History')){
 							SObjectType objToken = gd.get(sObjApiName);
 							//for standard history objects
 							boolean isCustom = objToken.getDescribe().isCustom(); 
 							if(objToken  != null && !isCustom){
-								picklistValues.addRow(
-									new VisualEditor.DataRow(sObjLabel+': History (' + sObjField +')', sObjLabel + ' History::' + sObjApiName + 'History::' + sObjApiName + '.' + sObjField)
-								);
+								// picklistValues.addRow(
+								// 	new VisualEditor.DataRow(sObjLabel+': History (' + sObjField +')', sObjLabel + ' History::' + sObjApiName + 'History::' + sObjApiName + '.' + sObjField)
+								// );
+								ObjectCompareList.add(new ObjectCompare(sObjLabel+': History (' + sObjField +')', sObjLabel + ' History::' + sObjApiName + 'History::' + sObjApiName + '.' + sObjField));
 								//Example apiName- Account History::AccountHistory::AccountHistory.AccountId
 							}else if(objToken  != null && isCustom){
 								//for custom history objects
-								picklistValues.addRow(
-									new VisualEditor.DataRow(sObjLabel+': History', sObjLabel + ' History::' + sObjApiName.removeEnd('c') + 'History::' + 'Parent.' + sObjField)
-								);
+								// picklistValues.addRow(
+								// 	new VisualEditor.DataRow(sObjLabel+': History', sObjLabel + ' History::' + sObjApiName.removeEnd('c') + 'History::' + 'Parent.' + sObjField)
+								// );
+								ObjectCompareList.add(new ObjectCompare(sObjLabel+': History', sObjLabel + ' History::' + sObjApiName.removeEnd('c') + 'History::' + 'Parent.' + sObjField));
 							}
 						}
 					}
@@ -70,11 +75,48 @@ global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickLi
                 string sObjLabel = ((context.pageType == 'RecordPage') ? '>' : '') + thisObj.getDescribe().getLabelPlural();
                 string namespace = String.valueOf(thisObj).replace('^(.*?)__.*$','$1');
                 sObjLabel += namespace!='' &&  namespace.endsWith('__') ? '(' + namespace + ')' : '';
-                picklistValues.addRow(
-                    new VisualEditor.DataRow(sObjLabel, String.valueOf(thisObj.getDescribe().getLabelPlural()) + '::' + String.valueOf(thisObj) + '::')
-                );
+                // picklistValues.addRow(
+                //     new VisualEditor.DataRow(sObjLabel, String.valueOf(thisObj.getDescribe().getLabelPlural()) + '::' + String.valueOf(thisObj) + '::')
+                // );
+				ObjectCompareList.add(new ObjectCompare(sObjLabel, String.valueOf(thisObj.getDescribe().getLabelPlural()) + '::' + String.valueOf(thisObj) + '::'));
             }
         }
+		
+		ObjectCompareList.sort();
+		
+		for (ObjectCompare obj : objectCompareList) {
+			picklistValues.addRow(
+                new VisualEditor.DataRow(obj.label, obj.value)
+        	);
+        }
+
 		return pickListValues;
 	}
+
+	private class ObjectCompare implements Comparable {
+		private String label;
+		private String value;
+	
+		public ObjectCompare(String l, String v) {
+			label= l;
+			value= v;
+		}
+	
+		public Integer compareTo(Object compareTo) {
+			ObjectCompare compareToObj = (ObjectCompare) compareTo;
+	
+			if (hasGreaterThanSign(label) && !hasGreaterThanSign(compareToObj.label)) {
+				return 1; 
+			} else if (!hasGreaterThanSign(label) && hasGreaterThanSign(compareToObj.label)) {
+				return -1;
+			} else {
+				return label.compareTo(compareToObj.label);
+			}
+		}
+	
+		private Boolean hasGreaterThanSign(String label) {
+			return label.contains('>');
+		}
+	}
+
 }

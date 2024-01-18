@@ -205,12 +205,6 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					el._rowStyle += eval('(' + this.config._advanced?.rowCss + ')')(el);
 				} catch (e) {
 					this.config._errors = libs.formatCallbackErrorMessages(e,'table','Row Css Callback');
-					// libs.showToast(this, {
-					// 	title: 'Error',
-					// 	message: e.toString(),
-					// 	variant: 'error',
-					// });
-					// console.error('Error', e);
 				}
 			}
 		});
@@ -238,12 +232,6 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					try {
 						el._rowStyle += eval('(' + this.config._advanced?.rowCss + ')')(el);
 					} catch (e) {
-						// libs.showToast(this, {
-						// 	title: 'Error',
-						// 	message: e.toString(),
-						// 	variant: 'error',
-						// });
-						// console.error('Error', e);
 						this.config._errors = libs.formatCallbackErrorMessages(e,'table','Row Css Callback');
 					}
 				}
@@ -298,35 +286,35 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			}
 			// Need for pagination;
 			return this.groupedRecords;
-		} else {
-			let isPager = this.config.pager;
-			if(!this.config.pager.pagerTop && !this.config.pager.pagerBottom){
-				let startIndex = 0;
-				let endIndex = this.records.length > 200 ? 200 : this.records.length;
-				let result = [];
-				for (let i = startIndex; i < endIndex; i++) {
-					result.push(this.records[i]);
-				}
-				this.displayedItemCount = this.recordInfo+ ' Showing only '+ endIndex  +' item(s)';
-				//console.log('result', JSON.parse(JSON.stringify(result)));
-				this.config._recordsToShow = result;
-				return result;
-			}
-			else if (isPager) {
-				let startIndex = (this.config.pager.curPage - 1) * this.config.pager.pageSize;
-				let endIndex = (startIndex + parseInt(this.config.pager.pageSize)) < this.records.length ? (startIndex + parseInt(this.config.pager.pageSize)) : this.records.length;
-				let result = [];
-				for (let i = startIndex; i < endIndex; i++) {
-					result.push(this.records[i]);
-				}
-				//console.log('result', JSON.parse(JSON.stringify(result)));
-				this.config._recordsToShow = result;
-				return result;
-			}
-			// Need for pagination;
-			this.config._recordsToShow = this.records;
-			return this.records;
 		}
+
+		let isPager = this.config.pager;
+		if(!this.config.pager.pagerTop && !this.config.pager.pagerBottom){
+			let startIndex = 0;
+			let endIndex = this.records.length > 200 ? 200 : this.records.length;
+			let result = [];
+			for (let i = startIndex; i < endIndex; i++) {
+				result.push(this.records[i]);
+			}
+			this.displayedItemCount = this.recordInfo+ ' Showing only '+ endIndex  +' item(s)';
+			//console.log('result', JSON.parse(JSON.stringify(result)));
+			this.config._recordsToShow = result;
+			return result;
+		}
+		else if (isPager) {
+			let startIndex = (this.config.pager.curPage - 1) * this.config.pager.pageSize;
+			let endIndex = (startIndex + parseInt(this.config.pager.pageSize)) < this.records.length ? (startIndex + parseInt(this.config.pager.pageSize)) : this.records.length;
+			let result = [];
+			for (let i = startIndex; i < endIndex; i++) {
+				result.push(this.records[i]);
+			}
+			//console.log('result', JSON.parse(JSON.stringify(result)));
+			this.config._recordsToShow = result;
+			return result;
+		}
+		// Need for pagination;
+		this.config._recordsToShow = this.records;
+		return this.records;
 	}
 
 	get recordInfo() {
@@ -1633,7 +1621,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 
 	@api
-	handleEventMessage(event) {
+	async handleEventMessage(event) {
 		
 		if(event.detail.cmd.split(':')[1] === 'refresh' && event.detail.cmd.split(':')[0] === 'filter') {
 
@@ -1643,9 +1631,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			// sourceConf.fields.forEach(f => fields.add(f));
 			let fields= new Set();
 			this.config.colModel.forEach((e)=> {
-				if(e.type==="picklist" && e.fieldName !== 'CurrencyIsoCode'){ 
+				if(e.type==="picklist" && e.fieldName !== 'CurrencyIsoCode' && (e.isVirtual === undefined || e.isVirtual === false)){ 
 					fields.add('toLabel(' +e.fieldName + ')');
-				}else{
+				}else if(e.isVirtual === undefined || e.isVirtual === false){
 					fields.add(e.fieldName);
 				}
 			});
@@ -1660,35 +1648,38 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					fields.add(f)
 				}
 			});
-
-			libs.remoteAction(this, 'query', {
-				isNeedDescribe: true,
-				sObjApiName: sourceConf.sObjApiName,
-				relField: sourceConf.relField === 'Id' ? '' : sourceConf.relField,
-				addCondition: sourceConf.condition,
-				fields: Array.from(fields),
-				listViewName: sourceConf.listView?.name,
-				callback: ((nodeName, data) => {  
-					
-					// this.config.records = libs.getGlobalVar(this.cfg).records;
-
-					if(this.config._advanced?.afterloadTransformation !== undefined && this.config._advanced?.afterloadTransformation !== ""){
-						try {
-							this.config.records = this.config._advanced?.afterloadTransformation(this, data[nodeName].records.length > 0 ? data[nodeName].records : []);
-							libs.getGlobalVar(this.cfg).records = this.config.records;
-						} catch(e){
-							// console.log('EXCEPTION', err);
-							this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Load Transformation Callback');
+			if(this.config.loadChunkSize !== undefined || this.config.loadChunkSize !== ''){
+				await this.loadBulkData(sourceConf.condition,sourceConf.relField === 'Id' ? '' : sourceConf.relField,sourceConf.sObjApiName,Array.from(fields));
+			}else{
+				libs.remoteAction(this, 'query', {
+					isNeedDescribe: true,
+					sObjApiName: sourceConf.sObjApiName,
+					relField: sourceConf.relField === 'Id' ? '' : sourceConf.relField,
+					addCondition: sourceConf.condition,
+					fields: Array.from(fields),
+					listViewName: sourceConf.listView?.name,
+					callback: ((nodeName, data) => {  
+						
+						// this.config.records = libs.getGlobalVar(this.cfg).records;
+	
+						if(this.config._advanced?.afterloadTransformation !== undefined && this.config._advanced?.afterloadTransformation !== ""){
+							try {
+								this.config.records = this.config._advanced?.afterloadTransformation(this, data[nodeName].records.length > 0 ? data[nodeName].records : []);
+								libs.getGlobalVar(this.cfg).records = this.config.records;
+							} catch(e){
+								// console.log('EXCEPTION', err);
+								this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Load Transformation Callback');
+							}
+						} else {
+							libs.getGlobalVar(this.cfg).records = data[nodeName].records.length > 0 ? data[nodeName].records : [];
+							this.config.records = libs.getGlobalVar(this.cfg).records;
 						}
-					} else {
-						libs.getGlobalVar(this.cfg).records = data[nodeName].records.length > 0 ? data[nodeName].records : [];
-						this.config.records = libs.getGlobalVar(this.cfg).records;
-					}
-
-					this.connectedCallback();
-				})
-			});
-			this.title = '';		
+	
+					})
+				});
+			}
+			this.title = '';	
+			this.connectedCallback();	
 
 		} else if(event.detail.cmd.split(':')[1] === 'refresh' && event.detail.cmd.split(':')[0] === 'chart') {
 
@@ -1719,6 +1710,67 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			});
 			this.connectedCallback();
 		}
+	}
+	async loadBulkData(condition,relField,sObjApiName,fields){
+		let soqlRel = '';
+		if(relField !== undefined && relField !== '' && libs.replaceLiteralsInStr(condition,this.name) !== ''){
+			soqlRel = " WHERE " + libs.replaceLiteralsInStr(condition,this.name).replace('AND', '');
+		}
+		await libs.remoteAction(this, 'customSoql', {
+			isNeedDescribe: true,
+			sObjApiName: sObjApiName,
+			SOQL: 'SELECT Count(Id) totalRecordsCount FROM ' + sObjApiName + soqlRel,
+			isAggregateResult: true,
+			callback: ((nodeName, data) => {
+				console.log('Returned records', data[nodeName].records);
+				this.config.totalRecordsCount = data[nodeName].records[0].totalRecordsCount;
+			})
+		});
+		console.log('Total records', this.config.totalRecordsCount);
+		this.config._loadingInfo = libs.formatStr('0/{0} {1}',[this.config.totalRecordsCount,this.config._LABELS.msg_recordLoadingStatus]);
+		this.config.listOfRecordIds = [];
+		this.config.fetchIdLimit = 49950;
+		for (let i = 1; i < ((parseInt(this.config.totalRecordsCount) / parseInt(this.config.fetchIdLimit)) + 1);i++) {
+			if(i === 1) await libs.getBulkRecordsId(this,libs.replaceLiteralsInStr(condition,this.name),sObjApiName,relField);
+			else{
+				await libs.getBulkRecordsId(this," AND Id > '" + this.config.listOfRecordIds[parseInt(this.config.listOfRecordIds.length)-1].Id+"' " + libs.replaceLiteralsInStr(condition,this.name),sObjApiName,relField);
+			}
+			console.log('Verifying loop', i);
+		}
+		console.log('All records Id fetched successfully', this.config.listOfRecordIds.length);
+		// max chunk size will be 10000
+		this.config.loadChunkSize = this.config.loadChunkSize === undefined || !isNaN(this.config.loadChunkSize) || parseInt(this.config.loadChunkSize) > 10000 || parseInt(this.config.loadChunkSize) < 1 ? 10000 : this.config.loadChunkSize;
+		this.config.listOfBulkRecords = [];
+		let startIndex = 0;
+		let endIndex = parseInt(this.config.loadChunkSize);
+		for (let i = 1; i < ((parseInt(this.config.totalRecordsCount) / parseInt(this.config.loadChunkSize)) + 1);i++) {
+			let recordsIds = [];
+			let chunkRecords = this.config.listOfRecordIds.slice(startIndex, endIndex);
+			chunkRecords.forEach(e => {
+				recordsIds.push(e.Id);
+			});
+			startIndex = startIndex + parseInt(recordsIds.length);
+			endIndex = endIndex + parseInt(recordsIds.length);
+			let con = libs.replaceLiteralsInStr(condition,this.name);
+			let updatedCondition = " AND Id IN ('" + recordsIds.join("','") + "') " + (con !== undefined ? con : '');
+			// console.log('condition',condition, i);
+			await libs.getBulkRecords(this,fields,sObjApiName,updatedCondition,'',this.config.loadChunkSize,relField);
+		}
+		console.log('All records fetched successfully', JSON.parse(JSON.stringify(this.config.listOfBulkRecords)));
+		if(this.config._advanced?.afterloadTransformation !== undefined && this.config._advanced?.afterloadTransformation !== ""){
+			try {
+				this.config.records = this.config._advanced?.afterloadTransformation(this, JSON.parse(JSON.stringify(this.config.listOfBulkRecords)).length > 0 ? JSON.parse(JSON.stringify(this.config.listOfBulkRecords)) : []);
+				libs.getGlobalVar(this.cfg).records = this.config.records;
+			} catch(e){
+				// console.log('EXCEPTION', err);
+				this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Load Transformation Callback');
+			}
+		} else {
+			libs.getGlobalVar(this.cfg).records = JSON.parse(JSON.stringify(this.config.listOfBulkRecords)).length > 0 ? JSON.parse(JSON.stringify(this.config.listOfBulkRecords)) : [];
+			this.config.records = libs.getGlobalVar(this.cfg).records;
+		}
+		
+		this.config._loadingInfo = false;
 	}
 
 	@api
