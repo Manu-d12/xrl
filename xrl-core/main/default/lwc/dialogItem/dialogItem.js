@@ -99,7 +99,14 @@ export default class dialogItem extends LightningElement {
 
                         return !el.isDisabled;
                 })
-                let child = this.template.querySelector('c-dialog-Item ');
+                let childrenArray = this.template.querySelectorAll('c-dialog-Item ');
+                // not sure why find function does not work
+                let child = false;
+                childrenArray.forEach((el) => {
+                    if(el.parent === target){
+                        child = el;
+                    }
+                });
                 if (child) child.updateChild(field.fields);
                 else this.config.fields[fldIndex].fields = field.fields;
                 
