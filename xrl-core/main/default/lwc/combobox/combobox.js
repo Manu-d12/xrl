@@ -36,7 +36,7 @@ export default class Combobox extends NavigationMixin(LightningElement) {
             //     value: 'Demo 1'
             // }
         ];
-        // this.config.sObjApiName = 'Case';
+        this.config.sObjApiName = 'Case';
         this.config.selectedSearchResult = [];
         this.config.options.forEach((option) => {
             if(this.enableedit){
@@ -105,58 +105,23 @@ export default class Combobox extends NavigationMixin(LightningElement) {
         let selectedValue = event.currentTarget.dataset.value;
         if(selectedValue.endsWith('#new_value')){
             // this.config.options.push({label: selectedValue.replace('#new_value',''), value: selectedValue.replace('#new_value','')});
-            if(this.config.sObjApiName){
-                // this.config.showSfNewOptionCreation = true;
-                this[NavigationMixin.Navigate]({
-					type: 'standard__objectPage',
-					attributes: {
-						objectApiName: this.config.sObjApiName,
-						actionName: 'new',
-					},
-					state: {
-				        useRecordTypeCheck: 1,
-						navigationLocation: 'RELATED_LIST'
-					}
-				});
-            }else{
-                this.config.UI = {
-                    "title": "New Option",
-                    "headerStyle": "slds-modal__header slds-theme_error",
-                    "buttons": [
-                        {
-                        "name": "cancel",
-                        "label": "Cancel",
-                        "variant": "neutral"
-                        },
-                        {
-                        "name": "btn:addNewItem",
-                        "label": "Done",
-                        "variant": "brand",
-                        "class": "slds-m-left_x-small",
-                        }
-                    ],
-                    "fields": [
-                        {
-                          "name": "label",
-                          "isRequired": true,
-                          "label": "Label",
-                          "variant": "neutral",
-                          "placeholder": "Enter a label",
-                          "type": "text"
-                        },
-                        {
-                            "name": "value",
-                            "isRequired": true,
-                            "label": "Value",
-                            "variant": "neutral",
-                            "placeholder": "Enter a Value",
-                            "type": "text"
-                        }
-                    ],
-                    "callback": "function(scope, libs, data) {\r\n    let event = new CustomEvent('action', {\r\n        detail: {\r\n            data:data\r\n        }\r\n    });\r\n    scope.dispatchEvent(event);\r\n}",
-                    "data_id": "newOption:dialog"
-                }
-            }
+            // if(this.config.sObjApiName){
+            //     // this.config.showSfNewOptionCreation = true;
+            //     this[NavigationMixin.Navigate]({
+			// 		type: 'standard__objectPage',
+			// 		attributes: {
+			// 			objectApiName: this.config.sObjApiName,
+			// 			actionName: 'new',
+			// 		},
+			// 		state: {
+			// 	        useRecordTypeCheck: 1,
+			// 			navigationLocation: 'RELATED_LIST'
+			// 		}
+			// 	});
+            // }else{
+                this.config.showNewItemCreation = true;
+                this.config.header = 'Case';
+            // }
             return;
         }
         selectedValue = selectedValue.replace('#new_value','');
