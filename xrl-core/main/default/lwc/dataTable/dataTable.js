@@ -1716,6 +1716,10 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if(relField !== undefined && relField !== '' && libs.replaceLiteralsInStr(condition,this.name) !== ''){
 			soqlRel = " WHERE " + libs.replaceLiteralsInStr(condition,this.name).replace('AND', '');
 		}
+
+		if(soqlRel === '' && condition !== ''){
+			soqlRel = " WHERE"+ libs.replaceLiteralsInStr(condition,this.name).replace('AND', '');
+		}
 		await libs.remoteAction(this, 'customSoql', {
 			isNeedDescribe: true,
 			sObjApiName: sObjApiName,

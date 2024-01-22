@@ -151,10 +151,11 @@ export default class ServerFilter extends LightningElement {
     async handleChange(event) {
         let apiName = event.target.dataset.id;
         let field = this.sFilterfields.find(f => f.fieldName === apiName);
-        if(field.isVirtual){
-            await field.virtualCallback(this,libs,event);
-            return;
-        }
+        // if(field.isVirtual){
+        //     this.conditionMap[apiName] = event.target.value;
+        //     await field.virtualCallback(this,libs,event);
+        //     return;
+        // }
         if (field.inputTypeDateRange) {
             let values = [];
             this.template.querySelectorAll(`[data-id="${apiName}"]`)?.forEach(f => values.push(f.value));
@@ -204,6 +205,11 @@ export default class ServerFilter extends LightningElement {
 				condition += partCondition!=undefined && partCondition!='' ? ' AND ' + partCondition : '';
                 continue;
             }
+
+            if(colItem.isVirtual !== undefined && colItem.isVirtual === true){
+                continue;
+            }
+
             if (typeof this.conditionMap[key] === 'object' && JSON.parse(JSON.stringify(this.conditionMap[key])).length > 1 && colItem.type !== 'daterange') {
                 JSON.parse(JSON.stringify(this.conditionMap[key])).forEach((el, index) => {                    
                     condition += index === 0 ? ' AND (' : ' OR ';
