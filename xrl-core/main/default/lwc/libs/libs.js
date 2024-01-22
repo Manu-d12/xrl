@@ -624,7 +624,7 @@ export let libs = {
 		}
 		return message;
 	},
-	checkAllRequiredFieldsForBomImport: function(config,data){
+	checkAllRequiredFields: function(config,data){
 		let allData=[];
 		Object.entries(data.data).forEach(([key, value]) => {
 			allData.push(value);

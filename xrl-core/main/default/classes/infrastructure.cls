@@ -341,7 +341,7 @@ global with sharing class infrastructure {
 
 		list < map < string, object >> listViews = new list < map < string, object >> {};
 
-		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c, sObjApiName__c, relFieldApiName__c, configType__c FROM extRelListConfig__c WHERE Id =: configId LIMIT 20];
+		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c, sObjApiName__c, relFieldApiName__c, configType__c FROM extRelListConfig__c WHERE Id =: configId AND Is_Active__c = TRUE LIMIT 20];
 		for (integer i = 0; i < lst.size(); i++) {
 			extRelListConfig__c item = lst[i];
 			map < string, object > view = new map < string, object > {
@@ -372,7 +372,7 @@ global with sharing class infrastructure {
 
 		list < map < string, object >> listViews = new list < map < string, object >> {};
 
-		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c, sObjApiName__c, relFieldApiName__c, configType__c FROM extRelListConfig__c WHERE uniqKey__c =: uniqueName LIMIT 20];
+		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c, sObjApiName__c, relFieldApiName__c, configType__c FROM extRelListConfig__c WHERE uniqKey__c =: uniqueName AND Is_Active__c = TRUE LIMIT 20];
 		for (integer i = 0; i < lst.size(); i++) {
 			extRelListConfig__c item = lst[i];
 			map < string, object > view = new map < string, object > {
@@ -1229,8 +1229,8 @@ global with sharing class infrastructure {
 		//orcReq.isLastChunk = true;
 
 		object result = new orchestrator(operation,orcReq).getResults();
-		System.debug(result);
-		System.debug('DONE');
+		//System.debug(result);
+		//System.debug('DONE');
 		return result;
     }
 
@@ -1361,7 +1361,9 @@ global with sharing class infrastructure {
     }
     
     global class validationResult {
+		@AuraEnabled
         global validationResultCode code;
+		@AuraEnabled
         global object[] dynamicValues; //  Need for errorMessage representation
     }
     
