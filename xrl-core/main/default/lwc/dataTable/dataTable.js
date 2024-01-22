@@ -1030,7 +1030,6 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			//this.config._isBulkEdit = true;
 		} else {
 				let record = recId ===  null ? this.records[calculatedInd] : libs.findRecordWithChild(this.records, recId);
-				record._isEditable = true;
 				record._focus = colName;
 				//for multiselect to open on top or bottom
 				this.setMultiselectPosition(record.sl);
@@ -1046,7 +1045,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				if(libs.getGlobalVar(this.cfg).optionsForMultiselect === undefined){
 					libs.getGlobalVar(this.cfg).optionsForMultiselect = new Map();
 				}
-				this.config.colModel.forEach(async (el) => {
+				// this.config.colModel.forEach(async (el) => {
+				for(const el of this.config.colModel){
 					//options callback
 					if(el?._advanced?.optionsCallback !== undefined && el?._advanced?.optionsCallback !== ""){ 
 						try{
@@ -1054,8 +1054,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						}catch(e){
 							this.config._errors = libs.formatCallbackErrorMessages(e,'field','Options callback');
 						}
+						console.log('options',el.options);
 					}
-					console.log('options',el.options);
 					if(el._showEditableIcon && el.type === 'reference' && !el._editOptions){
 						el._editOptions = [];
 						if(cItem.nillable === true){
@@ -1080,7 +1080,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						libs.getGlobalVar(this.cfg).optionsForMultiselect.set(el.fieldName,el._editOptions);
 						el._isLookUpEdit = true;
 					}
-				});
+				}
+				// });
+				record._isEditable = true;
 
 				if (this.hasGrouping) {
 					this.groupedRecords[groupInd].records[groupRowInd]._isEditable = true;
