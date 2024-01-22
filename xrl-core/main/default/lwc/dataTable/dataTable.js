@@ -1658,13 +1658,13 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					addCondition: sourceConf.condition,
 					fields: Array.from(fields),
 					listViewName: sourceConf.listView?.name,
-					callback: ((nodeName, data) => {  
+					callback: ( async (nodeName, data) => {  
 						
 						// this.config.records = libs.getGlobalVar(this.cfg).records;
 	
 						if(this.config._advanced?.afterloadTransformation !== undefined && this.config._advanced?.afterloadTransformation !== ""){
 							try {
-								this.config.records = this.config._advanced?.afterloadTransformation(this, data[nodeName].records.length > 0 ? data[nodeName].records : []);
+								this.config.records = await this.config._advanced?.afterloadTransformation(this, libs , data[nodeName].records.length > 0 ? data[nodeName].records : []);
 								libs.getGlobalVar(this.cfg).records = this.config.records;
 							} catch(e){
 								// console.log('EXCEPTION', err);
@@ -1763,7 +1763,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		console.log('All records fetched successfully', JSON.parse(JSON.stringify(this.config.listOfBulkRecords)));
 		if(this.config._advanced?.afterloadTransformation !== undefined && this.config._advanced?.afterloadTransformation !== ""){
 			try {
-				this.config.records = this.config._advanced?.afterloadTransformation(this, JSON.parse(JSON.stringify(this.config.listOfBulkRecords)).length > 0 ? JSON.parse(JSON.stringify(this.config.listOfBulkRecords)) : []);
+				this.config.records = await this.config._advanced?.afterloadTransformation(this, libs , JSON.parse(JSON.stringify(this.config.listOfBulkRecords)).length > 0 ? JSON.parse(JSON.stringify(this.config.listOfBulkRecords)) : []);
 				libs.getGlobalVar(this.cfg).records = this.config.records;
 			} catch(e){
 				// console.log('EXCEPTION', err);
@@ -1793,13 +1793,13 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					addCondition: configData.condition,
 					fields: Array.from(fields),
 					listViewName: configData.listView?.name,
-					callback: ((nodeName, data) => {  
+					callback: ( async (nodeName, data) => {  
 						
 						// this.config.records = libs.getGlobalVar(this.cfg).records;
 	
 						if(this.config._advanced?.afterloadTransformation !== undefined && this.config._advanced?.afterloadTransformation !== ""){
 							try {
-								this.config.records = this.config._advanced?.afterloadTransformation(this, data[nodeName].records.length > 0 ? data[nodeName].records : []);
+								this.config.records = await this.config._advanced?.afterloadTransformation(this, libs, data[nodeName].records.length > 0 ? data[nodeName].records : []);
 								libs.getGlobalVar(this.cfg).records = this.config.records;
 							} catch(e){
 								// console.log('EXCEPTION', err);
