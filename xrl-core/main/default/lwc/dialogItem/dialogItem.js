@@ -83,7 +83,7 @@ export default class dialogItem extends LightningElement {
     }
 
     updateValue(value,target,changingFrom){
-        //this.config.result[target] = value;
+        this.config.result[target] = value;
         
         let fldIndex = this.config.fields.findIndex(e => {
             return e.name === target;
@@ -99,7 +99,8 @@ export default class dialogItem extends LightningElement {
 
             if (this.config.fields[fldIndex].options) {
                 field.addInfo = this.config.fields[fldIndex].options.find((e) => { return e.value == field.value });
-				this.config.result[target] = field;
+				this.config.fields[fldIndex].addInfo = field.addInfo;
+				//this.config.result[target] = field;
             }
             if (field.onClick) { // implement onClick 
                 let _advanced = eval('[' + field.onClick + ']')[0];

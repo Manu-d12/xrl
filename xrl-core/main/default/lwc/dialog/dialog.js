@@ -60,7 +60,7 @@ export default class dialog extends LightningElement {
         if (event.detail.cmd == ':updateFromChild') {
             console.log('event from child', event.detail.data);
             if(event.detail.data?.value !== undefined){
-                this.config.result[event.detail.data.name] = event.detail.data?.value;
+                this.config.result[event.detail.data.name] = event.detail.data;
             }else{
                 if(this.config.result[event.detail.data.name]){
                     delete this.config.result[event.detail.data.name];
