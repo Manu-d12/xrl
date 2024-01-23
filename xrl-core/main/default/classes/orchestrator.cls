@@ -132,7 +132,7 @@ global with sharing class QuoteValidator {
         this.config.init(operation, orcReq);
         infrastructure.addDebugLog('orchestrator:in', this.orcReq);
         // Need run precheck
-        if (this.config.orchestrator.preCheck !=null) {
+        if (this.config.orchestrator.preCheck !=null && this.config.orchestrator.preCheck.isActive == true && this.config.orchestrator.preCheck.className!=null) {
             Type T = type.forName(this.config.orchestrator.preCheck.className);
 			if (T == null) throw new infrastructure.InfrastructureException(null, ('Can\'t find class {1}').replace('{1}', this.config.orchestrator.preCheck.className), infrastructure.exceptionType.CLASS_NOT_FOUND);
 			//infrastructure.handler handlerClass = (infrastructure.handler) T.newInstance();
@@ -171,12 +171,12 @@ global with sharing class QuoteValidator {
     
     private void mainLoop(string operation) {
         boolean oldDebug = infrastructure.isDebug;
-
+        object[] allRecords;
         for (executorConfigPart ePart : this.config.executors) {
             map<string, object> innerData = new  map<string, object>{ 'rootRecord' => this.config.rootRecord};
             log__c[] logs = new log__c[]{};
             // I think need to write results after every validation.  It will prevent issue with more then 10.000 records
-            object[] allRecords = this.config.getRecords(ePart, orcReq);
+            allRecords = this.config.getRecords(ePart, orcReq);
 			
             ePart.className= (ePart.typeOf == executorType.CALCENGINE) ? this.prepareCalcMethodName(ePart.className) : ePart.className;  // Need for dynamic generate a apexName
 
@@ -232,15 +232,14 @@ global with sharing class QuoteValidator {
                 l.errorMessage__c = 'DEBUG';
                 l.errCode__c = 'DEBUG';
 				string errMsg = JSON.serializePretty(infrastructure.debugLog);
-				integer len  = errMsg.length() > 131000 ? 131000 : errMsg.length();
-                l.info__c = errMsg.substring(0, len);
+                l.info__c = errMsg.left(130995);
                 logs.add(l);
             }
             insert logs;
         }
         
         infrastructure.isDebug = oldDebug;
-        this.orcResp.recordsCount = this.orcReq.relatedRecordIds.size();
+        this.orcResp.recordsCount = allRecords.size();
     }
 
     private string prepareCalcMethodName(string className) {

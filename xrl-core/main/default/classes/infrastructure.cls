@@ -1221,6 +1221,7 @@ global with sharing class infrastructure {
     }
 	private static object orchestrator(map<string, object> data) {        
         string operation = (string) data.get('operation');
+        boolean isRawResponse = (boolean) data.get('isRawResponse') == true;
         object entities = ((map<string, object>) data.get('orchestratorRequest')).remove('entities');
 		orchestrator.orchestratorRequest orcReq = (orchestrator.orchestratorRequest) JSON.deserialize(JSON.serialize(data.get('orchestratorRequest')), orchestrator.orchestratorRequest.class);
 		if (entities!=null)	orcReq.entities = (object[]) JSON.deserializeUntyped(JSON.serialize(entities));
@@ -1230,10 +1231,11 @@ global with sharing class infrastructure {
 		//orcReq.isFirstChunk = true;    
 		//orcReq.isLastChunk = true;
 
-		object result = new orchestrator(operation,orcReq).getResults();
+		orchestrator.orchestratorResponse result = new orchestrator(operation,orcReq).getResults();
 		//System.debug(result);
 		//System.debug('DONE');
-		return result;
+		if (isRawResponse == true) return result;
+		else return JSON.serialize(result);
     }
 
 	private static string[] getIntrLst() {
