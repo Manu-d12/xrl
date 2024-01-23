@@ -137,7 +137,7 @@ global with sharing class QuoteValidator {
 			if (T == null) throw new infrastructure.InfrastructureException(null, ('Can\'t find class {1}').replace('{1}', this.config.orchestrator.preCheck.className), infrastructure.exceptionType.CLASS_NOT_FOUND);
 			//infrastructure.handler handlerClass = (infrastructure.handler) T.newInstance();
             infrastructure.handler handlerClass = (infrastructure.handler) T.newInstance();
-            infrastructure.validationResult handlerResult = (infrastructure.validationResult) handlerClass.execute(new map<string, object>{'initParams' => orcReq});
+            infrastructure.validationResult handlerResult = (infrastructure.validationResult) handlerClass.execute(new map<string, object>{'initParams' => (map<string,object>) JSON.deserializeUntyped(JSON.serialize(orcReq))});
             if (handlerResult.code != infrastructure.validationResultCode.OK) {
                 this.orcResp.responses.add(handlerResult);
                 return;
@@ -355,6 +355,7 @@ global with sharing class QuoteValidator {
             for (executorConfigPart v: this.executors) {
                 if (eType == v.typeOf && v.listOfFieldsToPass!=null) allFields.addAll(v.listOfFieldsToPass);
             }
+			if (relRecordIds == null || relRecordIds.size() == 0 || relRecordIds[0] == null) return;
 			Schema.DescribeSObjectResult sObjDescribe = relRecordIds[0].getSObjectType().getDescribe();
 	        this.SObjAPIName = sObjDescribe.getName();
             if (eType == executorType.ROOTVALIDATION) {

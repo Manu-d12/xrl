@@ -1221,7 +1221,9 @@ global with sharing class infrastructure {
     }
 	private static object orchestrator(map<string, object> data) {        
         string operation = (string) data.get('operation');
+        object entities = ((map<string, object>) data.get('orchestratorRequest')).remove('entities');
 		orchestrator.orchestratorRequest orcReq = (orchestrator.orchestratorRequest) JSON.deserialize(JSON.serialize(data.get('orchestratorRequest')), orchestrator.orchestratorRequest.class);
+		if (entities!=null)	orcReq.entities = (object[]) JSON.deserializeUntyped(JSON.serialize(entities));
             //new orchestrator.orchestratorRequest();
 		//orcReq.rootRecordId = (string) data.get(rootRecordId);
 		//orcReq.relatedRecordIds = new Id[]{'5005i00000Kiy9BAAR','5005i00000Kiy9CAAR'};
@@ -1392,5 +1394,12 @@ global with sharing class infrastructure {
 		IMPLEMENTATION,
 		TRANSFORM_CLASS_NOT_FOUND
 	}
+
+	global static map < string, object > globalVars;
+
+    static {
+        globalVars = new map < string, object > {
+        };
+    }
 
 }
