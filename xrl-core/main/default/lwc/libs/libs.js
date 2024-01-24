@@ -340,6 +340,7 @@ export let libs = {
 				"tooltip": _labels.tooltip_numbersOfRecordInChunk,
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
+				"helpArticleUrl": _labels.hlpUrl_chunkSizeForDeleteAndSave,
 			},
 			"deleteChunkSize" : {
 				"defValue": 200,
@@ -348,6 +349,7 @@ export let libs = {
 				"tooltip": _labels.tooltip_deleteChunkSize,
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
+				"helpArticleUrl": _labels.hlpUrl_chunkSizeForDeleteAndSave,
 			},
 			"loadChunkSize" : {
 				//"defValue": 200,

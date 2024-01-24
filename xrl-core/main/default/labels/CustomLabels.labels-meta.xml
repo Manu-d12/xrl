@@ -2004,6 +2004,14 @@ Once you are done editing the pattern, click outside the input box.</value>
         <value>related-list-view-setup-and-customization-release3b/1892316-hypergrid-customization-tablesettings-article-release-3b#grouped-records-5</value>
     </labels>
     <labels>
+        <fullName>hlpUrl_chunkSizeForDeleteAndSave</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_chunkSizeForDeleteAndSave</shortDescription>
+        <value>en_US/getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#9-setting-the-chunk-size-for-save-and-delete-actions-84</value>
+    </labels>
+    <labels>
         <fullName>hlpUrl_isGlobalSearch</fullName>
         <categories>XRL</categories>
         <language>en_US</language>
