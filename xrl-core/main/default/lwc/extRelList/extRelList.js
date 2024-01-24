@@ -899,6 +899,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			if(!this.isThereUnsavedRecords()){
 				this.dialogCfg = {
 					title: this.config._LABELS.title_reqAFeature,
+					headerStyle: "slds-modal__header",
 					contents: [
 						{
 							isIframe: true,
