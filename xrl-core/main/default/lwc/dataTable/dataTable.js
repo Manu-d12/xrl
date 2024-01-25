@@ -634,7 +634,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		return newValue;
 	}
 
-	saveEditCallback(isNeedSave, rowName, value) {
+	async saveEditCallback(isNeedSave, rowName, value) {
 		if (isNeedSave === true) {
 			if (rowName !== undefined) {
 				this.config._inlineEditRow = this.config._inlineEditRow !== undefined ? 
@@ -685,7 +685,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					r._isEditable = false;
 					if(this.config?._advanced?.afterEditCallback !== undefined && this.config?._advanced?.afterEditCallback !== ""){
 						try{
-							this.config?._advanced?.afterEditCallback(this,libs,[r]);
+							await this.config?._advanced?.afterEditCallback(this,libs,[r]);
 						}catch(e){
 							// console.error("Error",e);
 							this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Edit Callback');
@@ -1484,7 +1484,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			this.executeBulk();
 		}), 10);
 	}
-	executeBulk(){
+	async executeBulk(){
 		function changeItem(that, item, fieldName, v, refNode, refNodeValue) {
 			
 			
@@ -1530,7 +1530,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			changeItem(this, this.records[this.config._bulkEdit.rowId], this.config._bulkEdit.cItem.fieldName, getValue(this.config._bulkEdit.cItem, value), refNode, refNodeValue);
 			if(this.config?._advanced?.afterEditCallback !== undefined && this.config?._advanced?.afterEditCallback !== ""){
 				try{
-					this.config?._advanced?.afterEditCallback(this,libs,[this.records[this.config._bulkEdit.rowId]]);
+					await this.config?._advanced?.afterEditCallback(this,libs,[this.records[this.config._bulkEdit.rowId]]);
 				}catch(e){
 					// console.error("Error",e);
 					this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Edit Callback');
@@ -1543,7 +1543,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			});
 			if(this.config?._advanced?.afterEditCallback !== undefined && this.config?._advanced?.afterEditCallback !== ""){
 				try{
-					this.config?._advanced?.afterEditCallback(this,libs,this.getSelectedRecords());
+					await this.config?._advanced?.afterEditCallback(this,libs,this.getSelectedRecords());
 				}catch(e){
 					// console.error("Error",e);
 					this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Edit Callback');
