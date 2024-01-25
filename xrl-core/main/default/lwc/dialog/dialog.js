@@ -78,6 +78,10 @@ export default class dialog extends LightningElement {
 
         if (cmd?.startsWith('btn')) {
             let btn = this.config.buttons?.find(el=> {return el.name == cmd});
+            if(btn && btn.UI){
+                this.config.UI = btn.UI;
+                this.config.showConfirmation = true;
+            }
             if (btn && this.config.callback && typeof this.config.callback === 'function') {
                 let result = this.config.callback(this, libs, { action: cmd, data: this.config.result, closeDialog : closeDialog });
                 console.log('RESULT', result);
@@ -86,7 +90,13 @@ export default class dialog extends LightningElement {
                 this.dispatchEvent(closeDialog);
             }
         }
-        if (cmd === 'cancel') this.dispatchEvent(closeDialog);
+        if(cmd === null){
+            cmd = event.detail.action;
+        }
+        if (cmd === 'cancel') {
+            if(this.config.showConfirmation) this.config.showConfirmation = false;
+            else this.dispatchEvent(closeDialog);
+        }
     }
 
     @api disableButtons(newTitle, spinner) {
