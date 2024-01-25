@@ -2121,7 +2121,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_loadChunkSize</shortDescription>
-        <value>related-list-view-setup-and-customization-release3b/how-to-get-related-list-view-with-more-than-50k-record</value>
+        <value>getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#13-load-chunk-size-89</value>
     </labels>
     <labels>
         <fullName>hlpUrl_isShowCheckBoxes</fullName>
