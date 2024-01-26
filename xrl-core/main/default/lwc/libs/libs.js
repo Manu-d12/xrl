@@ -124,7 +124,7 @@ export let libs = {
 				if (fields[i].endsWith('Id')) {
 					row = obj[fields[i].replace(/Id/, '')];
 				}
-				if (fields[i].endsWith('__c')) {
+				if (fields[i].endsWith('__c') && typeof obj[fields[i].replace(/__c/, '__r')] === 'object') {
 					row = obj[fields[i].replace(/__c/, '__r')];
 				}
 			}
