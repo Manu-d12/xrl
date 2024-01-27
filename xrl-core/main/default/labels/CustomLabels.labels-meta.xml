@@ -2148,6 +2148,14 @@ Once you are done editing the pattern, click outside the input box.</value>
         <value>getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#4-enable-pagination-79</value>
     </labels>
     <labels>
+        <fullName>hlpUrl_groupOrder</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_groupOrder</shortDescription>
+        <value>getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#12-group-order-of-records-88</value>
+    </labels>
+    <labels>
         <fullName>url_reqFeature</fullName>
         <categories>XRL</categories>
         <language>en_US</language>
