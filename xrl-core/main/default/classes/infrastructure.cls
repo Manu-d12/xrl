@@ -821,6 +821,7 @@ global with sharing class infrastructure {
 			'hlpUrl_actionsAdvanced' => label.hlpUrl_actionsAdvanced,
 			'hlpUrl_loadChunkSize' => label.hlpUrl_loadChunkSize,
 			'hlpUrl_chunkSizeForDeleteAndSave' => label.hlpUrl_chunkSizeForDeleteAndSave,
+			'hlpUrl_groupOrder' => label.hlpUrl_groupOrder,
 			'lbl_additionalConditionForWhereClause' => label.lbl_additionalConditionForWhereClause,
 			'lbl_chooseField' => label.lbl_chooseField,
 			'lbl_cancel' => label.lbl_cancel,

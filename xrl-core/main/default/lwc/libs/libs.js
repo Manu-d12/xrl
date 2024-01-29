@@ -124,7 +124,7 @@ export let libs = {
 				if (fields[i].endsWith('Id')) {
 					row = obj[fields[i].replace(/Id/, '')];
 				}
-				if (fields[i].endsWith('__c')) {
+				if (fields[i].endsWith('__c') && typeof obj[fields[i].replace(/__c/, '__r')] === 'object') {
 					row = obj[fields[i].replace(/__c/, '__r')];
 				}
 			}
@@ -308,6 +308,7 @@ export let libs = {
 				"tooltip": _labels.tooltip_groupOrder,
 				"options": [{label:'ASC',value:'ASC'},{label:'DESC',value:'DESC'}],
 				"cmd" : "dialog:setTableParam",
+				"helpArticleUrl": _labels.hlpUrl_groupOrder,
 			},
 			/*"isRecordsDragDropEnabled": { // Kuntal, we need to remove this checkbox, and check callback on advanced section
 				"defValue": false,
