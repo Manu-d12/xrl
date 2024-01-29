@@ -131,6 +131,14 @@ global with sharing class infrastructure {
                 'apexCode' => apexCode,
                 'input' => data
 			});
+           insert new log__c(
+            operation__c = 'EXCEPTION',
+            dateTimeStamp__c = system.now(),
+            info__c = JSON.serializePretty(result).LEFT(130000),
+            errCode__c = 'EXCEPTION'
+
+        );
+
 		}
 		
         result.put(cmd + 'Result', resultMethod);
@@ -1223,8 +1231,12 @@ global with sharing class infrastructure {
 	private static object orchestrator(map<string, object> data) {        
         string operation = (string) data.get('operation');
         boolean isRawResponse = (boolean) data.get('isRawResponse') == true;
-        object entities = ((map<string, object>) data.get('orchestratorRequest')).remove('entities');
-		orchestrator.orchestratorRequest orcReq = (orchestrator.orchestratorRequest) JSON.deserialize(JSON.serialize(data.get('orchestratorRequest')), orchestrator.orchestratorRequest.class);
+
+		string oReqStr  = JSON.serialize(data.get('orchestratorRequest'));
+		map<string, object> oReq = (map<string,  object>) JSON.deserializeUntyped(oReqStr);
+        object entities = oreq.remove('entities');
+
+		orchestrator.orchestratorRequest orcReq = (orchestrator.orchestratorRequest) JSON.deserialize(oReqStr, orchestrator.orchestratorRequest.class);
 		if (entities!=null)	orcReq.entities = (object[]) JSON.deserializeUntyped(JSON.serialize(entities));
             //new orchestrator.orchestratorRequest();
 		//orcReq.rootRecordId = (string) data.get(rootRecordId);

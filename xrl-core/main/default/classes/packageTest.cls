@@ -325,7 +325,7 @@ public class packageTest {
         orcReq.isLastChunk = true;
         test.startTest();
 			try {
-        	    orchestrator.orchestratorResponse results = new orchestrator('Test Metadata', orcReq).getResults();
+        	    orchestrator.orchestratorResponse results = new orchestrator('Test', orcReq).getResults();
 			} catch (exception e) {
 				
 			}

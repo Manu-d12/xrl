@@ -170,12 +170,11 @@ global with sharing class QuoteValidator {
     
     private void mainLoop(string operation) {
         boolean oldDebug = infrastructure.isDebug;
-        object[] allRecords;
         for (executorConfigPart ePart : this.config.executors) {
             map<string, object> innerData = new  map<string, object>{ 'rootRecord' => this.config.rootRecord};
             log__c[] logs = new log__c[]{};
             // I think need to write results after every validation.  It will prevent issue with more then 10.000 records
-            allRecords = this.config.getRecords(ePart, orcReq);
+            object[] allRecords = this.config.getRecords(ePart, orcReq);
 			
             ePart.className= (ePart.typeOf == executorType.CALCENGINE) ? this.prepareCalcMethodName(ePart.className) : ePart.className;  // Need for dynamic generate a apexName
 
@@ -238,7 +237,7 @@ global with sharing class QuoteValidator {
         }
         
         infrastructure.isDebug = oldDebug;
-        this.orcResp.recordsCount = allRecords.size();
+        this.orcResp.recordsCount = this.orcReq.getChunkSize();
     }
 
     private string prepareCalcMethodName(string className) {
@@ -454,6 +453,15 @@ global with sharing class QuoteValidator {
         public boolean isFirstChunk;
         public boolean isLastChunk;
 		public dateTime timeStamp;
+        public integer getChunkSize() {
+            return (relatedRecordIds!=null)
+                ? relatedRecordIds.size()
+                : (entities!=null)
+            		? entities.size()
+                    : (records!= null)
+               			? records.size()
+                        : 0;
+        }
     }
     
     public enum executorType {
