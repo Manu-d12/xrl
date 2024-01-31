@@ -1235,10 +1235,10 @@ global with sharing class infrastructure {
 
 		string oReqStr  = JSON.serialize(data.get('orchestratorRequest'));
 		map<string, object> oReq = (map<string,  object>) JSON.deserializeUntyped(oReqStr);
-        object entities = oreq.remove('entities');
+        string entities = oreq.containskey('entitie') ? JSON.serialize(oreq.remove('entities')) : null;
 
 		orchestrator.orchestratorRequest orcReq = (orchestrator.orchestratorRequest) JSON.deserialize(oReqStr, orchestrator.orchestratorRequest.class);
-		if (entities!=null)	orcReq.entities = (object[]) JSON.deserializeUntyped(JSON.serialize(entities));
+		if (entities!=null)	orcReq.entities = (object[]) JSON.deserializeUntyped(entities);
             //new orchestrator.orchestratorRequest();
 		//orcReq.rootRecordId = (string) data.get(rootRecordId);
 		//orcReq.relatedRecordIds = new Id[]{'5005i00000Kiy9BAAR','5005i00000Kiy9CAAR'};
