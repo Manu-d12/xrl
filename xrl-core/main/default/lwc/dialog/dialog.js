@@ -23,7 +23,7 @@ export default class dialog extends LightningElement {
     setDialog() {
         Object.assign(this.config, this._cfg);
         this.title = this._cfg?.title;
-        this.config.modalCss = this._cfg?.headerStyle;
+        this.config.modalCss = this._cfg?.headerStyle ? ("slds-modal__header slds-theme_" + this._cfg.headerStyle) : "slds-modal__header slds-theme_error";
         if (this._cfg?.contents) this.config.content = JSON.parse(JSON.stringify(this._cfg?.contents))[0];
         else if (this._cfg?.fields) this.config.fields = this._cfg?.fields;
         this.config.buttons = JSON.parse(JSON.stringify(this._cfg?.buttons)) || [];
@@ -54,7 +54,7 @@ export default class dialog extends LightningElement {
     }  
     
     @api
-    handleEvents(event) {
+    async handleEvents(event) {
         let cmd = event.value ? event.value : event.srcElement?.getAttribute('data-cmd');
         
         if (event.detail.cmd == ':updateFromChild') {
@@ -81,9 +81,10 @@ export default class dialog extends LightningElement {
             if(btn && btn.UI){
                 this.config.UI = btn.UI;
                 this.config.showConfirmation = true;
+                return;
             }
             if (btn && this.config.callback && typeof this.config.callback === 'function') {
-                let result = this.config.callback(this, libs, { action: cmd, data: this.config.result, closeDialog : closeDialog });
+                let result = await this.config.callback(this, libs, { action: cmd, data: this.config.result, closeDialog : closeDialog });
                 console.log('RESULT', result);
             } else {
                 // we need to close a dialog
@@ -97,6 +98,10 @@ export default class dialog extends LightningElement {
             if(this.config.showConfirmation) this.config.showConfirmation = false;
             else this.dispatchEvent(closeDialog);
         }
+    }
+    passToParent(){
+        this.config.showConfirmation = false;
+        this.dispatchEvent(new CustomEvent('childaction', { detail: { cmd: ':updateFromChildDialog', data: [] } }));
     }
 
     @api disableButtons(newTitle, spinner) {

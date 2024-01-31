@@ -1198,6 +1198,10 @@ export let libs = {
 			})
 		});
 	},
+	closeChildDialogs: function(scope){
+		let closeDialog = new CustomEvent('childaction', { detail: { childaction: ':updateFromChildDialog', data: [] } });
+		scope.dispatchEvent(closeDialog);
+	},
 	currencyMap: function(cur) {
 		let map = {
 			AED: 'د.إ',
