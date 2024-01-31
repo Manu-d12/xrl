@@ -29,10 +29,10 @@
 					</footer>
 				</div>
 			</section>
-			<div if:true={config.showConfirmation} class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+			<div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
 		</template>
 	</template>
-	<c-dialog if:true={config.showConfirmation} cfg={config.UI} onaction={handleEvents}></c-dialog>
+	<c-dialog if:true={config.showConfirmation} cfg={config.UI} onaction={handleEvents} onchildaction={passToParent}></c-dialog>
 	<template if:true={config.withoutHeader}>
 		<lightning-quick-action-panel header={config.title} style={config.headerStyle}>
 			<div  style="position:relative;">
