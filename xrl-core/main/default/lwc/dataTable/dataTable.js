@@ -693,7 +693,10 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					}
 					Object.assign(globalItem, r);
 					libs.getGlobalVar(this.cfg).records = this.records;
-					this.changeRecord(this.config._inlineEditRow.Id);
+					//need to investigate why it is called multiple times for a single record
+					if(this.config._inlineEditRow?.Id){ //Temporary fix of HYPER-745
+						this.changeRecord(this.config._inlineEditRow.Id);
+					}
 				}
 				//delete this.records[this.config._inlineEdit];
 				//delete this.config._inlineEdit;
