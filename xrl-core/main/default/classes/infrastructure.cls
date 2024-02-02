@@ -127,6 +127,8 @@ global with sharing class infrastructure {
 			result.put('exception', new map < string, object > {
 				'title' => 'EXCEPTION',
 				'message' => e.getMessage(),
+                'lineNumber' => e.getLineNumber(),
+                'typeName' => e.getTypeName(),
 				'debugMessage' => stackTrace,
                 'apexCode' => apexCode,
                 'input' => data
@@ -1229,25 +1231,21 @@ global with sharing class infrastructure {
 		}
 		return result;
     }
+
 	private static object orchestrator(map<string, object> data) {        
         string operation = (string) data.get('operation');
         boolean isRawResponse = (boolean) data.get('isRawResponse') == true;
 
 		string oReqStr  = JSON.serialize(data.get('orchestratorRequest'));
 		map<string, object> oReq = (map<string,  object>) JSON.deserializeUntyped(oReqStr);
-        string entities = oreq.containskey('entitie') ? JSON.serialize(oreq.remove('entities')) : null;
-
-		orchestrator.orchestratorRequest orcReq = (orchestrator.orchestratorRequest) JSON.deserialize(oReqStr, orchestrator.orchestratorRequest.class);
+		infrastructure.addDebugLog('infrastructure.orchestrator', oReq);
+        string entities = oreq.containskey('entities') ? JSON.serialize(oreq.remove('entities')) : null;
+		infrastructure.addDebugLog('infrastructure.orchestrator', entities);
+		//system.debug(LoggingLevel.Error, 'Entities ' + entities);
+        //system.debug(LoggingLevel.Error, 'oreq ' + oreq);
+		orchestrator.orchestratorRequest orcReq = (orchestrator.orchestratorRequest) JSON.deserialize(JSON.serialize(oReq), orchestrator.orchestratorRequest.class);
 		if (entities!=null)	orcReq.entities = (object[]) JSON.deserializeUntyped(entities);
-            //new orchestrator.orchestratorRequest();
-		//orcReq.rootRecordId = (string) data.get(rootRecordId);
-		//orcReq.relatedRecordIds = new Id[]{'5005i00000Kiy9BAAR','5005i00000Kiy9CAAR'};
-		//orcReq.isFirstChunk = true;    
-		//orcReq.isLastChunk = true;
-
 		orchestrator.orchestratorResponse result = new orchestrator(operation,orcReq).getResults();
-		//System.debug(result);
-		//System.debug('DONE');
 		if (isRawResponse == true) return result;
 		else return JSON.serialize(result);
     }
