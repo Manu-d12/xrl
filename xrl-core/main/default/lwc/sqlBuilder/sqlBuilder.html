@@ -127,7 +127,8 @@
             <div class="slds-grid slds-gutters">
                 <div class="slds-col slds-size_12-of-12">
                     <div class="slds-text-heading_small"><b>{config._LABELS.lbl_appliedConditions}</b>
-                        <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_appliedConditions}></lightning-helptext>
+                        <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_appliedConditions} onclick={config.dialog.handleHelpEvent} data-url={config._LABELS.hlpUrl_appliedConditions}
+                        onmouseenter={changeIcon} onmouseleave={changeIconAgain}></lightning-helptext>
                     </div>
                     <table if:true={config.sqlBuilder.conditions} class="slds-table slds-table_cell-buffer slds-table_bordered extRelListTable" aria-labelledby="element-with-table-label other-element-with-table-label" style="width:100%;">
                         <thead>
@@ -186,9 +187,9 @@
                             <div class="slds-form-element__icon">
                                 <button class="slds-button slds-button_icon" onmouseover={toggleConditionFilteringHelp}
                                     onmouseout={toggleConditionFilteringHelp}>
-                                    <lightning-icon icon-name="utility:info" alternative-text="Info" size="xx-small"
-                                        title="">
-                                    </lightning-icon>
+                                    <!--<lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_appliedConditions}></lightning-helptext> -->
+                                    <lightning-helptext class="placeTop" onclick={config.dialog.handleHelpEvent} data-url={config._LABELS.hlpUrl_conditionFilteringPattern}
+                                        onmouseenter={changeIcon} onmouseleave={changeIconAgain}></lightning-helptext>
                                 </button>
                                 <div class={ConditionFilteringClass} role="tooltip" id="help"
                                     style="position:absolute;top:-150px;left:-15px;width:250px">

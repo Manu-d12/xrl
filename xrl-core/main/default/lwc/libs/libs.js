@@ -164,7 +164,8 @@ export let libs = {
 				"defValue": false,
 				"type": "checkbox",
 				"label": _labels.lbl_isColumnHidden,
-				"tooltip": _labels.tooltip_isColumnHidden
+				"tooltip": _labels.tooltip_isColumnHidden,
+				"helpArticleUrl": _labels.hlpUrl_isColumnHidden
 			},
 			"isFilterable": {
 				"defValue": true,
@@ -191,12 +192,14 @@ export let libs = {
 				"defValue": false,
 				"type": "checkbox",
 				"label": _labels.lbl_isColumnWrapable,
-				"tooltip": _labels.tooltip_isColumnWrapable
+				"tooltip": _labels.tooltip_isColumnWrapable,
+				"helpArticleUrl": _labels.hlpUrl_isColumnWrapable,
 			},
 			"width": {
 				"type": "string",
 				"label" : _labels.lbl_width,
-				"tooltip": _labels.tooltip_widthExample
+				"tooltip": _labels.tooltip_widthExample,
+				"helpArticleUrl": _labels.hlpUrl_width
 			},
 			"advanced": {
 				"type": "function",
@@ -227,7 +230,8 @@ export let libs = {
 				"type": "checkbox",
 				"label": _labels.lbl_showNumeration,
 				"tooltip": _labels.tooltip_addNumerationColumnToTable,
-				"cmd" : "dialog:setTableParam"
+				"cmd" : "dialog:setTableParam",
+				"helpArticleUrl": _labels.hlpUrl_showNumeration
 			},
 			"isShowCheckBoxes": {
 				"defValue": false,
@@ -267,6 +271,7 @@ export let libs = {
 				"label": _labels.lbl_enableColumnHeaderWrap,
 				"tooltip": _labels.tooltip_enableColumnHeaderWrap,
 				"cmd" : "dialog:setTableParam",
+				"helpArticleUrl": _labels.hlpUrl_enableColumnHeaderWrap,
 			},
 			"showStandardEdit" : {
 				"defValue": false,
@@ -275,6 +280,7 @@ export let libs = {
 				"tooltip": _labels.tooltip_replaceInlineEditWithStandardEdit,
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
+				"helpArticleUrl": _labels.hlpUrl_showStandardEdit,
 			},
 			"rollBack" : {
 				"defValue": false,
@@ -283,12 +289,14 @@ export let libs = {
 				"tooltip": _labels.tooltip_rollback,
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
+				"helpArticleUrl": _labels.hlpUrl_rollback,
 			},
 			"overrideGridHeader" : {
 				"type": "string",
 				"label": _labels.lbl_overrideGridHeader,
 				"tooltip": _labels.tooltip_overrideGridHeader,
 				"cmd" : "dialog:setTableParam",
+				"helpArticleUrl": _labels.hlpUrl_overrideGridHeader,
 			},
 			"groupFieldName" : {
 				"defValue": "",
@@ -380,7 +388,8 @@ export let libs = {
 				"label": _labels.lbl_beforeSaveApexAction,
 				"tooltip": _labels.tooltip_beforeSaveApexAction,
 				"isReadOnly": true,
-				"cmd" : "dialog:setTableParam"
+				"cmd" : "dialog:setTableParam",
+				"helpArticleUrl": _labels.hlpUrl_beforeSaveApexAction,
 			},
 			// "beforeDeleteValidation": {
 			// 	"type": "function",
@@ -398,6 +407,7 @@ export let libs = {
 				"label": _labels.lbl_listSizeOptionsDropdown,
 				"tooltip": _labels.tooltip_numbersOfOptionsShown,
 				"cmd" : "dialog:setTableParam",
+				"helpArticleUrl": _labels.hlpUrl_listSizeOptionsDropdown,
 			},
 			//moved to advanced config JSON
 			// "rowCss": {
@@ -484,8 +494,8 @@ export let libs = {
 				"defValue":'',
 				"type": "text",
 				"label": _labels.lbl_actionTip,
-				"tooltip": _labels.tooltip_actionTipTooltip
-
+				"tooltip": _labels.tooltip_actionTipTooltip,
+				//"helpArticleUrl": _labels.hlpUrl_actionTip,
 			},
 			"actionCallBack" : {
 				"defValue":'',
@@ -498,8 +508,8 @@ export let libs = {
 				"defValue":false,
 				"type": "checkbox",
 				"label": _labels.lbl_actionIsHidden,
-				"tooltip": _labels.tooltip_actionIsHidden
-
+				"tooltip": _labels.tooltip_actionIsHidden,
+				"helpArticleUrl": _labels.hlpUrl_actionIsHidden,
 			},
 			"actionVisibleOnRecordSelection" : {
 				"defValue":false,
