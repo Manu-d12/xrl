@@ -14,35 +14,36 @@ export default class Combobox extends NavigationMixin(LightningElement) {
     @api label;
     @api enableedit = false;
     @api defaultvalues = [];
+    @api sobjapiname;
     get selectedValue() {
         return this.config.selectedSearchResult.length > 0 ? this.config.selectedSearchResult[0].label : null;
     }
     connectedCallback(){
         this.config.options = this.options ? JSON.parse(JSON.stringify(this.options)) : [
-            // {
-            //     label: 'Test',
-            //     value: 'Test'
-            // },
-            // {
-            //     label: 'Demo',
-            //     value: 'Demo'
-            // },
-            // {
-            //     label: 'Account',
-            //     value: 'Account'
-            // },
-            // {
-            //     label: 'Demo 1',
-            //     value: 'Demo 1'
-            // }
+            {
+                label: 'Test',
+                value: 'Test'
+            },
+            {
+                label: 'Demo',
+                value: 'Demo'
+            },
+            {
+                label: 'Account',
+                value: 'Account'
+            },
+            {
+                label: 'Demo 1',
+                value: 'Demo 1'
+            }
         ];
-        this.config.sObjApiName = 'Case';
+        this.config.sObjApiName = this.sobjapiname || 'Case';
         this.config.selectedSearchResult = [];
         this.config.options.forEach((option) => {
             if(this.enableedit){
                 option.isEditable = true;
             }
-            if(this.defaultvalues.includes(option.value)){
+            if(this.defaultvalues?.includes(option.value)){
                 option.selected = true;
                 this.config.selectSearchResult.push(option);
             }
@@ -92,36 +93,12 @@ export default class Combobox extends NavigationMixin(LightningElement) {
             this.selectSearchResult({currentTarget: {dataset: { value: eventData.data.value}}})
         }
     }
-    handleSuccess(event){
-        const evt = new ShowToastEvent({
-            title: 'Account created',
-            message: 'Record ID: ' + event.detail.id,
-            variant: 'success',
-        });
-        this.dispatchEvent(evt);
-        this.config.showSfNewOptionCreation = false;
-    }
     selectSearchResult(event) {
         let selectedValue = event.currentTarget.dataset.value;
         if(selectedValue.endsWith('#new_value')){
-            // this.config.options.push({label: selectedValue.replace('#new_value',''), value: selectedValue.replace('#new_value','')});
-            // if(this.config.sObjApiName){
-            //     // this.config.showSfNewOptionCreation = true;
-            //     this[NavigationMixin.Navigate]({
-			// 		type: 'standard__objectPage',
-			// 		attributes: {
-			// 			objectApiName: this.config.sObjApiName,
-			// 			actionName: 'new',
-			// 		},
-			// 		state: {
-			// 	        useRecordTypeCheck: 1,
-			// 			navigationLocation: 'RELATED_LIST'
-			// 		}
-			// 	});
-            // }else{
+                this.config.sObjApiName = this.sobjapiname;
                 this.config.showNewItemCreation = true;
-                this.config.header = 'Case';
-            // }
+                this.config.header = this.sobjapiname;
             return;
         }
         selectedValue = selectedValue.replace('#new_value','');

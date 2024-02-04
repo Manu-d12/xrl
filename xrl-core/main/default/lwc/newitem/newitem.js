@@ -15,6 +15,11 @@ export default class Newitem extends LightningElement {
         this.isShowModal = false;
     }
     handleSuccess(event){
-        
+        const evt = new ShowToastEvent({
+            title: 'Account created',
+            message: 'Record ID: ' + event.detail.id,
+            variant: 'success',
+        });
+        this.dispatchEvent(evt);
     }
 }
