@@ -224,7 +224,7 @@ export default class extRelListSettings extends LightningElement {
 				"isTextArea" : (tmp[item].type === 'function'),
 				"isText" : (tmp[item].type !== 'combobox' && tmp[item].type !== 'function'),
 				"options" : options,
-				"tooltip" : tmp[item].tooltip,
+				"tooltip" :  tmp[item].helpArticleUrl === undefined ? tmp[item].tooltip : '',
 				"isDisabled" : (fieldParams['isActionStandard'] ? this.config.enableActions.includes(item) ? false : true : false),
 				"value" : defValue,
 				"isChecked" : (tmp[item].type === 'checkbox') ? defValue : undefined,
@@ -235,6 +235,7 @@ export default class extRelListSettings extends LightningElement {
 				"helpLabel": tmp[item].label,
 				"helpTooltip" : tmp[item].tooltip,
 				"helpArticleUrl": tmp[item].helpArticleUrl !== undefined ? tmp[item].helpArticleUrl : false,
+				"helpStyle": this.generateStyleForHelp(tmp[item].type),
 			})
 		}
 		return result;

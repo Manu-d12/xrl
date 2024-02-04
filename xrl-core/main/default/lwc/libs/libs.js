@@ -495,7 +495,7 @@ export let libs = {
 				"type": "text",
 				"label": _labels.lbl_actionTip,
 				"tooltip": _labels.tooltip_actionTipTooltip,
-				//"helpArticleUrl": _labels.hlpUrl_actionTip,
+				"helpArticleUrl": _labels.hlpUrl_actionTip,
 			},
 			"actionCallBack" : {
 				"defValue":'',
