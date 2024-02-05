@@ -515,8 +515,8 @@ export let libs = {
 				"defValue":false,
 				"type": "checkbox",
 				"label": _labels.lbl_actionVisibleOnRecords,
-				"tooltip": _labels.tooltip_actionVisibleOnRecords
-
+				"tooltip": _labels.tooltip_actionVisibleOnRecords,
+				"helpArticleUrl": _labels.hlpUrl_actionVisibleOnRecords,
 			},
 			"actionVariant" : {
 				"type": "combobox",
@@ -529,13 +529,15 @@ export let libs = {
 			"actionIconName" : {
 				"type": "text",
 				"label": _labels.lbl_actionIconName,
-				"tooltip": _labels.tooltip_actionIconName
+				"tooltip": _labels.tooltip_actionIconName,
+				"helpArticleUrl": _labels.hlpUrl_actionIconName,
 			},
 			"refreshAfterCustomActionExecution" : { 
 				"defValue":false,
 				"type": "checkbox",
 				"label": _labels.lbl_refreshAfterCustomActionExecution,
-				"tooltip": _labels.tooltip_refreshAfterCustomActionExecution
+				"tooltip": _labels.tooltip_refreshAfterCustomActionExecution,
+				"helpArticleUrl": _labels.hlpUrl_refreshAfterCustomActionExecutione,
 			},
 			"actionOrder" : {
 				"type": "text",

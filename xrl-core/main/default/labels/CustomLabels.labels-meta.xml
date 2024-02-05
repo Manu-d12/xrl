@@ -2268,6 +2268,38 @@ Once you are done editing the pattern, click outside the input box.</value>
         <value>getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#12-group-order-of-records-88</value>
     </labels>
     <labels>
+        <fullName>hlpUrl_newAction</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_newAction</shortDescription>
+        <value>en_US/getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#1-define-new-action-96</value>
+    </labels>   
+    <labels>
+        <fullName>hlpUrl_actionVisibleOnRecords</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_actionVisibleOnRecords</shortDescription>
+        <value>custom-actions-release3b/1940862-customizeaction-article-release3b#action-visible-only-after-record-selection-7</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_actionIconName</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_actionIconName</shortDescription>
+        <value>custom-actions-release3b/1940862-customizeaction-article-release3b#name-of-the-icon-to-be-shown-9</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_refreshAfterCustomActionExecutione</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_refreshAfterCustomActionExecutione</shortDescription>
+        <value>custom-actions-release3b/1940862-customizeaction-article-release3b#refresh-grid-after-custom-action-execution-10</value>
+    </labels>
+    <labels>
         <fullName>url_reqFeature</fullName>
         <categories>XRL</categories>
         <language>en_US</language>

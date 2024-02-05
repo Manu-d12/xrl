@@ -146,8 +146,9 @@
 					<lightning-tab label="Actions" value="5" onactive={tabChanged}>
 						<template if:false={config.openNewAction}>
 							<lightning-button if:false={config.dialog.action} variant="brand" label="New Action" title="New Action" class="slds-m-right_x-small" data-val="openNewAction" onclick={handleNewAction}></lightning-button>
-							<lightning-helptext icon-name="utility:question" if:false={config.dialog.saveAs} 
-								onclick={config.dialog.handleHelpEvent} data-id="help:saveAsView" data-url={config._LABELS.hlpUrl_saveAsView}
+							<lightning-helptext if:false={config.dialog.action} 
+								onclick={config.dialog.handleHelpEvent} data-id="help:saveAsView" data-url={config._LABELS.hlpUrl_newAction}
+								onmouseenter={changeIcon} onmouseleave={changeIconAgain}
 								class="placeTop" content={config._LABELS.tooltip_configSaveAs} alternative-text={config._LABELS.altTxt_hlpUrl}>
 							</lightning-helptext>
 							<lightning-combobox name="status" label="Select Action" placeholder="Choose Action" value={config.dialog.action} data-id="dialog:setAction" onchange={config.dialog.handleEvent} options={config.dialog.allActions}>
