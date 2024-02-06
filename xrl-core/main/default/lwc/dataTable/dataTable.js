@@ -473,6 +473,15 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			this.config.colModel.push(add);
 		});
 		let tableWidth=0
+		let compWidth= libs.getGlobalVar(this.cfg).componentWidth
+		let screenWidth=0
+		if(compWidth === 'LARGE'){
+			screenWidth = (window.screen.width - 100);
+		}else if(compWidth === 'MEDIUM'){
+			screenWidth = (window.screen.width/2);
+		}else if(compWidth === 'SMALL'){
+			screenWidth = (window.screen.width/4);
+		}
 		this.config.colModel.forEach((item,index) => {
 			if(item.advanced !== undefined && item.advanced !== ''){
 				try{
@@ -534,9 +543,11 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				//item._style = 'width: ' + wd.replace(';','') + maxWidth + 'padding-left:1px;' + 'min-width: 100px;';
 				if(item.width !== ""){
 					//here checking the width is more than max width(500px in here) column can have and adding them in tableWidth
-					tableWidth+= parseInt(wd.endsWith('%') ? wd.replace('%','') : wd.replace('px','')) >500 ? 500 : parseInt(wd.endsWith('%') ? wd.replace('%','') : wd.replace('px',''))
+					//tableWidth+= parseInt(wd.endsWith('%') ? wd.replace('%','') : wd.replace('px','')) >500 ? 500 : parseInt(wd.endsWith('%') ? wd.replace('%','') : wd.replace('px',''))
+					tableWidth+= wd.endsWith('%') ? ( parseInt(wd.replace('%','')) > 40 ? screenWidth*0.4 : screenWidth*parseInt(wd.replace('%',''))/100) : (wd.replace('px','') > 500 ? 500 : parseInt(wd.replace('px','')));
 				}
-				item._style = 'width: ' + wd.replace(';','') + maxWidth + 'padding-left:1px;';
+				//item._style = 'width: ' + wd.replace(';','') + maxWidth + 'padding-left:1px;';
+				item._style = 'width: ' + (wd.replace(';','').slice(-1) === '%' ? (parseInt(wd.replace('%','')) > 40 ? screenWidth*0.4+'px' : screenWidth*parseInt(wd.replace('%',''))/100+'px') : (wd.replace(';','')) )+ ';max-width: 500px;' + 'padding-left:1px;';
 			}else{
 				item._style = 'padding-left:1px;padding-right:1px;';
 			}
@@ -554,16 +565,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		this.dispatchEvent(event);
 		//Here first checking the table width(total width the user has enter for different column) with the screen size on the basic of where XRL is used
 		//jira no- HYPER-557
-		let compWidth= libs.getGlobalVar(this.cfg).componentWidth
+		
 		//console.log('width'+compWidth)
-		let screenWidth=0
-		if(compWidth === 'LARGE'){
-			screenWidth = (window.screen.width - 100);
-		}else if(compWidth === 'MEDIUM'){
-			screenWidth = (window.screen.width/2);
-		}else if(compWidth === 'SMALL'){
-			screenWidth = (window.screen.width/4);
-		}
 		//console.log('container '+screenWidth+'  '+tableWidth)
 		if(tableWidth >= screenWidth){
 			this.config.colModel.forEach((item,index) => {
