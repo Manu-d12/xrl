@@ -146,6 +146,11 @@
 					<lightning-tab label="Actions" value="5" onactive={tabChanged}>
 						<template if:false={config.openNewAction}>
 							<lightning-button if:false={config.dialog.action} variant="brand" label="New Action" title="New Action" class="slds-m-right_x-small" data-val="openNewAction" onclick={handleNewAction}></lightning-button>
+							<lightning-helptext if:false={config.dialog.action} 
+								onclick={config.dialog.handleHelpEvent} data-id="help:saveAsView" data-url={config._LABELS.hlpUrl_newAction}
+								onmouseenter={changeIcon} onmouseleave={changeIconAgain}
+								class="placeTop" content={config._LABELS.tooltip_configSaveAs} alternative-text={config._LABELS.altTxt_hlpUrl}>
+							</lightning-helptext>
 							<lightning-combobox name="status" label="Select Action" placeholder="Choose Action" value={config.dialog.action} data-id="dialog:setAction" onchange={config.dialog.handleEvent} options={config.dialog.allActions}>
 							</lightning-combobox>
 						</template>
@@ -156,27 +161,42 @@
 							<lightning-button variant="destructive" label="Cancel" title="Cancel" class="slds-m-right_x-small" data-val="actionCancel" onclick={handleNewAction}></lightning-button>
 						</template>
 						<template if:true={config.dialog.action} for:each={actionItem} for:item="param" for:index="index">
-							<lightning-input if:true={param.isText} field-level-help={param.tooltip} key={param.paramName} type={param.type} label={param.label} disabled={param.isDisabled} value={param.value} data-id="dialog:setActionParam" data-param={param.paramName} data-type={param.type} checked={param.isChecked} onchange={config.dialog.handleEvent}></lightning-input>
-							<lightning-combobox if:true={param.isCombo} field-level-help={param.tooltip} key={param.paramName} type={param.type} label={param.label} disabled={param.isDisabled} value={param.value} data-id="dialog:setActionParam" data-param={param.paramName} onchange={config.dialog.handleEvent} options={param.options}></lightning-combobox>
-							<!-- <lightning-textarea if:true={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} data-type={param.type} label={param.label} value={param.value} data-id="dialog:setActionParam" data-param={param.paramName} onchange={config.dialog.handleEvent} placeholder={param.placeHolder}></lightning-textarea> -->
-							<!-- <lightning-button-icon if:true={param.useExample} key={param.paramName} icon-name="utility:copy_to_clipboard" class="slds-m-around_small" title="Use example" data-id="dialog:setTableParam" data-val={param.placeHolder} data-param={param.paramName} data-type={param.type} data-place="action" onclick={addNewUseExampleParam}></lightning-button-icon> -->
-							<span if:true={param.isAdvanced} key={param.paramName}>
-								<lightning-accordion allow-multiple-sections-open active-section-name="" >
-									<lightning-accordion-section name="advanced" label="Advanced section">
-										<lightning-textarea key={param.paramName} data-type={param.type} label={param.label} value={param.value} data-id="dialog:setActionParam" data-param={param.paramName} onchange={config.dialog.handleEvent} placeholder={param.placeHolder}></lightning-textarea>
-										<span>
-											<p data-id={param.helpId} class="helpLink slds-m-left_xx-small" style="top: 46px;left: 10px;position: absolute;color: rgb(74, 75, 77,1);font-size: 12px;">
-												{param.helpLabel}
-												<lightning-helptext style="cursor: pointer;"
-													onclick={config.dialog.handleHelpEvent} data-id={param.helpId} data-url={param.helpArticleUrl}
-													onmouseenter={changeIcon} onmouseleave={changeIconAgain}
-													class="inlineHelpIcon" content={param.helpTooltip} alternative-text={config._LABELS.altTxt_hlpUrl}>
-												</lightning-helptext>
-											</p>
-										</span>
-									</lightning-accordion-section>
-								</lightning-accordion>
-							</span>
+							<div key={param.paramName} style="position:relative">
+								<lightning-input if:true={param.isText} field-level-help={param.tooltip} key={param.paramName} type={param.type} label={param.label} disabled={param.isDisabled} value={param.value} data-id="dialog:setActionParam" data-param={param.paramName} data-type={param.type} checked={param.isChecked} onchange={config.dialog.handleEvent}></lightning-input>
+								<lightning-combobox if:true={param.isCombo} field-level-help={param.tooltip} key={param.paramName} type={param.type} label={param.label} disabled={param.isDisabled} value={param.value} data-id="dialog:setActionParam" data-param={param.paramName} onchange={config.dialog.handleEvent} options={param.options}></lightning-combobox>
+								<!-- <lightning-textarea if:true={param.isTextArea} field-level-help={param.tooltip} key={param.paramName} data-type={param.type} label={param.label} value={param.value} data-id="dialog:setActionParam" data-param={param.paramName} onchange={config.dialog.handleEvent} placeholder={param.placeHolder}></lightning-textarea> -->
+								<!-- <lightning-button-icon if:true={param.useExample} key={param.paramName} icon-name="utility:copy_to_clipboard" class="slds-m-around_small" title="Use example" data-id="dialog:setTableParam" data-val={param.placeHolder} data-param={param.paramName} data-type={param.type} data-place="action" onclick={addNewUseExampleParam}></lightning-button-icon> -->
+								<span if:true={param.isAdvanced} key={param.paramName}>
+									<lightning-accordion allow-multiple-sections-open active-section-name="" >
+										<lightning-accordion-section name="advanced" label="Advanced section">
+											<lightning-textarea key={param.paramName} data-type={param.type} label={param.label} value={param.value} data-id="dialog:setActionParam" data-param={param.paramName} onchange={config.dialog.handleEvent} placeholder={param.placeHolder}></lightning-textarea>
+											<span>
+												<p data-id={param.helpId} class="helpLink slds-m-left_xx-small" style="top: 46px;left: 10px;position: absolute;color: rgb(74, 75, 77,1);font-size: 12px;">
+													{param.helpLabel}
+													<lightning-helptext style="cursor: pointer;"
+														onclick={config.dialog.handleHelpEvent} data-id={param.helpId} data-url={param.helpArticleUrl}
+														onmouseenter={changeIcon} onmouseleave={changeIconAgain}
+														class="inlineHelpIcon" content={param.helpTooltip} alternative-text={config._LABELS.altTxt_hlpUrl}>
+													</lightning-helptext>
+												</p>
+											</span>
+										</lightning-accordion-section>
+									</lightning-accordion>
+								</span>
+								<span if:false={param.isAdvanced}>
+									<p if:true={param.helpArticleUrl} 
+										data-id={param.helpId} 
+										data-url={param.helpArticleUrl}
+										class="helpLink slds-m-left_xx-small" style={param.helpStyle}>
+										{param.helpLabel}
+										<lightning-helptext if:false={config.dialog.saveAs}
+											onclick={config.dialog.handleHelpEvent} data-id={param.helpId} data-url={param.helpArticleUrl}
+											onmouseenter={changeIcon} onmouseleave={changeIconAgain}
+											class="inlineHelpIcon" content={param.helpTooltip} alternative-text={config._LABELS.altTxt_hlpUrl}>
+										</lightning-helptext>
+										</p>
+								</span>
+							</div>
 						</template>
 						<template if:true={config.dialog.action}>
 							<br>

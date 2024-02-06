@@ -682,6 +682,12 @@ export default class SqlBuilder extends LightningElement {
         this.ConditionFilteringClass = this.ConditionFilteringClass === 'slds-popover slds-popover_tooltip slds-nubbin_bottom-left slds-fall-into-ground slds-hide' ? "slds-popover slds-popover_tooltip slds-nubbin_bottom-left slds-rise-from-ground" : "slds-popover slds-popover_tooltip slds-nubbin_bottom-left slds-fall-into-ground slds-hide"
     }
 
+    changeIcon(event){
+		event.target.iconName = 'utility:question';
+	}
+	changeIconAgain(event){
+		event.target.iconName = 'utility:info';
+	}
 
     Change(event){
         this.Data = event.detail.join(', ');
