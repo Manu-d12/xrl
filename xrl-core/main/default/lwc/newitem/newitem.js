@@ -24,6 +24,14 @@ export default class Newitem extends LightningElement {
         console.log('event:',event.detail);
         this.dispatchEvent(evt);
         this.isShowModal = false;
+        this.dispatchEvent(new CustomEvent('newoption', {
+            detail: {
+                'data' : {
+                    label: JSON.parse(JSON.stringify(event.detail)).fields.Name.value,
+                    value: event.detail.id
+                }
+            }
+        }));
     }
     handleError(event){
         console.log('error:',event.detail);

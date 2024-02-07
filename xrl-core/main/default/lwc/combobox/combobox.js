@@ -8,7 +8,7 @@ import { NavigationMixin } from "lightning/navigation";
 
 export default class Combobox extends NavigationMixin(LightningElement) {
     @track config = {};
-    @track isMultiselect = false;
+    @api ismultiselect = false;
     @api options;
     @api label;
     @api enableedit = false;
@@ -16,27 +16,10 @@ export default class Combobox extends NavigationMixin(LightningElement) {
     @api defaultvalues = [];
     @api sobjapiname;
     get selectedValue() {
-        return this.config.selectedSearchResult.length > 0 ? this.config.selectedSearchResult[0].label : null;
+        return this.config.selectedSearchResult.length > 0 ? this.config.selectedSearchResult[this.config.selectedSearchResult.length - 1].label : null;
     }
     connectedCallback(){
-        this.config.options = this.options ? JSON.parse(JSON.stringify(this.options)) : [
-            {
-                label: 'Test',
-                value: 'Test'
-            },
-            {
-                label: 'Demo',
-                value: 'Demo'
-            },
-            {
-                label: 'Account',
-                value: 'Account'
-            },
-            {
-                label: 'Demo 1',
-                value: 'Demo 1'
-            }
-        ];
+        this.config.options = this.options ? JSON.parse(JSON.stringify(this.options)) : [];
         this.config.sObjApiName = this.sobjapiname || 'Case';
         this.config.enableNewOption = this.enablenewoption === "true" && this.config.sObjApiName;
         this.config.selectedSearchResult = [];
@@ -75,26 +58,18 @@ export default class Combobox extends NavigationMixin(LightningElement) {
     }
     handleEvent(event){
         console.log('event received: ',JSON.parse(JSON.stringify(event.detail.data)));
-        //user pressed cancel button
-        if(event?.detail?.action === 'cancel'){
-			this.config.UI = false;
-			return;
-		}
-        if(event?.detail?.data.action === 'btn:addNewItem'){
-            let eventData = JSON.parse(JSON.stringify(event.detail.data));
-            this.config.options.push({label: eventData.data.label, value: eventData.data.value});
-            this.config.UI = false;
-            //dispatching event for the parent component
-            this.dispatchEvent(new CustomEvent('newoptionadd', {
-                detail: {
-                    'data' : {
-                        label: eventData.data.label,
-                        value: eventData.data.value
-                    }
+        let newOption = JSON.parse(JSON.stringify(event.detail.data));
+        this.config.options.push(newOption);
+        this.selectSearchResult({'currentTarget': { 'dataset': { 'value' : newOption.value }}});
+        //dispatching event for the parent component
+        this.dispatchEvent(new CustomEvent('newoptionadd', {
+            detail: {
+                'data' : {
+                    label: newOption.label,
+                    value: newOption.value
                 }
-            }));
-            this.selectSearchResult({currentTarget: {dataset: { value: eventData.data.value}}})
-        }
+            }
+        }));
     }
     selectSearchResult(event) {
         let selectedValue = event.currentTarget.dataset.value;
@@ -106,13 +81,13 @@ export default class Combobox extends NavigationMixin(LightningElement) {
         }
         selectedValue = selectedValue.replace('#new_value','');
         this.config.selectedSearchResult = [];
-        if(this.isMultiselect){
+        if(this.ismultiselect){
             //for multiselect
             this.config.options.forEach(
             (picklistOption) => {
                 if(picklistOption.value === selectedValue){
                     picklistOption.selected = !picklistOption.selected; //reversing the value
-                    this.config.selectedSearchResult = picklistOption;
+                    // this.config.selectedSearchResult = picklistOption;
                 }
                 if(picklistOption.selected){
                     this.config.selectedSearchResult.push(picklistOption);
