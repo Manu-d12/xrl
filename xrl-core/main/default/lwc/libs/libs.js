@@ -426,17 +426,17 @@ export let libs = {
 			// 	"cmd" : "dialog:setTableParam",
 			// 	"useExample":true,
 			// },
-			"rowRecalcApex": { // Temporary removed
-				"defValue": "",
-				"type": "combobox",
-				"optionsCallBack" : function(scope){
-					return scope.config.apexInterfaceList;
-				},
-				"label": 'Apex class for row recalculation',
-				"tooltip": 'Apex class for row recalculation',
-				"placeHolder": 'Apex class for row recalculation',
-				"cmd" : "dialog:setTableParam"
-			},
+			// "rowRecalcApex": { // Temporary removed because, It is not a part of current release
+			// 	"defValue": "",
+			// 	"type": "combobox",
+			// 	"optionsCallBack" : function(scope){
+			// 		return scope.config.apexInterfaceList;
+			// 	},
+			// 	"label": 'Apex class for row recalculation',
+			// 	"tooltip": 'Apex class for row recalculation',
+			// 	"placeHolder": 'Apex class for row recalculation',
+			// 	"cmd" : "dialog:setTableParam"
+			// },
 			/*"externalJS": {
 				"defValue": "",
 				"type": "combobox",
