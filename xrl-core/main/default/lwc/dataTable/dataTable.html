@@ -21,6 +21,13 @@
 		<div>
 		<table role="grid" if:true={tableRecords} class="slds-table slds-table_bordered slds-table_col-bordered extRelList" style="table-layout: fixed;">
 			<thead>
+				<tr if:true={config._topHeaderConfiguration} class="slds-line-height_reset" style="height:50px;">
+					<template for:each={config._topHeaderConfiguration} for:item="row" for:index="index">
+						<th colspan={row.colspan} scope="col" class="slds-text-align_center" style={row.style} key={row}>
+							<lightning-formatted-rich-text value={row.content}></lightning-formatted-rich-text>
+						</th>
+					</template>
+				</tr>
 				<tr class="slds-line-height_reset" style="height:50px;" ondrop={Drop} ondragstart={DragStart} ondragover={DragOver}>
 					<!-- <template if:true={hasGrouping}>
 						<th scope="col" style="width: 5rem;">
