@@ -3,11 +3,13 @@
     <div class="slds-form-element__control">
       <div class="slds-combobox_container">
         <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
-          <lightning-input label={label} type="search" onchange={search} value={selectedValue} onclick={showOptions} onfocusout={clearSearchResults}></lightning-input>
+          <lightning-input class="search" label={label} type="search" onchange={search} value={selectedValue} onclick={showOptions} onfocusout={clearSearchResults}></lightning-input>
           <!-- Dropdown starts -->
-          <div if:true={config.searchResults} id="listbox-id-11" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid" role="listbox">
+            <div if:true={config.searchResults} class="slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid slds-dropdown_left"
+		          data-dropdown-element="" role="listbox" part="dropdown overlay" style={config.style}>
+
             <ul class="slds-listbox slds-listbox_vertical" role="presentation">
-              <li data-value="#new_value" onclick={selectSearchResult} role="presentation" class="slds-listbox__item" style="background: aliceblue;">
+              <li if:true={config.enableNewOption} data-value="#new_value" onclick={selectSearchResult} role="presentation" class="slds-listbox__item" style="background: aliceblue;">
                 <div id="#new_value" class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small" role="option">
                     <span class="slds-media__figure slds-listbox__option-icon">
                       <span class="slds-icon_container slds-icon-utility-add slds-current-color">

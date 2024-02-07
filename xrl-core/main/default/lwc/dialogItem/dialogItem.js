@@ -69,7 +69,7 @@ export default class dialogItem extends LightningElement {
     onChangeDynamicField(event) {
         //sevent.stopImmediatePropagation();
         let target = event.target.getAttribute('data-id');
-        this.config.result[target] = event.target.value?.trim() || event.target.checked || event.detail.files;
+        this.config.result[target] = event.target.value?.trim() || event.target.checked || event.detail.files || event.detail.data[0];
 
         let fldIndex = this.config.fields.findIndex(e => {
             return e.name === target;

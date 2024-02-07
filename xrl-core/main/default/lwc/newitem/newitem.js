@@ -1,4 +1,5 @@
 import { LightningElement,api,track } from 'lwc';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 export default class Newitem extends LightningElement {
     @api objectapiname;
@@ -16,10 +17,15 @@ export default class Newitem extends LightningElement {
     }
     handleSuccess(event){
         const evt = new ShowToastEvent({
-            title: 'Account created',
-            message: 'Record ID: ' + event.detail.id,
+            title: 'Successfully created',
+            message: 'Record ID: ' + event.detail.id + ' (' + JSON.parse(JSON.stringify(event.detail)).fields.Name.value + ')',
             variant: 'success',
         });
+        console.log('event:',event.detail);
         this.dispatchEvent(evt);
+        this.isShowModal = false;
+    }
+    handleError(event){
+        console.log('error:',event.detail);
     }
 }

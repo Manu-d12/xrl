@@ -5,7 +5,6 @@
 */
 import { LightningElement,track,api } from 'lwc';
 import { NavigationMixin } from "lightning/navigation";
-import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 export default class Combobox extends NavigationMixin(LightningElement) {
     @track config = {};
@@ -13,6 +12,7 @@ export default class Combobox extends NavigationMixin(LightningElement) {
     @api options;
     @api label;
     @api enableedit = false;
+    @api enablenewoption = false;
     @api defaultvalues = [];
     @api sobjapiname;
     get selectedValue() {
@@ -38,6 +38,7 @@ export default class Combobox extends NavigationMixin(LightningElement) {
             }
         ];
         this.config.sObjApiName = this.sobjapiname || 'Case';
+        this.config.enableNewOption = this.enablenewoption === "true" && this.config.sObjApiName;
         this.config.selectedSearchResult = [];
         this.config.options.forEach((option) => {
             if(this.enableedit){
@@ -49,7 +50,9 @@ export default class Combobox extends NavigationMixin(LightningElement) {
             }
         });
     }
-    showOptions(){
+    showOptions(event){
+        let width = this.template.querySelector('.search').offsetWidth;
+        this.config.style = 'left: 16px; right: auto; position: fixed; z-index: 9109;top:' + (event.clientY + 15) + 'px;width: ' + width + 'px';
         this.config.searchResults = this.config.options;
     }
     search(event) {
@@ -129,10 +132,14 @@ export default class Combobox extends NavigationMixin(LightningElement) {
             ); 
             this.clearSearchResults();
         }
+        let selectedResultsArray = [];
+        this.config.selectedSearchResult?.forEach((selected) => {
+            selectedResultsArray.push(selected.value);
+        })
         //sending the event
         this.dispatchEvent(new CustomEvent('select', {
             detail: {
-                'data' : this.config.selectedSearchResult
+                'data' : selectedResultsArray
             }
         }));
     }
