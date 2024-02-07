@@ -42,11 +42,15 @@ export default class dialogItem extends LightningElement {
                 e.isPicklist = (e.type === 'picklist');
                 e.isCombobox = (e.type === 'combobox');
                 e.isTextArea = (e.type === 'textarea');
+                e.isRadioGroup =(e.type === 'radio');
                 e.isSwitch = (e.type === 'switch');
                 e.isSection = (e.type === 'section');
                 e.isFile = (e.type === 'file');
-                e.isInput = (e.isTextArea === false && e.isPicklist === false && e.isSection === false && e.isCombobox === false && e.isFile === false);
-                if (e.type==='checkbox') e.style="padding-top:7px";
+                e.isInput = (e.isTextArea === false && e.isPicklist === false && e.isSection === false && e.isCombobox === false && e.isRadioGroup === false && e.isFile === false);
+                if (e.type==='checkbox') {
+                    e.style="padding-top:7px";
+                    e.isChecked = (e.value === true || e.value === false) ? e.value : false;
+                }
                 if (typeof e.options == 'string' && e.options.startsWith('function(')) {
                     let _advanced = eval('[' + e.options + ']')[0];
                     e.options = _advanced(this, libs, e);
@@ -55,6 +59,10 @@ export default class dialogItem extends LightningElement {
                 //e.fields = e.fields?.filter(el => {return el.isDisabled!=true});
                 if (e.fields && e.fields.length == 0) e.fields = undefined;
                 console.log('fields', e.fields);
+
+                if(e.value !== undefined && e.isDisabled === false){
+                    this.updateValue(e.value,e.name,true);
+                }
             });
         }
     }
@@ -69,8 +77,14 @@ export default class dialogItem extends LightningElement {
     onChangeDynamicField(event) {
         //sevent.stopImmediatePropagation();
         let target = event.target.getAttribute('data-id');
-        this.config.result[target] = event.target.value?.trim() || event.target.checked || event.detail.files || event.detail.data[0];
+        let value = event.target.value?.trim() || event.target.checked || event.detail.files || event.detail.data[0];
 
+        this.updateValue(value,target,false);
+    }
+
+    updateValue(value,target,changingFrom){
+        this.config.result[target] = value;
+        
         let fldIndex = this.config.fields.findIndex(e => {
             return e.name === target;
         });
@@ -85,6 +99,8 @@ export default class dialogItem extends LightningElement {
 
             if (this.config.fields[fldIndex].options) {
                 field.addInfo = this.config.fields[fldIndex].options.find((e) => { return e.value == field.value });
+				this.config.fields[fldIndex].addInfo = field.addInfo;
+				//this.config.result[target] = field;
             }
             if (field.onClick) { // implement onClick 
                 let _advanced = eval('[' + field.onClick + ']')[0];
@@ -98,9 +114,32 @@ export default class dialogItem extends LightningElement {
 
                         return !el.isDisabled;
                 })
-                let child = this.template.querySelector('c-dialog-Item ');
+                let childrenArray = this.template.querySelectorAll('c-dialog-Item ');
+                // not sure why find function does not work
+                let child = false;
+                childrenArray.forEach((el) => {
+                    if(el.parent === target){
+                        child = el;
+                    }
+                });
                 if (child) child.updateChild(field.fields);
-                else this.config.fields[fldIndex].fields = field.fields;
+                else {
+                    //this.config.fields[fldIndex].fields = field.fields;
+                    if(changingFrom){
+                        let selectedFields = new Set();
+                        field.fields.forEach((field)=>{
+                            selectedFields.add(field.name);
+                        });
+
+                        this.config.fields[fldIndex].fields.forEach((field)=>{
+                            if(selectedFields.has(field.name)){
+                                field.isDisabled=false;
+                            }
+                        });
+                    }else{
+                        this.config.fields[fldIndex].fields = field.fields;
+                    }
+                }
                 
             } 
             this.dispatchEvent(new CustomEvent('childaction', { detail: { cmd: ':updateFromChild', data: this.config.fields[fldIndex] } }));

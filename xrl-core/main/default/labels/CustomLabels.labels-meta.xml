@@ -1969,7 +1969,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_isFilterable</shortDescription>
-        <value>data-lookup-filter-and-search-copy-94/client-side-filters-in-hypergrid-xrl-release3b</value>
+        <value>en_US/getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#3-is-column-filterable-69</value>
     </labels>
     <labels>
         <fullName>hlpUrl_isSortable</fullName>
@@ -1977,7 +1977,23 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_isSortable</shortDescription>
-        <value>data-lookup-filter-and-search-copy-94/client-side-filters-in-hypergrid-xrl-release3b#sorting-columns-4</value>
+        <value>en_US/getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#4-is-column-sortable-70</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_isColumnWrapable</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_isColumnWrapable</shortDescription>
+        <value>en_US/getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#6-wrap-column-content-72</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_width</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_width</shortDescription>
+        <value>en_US/getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#7-width-73</value>
     </labels>
     <labels>
         <fullName>hlpUrl_beforeDeleteValidation</fullName>
@@ -2001,7 +2017,15 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_groupFieldName</shortDescription>
-        <value>related-list-view-setup-and-customization-release3b/1892316-hypergrid-customization-tablesettings-article-release-3b#grouped-records-5</value>
+        <value>en_US/getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#11-grouping-of-records-86</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_chunkSizeForDeleteAndSave</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_chunkSizeForDeleteAndSave</shortDescription>
+        <value>en_US/getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#9-setting-the-chunk-size-for-save-and-delete-actions-84</value>
     </labels>
     <labels>
         <fullName>hlpUrl_isGlobalSearch</fullName>
@@ -2009,7 +2033,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_isGlobalSearch</shortDescription>
-        <value>data-lookup-filter-and-search-copy-94/hypergrid-globalsearch-article-release3b</value>
+        <value>en_US/getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#3-enable-global-search-78</value>
     </labels>
     <labels>
         <fullName>hlpUrl_extRelListInterfaceUnderstanding</fullName>
@@ -2025,7 +2049,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_sqlBuilderFieldSelection</shortDescription>
-        <value>getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#field-selection-63</value>
+        <value>getting-started-with-hypergrid-release30/hypergrid-advanced-configuration-of-extended-related-lists-r3b#reconfigure-columns-2</value>
     </labels>
     <labels>
         <fullName>hlpUrl_sqlBuilderApplyCondition</fullName>
@@ -2033,7 +2057,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_sqlBuilderApplyCondition</shortDescription>
-        <value>data-lookup-filter-and-search/hypergrid-server-side-filters</value>
+        <value>getting-started-with-hypergrid-release30/hypergrid-advanced-configuration-of-extended-related-lists-r3b#apply-conditions-3</value>
     </labels>
     <labels>
         <fullName>hlpUrl_sqlBuilderApplyOrdering</fullName>
@@ -2041,7 +2065,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_sqlBuilderApplyOrdering</shortDescription>
-        <value>getting-started-with-hypergrid-20/hypergrid-advanced-configuration-of-extended-related-lists#apply-ordering-4</value>
+        <value>getting-started-with-hypergrid-release30/hypergrid-advanced-configuration-of-extended-related-lists-r3b#apply-ordering-4</value>
     </labels>
     <labels>
         <fullName>hlpUrl_lockedFields</fullName>
@@ -2049,7 +2073,95 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_lockedFields</shortDescription>
-        <value>getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#locked-fields-66</value>
+        <value>en_US/getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#locked-fields-94</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_isColumnHidden</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_isColumnHidden</shortDescription>
+        <value>en_US/getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#2-hiding-this-colum-68</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_enableColumnHeaderWrap</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_enableColumnHeaderWrap</shortDescription>
+        <value>en_US/getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#5-enabling-column-header-text-wrap-80</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_showStandardEdit</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_showStandardEdit</shortDescription>
+        <value>data-editingupdate-operations-Release-3b/how-to-edit-fields-hypergrid-xrl-r3b#enabling-and-using-standard-editing-functionality-in-xrl-12</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_rollback</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_rollback</shortDescription>
+        <value>en_US/getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#7-rollback-setting-82</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_overrideGridHeader</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_overrideGridHeader</shortDescription>
+        <value>en_US/getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#8-grid-header-83</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_beforeSaveApexAction</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_beforeSaveApexAction</shortDescription>
+        <value>en_US/getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#14-class-and-method-name-to-be-executed-91</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_listSizeOptionsDropdown</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_listSizeOptionsDropdown</shortDescription>
+        <value>en_US/getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#10-setting-the-list-size-to-display-options-85</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_actionTip</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_actionTip</shortDescription>
+        <value>custom-actions-release3b/1940862-customizeaction-article-release3b#tip-for-the-action-5</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_actionIsHidden</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_actionIsHidden</shortDescription>
+        <value>custom-actions-release3b/1940862-customizeaction-article-release3b#hide-this-action-6</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_appliedConditions</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_appliedConditions</shortDescription>
+        <value>data-lookup-filter-and-search-copy-94/hypergrid-server-side-filters-release3b#applied-conditions-5</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_conditionFilteringPattern</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_conditionFilteringPattern</shortDescription>
+        <value>data-lookup-filter-and-search-copy-94/hypergrid-server-side-filters-release3b#conditional-filtering-pattern-6</value>
     </labels>
     <labels>
         <fullName>hlpUrl_deleteView</fullName>
@@ -2057,7 +2169,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_deleteView</shortDescription>
-        <value>related-list-view-setup-and-customization-release3b/how-to-share-and-delete-xrl-view-r3b</value>
+        <value>related-list-view-setup-and-customization-release3b/how-to-share-and-delete-xrl-view-r3b#delete-an-xrl-configuration-6</value>
     </labels>
     <labels>
         <fullName>altTxt_hlpUrl</fullName>
@@ -2073,7 +2185,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_shareView</shortDescription>
-        <value>related-list-view-setup-and-customization-release3b/how-to-share-and-delete-xrl-view-r3b</value>
+        <value>related-list-view-setup-and-customization-release3b/how-to-share-and-delete-xrl-view-r3b#share-an-xrl-configuration-among-users-3</value>
     </labels>
     <labels>
         <fullName>hlpUrl_saveAsView</fullName>
@@ -2089,7 +2201,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_isEditable</shortDescription>
-        <value>data-editingupdate-operations-Release-3b/how-to-edit-fields-hypergrid-xrl-copy-789</value>
+        <value>en_US/getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#5-is-column-editable-71</value>
     </labels>
     <labels>
         <fullName>hlpUrl_fieldSettingsAdvanced</fullName>
@@ -2097,7 +2209,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_fieldSettingsAdvanced</shortDescription>
-        <value>customize-rows-and-columns/1948866-customize-column-settings</value>
+        <value>en_US/getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#8-advanced-section-74</value>
     </labels>
     <labels>
         <fullName>hlpUrl_tableSettingsAdvanced</fullName>
@@ -2105,7 +2217,15 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_tableSettingsAdvanced</shortDescription>
-        <value>customize-rows-and-columns/customize-rows-in-xrl-using-conditional-formatting</value>
+        <value>en_US/getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#15-advanced-table-settings-92</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_showNumeration</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_showNumeration</shortDescription>
+        <value>en_US/getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#1-enable-numeration-76</value>
     </labels>
     <labels>
         <fullName>hlpUrl_actionsAdvanced</fullName>
@@ -2121,7 +2241,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_loadChunkSize</shortDescription>
-        <value>related-list-view-setup-and-customization-release3b/how-to-get-related-list-view-with-more-than-50k-record</value>
+        <value>getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#13-load-chunk-size-89</value>
     </labels>
     <labels>
         <fullName>hlpUrl_isShowCheckBoxes</fullName>
@@ -2129,7 +2249,7 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_isShowCheckBoxes</shortDescription>
-        <value>related-list-view-setup-and-customization-release3b/1892316-hypergrid-customization-tablesettings-article-release-3b#enable-record-selection-and-bulk-actions-9</value>
+        <value>en_US/getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#2-enable-checkboxes-77</value>
     </labels>
     <labels>
         <fullName>hlpUrl_pagerTop</fullName>
@@ -2137,7 +2257,47 @@ Once you are done editing the pattern, click outside the input box.</value>
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_pagerTop</shortDescription>
-        <value>related-list-view-setup-and-customization-release3b/1892316-hypergrid-customization-tablesettings-article-release-3b</value>
+        <value>getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#4-enable-pagination-79</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_groupOrder</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_groupOrder</shortDescription>
+        <value>getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#12-group-order-of-records-88</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_newAction</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_newAction</shortDescription>
+        <value>en_US/getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#1-define-new-action-96</value>
+    </labels>   
+    <labels>
+        <fullName>hlpUrl_actionVisibleOnRecords</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_actionVisibleOnRecords</shortDescription>
+        <value>custom-actions-release3b/1940862-customizeaction-article-release3b#action-visible-only-after-record-selection-7</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_actionIconName</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_actionIconName</shortDescription>
+        <value>custom-actions-release3b/1940862-customizeaction-article-release3b#name-of-the-icon-to-be-shown-9</value>
+    </labels>
+    <labels>
+        <fullName>hlpUrl_refreshAfterCustomActionExecutione</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_refreshAfterCustomActionExecutione</shortDescription>
+        <value>custom-actions-release3b/1940862-customizeaction-article-release3b#refresh-grid-after-custom-action-execution-10</value>
     </labels>
     <labels>
         <fullName>url_reqFeature</fullName>
@@ -2339,7 +2499,7 @@ return records;
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_fieldSettings</shortDescription>
-        <value>getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#field-settings-64</value>
+        <value>en_US/getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#field-settings-66</value>
     </labels>
     <labels>
         <fullName>hlpUrl_tableSettings</fullName>
@@ -2347,7 +2507,7 @@ return records;
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_tableSettings</shortDescription>
-        <value>getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#table-settings-65</value>
+        <value>en_US/getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#table-settings-75</value>
     </labels>
     <labels>
         <fullName>hlpUrl_actions</fullName>
@@ -2355,7 +2515,7 @@ return records;
         <language>en_US</language>
         <protected>true</protected>
         <shortDescription>hlpUrl_actions</shortDescription>
-        <value>getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#actions-67</value>
+        <value>en_US/getting-started-with-hypergrid-release30/hypergrid-understanding-the-xrl-interface-r3b#actions-95</value>
     </labels>
     <labels>
         <fullName>lbl_selectAnOption</fullName>
@@ -2364,5 +2524,61 @@ return records;
         <protected>true</protected>
         <shortDescription>lbl_selectAnOption</shortDescription>
         <value>Select an Option</value>
+    </labels>
+    <labels>
+        <fullName>lbl_addVirtualField</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_addVirtualField</shortDescription>
+        <value>Add Virtual Field</value>
+    </labels>
+    <labels>
+        <fullName>lbl_addVirtualFieldLabel</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_addVirtualFieldLabel</shortDescription>
+        <value>Virtual Field Label</value>
+    </labels>
+    <labels>
+        <fullName>lbl_addVirtualFieldApiName</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_addVirtualFieldApiName</shortDescription>
+        <value>Virtual Field Unique Name(Api Name)</value>
+    </labels>
+    <labels>
+        <fullName>lbl_addVirtualFieldAdvancedJSON</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>lbl_addVirtualFieldAdvancedJSON</shortDescription>
+        <value>Virtual Field Advanced JSON</value>
+    </labels>
+    <labels>
+        <fullName>msg_virtualFieldAddedSuccessfully</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_virtualFieldAddedSuccessfully</shortDescription>
+        <value>Virtual field added successfully</value>
+    </labels>
+    <labels>
+        <fullName>msg_virtualFieldAlreadyExists</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_virtualFieldAlreadyExists</shortDescription>
+        <value>Field with same api name already exists</value>
+    </labels>
+    <labels>
+        <fullName>msg_virtualFieldApiNameBlank</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>msg_virtualFieldApiNameBlank</shortDescription>
+        <value>You can not keep virtual field API Name blank</value>
     </labels>
 </CustomLabels>

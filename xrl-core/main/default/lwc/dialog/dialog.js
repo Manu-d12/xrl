@@ -23,7 +23,7 @@ export default class dialog extends LightningElement {
     setDialog() {
         Object.assign(this.config, this._cfg);
         this.title = this._cfg?.title;
-        this.config.modalCss = this._cfg?.headerStyle;
+        this.config.modalCss = this._cfg?.headerStyle ? ("slds-modal__header slds-theme_" + this._cfg.headerStyle) : "slds-modal__header slds-theme_error";
         if (this._cfg?.contents) this.config.content = JSON.parse(JSON.stringify(this._cfg?.contents))[0];
         else if (this._cfg?.fields) this.config.fields = this._cfg?.fields;
         this.config.buttons = JSON.parse(JSON.stringify(this._cfg?.buttons)) || [];
@@ -54,12 +54,18 @@ export default class dialog extends LightningElement {
     }  
     
     @api
-    handleEvents(event) {
+    async handleEvents(event) {
         let cmd = event.value ? event.value : event.srcElement?.getAttribute('data-cmd');
         
         if (event.detail.cmd == ':updateFromChild') {
             console.log('event from child', event.detail.data);
-            this.config.result[event.detail.data.name] = event.detail.data?.value;
+            if(event.detail.data?.value !== undefined){
+                this.config.result[event.detail.data.name] = event.detail.data;
+            }else{
+                if(this.config.result[event.detail.data.name]){
+                    delete this.config.result[event.detail.data.name];
+                }
+            }
             // Need also rerender buttons
             this.config.buttons.forEach(btn => {
                 if (btn.disableCallback && typeof btn.disableCallback === 'function') {
@@ -72,15 +78,31 @@ export default class dialog extends LightningElement {
 
         if (cmd?.startsWith('btn')) {
             let btn = this.config.buttons?.find(el=> {return el.name == cmd});
-            if (btn && this.config.callback && typeof this.config.callback === 'function') {
-                let result = this.config.callback(this, libs, { action: cmd, data: this.config.result, closeDialog : closeDialog });
+            if(btn && btn.UI){
+                this.config.UI = btn.UI;
+                this.config.showConfirmation = true;
+                return;
+            }
+            if (btn && btn.callback) {
+                btn.callback = eval('[' + btn.callback + ']')[0];
+                let result = await btn.callback(this, libs, { action: cmd, data: this.config.result, closeDialog : closeDialog });
                 console.log('RESULT', result);
             } else {
                 // we need to close a dialog
                 this.dispatchEvent(closeDialog);
             }
         }
-        if (cmd === 'cancel') this.dispatchEvent(closeDialog);
+        if(cmd === null){
+            cmd = event.detail.action;
+        }
+        if (cmd === 'cancel') {
+            if(this.config.showConfirmation) this.config.showConfirmation = false;
+            else this.dispatchEvent(closeDialog);
+        }
+    }
+    passToParent(){
+        this.config.showConfirmation = false;
+        this.dispatchEvent(new CustomEvent('childaction', { detail: { cmd: ':updateFromChildDialog', data: [] } }));
     }
 
     @api disableButtons(newTitle, spinner) {
@@ -95,4 +117,3 @@ export default class dialog extends LightningElement {
     }
 
 }
-

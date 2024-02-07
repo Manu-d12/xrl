@@ -12,7 +12,10 @@
 					</div>
 					<div class="slds-modal__content slds-p-around_medium">
 						<template if:false={config.fields}>
-							<span if:true={config.content}>{config.content.text}</span>
+							<span if:true={config.content.text}>{config.content.text}</span>
+							<template if:true={config.content.isIframe}>
+								<iframe style={config.content.style} src={config.content.url}></iframe>
+							</template>
 						</template>
 						<c-Dialog-Item if:true={config.fields} cfg={config.fields} onkeydown={handleEvents}
 							onchildaction={handleEvents}></c-Dialog-Item>
@@ -29,15 +32,18 @@
 			<div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
 		</template>
 	</template>
-
+	<c-dialog if:true={config.showConfirmation} cfg={config.UI} onaction={handleEvents} onchildaction={passToParent}></c-dialog>
 	<template if:true={config.withoutHeader}>
 		<lightning-quick-action-panel header={config.title} style={config.headerStyle}>
 			<div  style="position:relative;">
 			<template if:false={config.fields}>
-				<span if:true={config.content}>{config.content.text}</span>
+				<span if:true={config.content.text}>{config.content.text}</span>
+				<template if:true={config.content.isIframe}>
+					<iframe style={config.content.style} src={config.content.url}></iframe>
+				</template>
 			</template>
 			<c-Dialog-Item if:true={config.fields} cfg={config.fields} onkeydown={handleEvents} onchildaction={handleEvents}></c-Dialog-Item>
-			<lightning-spinner if:true={config.isSpinner} alternative-text="Loading"></lightning-spinner>
+			<!-- <lightning-spinner if:true={config.isSpinner} alternative-text="Loading"></lightning-spinner> -->
 			</div>
 		</lightning-quick-action-panel>
 		<div class="slds-modal__footer">

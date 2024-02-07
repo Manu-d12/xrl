@@ -1,6 +1,6 @@
 <template>
 	
-	
+	<p if:true={config._loadingInfo} style="margin-left:46%"><b>{config._loadingInfo}</b></p>
 	<lightning-formatted-rich-text if:true={config._errors} value={config._errors}></lightning-formatted-rich-text>
 	<div style={config._tableStyle} ondropdownevent={handleDropDownEvents}>
 		<div class="slds-grid slds-m-around_xx-small">

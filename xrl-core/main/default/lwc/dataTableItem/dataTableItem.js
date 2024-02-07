@@ -164,6 +164,8 @@ export default class dataTableItem extends LightningElement {
 			let row,val;
 			[row,val] = libs.getLookupRow(this.row, this.col.fieldName);
 			try {
+				//passing this.row instead of row as having a issue when fieldName is quote1.StrataVAR__Part_Number__c 
+				//the row value is coming as blank, need to investigate further, issue in libs.getLookupRow function
 				value += this.col._uStyle(row, this.col, val);
 			} catch(e) {
 				console.error(e.toString);

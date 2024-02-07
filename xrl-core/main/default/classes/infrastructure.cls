@@ -127,10 +127,20 @@ global with sharing class infrastructure {
 			result.put('exception', new map < string, object > {
 				'title' => 'EXCEPTION',
 				'message' => e.getMessage(),
+                'lineNumber' => e.getLineNumber(),
+                'typeName' => e.getTypeName(),
 				'debugMessage' => stackTrace,
                 'apexCode' => apexCode,
                 'input' => data
 			});
+           insert new log__c(
+            operation__c = 'EXCEPTION',
+            dateTimeStamp__c = system.now(),
+            info__c = JSON.serializePretty(result).LEFT(130000),
+            errCode__c = 'EXCEPTION'
+
+        );
+
 		}
 		
         result.put(cmd + 'Result', resultMethod);
@@ -341,7 +351,7 @@ global with sharing class infrastructure {
 
 		list < map < string, object >> listViews = new list < map < string, object >> {};
 
-		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c, sObjApiName__c, relFieldApiName__c, configType__c FROM extRelListConfig__c WHERE Id =: configId LIMIT 20];
+		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c, sObjApiName__c, relFieldApiName__c, configType__c FROM extRelListConfig__c WHERE Id =: configId AND Is_Active__c = TRUE LIMIT 20];
 		for (integer i = 0; i < lst.size(); i++) {
 			extRelListConfig__c item = lst[i];
 			map < string, object > view = new map < string, object > {
@@ -372,7 +382,7 @@ global with sharing class infrastructure {
 
 		list < map < string, object >> listViews = new list < map < string, object >> {};
 
-		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c, sObjApiName__c, relFieldApiName__c, configType__c FROM extRelListConfig__c WHERE uniqKey__c =: uniqueName LIMIT 20];
+		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c, sObjApiName__c, relFieldApiName__c, configType__c FROM extRelListConfig__c WHERE uniqKey__c =: uniqueName AND Is_Active__c = TRUE LIMIT 20];
 		for (integer i = 0; i < lst.size(); i++) {
 			extRelListConfig__c item = lst[i];
 			map < string, object > view = new map < string, object > {
@@ -812,6 +822,26 @@ global with sharing class infrastructure {
 			'hlpUrl_tableSettingsAdvanced' => label.hlpUrl_tableSettingsAdvanced,
 			'hlpUrl_actionsAdvanced' => label.hlpUrl_actionsAdvanced,
 			'hlpUrl_loadChunkSize' => label.hlpUrl_loadChunkSize,
+			'hlpUrl_chunkSizeForDeleteAndSave' => label.hlpUrl_chunkSizeForDeleteAndSave,
+			'hlpUrl_groupOrder' => label.hlpUrl_groupOrder,
+			'hlpUrl_isColumnHidden' => label.hlpUrl_isColumnHidden,
+			'hlpUrl_width' => label.hlpUrl_width,
+			'hlpUrl_isColumnWrapable' => label.hlpUrl_isColumnWrapable,
+			'hlpUrl_showNumeration' => label.hlpUrl_showNumeration,
+			'hlpUrl_enableColumnHeaderWrap' => label.hlpUrl_enableColumnHeaderWrap,
+			'hlpUrl_showStandardEdit' => label.hlpUrl_showStandardEdit,
+			'hlpUrl_rollback' => label.hlpUrl_rollback,
+			'hlpUrl_overrideGridHeader' => label.hlpUrl_overrideGridHeader,
+			'hlpUrl_beforeSaveApexAction' => label.hlpUrl_beforeSaveApexAction,
+			'hlpUrl_listSizeOptionsDropdown' => label.hlpUrl_listSizeOptionsDropdown,
+			'hlpUrl_actionTip' => label.hlpUrl_actionTip,
+			'hlpUrl_actionIsHidden' => label.hlpUrl_actionIsHidden,
+			'hlpUrl_newAction' => label.hlpUrl_newAction,
+			'hlpUrl_actionVisibleOnRecords' => label.hlpUrl_actionVisibleOnRecords,
+			'hlpUrl_actionIconName' => label.hlpUrl_actionIconName,
+			'hlpUrl_refreshAfterCustomActionExecutione' => label.hlpUrl_refreshAfterCustomActionExecutione,
+			'hlpUrl_appliedConditions' => label.hlpUrl_appliedConditions,
+			'hlpUrl_conditionFilteringPattern' => label.hlpUrl_conditionFilteringPattern,
 			'lbl_additionalConditionForWhereClause' => label.lbl_additionalConditionForWhereClause,
 			'lbl_chooseField' => label.lbl_chooseField,
 			'lbl_cancel' => label.lbl_cancel,
@@ -929,6 +959,10 @@ global with sharing class infrastructure {
 			'lbl_advancedActionSettings'=>label.lbl_advancedActionSettings,
 			'lbl_externalJS' => label.lbl_externalJS,
 			'lbl_selectAnOption' => label.lbl_selectAnOption,
+			'lbl_addVirtualField' => label.lbl_addVirtualField,
+			'lbl_addVirtualFieldLabel' => label.lbl_addVirtualFieldLabel,
+			'lbl_addVirtualFieldApiName' =>label.lbl_addVirtualFieldApiName,
+			'lbl_addVirtualFieldAdvancedJSON' => label.lbl_addVirtualFieldAdvancedJSON,
 			'msg_enterUniqueActionId'=>label.msg_enterUniqueActionId,
 			'msg_lisViewWasUpdated' => label.msg_lisViewWasUpdated,
 			'msg_requestWasSent' => label.msg_requestWasSent,
@@ -956,6 +990,9 @@ global with sharing class infrastructure {
 			'msg_onlyAcceptsPositiveNumbers'=>label.msg_onlyAcceptsPositiveNumbers,
 			'msg_rowCallbackEnabled'=>label.msg_rowCallbackEnabled,
 			'msg_recordLoadingStatus' => label.msg_recordLoadingStatus,
+			'msg_virtualFieldAddedSuccessfully' => label.msg_virtualFieldAddedSuccessfully,
+			'msg_virtualFieldAlreadyExists' => label.msg_virtualFieldAlreadyExists,
+			'msg_virtualFieldApiNameBlank' => label.msg_virtualFieldApiNameBlank,
 			'placeHolder_beforeSaveValidation'=>label.placeHolder_beforeSaveValidation,
 			'placeHolder_beforeDeleteValidation'=>label.placeHolder_beforeDeleteValidation,
 			'placeholder_actionCallback'=> label.placeholder_actionCallback,
@@ -1182,24 +1219,23 @@ global with sharing class infrastructure {
 	}
     
     private static map < string, object > invokeApex(string helperType, map<string, object> data) {
-		/*string nameSpacePrefix = (string) data.get('nameSpacePrefix');
-		string[] apexHelper = helperType.split('\\.');
 		
-        string helperTypeClass = apexHelper[0];// customActions.getPackage, customActions.getPackage, customActions, Stratavar.customActions
-    	
-        // check class exist or not
-        ApexClass[] A = [SELECT Id, NamespacePrefix FROM ApexClass WHERE Name =: helperTypeClass ORDER BY NamespacePrefix ASC NULLS FIRST LIMIT 1];
+        string[] apexHelper = helperType.split('\\.');
+	    string helperTypeClass = apexHelper[0];
+        infrastructure.addDebugLog('invokeApex', apexHelper);
         
-        if (A.size() == 0) throw new InfrastructureException(null, 'Can\'t find class {1}'.replace('{1}', helperType) + ':' + helperTypeClass, exceptionType.CLASS_NOT_FOUND);
-        
-        Type T = string.isEmpty(A[0].namespacePrefix) ? type.forName(helperType) : type.forName(A[0].namespacePrefix, helperType);
-        if (T == null) throw new InfrastructureException(null, ('Can\'t find method {1} in class ' + helperType).replace('{1}', helperType) + ':' + helperTypeClass, exceptionType.INSTANCE_CLASS_NOT_FOUND);
-                
-        handler handlerClass = (handler) JSON.deserialize(JSON.serialize(data), T);*/
-
-		Type T = type.forName(helperType);			
+   		ApexClass[] A = [SELECT Id, NamespacePrefix FROM ApexClass WHERE Name =: helperTypeClass ORDER BY NamespacePrefix ASC NULLS FIRST LIMIT 1];
+        if (A.size() == 0) throw new InfrastructureException(null, 'Can\'t find class {1}'.replace('{1}', helperTypeClass) + ':' + helperType, exceptionType.CLASS_NOT_FOUND);
+        Type T = string.isEmpty(A[0].namespacePrefix) ? system.type.forName(null,helperType) : system.type.forName(A[0].namespacePrefix, helperType);
 		if (T == null) throw new InfrastructureException(null, ('Can\'t find class {1}').replace('{1}', helperType), exceptionType.CLASS_NOT_FOUND);
-		handler handlerClass = (handler) T.newInstance();
+        infrastructure.addDebugLog('invokeApex', T.toString());
+        //handler handlerClass = (infrastructure.handler) JSON.deserialize(JSON.serialize(data.get('data')), T);
+        //handler handlerClass = (infrastructure.handler) T.newInstance();
+
+		/*
+			SALESFORCE BUG. helperTypeClass  must have API version 48 and not more!!! 
+		*/
+        handler handlerClass = (infrastructure.handler)JSON.deserialize(JSON.serialize(data.get('data')), T);
 
 		map < string, object > result = new map < string, object > ();
 		try {
@@ -1213,19 +1249,23 @@ global with sharing class infrastructure {
 		}
 		return result;
     }
+
 	private static object orchestrator(map<string, object> data) {        
         string operation = (string) data.get('operation');
-		orchestrator.orchestratorRequest orcReq = (orchestrator.orchestratorRequest) JSON.deserialize(JSON.serialize(data.get('orchestratorRequest')), orchestrator.orchestratorRequest.class);
-            //new orchestrator.orchestratorRequest();
-		//orcReq.rootRecordId = (string) data.get(rootRecordId);
-		//orcReq.relatedRecordIds = new Id[]{'5005i00000Kiy9BAAR','5005i00000Kiy9CAAR'};
-		//orcReq.isFirstChunk = true;    
-		//orcReq.isLastChunk = true;
+        boolean isRawResponse = (boolean) data.get('isRawResponse') == true;
 
-		object result = new orchestrator(operation,orcReq).getResults();
-		System.debug(result);
-		System.debug('DONE');
-		return result;
+		string oReqStr  = JSON.serialize(data.get('orchestratorRequest'));
+		map<string, object> oReq = (map<string,  object>) JSON.deserializeUntyped(oReqStr);
+		infrastructure.addDebugLog('infrastructure.orchestrator', oReq);
+        string entities = oreq.containskey('entities') ? JSON.serialize(oreq.remove('entities')) : null;
+		infrastructure.addDebugLog('infrastructure.orchestrator', entities);
+		//system.debug(LoggingLevel.Error, 'Entities ' + entities);
+        //system.debug(LoggingLevel.Error, 'oreq ' + oreq);
+		orchestrator.orchestratorRequest orcReq = (orchestrator.orchestratorRequest) JSON.deserialize(JSON.serialize(oReq), orchestrator.orchestratorRequest.class);
+		if (entities!=null)	orcReq.entities = (object[]) JSON.deserializeUntyped(entities);
+		orchestrator.orchestratorResponse result = new orchestrator(operation,orcReq).getResults();
+		if (isRawResponse == true) return result;
+		else return JSON.serialize(result);
     }
 
 	private static string[] getIntrLst() {
@@ -1355,7 +1395,9 @@ global with sharing class infrastructure {
     }
     
     global class validationResult {
+		@AuraEnabled
         global validationResultCode code;
+		@AuraEnabled
         global object[] dynamicValues; //  Need for errorMessage representation
     }
     
@@ -1384,5 +1426,12 @@ global with sharing class infrastructure {
 		IMPLEMENTATION,
 		TRANSFORM_CLASS_NOT_FOUND
 	}
+
+	global static map < string, object > globalVars;
+
+    static {
+        globalVars = new map < string, object > {
+        };
+    }
 
 }

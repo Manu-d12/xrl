@@ -124,7 +124,7 @@ export let libs = {
 				if (fields[i].endsWith('Id')) {
 					row = obj[fields[i].replace(/Id/, '')];
 				}
-				if (fields[i].endsWith('__c')) {
+				if (fields[i].endsWith('__c') && typeof obj[fields[i].replace(/__c/, '__r')] === 'object') {
 					row = obj[fields[i].replace(/__c/, '__r')];
 				}
 			}
@@ -164,7 +164,8 @@ export let libs = {
 				"defValue": false,
 				"type": "checkbox",
 				"label": _labels.lbl_isColumnHidden,
-				"tooltip": _labels.tooltip_isColumnHidden
+				"tooltip": _labels.tooltip_isColumnHidden,
+				"helpArticleUrl": _labels.hlpUrl_isColumnHidden
 			},
 			"isFilterable": {
 				"defValue": true,
@@ -191,12 +192,14 @@ export let libs = {
 				"defValue": false,
 				"type": "checkbox",
 				"label": _labels.lbl_isColumnWrapable,
-				"tooltip": _labels.tooltip_isColumnWrapable
+				"tooltip": _labels.tooltip_isColumnWrapable,
+				"helpArticleUrl": _labels.hlpUrl_isColumnWrapable,
 			},
 			"width": {
 				"type": "string",
 				"label" : _labels.lbl_width,
-				"tooltip": _labels.tooltip_widthExample
+				"tooltip": _labels.tooltip_widthExample,
+				"helpArticleUrl": _labels.hlpUrl_width
 			},
 			"advanced": {
 				"type": "function",
@@ -227,7 +230,8 @@ export let libs = {
 				"type": "checkbox",
 				"label": _labels.lbl_showNumeration,
 				"tooltip": _labels.tooltip_addNumerationColumnToTable,
-				"cmd" : "dialog:setTableParam"
+				"cmd" : "dialog:setTableParam",
+				"helpArticleUrl": _labels.hlpUrl_showNumeration
 			},
 			"isShowCheckBoxes": {
 				"defValue": false,
@@ -267,6 +271,7 @@ export let libs = {
 				"label": _labels.lbl_enableColumnHeaderWrap,
 				"tooltip": _labels.tooltip_enableColumnHeaderWrap,
 				"cmd" : "dialog:setTableParam",
+				"helpArticleUrl": _labels.hlpUrl_enableColumnHeaderWrap,
 			},
 			"showStandardEdit" : {
 				"defValue": false,
@@ -275,6 +280,7 @@ export let libs = {
 				"tooltip": _labels.tooltip_replaceInlineEditWithStandardEdit,
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
+				"helpArticleUrl": _labels.hlpUrl_showStandardEdit,
 			},
 			"rollBack" : {
 				"defValue": false,
@@ -283,12 +289,14 @@ export let libs = {
 				"tooltip": _labels.tooltip_rollback,
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
+				"helpArticleUrl": _labels.hlpUrl_rollback,
 			},
 			"overrideGridHeader" : {
 				"type": "string",
 				"label": _labels.lbl_overrideGridHeader,
 				"tooltip": _labels.tooltip_overrideGridHeader,
 				"cmd" : "dialog:setTableParam",
+				"helpArticleUrl": _labels.hlpUrl_overrideGridHeader,
 			},
 			"groupFieldName" : {
 				"defValue": "",
@@ -308,6 +316,7 @@ export let libs = {
 				"tooltip": _labels.tooltip_groupOrder,
 				"options": [{label:'ASC',value:'ASC'},{label:'DESC',value:'DESC'}],
 				"cmd" : "dialog:setTableParam",
+				"helpArticleUrl": _labels.hlpUrl_groupOrder,
 			},
 			/*"isRecordsDragDropEnabled": { // Kuntal, we need to remove this checkbox, and check callback on advanced section
 				"defValue": false,
@@ -340,6 +349,7 @@ export let libs = {
 				"tooltip": _labels.tooltip_numbersOfRecordInChunk,
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
+				"helpArticleUrl": _labels.hlpUrl_chunkSizeForDeleteAndSave,
 			},
 			"deleteChunkSize" : {
 				"defValue": 200,
@@ -348,6 +358,7 @@ export let libs = {
 				"tooltip": _labels.tooltip_deleteChunkSize,
 				"isReadOnly": true,
 				"cmd" : "dialog:setTableParam",
+				"helpArticleUrl": _labels.hlpUrl_chunkSizeForDeleteAndSave,
 			},
 			"loadChunkSize" : {
 				//"defValue": 200,
@@ -377,7 +388,8 @@ export let libs = {
 				"label": _labels.lbl_beforeSaveApexAction,
 				"tooltip": _labels.tooltip_beforeSaveApexAction,
 				"isReadOnly": true,
-				"cmd" : "dialog:setTableParam"
+				"cmd" : "dialog:setTableParam",
+				"helpArticleUrl": _labels.hlpUrl_beforeSaveApexAction,
 			},
 			// "beforeDeleteValidation": {
 			// 	"type": "function",
@@ -395,6 +407,7 @@ export let libs = {
 				"label": _labels.lbl_listSizeOptionsDropdown,
 				"tooltip": _labels.tooltip_numbersOfOptionsShown,
 				"cmd" : "dialog:setTableParam",
+				"helpArticleUrl": _labels.hlpUrl_listSizeOptionsDropdown,
 			},
 			//moved to advanced config JSON
 			// "rowCss": {
@@ -481,8 +494,8 @@ export let libs = {
 				"defValue":'',
 				"type": "text",
 				"label": _labels.lbl_actionTip,
-				"tooltip": _labels.tooltip_actionTipTooltip
-
+				"tooltip": _labels.tooltip_actionTipTooltip,
+				"helpArticleUrl": _labels.hlpUrl_actionTip,
 			},
 			"actionCallBack" : {
 				"defValue":'',
@@ -495,15 +508,15 @@ export let libs = {
 				"defValue":false,
 				"type": "checkbox",
 				"label": _labels.lbl_actionIsHidden,
-				"tooltip": _labels.tooltip_actionIsHidden
-
+				"tooltip": _labels.tooltip_actionIsHidden,
+				"helpArticleUrl": _labels.hlpUrl_actionIsHidden,
 			},
 			"actionVisibleOnRecordSelection" : {
 				"defValue":false,
 				"type": "checkbox",
 				"label": _labels.lbl_actionVisibleOnRecords,
-				"tooltip": _labels.tooltip_actionVisibleOnRecords
-
+				"tooltip": _labels.tooltip_actionVisibleOnRecords,
+				"helpArticleUrl": _labels.hlpUrl_actionVisibleOnRecords,
 			},
 			"actionVariant" : {
 				"type": "combobox",
@@ -516,13 +529,15 @@ export let libs = {
 			"actionIconName" : {
 				"type": "text",
 				"label": _labels.lbl_actionIconName,
-				"tooltip": _labels.tooltip_actionIconName
+				"tooltip": _labels.tooltip_actionIconName,
+				"helpArticleUrl": _labels.hlpUrl_actionIconName,
 			},
 			"refreshAfterCustomActionExecution" : { 
 				"defValue":false,
 				"type": "checkbox",
 				"label": _labels.lbl_refreshAfterCustomActionExecution,
-				"tooltip": _labels.tooltip_refreshAfterCustomActionExecution
+				"tooltip": _labels.tooltip_refreshAfterCustomActionExecution,
+				"helpArticleUrl": _labels.hlpUrl_refreshAfterCustomActionExecutione,
 			},
 			"actionOrder" : {
 				"type": "text",
@@ -624,8 +639,45 @@ export let libs = {
 		}
 		return message;
 	},
+	checkAllRequiredFields: function(config,data){
+		let allData=[];
+		Object.entries(data.data).forEach(([key, value]) => {
+			allData.push(value);
+		});
+		config = JSON.parse(JSON.stringify(config));
+		const allFields = [];
+
+		config[0].fields.forEach((field)=>{
+			if(field.parentValue.includes(data.data.bomType)){
+				allFields.push(field);
+			}
+		});
+		
+		while(allFields.length > 0){
+			const current = allFields.pop();
+			let parentValueCheck= false;
+			if(current.parentValue){
+				for(let i=0; i< current.parentValue.length ;i++){
+					if(allData.includes(current.parentValue[i])){
+						parentValueCheck= true;
+						break;
+					}
+				}
+			}
+	
+			if(current.isRequired !== undefined && current.isRequired === true && data.data[current.name] === undefined && current.type !== 'section' && parentValueCheck){
+				return {"value": false, "message": current.name};
+			}
+
+			if(current.fields){
+				allFields.push(...current.fields);
+			}
+		}
+
+		return {"value": true, "message": "All fields have value"};
+	},
 	getMacros: function(){
-		return [{"label":'recordId',"value":'%%recordId%%'}, {"label":'userId',"value":'%%userInfo.id%%'},{"label":'sObjApiName',"value":'%%sObjApiName%%'},{"label":'urlParam',"value":'%%urlParam%%'}];
+		return [{"label":'%%recordId%%',"value":'%%recordId%%'}, {"label":'%%userId%%',"value":'%%userInfo.id%%'},{"label":'%%sObjApiName%%',"value":'%%sObjApiName%%'},{"label":'%%urlParam%%',"value":'%%urlParam%%'}];
 	},
 	getDateLiterals: function(){
 		return [{"label":'CUSTOM',"value":'CUSTOM'},{"label":'YESTERDAY',"value":'YESTERDAY'},{"label":'TODAY',"value":'TODAY'},{"label":'TOMORROW',"value":'TOMORROW'},{"label":'LAST WEEK',"value":'LAST_WEEK'},{"label":'THIS WEEK',"value":'THIS_WEEK'},{"label":'LAST MONTH',"value":'LAST_MONTH'},{"label":'THIS MONTH',"value":'THIS_MONTH'},{"label":'THIS YEAR',"value":'THIS_YEAR'},{"label":'LAST YEAR',"value":'LAST_YEAR'}];
@@ -1123,6 +1175,44 @@ export let libs = {
 			libs.getGlobalVar('orchestratorResult').errorRecords += data.invalidCount;
 		}
 		return libs.getGlobalVar('orchestratorResult');
+	},
+	getBulkRecordsId:async function(scope,whereCondition,sObjApiName,relField){
+		await this.remoteAction(scope, 'query', {
+			isNeedDescribe: true,
+			sObjApiName: sObjApiName,
+			relField: relField,
+			addCondition: whereCondition,
+			orderBy: ' ORDER BY Id ASC',
+			fields: ['Id'],
+			listViewName: scope.config?.listView?.name,
+			callback: ((nodeName, data) => {
+				console.log('record Ids chunk size', data[nodeName].records);
+				scope.config.listOfRecordIds = scope.config.listOfRecordIds.concat(data[nodeName].records);
+			})
+		});
+	},
+	getBulkRecords: async function(scope,fields,sObjApiName,whereCondition,orderBy,limit,relField){
+		await this.remoteAction(scope, 'query', {
+			isNeedDescribe: true,
+			sObjApiName: sObjApiName,
+			relField: relField,
+			addCondition: whereCondition,
+			orderBy: orderBy,
+			fields: fields,
+			limit: 'LIMIT ' + limit,
+			listViewName: scope.config?.listView?.name,
+			callback: ((nodeName, data) => {
+				console.log('records chunk size', data[nodeName].records);
+				scope.config.inaccessibleFields= data[nodeName].removedFields;
+				scope.config.query = data[nodeName].SOQL;
+				scope.config.listOfBulkRecords = scope.config.listOfBulkRecords.concat(data[nodeName].records);
+				scope.config._loadingInfo = this.formatStr('{0}/{1} {2}',[scope.config.listOfBulkRecords.length,scope.config.totalRecordsCount,scope.config._LABELS.msg_recordLoadingStatus]);
+			})
+		});
+	},
+	closeChildDialogs: function(scope){
+		let closeDialog = new CustomEvent('childaction', { detail: { childaction: ':updateFromChildDialog', data: [] } });
+		scope.dispatchEvent(closeDialog);
 	},
 	currencyMap: function(cur) {
 		let map = {

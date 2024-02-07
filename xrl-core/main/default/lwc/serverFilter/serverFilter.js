@@ -39,7 +39,7 @@ export default class ServerFilter extends LightningElement {
             }
 		}
         for(let key in this.sFilterfields){
-            if (!this.sFilterfields[key].virtual) this.selectedFields.push(this.sFilterfields[key].fieldName);
+            if (!this.sFilterfields[key].isVirtual) this.selectedFields.push(this.sFilterfields[key].fieldName);
         }
         this.defaultFields = this.defaultFields.length === 0 ? this.sFilterfields.map(f => f.fieldName) : this.defaultFields;
         libs.sortRecords(this.allFields, 'label', true);
@@ -75,14 +75,14 @@ export default class ServerFilter extends LightningElement {
         for (let element of this.sFilterfields) {
             element.class = colClass;
             if (element.type === 'picklist') {
-                element.inputTypeComboBox = true;
                 if (element.options && typeof element.options === 'function') {
-                    element.options = element.options(this, libs, element);
+                    element.options = await element.options(this, libs, element);
                 }
-                if (element.options[0].value !== 'All' && element.hasAll) {
+                if ((element.isVirtual === undefined || element.isVirtual === false) && element.options[0].value !== 'All' && element.hasAll) {
                     element.options.splice(0, 0, { label: "All", value: "All" });
                 }
                 element.class = 'slds-col slds-size_1-of-12';
+                element.inputTypeComboBox = true;
             } else if (element.type === 'boolean') {
                 element.inputTypeComboBox = true;
                 element.options = [];
@@ -148,9 +148,14 @@ export default class ServerFilter extends LightningElement {
         return element;
     }
       
-    handleChange(event) {
+    async handleChange(event) {
         let apiName = event.target.dataset.id;
         let field = this.sFilterfields.find(f => f.fieldName === apiName);
+        // if(field.isVirtual){
+        //     this.conditionMap[apiName] = event.target.value;
+        //     await field.virtualCallback(this,libs,event);
+        //     return;
+        // }
         if (field.inputTypeDateRange) {
             let values = [];
             this.template.querySelectorAll(`[data-id="${apiName}"]`)?.forEach(f => values.push(f.value));
@@ -200,6 +205,11 @@ export default class ServerFilter extends LightningElement {
 				condition += partCondition!=undefined && partCondition!='' ? ' AND ' + partCondition : '';
                 continue;
             }
+
+            if(colItem.isVirtual !== undefined && colItem.isVirtual === true){
+                continue;
+            }
+
             if (typeof this.conditionMap[key] === 'object' && JSON.parse(JSON.stringify(this.conditionMap[key])).length > 1 && colItem.type !== 'daterange') {
                 JSON.parse(JSON.stringify(this.conditionMap[key])).forEach((el, index) => {                    
                     condition += index === 0 ? ' AND (' : ' OR ';

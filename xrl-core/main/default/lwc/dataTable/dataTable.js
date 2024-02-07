@@ -205,12 +205,6 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					el._rowStyle += eval('(' + this.config._advanced?.rowCss + ')')(el);
 				} catch (e) {
 					this.config._errors = libs.formatCallbackErrorMessages(e,'table','Row Css Callback');
-					// libs.showToast(this, {
-					// 	title: 'Error',
-					// 	message: e.toString(),
-					// 	variant: 'error',
-					// });
-					// console.error('Error', e);
 				}
 			}
 		});
@@ -238,12 +232,6 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					try {
 						el._rowStyle += eval('(' + this.config._advanced?.rowCss + ')')(el);
 					} catch (e) {
-						// libs.showToast(this, {
-						// 	title: 'Error',
-						// 	message: e.toString(),
-						// 	variant: 'error',
-						// });
-						// console.error('Error', e);
 						this.config._errors = libs.formatCallbackErrorMessages(e,'table','Row Css Callback');
 					}
 				}
@@ -298,35 +286,35 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			}
 			// Need for pagination;
 			return this.groupedRecords;
-		} else {
-			let isPager = this.config.pager;
-			if(!this.config.pager.pagerTop && !this.config.pager.pagerBottom){
-				let startIndex = 0;
-				let endIndex = this.records.length > 200 ? 200 : this.records.length;
-				let result = [];
-				for (let i = startIndex; i < endIndex; i++) {
-					result.push(this.records[i]);
-				}
-				this.displayedItemCount = this.recordInfo+ ' Showing only '+ endIndex  +' item(s)';
-				//console.log('result', JSON.parse(JSON.stringify(result)));
-				this.config._recordsToShow = result;
-				return result;
-			}
-			else if (isPager) {
-				let startIndex = (this.config.pager.curPage - 1) * this.config.pager.pageSize;
-				let endIndex = (startIndex + parseInt(this.config.pager.pageSize)) < this.records.length ? (startIndex + parseInt(this.config.pager.pageSize)) : this.records.length;
-				let result = [];
-				for (let i = startIndex; i < endIndex; i++) {
-					result.push(this.records[i]);
-				}
-				//console.log('result', JSON.parse(JSON.stringify(result)));
-				this.config._recordsToShow = result;
-				return result;
-			}
-			// Need for pagination;
-			this.config._recordsToShow = this.records;
-			return this.records;
 		}
+
+		let isPager = this.config.pager;
+		if(!this.config.pager.pagerTop && !this.config.pager.pagerBottom){
+			let startIndex = 0;
+			let endIndex = this.records.length > 200 ? 200 : this.records.length;
+			let result = [];
+			for (let i = startIndex; i < endIndex; i++) {
+				result.push(this.records[i]);
+			}
+			this.displayedItemCount = this.recordInfo+ ' Showing only '+ endIndex  +' item(s)';
+			//console.log('result', JSON.parse(JSON.stringify(result)));
+			this.config._recordsToShow = result;
+			return result;
+		}
+		else if (isPager) {
+			let startIndex = (this.config.pager.curPage - 1) * this.config.pager.pageSize;
+			let endIndex = (startIndex + parseInt(this.config.pager.pageSize)) < this.records.length ? (startIndex + parseInt(this.config.pager.pageSize)) : this.records.length;
+			let result = [];
+			for (let i = startIndex; i < endIndex; i++) {
+				result.push(this.records[i]);
+			}
+			//console.log('result', JSON.parse(JSON.stringify(result)));
+			this.config._recordsToShow = result;
+			return result;
+		}
+		// Need for pagination;
+		this.config._recordsToShow = this.records;
+		return this.records;
 	}
 
 	get recordInfo() {
@@ -485,6 +473,15 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			this.config.colModel.push(add);
 		});
 		let tableWidth=0
+		let compWidth= libs.getGlobalVar(this.cfg).componentWidth
+		let screenWidth=0
+		if(compWidth === 'LARGE'){
+			screenWidth = (window.screen.width - 100);
+		}else if(compWidth === 'MEDIUM'){
+			screenWidth = (window.screen.width/2);
+		}else if(compWidth === 'SMALL'){
+			screenWidth = (window.screen.width/4);
+		}
 		this.config.colModel.forEach((item,index) => {
 			if(item.advanced !== undefined && item.advanced !== ''){
 				try{
@@ -546,9 +543,11 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				//item._style = 'width: ' + wd.replace(';','') + maxWidth + 'padding-left:1px;' + 'min-width: 100px;';
 				if(item.width !== ""){
 					//here checking the width is more than max width(500px in here) column can have and adding them in tableWidth
-					tableWidth+= parseInt(wd.endsWith('%') ? wd.replace('%','') : wd.replace('px','')) >500 ? 500 : parseInt(wd.endsWith('%') ? wd.replace('%','') : wd.replace('px',''))
+					//tableWidth+= parseInt(wd.endsWith('%') ? wd.replace('%','') : wd.replace('px','')) >500 ? 500 : parseInt(wd.endsWith('%') ? wd.replace('%','') : wd.replace('px',''))
+					tableWidth+= wd.endsWith('%') ? ( parseInt(wd.replace('%','')) > 40 ? screenWidth*0.4 : screenWidth*parseInt(wd.replace('%',''))/100) : (wd.replace('px','') > 500 ? 500 : parseInt(wd.replace('px','')));
 				}
-				item._style = 'width: ' + wd.replace(';','') + maxWidth + 'padding-left:1px;';
+				//item._style = 'width: ' + wd.replace(';','') + maxWidth + 'padding-left:1px;';
+				item._style = 'width: ' + (wd.replace(';','').slice(-1) === '%' ? (parseInt(wd.replace('%','')) > 40 ? screenWidth*0.4+'px' : screenWidth*parseInt(wd.replace('%',''))/100+'px') : (wd.replace(';','')) )+ ';max-width: 500px;' + 'padding-left:1px;';
 			}else{
 				item._style = 'padding-left:1px;padding-right:1px;';
 			}
@@ -566,16 +565,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		this.dispatchEvent(event);
 		//Here first checking the table width(total width the user has enter for different column) with the screen size on the basic of where XRL is used
 		//jira no- HYPER-557
-		let compWidth= libs.getGlobalVar(this.cfg).componentWidth
+		
 		//console.log('width'+compWidth)
-		let screenWidth=0
-		if(compWidth === 'LARGE'){
-			screenWidth = (window.screen.width - 100);
-		}else if(compWidth === 'MEDIUM'){
-			screenWidth = (window.screen.width/2);
-		}else if(compWidth === 'SMALL'){
-			screenWidth = (window.screen.width/4);
-		}
 		//console.log('container '+screenWidth+'  '+tableWidth)
 		if(tableWidth >= screenWidth){
 			this.config.colModel.forEach((item,index) => {
@@ -646,7 +637,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		return newValue;
 	}
 
-	saveEditCallback(isNeedSave, rowName, value) {
+	async saveEditCallback(isNeedSave, rowName, value) {
 		if (isNeedSave === true) {
 			if (rowName !== undefined) {
 				this.config._inlineEditRow = this.config._inlineEditRow !== undefined ? 
@@ -697,7 +688,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					r._isEditable = false;
 					if(this.config?._advanced?.afterEditCallback !== undefined && this.config?._advanced?.afterEditCallback !== ""){
 						try{
-							this.config?._advanced?.afterEditCallback(this,libs,[r]);
+							await this.config?._advanced?.afterEditCallback(this,libs,[r]);
 						}catch(e){
 							// console.error("Error",e);
 							this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Edit Callback');
@@ -705,7 +696,10 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					}
 					Object.assign(globalItem, r);
 					libs.getGlobalVar(this.cfg).records = this.records;
-					this.changeRecord(this.config._inlineEditRow.Id);
+					//need to investigate why it is called multiple times for a single record
+					if(this.config._inlineEditRow?.Id){ //Temporary fix of HYPER-745
+						this.changeRecord(this.config._inlineEditRow.Id);
+					}
 				}
 				//delete this.records[this.config._inlineEdit];
 				//delete this.config._inlineEdit;
@@ -1025,7 +1019,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				value : rec[cItem.fieldName],
 				chBoxLabel : libs.formatStr('Update {0} items', [this.getSelectedRecords().length]),
 				chBoxValue : false,
-				style: libs.formatStr("position:absolute;top:{0}px;left:{1}px", [(-table.offsetHeight + event.srcElement.parentElement.parentElement.offsetTop - (this.config.pager.pagerTop === true ? 110 : 40)), left]),
+				style: libs.formatStr("position:absolute;top:{0}px;left:{1}px", [(-table.offsetHeight + event.srcElement.parentElement?.parentElement?.offsetTop - (this.config.pager.pagerTop === true ? 110 : 40)), left]),
 			}
 			//this.config._isBulkEdit = true;
 		} else {
@@ -1081,9 +1075,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						el._isLookUpEdit = true;
 					}
 				}
-				// });
 				record._isEditable = true;
-
 				if (this.hasGrouping) {
 					this.groupedRecords[groupInd].records[groupRowInd]._isEditable = true;
 					this.groupedRecords[groupInd].records[groupRowInd]._focus = colName;
@@ -1498,7 +1490,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			this.executeBulk();
 		}), 10);
 	}
-	executeBulk(){
+	async executeBulk(){
 		function changeItem(that, item, fieldName, v, refNode, refNodeValue) {
 			
 			
@@ -1544,7 +1536,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			changeItem(this, this.records[this.config._bulkEdit.rowId], this.config._bulkEdit.cItem.fieldName, getValue(this.config._bulkEdit.cItem, value), refNode, refNodeValue);
 			if(this.config?._advanced?.afterEditCallback !== undefined && this.config?._advanced?.afterEditCallback !== ""){
 				try{
-					this.config?._advanced?.afterEditCallback(this,libs,[this.records[this.config._bulkEdit.rowId]]);
+					await this.config?._advanced?.afterEditCallback(this,libs,[this.records[this.config._bulkEdit.rowId]]);
 				}catch(e){
 					// console.error("Error",e);
 					this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Edit Callback');
@@ -1557,7 +1549,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			});
 			if(this.config?._advanced?.afterEditCallback !== undefined && this.config?._advanced?.afterEditCallback !== ""){
 				try{
-					this.config?._advanced?.afterEditCallback(this,libs,this.getSelectedRecords());
+					await this.config?._advanced?.afterEditCallback(this,libs,this.getSelectedRecords());
 				}catch(e){
 					// console.error("Error",e);
 					this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Edit Callback');
@@ -1635,7 +1627,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 	}
 
 	@api
-	handleEventMessage(event) {
+	async handleEventMessage(event) {
 		
 		if(event.detail.cmd.split(':')[1] === 'refresh' && event.detail.cmd.split(':')[0] === 'filter') {
 
@@ -1645,9 +1637,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			// sourceConf.fields.forEach(f => fields.add(f));
 			let fields= new Set();
 			this.config.colModel.forEach((e)=> {
-				if(e.type==="picklist" && e.fieldName !== 'CurrencyIsoCode'){ 
+				if(e.type==="picklist" && e.fieldName !== 'CurrencyIsoCode' && (e.isVirtual === undefined || e.isVirtual === false)){ 
 					fields.add('toLabel(' +e.fieldName + ')');
-				}else{
+				}else if(e.isVirtual === undefined || e.isVirtual === false){
 					fields.add(e.fieldName);
 				}
 			});
@@ -1662,35 +1654,38 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					fields.add(f)
 				}
 			});
-
-			libs.remoteAction(this, 'query', {
-				isNeedDescribe: true,
-				sObjApiName: sourceConf.sObjApiName,
-				relField: sourceConf.relField === 'Id' ? '' : sourceConf.relField,
-				addCondition: sourceConf.condition,
-				fields: Array.from(fields),
-				listViewName: sourceConf.listView?.name,
-				callback: ((nodeName, data) => {  
-					
-					// this.config.records = libs.getGlobalVar(this.cfg).records;
-
-					if(this.config._advanced?.afterloadTransformation !== undefined && this.config._advanced?.afterloadTransformation !== ""){
-						try {
-							this.config.records = this.config._advanced?.afterloadTransformation(this, data[nodeName].records.length > 0 ? data[nodeName].records : []);
-							libs.getGlobalVar(this.cfg).records = this.config.records;
-						} catch(e){
-							// console.log('EXCEPTION', err);
-							this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Load Transformation Callback');
+			if(this.config.loadChunkSize !== undefined || this.config.loadChunkSize !== ''){
+				await this.loadBulkData(sourceConf.condition,sourceConf.relField === 'Id' ? '' : sourceConf.relField,sourceConf.sObjApiName,Array.from(fields));
+			}else{
+				libs.remoteAction(this, 'query', {
+					isNeedDescribe: true,
+					sObjApiName: sourceConf.sObjApiName,
+					relField: sourceConf.relField === 'Id' ? '' : sourceConf.relField,
+					addCondition: sourceConf.condition,
+					fields: Array.from(fields),
+					listViewName: sourceConf.listView?.name,
+					callback: ( async (nodeName, data) => {  
+						
+						// this.config.records = libs.getGlobalVar(this.cfg).records;
+	
+						if(this.config._advanced?.afterloadTransformation !== undefined && this.config._advanced?.afterloadTransformation !== ""){
+							try {
+								this.config.records = await this.config._advanced?.afterloadTransformation(this, libs , data[nodeName].records.length > 0 ? data[nodeName].records : []);
+								libs.getGlobalVar(this.cfg).records = this.config.records;
+							} catch(e){
+								// console.log('EXCEPTION', err);
+								this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Load Transformation Callback');
+							}
+						} else {
+							libs.getGlobalVar(this.cfg).records = data[nodeName].records.length > 0 ? data[nodeName].records : [];
+							this.config.records = libs.getGlobalVar(this.cfg).records;
 						}
-					} else {
-						libs.getGlobalVar(this.cfg).records = data[nodeName].records.length > 0 ? data[nodeName].records : [];
-						this.config.records = libs.getGlobalVar(this.cfg).records;
-					}
-
-					this.connectedCallback();
-				})
-			});
-			this.title = '';		
+	
+					})
+				});
+			}
+			this.title = '';	
+			this.connectedCallback();	
 
 		} else if(event.detail.cmd.split(':')[1] === 'refresh' && event.detail.cmd.split(':')[0] === 'chart') {
 
@@ -1722,6 +1717,71 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			this.connectedCallback();
 		}
 	}
+	async loadBulkData(condition,relField,sObjApiName,fields){
+		let soqlRel = '';
+		if(relField !== undefined && relField !== '' && libs.replaceLiteralsInStr(condition,this.name) !== ''){
+			soqlRel = " WHERE " + libs.replaceLiteralsInStr(condition,this.name).replace('AND', '');
+		}
+
+		if(soqlRel === '' && condition !== ''){
+			soqlRel = " WHERE"+ libs.replaceLiteralsInStr(condition,this.name).replace('AND', '');
+		}
+		await libs.remoteAction(this, 'customSoql', {
+			isNeedDescribe: true,
+			sObjApiName: sObjApiName,
+			SOQL: 'SELECT Count(Id) totalRecordsCount FROM ' + sObjApiName + soqlRel,
+			isAggregateResult: true,
+			callback: ((nodeName, data) => {
+				console.log('Returned records', data[nodeName].records);
+				this.config.totalRecordsCount = data[nodeName].records[0].totalRecordsCount;
+			})
+		});
+		console.log('Total records', this.config.totalRecordsCount);
+		this.config._loadingInfo = libs.formatStr('0/{0} {1}',[this.config.totalRecordsCount,this.config._LABELS.msg_recordLoadingStatus]);
+		this.config.listOfRecordIds = [];
+		this.config.fetchIdLimit = 49950;
+		for (let i = 1; i < ((parseInt(this.config.totalRecordsCount) / parseInt(this.config.fetchIdLimit)) + 1);i++) {
+			if(i === 1) await libs.getBulkRecordsId(this,libs.replaceLiteralsInStr(condition,this.name),sObjApiName,relField);
+			else{
+				await libs.getBulkRecordsId(this," AND Id > '" + this.config.listOfRecordIds[parseInt(this.config.listOfRecordIds.length)-1].Id+"' " + libs.replaceLiteralsInStr(condition,this.name),sObjApiName,relField);
+			}
+			console.log('Verifying loop', i);
+		}
+		console.log('All records Id fetched successfully', this.config.listOfRecordIds.length);
+		// max chunk size will be 10000
+		this.config.loadChunkSize = this.config.loadChunkSize === undefined || !isNaN(this.config.loadChunkSize) || parseInt(this.config.loadChunkSize) > 10000 || parseInt(this.config.loadChunkSize) < 1 ? 10000 : this.config.loadChunkSize;
+		this.config.listOfBulkRecords = [];
+		let startIndex = 0;
+		let endIndex = parseInt(this.config.loadChunkSize);
+		for (let i = 1; i < ((parseInt(this.config.totalRecordsCount) / parseInt(this.config.loadChunkSize)) + 1);i++) {
+			let recordsIds = [];
+			let chunkRecords = this.config.listOfRecordIds.slice(startIndex, endIndex);
+			chunkRecords.forEach(e => {
+				recordsIds.push(e.Id);
+			});
+			startIndex = startIndex + parseInt(recordsIds.length);
+			endIndex = endIndex + parseInt(recordsIds.length);
+			let con = libs.replaceLiteralsInStr(condition,this.name);
+			let updatedCondition = " AND Id IN ('" + recordsIds.join("','") + "') " + (con !== undefined ? con : '');
+			// console.log('condition',condition, i);
+			await libs.getBulkRecords(this,fields,sObjApiName,updatedCondition,'',this.config.loadChunkSize,relField);
+		}
+		console.log('All records fetched successfully', JSON.parse(JSON.stringify(this.config.listOfBulkRecords)));
+		if(this.config._advanced?.afterloadTransformation !== undefined && this.config._advanced?.afterloadTransformation !== ""){
+			try {
+				this.config.records = await this.config._advanced?.afterloadTransformation(this, libs , JSON.parse(JSON.stringify(this.config.listOfBulkRecords)).length > 0 ? JSON.parse(JSON.stringify(this.config.listOfBulkRecords)) : []);
+				libs.getGlobalVar(this.cfg).records = this.config.records;
+			} catch(e){
+				// console.log('EXCEPTION', err);
+				this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Load Transformation Callback');
+			}
+		} else {
+			libs.getGlobalVar(this.cfg).records = JSON.parse(JSON.stringify(this.config.listOfBulkRecords)).length > 0 ? JSON.parse(JSON.stringify(this.config.listOfBulkRecords)) : [];
+			this.config.records = libs.getGlobalVar(this.cfg).records;
+		}
+		
+		this.config._loadingInfo = false;
+	}
 
 	@api
 	handlePostMessageEvents(operations){
@@ -1739,13 +1799,13 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					addCondition: configData.condition,
 					fields: Array.from(fields),
 					listViewName: configData.listView?.name,
-					callback: ((nodeName, data) => {  
+					callback: ( async (nodeName, data) => {  
 						
 						// this.config.records = libs.getGlobalVar(this.cfg).records;
 	
 						if(this.config._advanced?.afterloadTransformation !== undefined && this.config._advanced?.afterloadTransformation !== ""){
 							try {
-								this.config.records = this.config._advanced?.afterloadTransformation(this, data[nodeName].records.length > 0 ? data[nodeName].records : []);
+								this.config.records = await this.config._advanced?.afterloadTransformation(this, libs, data[nodeName].records.length > 0 ? data[nodeName].records : []);
 								libs.getGlobalVar(this.cfg).records = this.config.records;
 							} catch(e){
 								// console.log('EXCEPTION', err);

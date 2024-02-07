@@ -119,7 +119,7 @@ global with sharing class QuoteValidator {
         this.orcResp =  new orchestratorResponse();
         
         config__mdt[] cfg;
-        if (System.Test.isRunningTest()) {
+        if (operation ==  'TEST' && System.Test.isRunningTest()) {
             String json= '{\r\n  \"executors\": [\r\n    {\r\n      \"className\": \"QuoteValidator.Margin\",\r\n      \"isActive\": true,\r\n      \"isDebug\": false,\r\n      \"typeOf\": \"ROOTVALIDATION\",\r\n      \"onFail\": \"warn\",\r\n      \"listOfFieldsToPass\": [\r\n        \"Name\",\r\n        \"Rating\"\r\n      ],\r\n      \"errorTemplate\": \"MarginValidation\",\r\n      \"additionalParams\": {\r\n        \"limits\": {\r\n          \"chunkSize\": 500\r\n        }\r\n      }\r\n    },\r\n    {\r\n      \"className\": \"QuoteItemIsNotSaasValidator\",\r\n      \"isActive\": false,\r\n      \"typeOf\": \"CALCENGINE\",\r\n      \"additionalParams\": {\r\n        \"initialField\": \"\",\r\n        \"isRefresh\": \"\",\r\n        \"discMode\": \"\"\r\n      }\r\n    },\r\n    {\r\n      \"className\": \"QuoteAccountIsInUsValidator\",\r\n      \"typeOf\": \"CALCENGINE\"\r\n    },\r\n    {\r\n      \"className\": \"QuoteValidator.MasterItemMaterialIdValidator\",\r\n      \"isActive\": true,\r\n      \"errorTemplate\": \"MarginValidation\",\r\n      \"typeOf\": \"VALIDATION\",\r\n      \"isDebug\": false,\r\n      \"listOfFieldsToPass\": [\r\n        \"Account.Name\",\r\n        \"CaseNumber\",\r\n        \"Status\"\r\n      ]\r\n    }\r\n  ],\r\n  \"orchestrator\": {\r\n    \"noErrorCallback\": {\r\n      \"UI\": \"function(scope, libs) {}\",\r\n      \"Batch\": \"apex method\"\r\n    },\r\n    \"childObjApiName\": \"Cases\",\r\n    \"limits\": {\r\n      \"chunkSize\": 6000\r\n    },\r\n    \"email\": {\r\n      \"isActive\": true,\r\n      \"emailTemplate\": \"SalesNewCustomerEmail\",\r\n      \"recipients\": [\r\n        \"${currentUser}\",\r\n        \"${ownerRootRecord}\",\r\n        \"wildervit@gmail.com\"\r\n      ]\r\n    }\r\n  },\r\n  \"UI\": {\r\n    \"withoutHeader\": true,\r\n    \"title\": \"Quote Export\",\r\n    \"headerStyle\": \"slds-modal__header slds-theme_error\",\r\n    \"contents\": [\r\n      {\r\n        \"isMessage\": true,\r\n        \"name\": \"deleteConfirm\",\r\n        \"text\": \"this.config._LABELS.msg_deleteConfirm1 + + records.length +  + this.config._LABELS.msg_deleteConfirm2\"\r\n      }\r\n    ],\r\n    \"fields\": [\r\n      {\r\n        \"name\": \"template\",\r\n        \"isRequired\": true,\r\n        \"label\": \"template\",\r\n        \"variant\": \"neutral\",\r\n        \"placeholder\": \"Please choose a template\",\r\n        \"type\": \"combobox\",\r\n        \"onClick\": \"function(scope, libs, input) {\\n    let newData = {\\n        \\\"name\\\": \\\"template1\\\",\\n        \\\"label\\\": \\\"Template params\\\",\\n        \\\"variant\\\": \\\"neutral\\\",\\n        \\\"type\\\": \\\"section\\\",\\n        \\\"fields\\\": [{\\n            \\\"name\\\": \\\"template2\\\",\\n            \\\"label\\\": \\\"template2\\\",\\n            \\\"variant\\\": \\\"neutra2\\\",\\n            \\\"type\\\": \\\"checkbox\\\"\\n        }]\\n    };\\n    scope.prepareData(newData);\\n}\",\r\n        \"updateOptions\": \"function(scope, libs, input) {\\n    libs.remoteAction(scope, \\\"customSoql\\\", {\\n        SOQL: \\\"SELECT Id, Name from Account\\\",\\n        callback: ((nodeName, data) => {\\n            input.options = [];\\n            data[nodeName].records.forEach(item => {\\n                input.options.push({\\n                    \\\"value\\\": item.Id,\\n                    \\\"label\\\": item.Name,\\n                    originRecord : item\\n                })\\n            })\\n            input.isDisabled = false;\\n        }).bind(scope)\\n    })\\n\\n}\"\r\n      },\r\n      {\r\n        \"name\": \"incQuoteVersion\",\r\n        \"label\": \"Increase Quote Version\",\r\n        \"variant\": \"neutral\",\r\n        \"type\": \"combobox\",\r\n        \"options\": [\r\n          {\r\n            \"label\": \"\",\r\n            \"value\": \"\"\r\n          },\r\n          {\r\n            \"label\": \"No\",\r\n            \"value\": \"no\"\r\n          },\r\n          {\r\n            \"label\": \"Yes\",\r\n            \"value\": \"yes\"\r\n          }\r\n        ]\r\n      }\r\n    ],\r\n    \"buttons\": [\r\n      {\r\n        \"name\": \"cancel\",\r\n        \"label\": \"Cancel\",\r\n        \"variant\": \"neutral\"\r\n      },\r\n      {\r\n        \"name\": \"btn:Validate\",\r\n        \"label\": \"Validate\",\r\n        \"variant\": \"brand\",\r\n        \"class\": \"slds-m-left_x-small\"\r\n      }\r\n    ],\r\n    \"data_id\": \"validate:dialog\"\r\n  }\r\n}';
             config__mdt tst= new config__mdt(JSON__c=json);
             //config__mdt tst = (config__mdt) JSON.deserialize('{"executors":[{"className":"QuoteValidator.Margin","isActive":true,"isDebug":false,"typeOf":"ROOTVALIDATION","onFail":"warn","listOfFieldsToPass":["Name","Rating"],"errorTemplate":"MarginValidation"},{"className":"QuoteValidator.MasterItemMaterialIdValidator","isActive":true,"errorTemplate":"MarginValidation","typeOf":"VALIDATION","isDebug":false,"listOfFieldsToPass":["Account.Name","CaseNumber","Status"]}],"orchestrator":{"noErrorCallback":{"UI":"function(scope, libs) {}","Batch":"apex method"},"childObjApiName":"Cases","limits":{"chunkSize":6000},"email":{"isActive":true,"emailTemplate":"SalesNewCustomerEmail","recipients":["${currentUser}","${ownerRootRecord}","wildervit@gmail.com"]}}}', config__mdt.class);
@@ -131,7 +131,19 @@ global with sharing class QuoteValidator {
         this.config = (orchestratorConfig) JSON.deserialize(cfg[0].JSON__c, orchestratorConfig.class);
         this.config.init(operation, orcReq);
         infrastructure.addDebugLog('orchestrator:in', this.orcReq);
-        
+        // Need run precheck
+        if (this.config.orchestrator.preCheck !=null && this.config.orchestrator.preCheck.isActive == true && this.config.orchestrator.preCheck.className!=null) {
+            Type T = type.forName(this.config.orchestrator.preCheck.className);
+			if (T == null) throw new infrastructure.InfrastructureException(null, ('Can\'t find class {1}').replace('{1}', this.config.orchestrator.preCheck.className), infrastructure.exceptionType.CLASS_NOT_FOUND);
+            infrastructure.handler handlerClass = (infrastructure.handler) T.newInstance();
+            infrastructure.validationResult handlerResult = (infrastructure.validationResult) handlerClass.execute(new map<string, object>{'initParams' => (map<string,object>) JSON.deserializeUntyped(JSON.serialize(orcReq))});
+            if (handlerResult.code != infrastructure.validationResultCode.OK) {
+                this.orcResp.responses.add(handlerResult);
+                return;
+            }
+            //infrastructure.validationResult vResult = (infrastructure.validationResult) handlerResult
+            //if (handlerResult == )
+        }
         this.mainLoop(operation);
         if (this.orcReq.isLastChunk == true) {
             log__c[] errors = [
@@ -158,25 +170,27 @@ global with sharing class QuoteValidator {
     
     private void mainLoop(string operation) {
         boolean oldDebug = infrastructure.isDebug;
-
         for (executorConfigPart ePart : this.config.executors) {
+            map<string, object> innerData = new  map<string, object>{ 'rootRecord' => this.config.rootRecord};
             log__c[] logs = new log__c[]{};
             // I think need to write results after every validation.  It will prevent issue with more then 10.000 records
-            sObject[] allRecords = this.config.getRecords(ePart);
-
+            object[] allRecords = this.config.getRecords(ePart, orcReq);
+			
             ePart.className= (ePart.typeOf == executorType.CALCENGINE) ? this.prepareCalcMethodName(ePart.className) : ePart.className;  // Need for dynamic generate a apexName
 
             Type T = type.forName(ePart.className);
 			if (T == null) throw new infrastructure.InfrastructureException(null, ('Can\'t find class {1}').replace('{1}', ePart.className), infrastructure.exceptionType.CLASS_NOT_FOUND);
-			infrastructure.handler handlerClass = (infrastructure.handler) T.newInstance();
+			//infrastructure.handler handlerClass = (infrastructure.handler) T.newInstance();
+            infrastructure.handler handlerClass = (infrastructure.handler)JSON.deserialize(JSON.serialize(innerData), T);
             if (handlerClass.isExecutable(new  map<string, object>{'rootRecord' => this.config.rootRecord}) != true) continue;
             
 			//set global debug flag
 			infrastructure.isDebug = ePart.isDebug;
 
-            for (sObject obj: allRecords) {
+            for (object obj: allRecords) {
                 try {
-                    object handlerResult = handlerClass.execute(new  map<string, object>{ 'record'=> obj, 'rootRecord' => this.config.rootRecord});
+                    innerData.put('record', obj);
+                    object handlerResult = handlerClass.execute(innerData);
                     this.orcResp.responses.add(handlerResult);
                     switch on ePart.typeOf {
 						when ROOTVALIDATION, VALIDATION {
@@ -189,6 +203,9 @@ global with sharing class QuoteValidator {
                                 l.errCode__c = ePart.className;
                                 logs.add(l);
                             }
+                        }
+                        when INBOUNDVALIDATION {
+                            
                         }
                         when CALCENGINE {
                             //Need generate a method name by input params
@@ -213,15 +230,14 @@ global with sharing class QuoteValidator {
                 l.errorMessage__c = 'DEBUG';
                 l.errCode__c = 'DEBUG';
 				string errMsg = JSON.serializePretty(infrastructure.debugLog);
-				integer len  = errMsg.length() > 131000 ? 131000 : errMsg.length();
-                l.info__c = errMsg.substring(0, len);
+                l.info__c = errMsg.left(130995);
                 logs.add(l);
             }
             insert logs;
         }
         
         infrastructure.isDebug = oldDebug;
-        this.orcResp.recordsCount = this.orcReq.relatedRecordIds.size();
+        this.orcResp.recordsCount = this.orcReq.getChunkSize();
     }
 
     private string prepareCalcMethodName(string className) {
@@ -238,13 +254,13 @@ global with sharing class QuoteValidator {
         return className.replace('{method}',  methodName.replaceAll('^(\\d{1})','calc_' + '$1'));
     }
     
-    private log__c prepareLogRecord(string operation, sObject relatedRecord) {
+    private log__c prepareLogRecord(string operation, object relatedRecord) {
         
-        string relatedRecordName = relatedRecord == this.config.rootRecord || relatedRecord == null ? this.config.rootRecordName : (string) relatedRecord.get(getNameField(this.config.SObjAPIName));
+        string relatedRecordName = ((sObject) relatedRecord) == this.config.rootRecord || relatedRecord == null ? this.config.rootRecordName : (string) ((sObject)relatedRecord).get(getNameField(this.config.SObjAPIName));
         return new log__c(
             operation__c = operation,
             dateTimeStamp__c = system.now(),
-            relatedRecordId__c = relatedRecord!= null ? relatedRecord.Id : null,
+            relatedRecordId__c = relatedRecord!= null ? (string)((sObject)relatedRecord).get('Id') : null,
             relatedRecordName__c = relatedRecordName,
             rootRecordId__c = this.orcReq.rootRecordId,
             rootRecordName__c = this.config.rootRecordName
@@ -264,7 +280,7 @@ global with sharing class QuoteValidator {
         
         Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
         mail.setTemplateId(et.Id);
-        mail.setToAddresses(this.config.prepareEmailRecipients(this.config.rootRecord));
+        mail.setToAddresses(this.config.prepareEmailRecipients(this.config.rootRecord, orcReq.additionalParameters!=null ? (string) orcReq.additionalParameters.get('emails') : null));
         //mail.setSubject('test subject'); Subject must be provided by template, but in additional to this we can format a Subject
         mail.setTargetObjectId(userInfo.getUserId());// Need to change
         //mail.setWhatId(primaryAccount);
@@ -302,7 +318,7 @@ global with sharing class QuoteValidator {
         public boolean isNeedSendEmail;
         private boolean isNeedPrepareRelatedData = false;
                 
-        public void init(string operation,orchestratorRequest orcReq) {
+        public void init(string operation, orchestratorRequest orcReq) {
             executorConfigPart[] executorsActive = new executorConfigPart[]{};
             
             for (executorConfigPart ePart: this.executors) {
@@ -336,6 +352,7 @@ global with sharing class QuoteValidator {
             for (executorConfigPart v: this.executors) {
                 if (eType == v.typeOf && v.listOfFieldsToPass!=null) allFields.addAll(v.listOfFieldsToPass);
             }
+			if (relRecordIds == null || relRecordIds.size() == 0 || relRecordIds[0] == null) return;
 			Schema.DescribeSObjectResult sObjDescribe = relRecordIds[0].getSObjectType().getDescribe();
 	        this.SObjAPIName = sObjDescribe.getName();
             if (eType == executorType.ROOTVALIDATION) {
@@ -361,7 +378,7 @@ global with sharing class QuoteValidator {
             
         }
         
-        public string[] prepareEmailRecipients(sObject rootRecord) {
+        public string[] prepareEmailRecipients(sObject rootRecord, string additionalEmails) {
             string[] result = new string[]{};
             if (this.isNeedSendEmail == true) {
                 for (string rec : orchestrator.email.recipients) {
@@ -372,12 +389,13 @@ global with sharing class QuoteValidator {
                     // Also need to provide other transformation. For example a public group implementation
                     result.add(rec);
                 }
+                if (additionalEmails!=null) result.addAll(additionalEmails.split(' +, +'));
             }
             return result;
         }
         
-        public sObject[] getRecords(executorConfigPart ePart) {
-            sObject[] allRecords;
+        public object[] getRecords(executorConfigPart ePart, orchestratorRequest orcReq) {
+            object[] allRecords;
             if (ePart.typeOf == executorType.ROOTVALIDATION || ePart.typeOf == executorType.VALIDATION) {
             	allRecords = ePart.typeOf == executorType.ROOTVALIDATION
                     ? new sObject[]{this.rootRecord} 
@@ -386,6 +404,10 @@ global with sharing class QuoteValidator {
             if (ePart.typeOf == executorType.EXECUTION) {
                 //allRecords = this.orcReq.records;
             }
+            if (ePart.typeOf == executorType.INBOUNDVALIDATION) {
+                allRecords = orcReq.entities;
+            }
+            
             return allRecords;
         }
     }
@@ -404,6 +426,7 @@ global with sharing class QuoteValidator {
     public class orchestratorConfigPart {
         public orchestratorEmailConfigPart email;
         public noErrorCallbackPart noErrorCallback;
+        public executorConfigPart preCheck;
     }
     
     public class orchestratorEmailConfigPart {
@@ -422,17 +445,29 @@ global with sharing class QuoteValidator {
         public Id rootRecordId;
         public Id[] relatedRecordIds;
         public map<string, object> additionalParameters;
+        public object[] entities;
         public string initialField;
         public sObject[] records;
+        
         
         public boolean isFirstChunk;
         public boolean isLastChunk;
 		public dateTime timeStamp;
+        public integer getChunkSize() {
+            return (relatedRecordIds!=null)
+                ? relatedRecordIds.size()
+                : (entities!=null)
+            		? entities.size()
+                    : (records!= null)
+               			? records.size()
+                        : 0;
+        }
     }
     
     public enum executorType {
 		VALIDATION,
 		ROOTVALIDATION,
+        INBOUNDVALIDATION,
         CALCENGINE,
 		EXECUTION
 	}

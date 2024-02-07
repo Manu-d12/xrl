@@ -127,7 +127,8 @@
             <div class="slds-grid slds-gutters">
                 <div class="slds-col slds-size_12-of-12">
                     <div class="slds-text-heading_small"><b>{config._LABELS.lbl_appliedConditions}</b>
-                        <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_appliedConditions}></lightning-helptext>
+                        <lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_appliedConditions} onclick={config.dialog.handleHelpEvent} data-url={config._LABELS.hlpUrl_appliedConditions}
+                        onmouseenter={changeIcon} onmouseleave={changeIconAgain}></lightning-helptext>
                     </div>
                     <table if:true={config.sqlBuilder.conditions} class="slds-table slds-table_cell-buffer slds-table_bordered extRelListTable" aria-labelledby="element-with-table-label other-element-with-table-label" style="width:100%;">
                         <thead>
@@ -186,9 +187,9 @@
                             <div class="slds-form-element__icon">
                                 <button class="slds-button slds-button_icon" onmouseover={toggleConditionFilteringHelp}
                                     onmouseout={toggleConditionFilteringHelp}>
-                                    <lightning-icon icon-name="utility:info" alternative-text="Info" size="xx-small"
-                                        title="">
-                                    </lightning-icon>
+                                    <!--<lightning-helptext class="placeTop" content={config._LABELS.hlpTxt_appliedConditions}></lightning-helptext> -->
+                                    <lightning-helptext class="placeTop" onclick={config.dialog.handleHelpEvent} data-url={config._LABELS.hlpUrl_conditionFilteringPattern}
+                                        onmouseenter={changeIcon} onmouseleave={changeIconAgain}></lightning-helptext>
                                 </button>
                                 <div class={ConditionFilteringClass} role="tooltip" id="help"
                                     style="position:absolute;top:-150px;left:-15px;width:250px">
@@ -264,6 +265,30 @@
                 </div>
             </div>
         </lightning-tab>
+        <!-- Virtual Tab Starts -->
+        <lightning-tab label={config._LABELS.lbl_addVirtualField} value="14" onactive={tabChanged}>
+            <div style="border:0.5px solid rgb(183, 180, 180);">
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_6-of-12">
+                        <div class="slds-p-around_medium">
+                            <lightning-input type="text" label={config._LABELS.lbl_addVirtualFieldLabel} id="fieldLabel" data-id="fieldLabel" onchange={handleVirtualFieldEvents}></lightning-input>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_6-of-12">
+                        <div class="slds-p-around_medium">
+                            <lightning-input required="true" type="text" label={config._LABELS.lbl_addVirtualFieldApiName} data-id="fieldApiName" onchange={handleVirtualFieldEvents}></lightning-input>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_12-of-12">
+                        <lightning-button variant="brand" label="Save Virtual Field" title="Primary action" data-id="saveVirtualField" onclick={handleVirtualFieldEvents} class="slds-m-left_x-small"></lightning-button>
+                        <br/>
+                    </div>
+                </div>
+            </div>
+        </lightning-tab>
+        <!-- Virtual Tab Ends -->
 			
     </lightning-tabset>
     <p style="float: left;" if:true={config.sqlBuilder.selectedFields}>{config._LABELS.lbl_liveQuery} <b>{livequery}</b></p>
