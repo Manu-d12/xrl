@@ -601,6 +601,8 @@ export let libs = {
 					}
 					else if(formattedErrMsg.includes('Permission Set')){
 						scope.config._tableLevelErrors = '<b>XRL:</b> No permission set assigned';
+					}else{
+						scope.dispatchEvent(event);
 					}
 				} else {
 					if (typeof(params.callback) === 'function') {
