@@ -205,7 +205,15 @@ global with sharing class QuoteValidator {
                             }
                         }
                         when INBOUNDVALIDATION {
-                            
+                            infrastructure.validationResult vResult = (infrastructure.validationResult) handlerResult;
+                            if (vResult.code != infrastructure.validationResultCode.OK) {
+                                this.orcResp.invalidCount ++;
+                                string errorMessage = String.format(ePart.errorTemplate, vResult.dynamicValues);
+                                log__c l = this.prepareLogRecord(operation, null);
+                                l.errorMessage__c = errorMessage;
+                                l.errCode__c = ePart.className;
+                                logs.add(l);
+                            }
                         }
                         when CALCENGINE {
                             //Need generate a method name by input params
@@ -226,6 +234,7 @@ global with sharing class QuoteValidator {
                 }
             }
             if (infrastructure.debugLog!= null) {
+				infrastructure.addDebugLog('orchestrator:out', JSON.serialize(this.orcResp));
                 log__c l = this.prepareLogRecord(operation, null);
                 l.errorMessage__c = 'DEBUG';
                 l.errCode__c = 'DEBUG';
@@ -256,7 +265,7 @@ global with sharing class QuoteValidator {
     
     private log__c prepareLogRecord(string operation, object relatedRecord) {
         
-        string relatedRecordName = ((sObject) relatedRecord) == this.config.rootRecord || relatedRecord == null ? this.config.rootRecordName : (string) ((sObject)relatedRecord).get(getNameField(this.config.SObjAPIName));
+        string relatedRecordName = relatedRecord == null || ((sObject) relatedRecord) == this.config.rootRecord  ? this.config.rootRecordName : (string) ((sObject)relatedRecord).get(getNameField(this.config.SObjAPIName));
         return new log__c(
             operation__c = operation,
             dateTimeStamp__c = system.now(),
