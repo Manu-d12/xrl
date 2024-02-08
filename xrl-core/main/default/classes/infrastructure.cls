@@ -842,6 +842,7 @@ global with sharing class infrastructure {
 			'hlpUrl_refreshAfterCustomActionExecutione' => label.hlpUrl_refreshAfterCustomActionExecutione,
 			'hlpUrl_appliedConditions' => label.hlpUrl_appliedConditions,
 			'hlpUrl_conditionFilteringPattern' => label.hlpUrl_conditionFilteringPattern,
+			'hlpUrl_actionFlowName' => label.hlpUrl_actionFlowName,
 			'lbl_additionalConditionForWhereClause' => label.lbl_additionalConditionForWhereClause,
 			'lbl_chooseField' => label.lbl_chooseField,
 			'lbl_cancel' => label.lbl_cancel,
