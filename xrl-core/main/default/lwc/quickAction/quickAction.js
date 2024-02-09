@@ -165,12 +165,12 @@ export default class customAction extends LightningElement {
     }
 
 
-    @api handleEvent(event) {
+    @api async handleEvent(event) {
         let dataId = event.target.getAttribute('data-id');
 
         if(dataId === 'confirmationdialog' && event?.detail?.action === 'cancel') {
             this.config.showConfirmation = false;
-            this.config.ConfirmationUI = false;
+            this.config.confirmationUI = false;
             return;
         }
 
@@ -178,6 +178,11 @@ export default class customAction extends LightningElement {
         if (target == 'getRecordsAndSend') this.getRecordsAndSend();
         else if (target == 'runOrchestratorSync') this.runOrchestratorSync();
         else if (target == 'runOrchestratorAsync') this.runOrchestratorAsync();
+        else if(target == ':executeCallbackOnQuickAction'){
+            let callback = eval('[' + event?.detail?.btn?.callback + ']')[0];
+            let result = await callback(this, libs, event?.detail?.btn?.data);
+            console.log('RESULT', result);
+        }
         
         else {
             this.dispatchEvent(new CloseActionScreenEvent());
