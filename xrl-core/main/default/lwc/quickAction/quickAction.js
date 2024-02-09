@@ -180,7 +180,7 @@ export default class customAction extends LightningElement {
         else if (target == 'runOrchestratorAsync') this.runOrchestratorAsync();
         else if(target == ':executeCallbackOnQuickAction'){
             let callback = eval('[' + event?.detail?.btn?.callback + ']')[0];
-            let result = await callback(this, libs, event?.detail?.btn?.data);
+            let result = await callback(this, libs, event?.detail);
             console.log('RESULT', result);
         }
         
