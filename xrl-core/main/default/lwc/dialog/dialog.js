@@ -84,6 +84,16 @@ export default class dialog extends LightningElement {
                 return;
             }
             if (btn && btn.callback) {
+                if(btn?.isExecuteCallbackOnQuickAction){
+                    this.dispatchEvent(new CustomEvent('action', { 
+                        detail: { 
+                            action: ':executeCallbackOnQuickAction', 
+                            btn: btn,
+                            data: { action: cmd, data: this.config.result, closeDialog : closeDialog } 
+                        } 
+                    }));
+                    return;
+                }
                 btn.callback = eval('[' + btn.callback + ']')[0];
                 let result = await btn.callback(this, libs, { action: cmd, data: this.config.result, closeDialog : closeDialog });
                 console.log('RESULT', result);
