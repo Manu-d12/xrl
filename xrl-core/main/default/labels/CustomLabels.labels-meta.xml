@@ -2581,4 +2581,12 @@ return records;
         <shortDescription>msg_virtualFieldApiNameBlank</shortDescription>
         <value>You can not keep virtual field API Name blank</value>
     </labels>
+    <labels>
+        <fullName>hlpUrl_actionFlowName</fullName>
+        <categories>XRL</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>hlpUrl_actionFlowName</shortDescription>
+        <value>en_US/custom-actions-release3b/1940862-customizeaction-article-release3b#api-name-of-the-flow-12</value>
+    </labels>
 </CustomLabels>

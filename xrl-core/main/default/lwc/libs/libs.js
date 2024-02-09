@@ -550,7 +550,8 @@ export let libs = {
 				"optionsCallBack" : function(scope){
 					return scope.config.flowList;
 				},
-				"label": _labels.lbl_actionFlowName
+				"label": _labels.lbl_actionFlowName,
+				"helpArticleUrl": _labels.hlpUrl_actionFlowName,
 			},
 			"advanced": {
 				"type": "function",
