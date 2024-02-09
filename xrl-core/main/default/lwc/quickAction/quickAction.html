@@ -7,5 +7,5 @@
 		</lightning-card>
 	</div>
  	<c-dialog if:true={config.UI} data-id="maindialog" cfg={config.UI} onaction={handleEvent}></c-dialog>
-	<c-dialog if:true={config.showConfirmation} data-id="confirmationdialog" cfg={config.ConfirmationUI} onaction={handleEvent}></c-dialog>
+	<c-dialog if:true={config.showConfirmation} data-id="confirmationdialog" cfg={config.confirmationUI} onaction={handleEvent}></c-dialog>
 </template>

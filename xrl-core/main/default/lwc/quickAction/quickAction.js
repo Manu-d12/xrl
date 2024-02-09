@@ -127,7 +127,7 @@ export default class customAction extends LightningElement {
                     //  need show dialog
                     this.config.UI.isSpinner = false;
                     this.config.showConfirmation = true;
-                    this.config.ConfirmationUI = {
+                    this.config.confirmationUI = {
                         "buttons": [
                             {
                             "name": "cancel",
@@ -160,9 +160,6 @@ export default class customAction extends LightningElement {
                 } else {
                     this.runOrchestratorSync()
                 }
-
-
-
             })
         })
     }
