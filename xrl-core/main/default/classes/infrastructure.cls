@@ -254,6 +254,7 @@ global with sharing class infrastructure {
     private static object getMetaConfigByName(map < string, object > data){
         string cfgName = (string) data.get('cfgName');
         config__mdt[] res  = [SELECT JSON__c FROM config__mdt WHERE DeveloperName = :cfgName];
+		// Need improve functionality and return count of the related records in case of orchestrator.childObjApiName !=  null
         return new map<string, object> {
             'cfg' =>res.size()>0 && res[0].JSON__c!=null ? replaceLabels(res[0].JSON__c) : null,
             'timeStamp' => system.now()
