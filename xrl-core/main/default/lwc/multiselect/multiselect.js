@@ -377,6 +377,11 @@ export default class Multiselect extends LightningElement {
         }, 150);
     }
     handleEvent(event){
+        if(event?.detail?.action === 'cancel'){
+            this.config.sObjApiName = '';
+            this.config.showNewItemCreation = false;
+            return;
+        }
         console.log('event received: ',JSON.parse(JSON.stringify(event.detail.data)));
         let newOption = JSON.parse(JSON.stringify(event.detail.data));
         this.config.options.push(newOption);
@@ -390,6 +395,7 @@ export default class Multiselect extends LightningElement {
                 }
             }
         }));
+        this.config.showNewItemCreation = false;
     }
     selectSearchResult(event) {
         let selectedValue = event.currentTarget.dataset.value;

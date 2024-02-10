@@ -12,22 +12,25 @@ export default class Newitem extends LightningElement {
         }
         this.isShowModal = true;
     }
-    close(event){
-        this.isShowModal = false;
+    handleClose(event){
+        this.dispatchEvent(new CustomEvent('cancel', {
+            detail: {
+                action: 'cancel'
+            }
+        }));
     }
     handleSuccess(event){
         const evt = new ShowToastEvent({
             title: 'Successfully created',
-            message: 'Record ID: ' + event.detail.id + ' (' + JSON.parse(JSON.stringify(event.detail)).fields.Name.value + ')',
+            message: 'Record ID: ' + event.detail.id + ' (' + JSON.parse(JSON.stringify(event.detail)).fields?.Name?.value + ')',
             variant: 'success',
         });
         console.log('event:',event.detail);
         this.dispatchEvent(evt);
-        this.isShowModal = false;
         this.dispatchEvent(new CustomEvent('newoption', {
             detail: {
                 'data' : {
-                    label: JSON.parse(JSON.stringify(event.detail)).fields.Name.value,
+                    label: JSON.parse(JSON.stringify(event.detail)).fields?.Name?.value,
                     value: event.detail.id
                 }
             }
