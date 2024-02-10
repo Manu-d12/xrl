@@ -3,7 +3,7 @@
       <div class="slds-form-element__control">
         <div class="slds-combobox_container">
           <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
-            <lightning-input class="search" label={label} type="search" onchange={search} value={selectedValue} onclick={showOptionsForNewUI} onfocusout={clearSearchResults}></lightning-input>
+            <lightning-input class="search" label={label} type="search" onchange={search} value={selectedValue} onclick={showOptionsForNewUI} onfocusout={clearSearchResults} oncommit={clearSearchResults}></lightning-input>
             <!-- Dropdown starts -->
               <div if:true={config.searchResults} class="slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid slds-dropdown_left"
                     data-dropdown-element="" role="listbox" part="dropdown overlay" style={config.style}>

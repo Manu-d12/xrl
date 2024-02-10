@@ -353,9 +353,11 @@ export default class Multiselect extends LightningElement {
         return this.config.selectedSearchResult.length > 0 ? this.config.selectedSearchResult[this.config.selectedSearchResult.length - 1].label : null;
     }
     showOptionsForNewUI(event){
-        let width = this.template.querySelector('.search').offsetWidth;
-        this.config.style = 'left: 16px; right: auto; position: fixed; z-index: 9109;top:' + (event.clientY + 15) + 'px;width: ' + width + 'px';
-        this.config.searchResults = this.config.options;
+        if(event !== undefined){
+            let width = this.template.querySelector('.search').offsetWidth;
+            this.config.style = 'left: 16px; right: auto; position: fixed; z-index: 9109;top:' + (event.clientY + 15) + 'px;width: ' + width + 'px';
+            this.config.searchResults = this.config.options;
+        }
     }
     search(event) {
         const input = event.detail.value.toLowerCase();
