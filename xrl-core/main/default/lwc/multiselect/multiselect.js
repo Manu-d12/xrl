@@ -20,7 +20,7 @@ export default class Multiselect extends LightningElement {
     @api usenewui = false;
     //for new UI
     @api enablenewoption = false;
-    @api sobjapiname;
+    @api newitemcreation;
     @track config = {selectedSearchResult : []};
 
     @track mSelectConfig = {};
@@ -63,10 +63,9 @@ export default class Multiselect extends LightningElement {
         if(this.config.useNewUi){
             //for New UI
             this.config.options = this.options ? JSON.parse(JSON.stringify(this.options)) : [];
-            this.config.sObjApiName = this.sobjapiname || 'Case';
-            this.config.enableNewOption = this.enablenewoption == "true" && this.config.sObjApiName;
-            this.config.enableNewOption = true;
-            //this.config.sobjapiname = this.sobjapiname;
+            this.config.sObjApiName = this.newitemcreation?.sObjApiName || 'Case';
+            this.config.enableNewOption = this.enablenewoption;
+            this.config.newOptionLabel = this.newitemcreation?.label || 'New Option';
             //this.config.selectedSearchResult = [];
 			if (typeof this.selectedvalues == 'string') this.selectedvalues = [this.selectedvalues];
             this.config.options.forEach((option) => {
@@ -391,7 +390,8 @@ export default class Multiselect extends LightningElement {
             detail: {
                 'data' : {
                     label: newOption.label,
-                    value: newOption.value
+                    value: newOption.value,
+                    record: newOption
                 }
             }
         }));
@@ -400,9 +400,9 @@ export default class Multiselect extends LightningElement {
     selectSearchResult(event) {
         let selectedValue = event.currentTarget.dataset.value;
         if(selectedValue.endsWith('#new_value')){
-                this.config.sObjApiName = this.sobjapiname;
+                this.config.sObjApiName = this.newitemcreation?.sObjApiName;
                 this.config.showNewItemCreation = true;
-                this.config.header = this.sobjapiname;
+                this.config.header = this.newitemcreation?.header || this.newitemcreation?.sObjApiName;
             return;
         }
         selectedValue = selectedValue.replace('#new_value','');
