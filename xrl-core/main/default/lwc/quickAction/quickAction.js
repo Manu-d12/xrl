@@ -59,7 +59,7 @@ export default class customAction extends LightningElement {
     connectedCallback() {
     }
 
-    runOrchestratorAsync() {
+    runOrchestratorAsync(relatedRecords) {
         console.log('ASYNC');
         // Need invoke a class that will run a orchestrator in ASYNC mode
         libs.remoteAction(this, 'invokeApex', {
@@ -71,15 +71,16 @@ export default class customAction extends LightningElement {
         });
     }
 
-    runOrchestratorSync() {
+    runOrchestratorSync(relatedRecords) {
         
         console.log('SYNC');
         debugger;
-        let chunkSize = libs.setGlobalVar('chunkSize');
-        let suggestedChunckSize = libs.setGlobalVar('suggestedChunckSize');
+        let chunkSize = libs.getGlobalVar('chunkSize');
+        let suggestedChunckSize = libs.getGlobalVar('suggestedChunckSize');
         libs.remoteAction(this, 'orchestrator', {
             isDebug: this.config.UI?.isDebug,
             operation: this.cfgName,
+			isRawResponse : true,
             recordsPath: "orchestratorRequest.relatedRecordIds",
             _chunkSize: chunkSize > suggestedChunckSize ? suggestedChunckSize : chunkSize,// we have a limitation for a SF 10.000 records in a same transaction
             finishCallback: this.config.orchestrator?.noErrorCallback?.UI,
@@ -95,6 +96,7 @@ export default class customAction extends LightningElement {
                 if (this.config.UI) {
                     let title = this.config.UI.processRecordsLabel.replace('{1}', libs.getGlobalVar('orchestratorRequestCount')).replace('{0}', res.totalRecords).replace('{2}', res.errorRecords);
                     this.template.querySelector('c-dialog').disableButtons(title, !data.isLastChunk);
+					this.dispatchEvent(new CloseActionScreenEvent());
                 }
             })
         })
@@ -138,14 +140,14 @@ export default class customAction extends LightningElement {
                             "name": "btn:async",
                             "label": "Async",
                             "variant": "neutral",
-                            "callback": "function(scope, libs, data) {\n    let event = new CustomEvent('action', {\n        detail: {\n            action: 'runOrchestratorAsync'\n        }\n    });\n    scope.dispatchEvent(event);\n}"
+                            "callback": "function(scope, libs, data) {\n    let event = new CustomEvent('action', {\n        detail: {\n            action: 'runOrchestratorAsync', relatedRecords: '" + relatedRecords + "'\n        }\n    });\n    scope.dispatchEvent(event);\n}"
                             },
                             {
                             "name": "btn:sync",
                             "label": "Sync",
                             "variant": "brand",
                             "class": "slds-m-left_x-small",
-                            "callback": "function(scope, libs, data) {\n    let event = new CustomEvent('action', {\n        detail: {\n            action: 'runOrchestratorSync'\n        }\n    });\n    scope.dispatchEvent(event);\n}"
+                            "callback": "function(scope, libs, data) {\n    let event = new CustomEvent('action', {\n        detail: {\n            action: 'runOrchestratorSync', relatedRecords: '" + relatedRecords + "'\n        }\n    });\n    scope.dispatchEvent(event);\n}"
                             }
                         ],
                         "contents": [
@@ -158,7 +160,7 @@ export default class customAction extends LightningElement {
                         ]
                     }
                 } else {
-                    this.runOrchestratorSync()
+                    this.runOrchestratorSync(relatedRecords)
                 }
             })
         })
@@ -176,8 +178,8 @@ export default class customAction extends LightningElement {
 
         let target = event?.detail?.action;
         if (target == 'getRecordsAndSend') this.getRecordsAndSend();
-        else if (target == 'runOrchestratorSync') this.runOrchestratorSync();
-        else if (target == 'runOrchestratorAsync') this.runOrchestratorAsync();
+        else if (target == 'runOrchestratorSync') this.runOrchestratorSync(event?.detail?.relatedRecords);
+        else if (target == 'runOrchestratorAsync') this.runOrchestratorAsync(event?.detail?.relatedRecords);
         else if(target == ':executeCallbackOnQuickAction'){
             let callback = eval('[' + event?.detail?.btn?.callback + ']')[0];
             let result = await callback(this, libs, event?.detail);
