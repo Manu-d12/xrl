@@ -21,7 +21,7 @@ export default class Multiselect extends LightningElement {
     //for new UI
     @api enablenewoption = false;
     @api sobjapiname;
-    @track config = {};
+    @track config = {selectedSearchResult : []};
 
     @track mSelectConfig = {};
 
@@ -66,15 +66,16 @@ export default class Multiselect extends LightningElement {
             this.config.sObjApiName = this.sobjapiname || 'Case';
             this.config.enableNewOption = this.enablenewoption == "true" && this.config.sObjApiName;
             this.config.enableNewOption = true;
-            this.config.sobjapiname = 'Case';
-            this.config.selectedSearchResult = [];
+            //this.config.sobjapiname = this.sobjapiname;
+            //this.config.selectedSearchResult = [];
+			if (typeof this.selectedvalues == 'string') this.selectedvalues = [this.selectedvalues];
             this.config.options.forEach((option) => {
                 if(this.enableedit){
                     option.isEditable = true;
                 }
                 if(this.selectedvalues?.includes(option.value)){
                     option.selected = true;
-                    this.config.selectSearchResult.push(option);
+                    this.config.selectedSearchResult.push(option);
                 }
             });
         }else{
