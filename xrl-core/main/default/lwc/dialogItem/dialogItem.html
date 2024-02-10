@@ -13,8 +13,8 @@
 				type="radio">
 			</lightning-radio-group>
 			<c-multiselect if:true={fld.isPicklist} id={fld.name} label={fld.label} data-id={fld.name}
-				options={fld.options} disabled={fld.disabled} required={fld.required} selectedvalue={fld.value}
-				selectedvalues={fld.value} multiselect={fld.multiselect} onselect={onChangeDynamicField} listsize=10000>
+				options={fld.options} sobjapiname={fld.sObjApiName} enablenewoption={fld.enableNewOption} disabled={fld.disabled} required={fld.required} selectedvalues={fld.value}
+				multiselect={fld.multiselect} onselect={onChangeDynamicField} usenewui=true listsize=10000>
 			</c-multiselect>
 			<lightning-button if:true={fld.isSwitch} label={fld.label} title={fld.label} class={fld.class}
 				data-id={fld.name} variant={fld.variant} onclick={onChangeDynamicField}>

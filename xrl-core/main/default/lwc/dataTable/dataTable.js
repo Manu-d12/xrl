@@ -1055,8 +1055,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						}catch(e){
 							this.config._errors = libs.formatCallbackErrorMessages(e,'field','Options callback');
 						}
+						console.log('options',el.options);
 					}
-					console.log('options',el.options);
 					if(el._showEditableIcon && el.type === 'reference' && !el._editOptions){
 						el._editOptions = [];
 						if(cItem.nillable === true){
