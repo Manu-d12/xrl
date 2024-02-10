@@ -20,7 +20,7 @@
                       </span>
                       <span class="slds-media__body">
                           <span class="slds-truncate" title="New Option">
-                              New Option
+                              {config.newOptionLabel}
                           </span>
                       </span>
                   </div>
@@ -59,7 +59,7 @@
               </ul>
             </div>
             <!-- Add New Option -->
-            <c-newitem if:true={config.showNewItemCreation} objectapiname={config.sObjApiName} header={config.header} onnewoption={handleEvent}></c-newitem>
+            <c-newitem if:true={config.showNewItemCreation} objectapiname={config.sObjApiName} newitemcreation={newitemcreation} header={config.header} onnewoption={handleEvent} oncancel={handleEvent}></c-newitem>
             <!-- Dialog for Edit options -->
             <section if:true={config.selectedValueForEdit} aria-describedby="dialog-body-id-26" aria-label="Language Options" class="slds-popover slds-popover_full-width" id="popover-unique-id-01" role="dialog">
               <div class="slds-popover__body slds-popover__body_small" id="dialog-body-id-26" tabindex="0" role="region">
