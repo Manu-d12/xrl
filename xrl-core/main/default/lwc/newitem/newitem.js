@@ -36,7 +36,7 @@ export default class Newitem extends LightningElement {
         if(this.newitemcreation?.callback){
             try{
                 let callback = eval('[' + this.newitemcreation?.callback + ']')[0];
-                dataForEvent = await callback(this,libs,JSON.parse(JSON.stringify(event.detail)));
+                dataForEvent = await callback(this,libs,JSON.parse(JSON.stringify(event.detail)),JSON.parse(JSON.stringify(this.newitemcreation)));
             }catch(e){
                 console.log('error',e);
             }
