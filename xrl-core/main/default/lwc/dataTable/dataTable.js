@@ -1009,6 +1009,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			}
 			let left = ((event.x - 60) + 320) > screen.availWidth ? (screen.availWidth - 380) : (event.x - 60);
 			let rec = recId ===  null ? this.records[calculatedInd] : libs.findRecordWithChild(this.records, recId);
+			//taking the event offset here because in few cases event srcElement automatically changes after optionsCallback
+			let top = event.srcElement.localName === 'td' ? event.srcElement?.offsetTop :  event.srcElement.parentElement?.parentElement?.offsetTop;
 			//options callback
 			if(cItem?._advanced?.optionsCallback !== undefined && cItem?._advanced?.optionsCallback !== ""){ 
 				try{
@@ -1026,7 +1028,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				value : rec[cItem.fieldName],
 				chBoxLabel : libs.formatStr('Update {0} items', [this.getSelectedRecords().length]),
 				chBoxValue : false,
-				style: libs.formatStr("position:absolute;top:{0}px;left:{1}px", [(-table.offsetHeight + event.srcElement.parentElement?.parentElement?.offsetTop - (this.config.pager.pagerTop === true ? 110 : 40)), left]),
+				style: libs.formatStr("position:absolute;top:{0}px;left:{1}px", [(-table.offsetHeight + top - (this.config.pager.pagerTop === true ? 110 : 40)), left]),
 			}
 			//this.config._isBulkEdit = true;
 		} else {
