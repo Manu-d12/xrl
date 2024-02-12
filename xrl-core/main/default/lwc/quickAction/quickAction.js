@@ -2,6 +2,9 @@ import { LightningElement, wire, api, track } from 'lwc';
 import { libs } from 'c/libs';
 import { CloseActionScreenEvent } from 'lightning/actions';
 //import { CurrentPageReference } from 'lightning/navigation';
+import resource from '@salesforce/resourceUrl/extRelList';
+import { loadScript, loadStyle } from 'lightning/platformResourceLoader';
+
 
 
 export default class customAction extends LightningElement {
@@ -38,28 +41,36 @@ export default class customAction extends LightningElement {
             callback: ((nodeName, data) => {
                 let config = JSON.parse(libs.replaceLiteralsInStr(data[nodeName].cfg, this.cfgName));
                 config._timeStamp = data[nodeName].timeStamp;
-                if (config.UI == undefined) {
-                    this.config = config;
+                this.config = config;
+                let isUI = this.isUIDefined(config);
+                if (isUI == false) {
                     this.getRecordsAndSend();
-                } else {
+                } else if (config.UI){
                     if (config.UI.initCallback) {
                         config.UI.initCallback = eval('[' + config.UI.initCallback + ']')[0];
                         config.UI.initCallback(this, libs, config);
-                    } else {
-                        this.config = config;
                     }
                 }
+                Promise.all([
+                    loadStyle(this, resource + '/css/extRelList.css'),
+                    //loadScript(this, resource + '/js/xlsx.full.min.js'),
+                    //loadScript(this, leaflet + '/leaflet.js')
+                ]).then(() => {
+                    console.log('Resources are loaded');
+                });
             })
         });
+    }
 
-
+    isUIDefined(config) {
+        return config.UI != undefined || config.layout != undefined  || config.extRelList != undefined
     }
 
 
     connectedCallback() {
     }
 
-    runOrchestratorAsync(relatedRecords) {
+    runOrchestratorAsync() {
         console.log('ASYNC');
         // Need invoke a class that will run a orchestrator in ASYNC mode
         libs.remoteAction(this, 'invokeApex', {

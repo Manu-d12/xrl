@@ -59,3 +59,12 @@
 	padding-left:1px;
 	max-width: 90%;
 }
+
+/*fix modal dialog width issue */
+.modal-container, .slds-modal__container {
+	max-width: 80% !important;
+}
+
+.uiModal--medium, .modal-container {
+	max-width: 80% !important;
+}

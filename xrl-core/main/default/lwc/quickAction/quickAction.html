@@ -1,11 +1,14 @@
 <template>
-	<div if:false={config.UI}>
+	<!--<div if:false={config.UI}>
 		<lightning-card title="Bulk operations" icon-name="custom:custom14">
 			<div class="slds-m-around_medium">
 				LOADING...
 			</div>
 		</lightning-card>
-	</div>
+	</div>-->
  	<c-dialog if:true={config.UI} data-id="maindialog" cfg={config.UI} onaction={handleEvent}></c-dialog>
 	<c-dialog if:true={config.showConfirmation} data-id="confirmationdialog" cfg={config.confirmationUI} onaction={handleEvent}></c-dialog>
+	<c-layout if:true={config.layout} data-id="layout" config-id={config.layout.configId} onaction={handleEvent}></c-layout>
+
+	<c-ext-rel-list if:true={config.extRelList} data-id="extRelList" api-name={config.extRelList.apiName} onaction={handleEvent}></c-ext-rel-list>
 </template>
