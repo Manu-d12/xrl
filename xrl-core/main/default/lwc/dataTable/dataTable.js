@@ -1452,17 +1452,17 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if(event.target.getAttribute('data-id') === 'newItemDialog'){
 			if(event?.detail?.data){
 				//it means new option is created successfully
-				this.template.querySelectorAll('.edit').forEach(element => {
-					if (element.getAttribute('data-colname') === this.config._changedField) {
-						element.updateMultiselect(JSON.parse(JSON.stringify(event?.detail?.data)));
-					}
-				});
 				let col = this.config.colModel.find((colModel) => {
 					return colModel.fieldName === this.config._changedField;
 				});
 				if(col !== undefined) {
 					col.options.push(JSON.parse(JSON.stringify(event?.detail?.data)));
 				}
+				this.template.querySelectorAll('.edit').forEach(element => {
+					if (element.getAttribute('data-colname') === this.config._changedField) {
+						element.updateMultiselect(JSON.parse(JSON.stringify(event?.detail?.data)));
+					}
+				});
 			}
 			this.config._showNewItemCreation = false;
 		}else{
