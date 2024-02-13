@@ -639,7 +639,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			return null;
 
 		if(column?.type && column.type === 'picklist'){
-			return column?.options?.find(op=>{return op.value === newValue}).label;
+			return column?.options?.find(op=>{return op.value === newValue})?.label;
 		}
 		return newValue;
 	}
@@ -1446,6 +1446,31 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			refField = this.getRefFieldNameConsistsValue(refField);
 			this.records = libs.sortRecords(this.records, fieldName, col.isASCSort,refField);
 			// this.records = libs.sortRecords(this.records, col.type === 'reference' ? col.fieldName + '.Name' : col.fieldName, col.isASCSort);
+		}
+	}
+	handleNewDialog(event){
+		if(event.target.getAttribute('data-id') === 'newItemDialog'){
+			if(event?.detail?.data){
+				//it means new option is created successfully
+				let col = this.config.colModel.find((colModel) => {
+					return colModel.fieldName === this.config._changedField;
+				});
+				if(col !== undefined) {
+					col.options.push(JSON.parse(JSON.stringify(event?.detail?.data)));
+				}
+				this.template.querySelectorAll('.edit').forEach(element => {
+					if (element.getAttribute('data-colname') === this.config._changedField) {
+						element.updateMultiselect(JSON.parse(JSON.stringify(event?.detail?.data)));
+					}
+				});
+			}
+			this.config._showNewItemCreation = false;
+		}else{
+			this.config._sObjApiName = event.detail.data?.data.sObjApiName;
+			this.config._header = event.detail.data?.data?.header;
+			this.config._newItemCreation = event.detail.data?.data;
+			this.config._changedField = event.detail.data?.field;
+			this.config._showNewItemCreation = true;
 		}
 	}
 	setNumPages(value) {

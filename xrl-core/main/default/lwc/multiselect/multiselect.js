@@ -21,6 +21,7 @@ export default class Multiselect extends LightningElement {
     //for new UI
     @api enablenewoption = false;
     @api newitemcreation;
+    @api opennewindatatable = false;
     @track config = {selectedSearchResult : []};
 
     @track mSelectConfig = {};
@@ -72,7 +73,7 @@ export default class Multiselect extends LightningElement {
                 if(this.enableedit){
                     option.isEditable = true;
                 }
-                if(this.selectedvalues?.includes(option.value)){
+                if(this.selectedvalues && this.selectedvalues?.findIndex((el) => el.toLowerCase() === option.value.toLowerCase()) !== -1){
                     option.selected = true;
                     this.config.selectedSearchResult.push(option);
                 }
@@ -355,7 +356,7 @@ export default class Multiselect extends LightningElement {
     showOptionsForNewUI(event){
         if(event !== undefined){
             let width = this.template.querySelector('.search').offsetWidth;
-            this.config.style = 'left: 16px; right: auto; position: fixed; z-index: 9109;top:' + (event.clientY + 15) + 'px;width: ' + width + 'px';
+            this.config.style = 'left: auto; right: auto; position: fixed; z-index: 9109;top:' + (event.clientY + 15) + 'px;width: ' + width + 'px';
             this.config.searchResults = this.config.options;
         }
     }
@@ -377,14 +378,14 @@ export default class Multiselect extends LightningElement {
             this.config.searchResults = false;
         }, 150);
     }
-    handleEvent(event){
+    @api handleEvent(event){
         if(event?.detail?.action === 'cancel'){
             this.config.sObjApiName = '';
             this.config.showNewItemCreation = false;
             return;
         }
-        console.log('event received: ',JSON.parse(JSON.stringify(event.detail.data)));
-        let newOption = JSON.parse(JSON.stringify(event.detail.data));
+        // console.log('event received: ',JSON.parse(JSON.stringify(event.detail.data)));
+        let newOption = event?.detail?.data ? JSON.parse(JSON.stringify(event.detail.data)) : JSON.parse(JSON.stringify(event));
         this.config.options.push(newOption);
         this.selectSearchResult({'currentTarget': { 'dataset': { 'value' : newOption.value }}});
         //dispatching event for the parent component
@@ -402,9 +403,18 @@ export default class Multiselect extends LightningElement {
     selectSearchResult(event) {
         let selectedValue = event.currentTarget.dataset.value;
         if(selectedValue.endsWith('#new_value')){
+            if(this.opennewindatatable){
+                this.dispatchEvent(new CustomEvent('opennewdialog', {
+                    detail: {
+                        'data' : this.newitemcreation,
+                        'field': this.col.fieldName
+                    }
+                }));
+            }else{
                 this.config.sObjApiName = this.newitemcreation?.sObjApiName;
                 this.config.showNewItemCreation = true;
                 this.config.header = this.newitemcreation?.header || this.newitemcreation?.sObjApiName;
+            }
             return;
         }
         selectedValue = selectedValue.replace('#new_value','');
