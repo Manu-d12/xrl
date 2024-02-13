@@ -72,7 +72,7 @@ export default class Multiselect extends LightningElement {
                 if(this.enableedit){
                     option.isEditable = true;
                 }
-                if(this.selectedvalues?.includes(option.value)){
+                if(this.selectedvalues?.findIndex((el) => el.toLowerCase() === option.value.toLowerCase()) !== -1){
                     option.selected = true;
                     this.config.selectedSearchResult.push(option);
                 }
@@ -355,7 +355,7 @@ export default class Multiselect extends LightningElement {
     showOptionsForNewUI(event){
         if(event !== undefined){
             let width = this.template.querySelector('.search').offsetWidth;
-            this.config.style = 'left: 16px; right: auto; position: fixed; z-index: 9109;top:' + (event.clientY + 15) + 'px;width: ' + width + 'px';
+            this.config.style = 'left: auto; right: auto; position: fixed; z-index: 9109;top:' + (event.clientY + 15) + 'px;width: ' + width + 'px';
             this.config.searchResults = this.config.options;
         }
     }

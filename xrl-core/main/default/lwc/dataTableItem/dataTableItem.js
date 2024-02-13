@@ -185,6 +185,9 @@ export default class dataTableItem extends LightningElement {
 			val = this.row[this.col.fieldName] != undefined ? this.row[this.col.fieldName].split(';') : [];
 		}else{
 			[row,val] = libs.getLookupRow(this.row, this.col.fieldName);
+			if(this.col.type === 'picklist'){
+				val = [val];
+			}
 		}
 		return val;
 	}
@@ -201,7 +204,7 @@ export default class dataTableItem extends LightningElement {
 		// console.log(event);
 		// let config = libs.getGlobalVar(this.cfg).listViewConfig;
 		// console.log(config);
-		let value = this.col.isEditableBool ? event.target.checked : this.col.type === 'multipicklist' ? event.detail.payload.values.join(';') : (this.col.type === 'picklist' || this.col._isLookUpEdit || this.col.isEditableAsPicklist) ? event.detail.payload.value : event.target.value;
+		let value = this.col.isEditableBool ? event.target.checked : this.col.type === 'multipicklist' ? event.detail.payload.values.join(';') : (this.col.type === 'picklist' || this.col._isLookUpEdit || this.col.isEditableAsPicklist) ? event.detail.payload.values[0] : event.target.value;
 		// value = event.detail.payload.value;
 		this.config.dataTableCfg._saveEdit(true, this.col.fieldName, value);
 	}
