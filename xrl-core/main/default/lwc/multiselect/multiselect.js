@@ -415,7 +415,6 @@ export default class Multiselect extends LightningElement {
                 this.config.showNewItemCreation = true;
                 this.config.header = this.newitemcreation?.header || this.newitemcreation?.sObjApiName;
             }
-                //dispatching event for the parent component
             return;
         }
         selectedValue = selectedValue.replace('#new_value','');

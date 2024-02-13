@@ -34,6 +34,12 @@ export default class dataTableItem extends LightningElement {
 				console.log('In event Listener dataTableItem', this.showEdit, this.col.fieldName);
 			}
 		});
+		if(this.col._advanced?.newItemCreation){
+			this.config._newItemCreation = this.col._advanced?.newItemCreation;
+		}
+		if(this.col._advanced?.enableNewOption){
+			this.config._enableNewOption = this.col._advanced?.enableNewOption;
+		}
 	}
 
 	@api
