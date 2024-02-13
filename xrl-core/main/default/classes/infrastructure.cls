@@ -193,15 +193,9 @@ global with sharing class infrastructure {
 		boolean isCreateble = Schema.getGlobalDescribe().get(sObjApiName).getDescribe().isCreateable();
 		integer loadChunkSize = data.get('loadChunkSize')!=null ? Integer.valueof(((String)data.get('loadChunkSize')).trim()) : null;
 		boolean isNeedDescribe = (boolean) data.get('isNeedDescribe') == true;
-		set<string> parentObjFields = null;
+		
         
-        if (data.containsKey('parentObjFields')) {
-        	parentObjFields = (set < string > ) JSON.deserialize(JSON.serialize(data.get('parentObjFields')), set < string > .class);
-            
-            string pSOQL = 'SELECT ' + string.join(new list < string > (parentObjFields), ',') +' FROM ' + recordId.getSObjectType() + ' WHERE Id=\'' + recordId + '\' LIMIT 1';
-            sObject[] pRecords = database.query(pSOQL);
-            result.put('record', pRecords[0]);
-        }
+        
 
 		set < string > soqlFields = new set < string > { 'Id' };
 	
@@ -289,7 +283,11 @@ global with sharing class infrastructure {
 		string sObjApiName = (string) data.get('sObjApiName');
 		boolean isAggregateResult = data.get('isAggregateResult') != null ? (boolean) data.get('isAggregateResult') : false;
 		boolean isNeedDescribe = true;
+        boolean isNeedGetSObjName = data.get('isNeedGetSObjName') == true;
 		map < string, object > result = new map < string, object > ();
+        if (isNeedGetSObjName == true) {
+            SOQL = SOQL.replace('{objName}', recordId.getSObjectType().toString());
+        }
 		result.put('SOQL', SOQL);
 
 		result.putAll(getDescribeData(isNeedDescribe,sObjApiName));

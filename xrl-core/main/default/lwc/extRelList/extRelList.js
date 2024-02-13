@@ -597,6 +597,18 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			}
 		});
 
+		//Need to get a parent record if exist
+		if (this.config.recordId) {
+			let parentObjFields = JSON.parse(this.config.dataTableConfig?.advanced)?.parentObjFields;
+			await libs.remoteAction(this, 'customSoql', {
+				isNeedGetSObjName: true,
+				SOQL: "SELECT " + parentObjFields.join(",") + " FROM {objName} WHERE Id='" + this.recordId + "'",
+				callback: ((nodeName, data1) => {
+					this.config.record = data1[nodeName].records[0];
+				})
+			});
+		}
+
 		if(refFieldsObject.length > 0) {
 			const resultString = refFieldsObject.join("','");
 
