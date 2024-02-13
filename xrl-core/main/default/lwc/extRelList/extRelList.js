@@ -371,6 +371,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}else{
 			await libs.remoteAction(this, 'query', {
 				isNeedDescribe: true,
+				parentObjFields : JSON.parse(this.config.dataTableConfig?.advanced)?.parentObjFields,
 				sObjApiName: this.config.sObjApiName,
 				relField: this.config.relField,
 				addCondition: libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name),
@@ -383,6 +384,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					this.config.query = data[nodeName].SOQL;
 					
 					libs.getGlobalVar(this.name).records = data[nodeName].records.length > 0 ? data[nodeName].records : undefined;
+					libs.getGlobalVar(this.name).record = data[nodeName].record;
+
 					if(this.config?._advanced?.afterloadTransformation !== undefined && this.config?._advanced?.afterloadTransformation !== ""){
 						try {
 							this.config.records = eval('(' + this.config?._advanced?.afterloadTransformation + ')')(this,libs, libs.getGlobalVar(this.name).records);
