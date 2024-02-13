@@ -239,5 +239,16 @@ export default class dataTableItem extends LightningElement {
 			return currency.orgCurrency;
 		}
 	}
-
+	passToDataTable(event){
+		//dispatching event for the parent component
+        this.dispatchEvent(new CustomEvent('opennewdialog', {
+            detail: {
+                'data' : event.detail
+            }
+        }));
+	}
+	@api updateMultiselect(event){
+		console.log('updateMultiselect');
+		this.template.querySelector('c-multiselect').handleEvent(JSON.parse(JSON.stringify(event)));
+	}
 }
