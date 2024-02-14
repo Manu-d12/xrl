@@ -1013,6 +1013,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				this.showDialog = false;
 			}
 		}
+		if (val.startsWith('action:')) {
+			this.dispatchEvent(new CustomEvent({detail : val}));
+		}
 	}
 	async prepareRecordsToDelete(){
 		let records = this.template.querySelector('c-Data-Table').getSelectedRecords();
@@ -1210,8 +1213,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		this.config.countOfFailedRecords = 0;
 		this.config.errorList = [];
 		if (isCustom) {
-			let cbResult = eval('[' + this.config._advanced.customSave.callback + ']')[0];
-			console.log('cbResult', cbResult);
+			let cbResult = eval('[' + this.config._advanced.customSaveAction.callback + ']')[0];
+			let res = cbResult(this, libs, changedItems);
+			console.log('cbResult', res);
 			return;
 		}
 		let chunkCount = await libs.splitRecordsIntoChunks(this,changedItems,saveChunk,this.saveRecords);
@@ -1535,6 +1539,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			libs.saveConfig(this.ApiName, config);
 			libs.remoteAction(this, 'query', {isNeedDescribe : true, sObjApiName: this.config.sObjApiName, relField : this.config.relField, addCondition : this.AddCondition, fields: this.config.fields, callback : this.loadRecords});*/
 		}
+	
 	}
 
 	handleGlobalSearch(event) {
