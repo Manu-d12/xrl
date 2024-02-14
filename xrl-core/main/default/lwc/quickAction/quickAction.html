@@ -10,5 +10,5 @@
 	<c-dialog if:true={config.showConfirmation} data-id="confirmationdialog" cfg={config.confirmationUI} onaction={handleEvent}></c-dialog>
 	<c-layout if:true={config.layout} data-id="layout" config-id={config.layout.configId} onaction={handleEvent}></c-layout>
 
-	<c-ext-rel-list if:true={config.extRelList} data-id="extRelList" api-name={config.extRelList.apiName} onaction={handleEvent}></c-ext-rel-list>
+	<c-ext-rel-list if:true={config.extRelList} data-id="extRelList" api-name={config.extRelList.apiName} record-id={urlParams.recordId} onaction={handleEvent}></c-ext-rel-list>
 </template>

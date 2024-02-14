@@ -199,8 +199,9 @@ global with sharing class QuoteValidator {
                                 this.orcResp.invalidCount ++;
                                 string errorMessage = String.format(ePart.errorTemplate, vResult.dynamicValues);
                                 log__c l = this.prepareLogRecord(operation, obj);
-                                l.errorMessage__c = errorMessage;
+                                l.errorMessage__c = errorMessage.left(250);
                                 l.errCode__c = ePart.className;
+								if (errorMessage.length() > 255) l.info__c = errorMessage;
                                 logs.add(l);
                             }
                         }
@@ -210,8 +211,9 @@ global with sharing class QuoteValidator {
                                 this.orcResp.invalidCount ++;
                                 string errorMessage = String.format(ePart.errorTemplate, vResult.dynamicValues);
                                 log__c l = this.prepareLogRecord(operation, null);
-                                l.errorMessage__c = errorMessage;
+                                l.errorMessage__c = errorMessage.left(250);
                                 l.errCode__c = ePart.className;
+								if (errorMessage.length() > 255) l.info__c = errorMessage;
                                 logs.add(l);
                             }
                         }

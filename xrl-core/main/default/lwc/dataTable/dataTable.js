@@ -695,6 +695,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					r._isEditable = false;
 					if(this.config?._advanced?.afterEditCallback !== undefined && this.config?._advanced?.afterEditCallback !== ""){
 						try{
+							if (typeof this.config?._advanced?.afterEditCallback == 'string') this.config?._advanced?.afterEditCallback = eval('(' + this.config?._advanced?.afterloadTransformation + ')');
 							await this.config?._advanced?.afterEditCallback(this,libs,[r]);
 						}catch(e){
 							// console.error("Error",e);
@@ -1704,6 +1705,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 							try {
 								this.config.records = await this.config._advanced?.afterloadTransformation(this, libs , data[nodeName].records.length > 0 ? data[nodeName].records : []);
 								libs.getGlobalVar(this.cfg).records = this.config.records;
+								libs.getGlobalVar(this.cfg).originalRecords = data[nodeName].records;
 							} catch(e){
 								// console.log('EXCEPTION', err);
 								this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Load Transformation Callback');

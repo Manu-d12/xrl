@@ -599,7 +599,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 		//Need to get a parent record if exist
 		if (this.config.recordId) {
-			let parentObjFields = JSON.parse(this.config.dataTableConfig?.advanced)?.parentObjFields;
+			let parentObjFields = this.config.dataTableConfig?.advanced ? JSON.parse(this.config.dataTableConfig?.advanced)?.parentObjFields : undefined;
 			if (parentObjFields && Array.isArray(parentObjFields)) {
 				await libs.remoteAction(this, 'customSoql', {
 					isNeedGetSObjName: true,
