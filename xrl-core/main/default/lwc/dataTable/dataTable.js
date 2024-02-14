@@ -695,7 +695,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					r._isEditable = false;
 					if(this.config?._advanced?.afterEditCallback !== undefined && this.config?._advanced?.afterEditCallback !== ""){
 						try{
-							if (typeof this.config?._advanced?.afterEditCallback == 'string') this.config?._advanced?.afterEditCallback = eval('(' + this.config?._advanced?.afterloadTransformation + ')');
+							if (typeof this.config._advanced.afterEditCallback == 'string') this.config._advanced.afterEditCallback = eval('(' + this.config._advanced.afterEditCallback + ')');
 							await this.config?._advanced?.afterEditCallback(this,libs,[r]);
 						}catch(e){
 							// console.error("Error",e);
@@ -1053,16 +1053,20 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					if(el?._advanced?.optionsCallback !== undefined && el?._advanced?.optionsCallback !== ""){ 
 						try{
 							el.options = await el._advanced.optionsCallback(this,libs,el,record);
+							el._editOptions	= el.options;
+							el._isLookUpEdit = true;
 						}catch(e){
 							this.config._errors = libs.formatCallbackErrorMessages(e,'field','Options callback');
 						}
 						console.log('options',el.options);
-					}
+					} 
+					// We need to think about this part
 					if(el._showEditableIcon && el.type === 'reference' && !el._editOptions){
 						el._editOptions = [];
 						if(cItem.nillable === true){
 							el._editOptions.push({"label":'--None--',"value":'NONE'});
 						}
+						
 						let fields = ['Id','Name'];
 						if(el._advanced?.referencedObject?.fields){
 							fields.push(...el._advanced?.referencedObject?.fields);

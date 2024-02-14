@@ -10,7 +10,7 @@
 				options={col.options} selectedvalues={editValue} cfg={cfg} data-id={col.fieldName} usenewui=true></c-multiselect>
 				<!-- For SingleSelect/Picklist type -->
 				<c-multiselect if:false={picklistType} listsize={config.dataTableCfg.displayOptionListSize} onselect={inlineEdit} 
-				options={col.options} selectedvalues={editValue} cfg={cfg} data-id={col.fieldName} usenewui=true  newitemcreation={config._newItemCreation} 
+				options={col.options} selectedvalues={editValue} cfg={cfg} data-id={col.fieldName} usenewui=true newitemcreation={config._newItemCreation} 
 				enablenewoption={config._enableNewOption} onopennewdialog={passToDataTable} opennewindatatable=true col={col}></c-multiselect>
 			</template>
 			<template if:false={col._isLookUpEdit}>
@@ -27,7 +27,7 @@
 			</span> -->
 			<template if:true={col._isLookUpEdit}>
 				<c-multiselect if:true={col._editOptions} listsize={config.dataTableCfg.displayOptionListSize} onselect={inlineEdit} 
-				options={col._editOptions} selectedvalue={editValue} cfg={cfg} col={col} optionsfromglobalvar=true data-id={col.fieldName}></c-multiselect>
+				options={col._editOptions} selectedvalue={editValue} cfg={cfg} col={col} optionsfromglobalvar=true data-id={col.fieldName} usenewui=true newitemcreation={config._newItemCreation}></c-multiselect>
 			</template>
 			<span if:true={col.isEditable} title={value}>
 				<lightning-input type="checkbox" if:true={col.isEditableBool} checked={editValue} onchange={inlineEdit} data-id={col.fieldName}> </lightning-input>

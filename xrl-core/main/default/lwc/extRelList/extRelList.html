@@ -32,8 +32,13 @@
 						</div>
 						<div class="slds-m-left_xx-small forceListViewSettingsMenu">
 							<span if:true={config.listViewConfig}>
-								<lightning-button-icon if:true={config.dataTableConfig._changedRecords} icon-name="utility:save"  variant="brand" alternative-text={config._LABELS.altTxt_save} title={changedRecords} data-id=":save" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
-								<lightning-button-icon if:true={config.dataTableConfig._changedRecords} icon-name="utility:undelete"  variant="brand" title={config._LABELS.altTxt_cancelRecordSave} data-id=":cancelRecordSave" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
+								<span if:false={config._advanced.customSaveAction}>
+									<lightning-button-icon if:true={config.dataTableConfig._changedRecords} icon-name="utility:save"  variant="brand" alternative-text={config._LABELS.altTxt_save} title={changedRecords} data-id=":save" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
+									<lightning-button-icon if:true={config.dataTableConfig._changedRecords} icon-name="utility:undelete"  variant="brand" title={config._LABELS.altTxt_cancelRecordSave} data-id=":cancelRecordSave" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
+								</span>
+								<span if:true={config._advanced.customSaveAction}>
+									<lightning-button-icon if:true={config.dataTableConfig._changedRecords} icon-name={config._advanced.customSaveAction.icon}  variant={config._advanced.customSaveAction.variant} title={changedRecords} data-id=":customSave" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
+								</span>
 							</span>
 							
 							<lightning-button-menu if:true={hasDynamicActions} alternative-text={config._LABELS.altTxt_dynamic} variant="border-filled" icon-name="utility:play" class="slds-p-horizontal_xx-small" menu-alignment="right">

@@ -891,6 +891,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		if (val.startsWith(':save')) {
 			this.prepareRecordsForSave();
 		}
+		if (val.startsWith(':customSave')) {
+			this.prepareRecordsForSave(true);
+		}
 		if (val.startsWith(':cancelRecordSave')) {
 			this.config.listViewConfig[0]._changedRecords = undefined;
 			this.config.records = undefined;
@@ -1132,7 +1135,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		return records;
 	}
 
-	async prepareRecordsForSave(){
+	async prepareRecordsForSave(isCustom){
 		let records = [];
 		if(this.config?._advanced?.recordsDragDropCallback !== undefined && this.config?._advanced?.recordsDragDropCallback !== "" && this.config?._advanced?.afterloadTransformation !== undefined && this.config?._advanced?.afterloadTransformation !== ""){
 			records = libs.flattenRecordsWithChildren(this.template.querySelector('c-Data-Table').getRecords());
@@ -1205,6 +1208,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		this.config.saveStatus = 0;
 		this.config.countOfFailedRecords = 0;
 		this.config.errorList = [];
+		if (isCustom) {
+			let cbResult = eval('[' + this.config._advanced.customSave.callback + ']')[0];
+			console.log('cbResult', cbResult);
+			return;
+		}
 		let chunkCount = await libs.splitRecordsIntoChunks(this,changedItems,saveChunk,this.saveRecords);
 
 		// while(changedItems.length > 0 && index < changedItems.length){
