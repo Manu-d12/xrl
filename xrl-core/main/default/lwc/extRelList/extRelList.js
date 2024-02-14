@@ -388,6 +388,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 					if(this.config?._advanced?.afterloadTransformation !== undefined && this.config?._advanced?.afterloadTransformation !== ""){
 						try {
+							libs.getGlobalVar(this.name).originalRecords = JSON.parse(JSON.stringify(libs.getGlobalVar(this.name).records));
 							this.config.records = eval('(' + this.config?._advanced?.afterloadTransformation + ')')(this,libs, libs.getGlobalVar(this.name).records);
 						} catch(e){
 							// console.log('EXCEPTION', err);
