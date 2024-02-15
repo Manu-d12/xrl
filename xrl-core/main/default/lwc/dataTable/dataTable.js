@@ -1109,7 +1109,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			// Check if min-height property already exists
 			if (!this.config._tableStyle.includes("min-height")) {
 				// Add min-height property if it doesn't exist
-				this.config._tableStyle += "min-height: 460px;";
+				//this.config._tableStyle += "min-height: 460px;";
 			}
 		}
 	}

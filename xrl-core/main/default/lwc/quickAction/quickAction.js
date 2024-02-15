@@ -76,10 +76,10 @@ export default class customAction extends LightningElement {
         libs.remoteAction(this, 'invokeApex', {
 			isBatch : true,
             isDebug: this.config.UI?.isDebug,
-            helperType : this.config.apexAsyncClass,
+            helperType : this.config.orchestrator?.apexAsyncClass,
 			operation : this.cfgName,
 			rootRecordId : this.urlParams.recordId,
-			SOQL : this.config.orchestrator.childSOQL;
+			SOQL : this.config.orchestrator.childSOQL,
             callback: ((nodeName, data) => {
 				console.log('Async Invocation', data);
             })
@@ -107,12 +107,11 @@ export default class customAction extends LightningElement {
             callback: ((nodeName, data) => {
                 console.log(nodeName, data);
                 let res = libs.orchestratorResult(data[nodeName]);
-
-                if (this.config._isUI == true) {
-                    let title = this.config.UI.processRecordsLabel.replace('{1}', libs.getGlobalVar('orchestratorRequestCount')).replace('{0}', res.totalRecords).replace('{2}', res.errorRecords);
+                if (this.config.UI == true) {
+                    let title = this.config.orchestrator.processRecordsLabel.replace('{1}', libs.getGlobalVar('orchestratorRequestCount')).replace('{0}', res.totalRecords).replace('{2}', res.errorRecords);
                     this.template.querySelector('c-dialog').disableButtons(title, !data.isLastChunk);
-					this.dispatchEvent(new CloseActionScreenEvent());
                 }
+				this.dispatchEvent(new CloseActionScreenEvent());
             })
         })
     }
