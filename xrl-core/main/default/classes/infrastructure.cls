@@ -333,9 +333,9 @@ global with sharing class infrastructure {
 			};
 			if (item.listViewName__c == listViewName || string.isEmpty(listViewName) || (i == lst.size() - 1 && result.get('userConfig') == null)) {
 				view.put('isUserConfig', true);
-				result.put('userConfig', item.JSON__c);
+				result.put('userConfig', replaceLabels(item.JSON__c));
 			}
-			if (item.isAdminConfig__c) result.put('baseConfig', item.JSON__c);
+			if (item.isAdminConfig__c) result.put('baseConfig', replaceLabels(item.JSON__c));
 			listViews.add(view);
 		}
 		result.putAll(getOtherConfigInfo(isNeedDescribe,sObjApiName));
@@ -370,8 +370,8 @@ global with sharing class infrastructure {
 				'configType' => item.configType__c
 			};
 			view.put('isUserConfig', true);
-			result.put('userConfig', item.JSON__c);
-			if (item.isAdminConfig__c) result.put('baseConfig', item.JSON__c);
+			result.put('userConfig', replaceLabels(item.JSON__c));
+			if (item.isAdminConfig__c) result.put('baseConfig', replaceLabels(item.JSON__c));
 			listViews.add(view);
 		}
 		result.put('listViews', listViews);
@@ -402,8 +402,8 @@ global with sharing class infrastructure {
 			};
 			sObjApiNameFromView = item.sObjApiName__c;
 			view.put('isUserConfig', true);
-			result.put('userConfig', item.JSON__c);
-			if (item.isAdminConfig__c) result.put('baseConfig', item.JSON__c);
+			result.put('userConfig', replaceLabels(item.JSON__c));
+			if (item.isAdminConfig__c) result.put('baseConfig', replaceLabels(item.JSON__c));
 			listViews.add(view);
 		}
 		result.put('listViews', listViews);
@@ -1227,34 +1227,42 @@ global with sharing class infrastructure {
 	}
     
     private static map < string, object > invokeApex(string helperType, map<string, object> data) {
-		
-        string[] apexHelper = helperType.split('\\.');
-	    string helperTypeClass = apexHelper[0];
-        infrastructure.addDebugLog('invokeApex', apexHelper);
+		boolean isBatch = (boolean) data.get('isBatch') == true;
+        map < string, object > result = new map < string, object > ();
         
-   		ApexClass[] A = [SELECT Id, NamespacePrefix FROM ApexClass WHERE Name =: helperTypeClass ORDER BY NamespacePrefix ASC NULLS FIRST LIMIT 1];
-        if (A.size() == 0) throw new InfrastructureException(null, 'Can\'t find class {1}'.replace('{1}', helperTypeClass) + ':' + helperType, exceptionType.CLASS_NOT_FOUND);
-        Type T = string.isEmpty(A[0].namespacePrefix) ? system.type.forName(null,helperType) : system.type.forName(A[0].namespacePrefix, helperType);
-		if (T == null) throw new InfrastructureException(null, ('Can\'t find class {1}').replace('{1}', helperType), exceptionType.CLASS_NOT_FOUND);
-        infrastructure.addDebugLog('invokeApex', T.toString());
-        //handler handlerClass = (infrastructure.handler) JSON.deserialize(JSON.serialize(data.get('data')), T);
-        //handler handlerClass = (infrastructure.handler) T.newInstance();
-
-		/*
-			SALESFORCE BUG. helperTypeClass  must have API version 48 and not more!!! 
-		*/
-        handler handlerClass = (infrastructure.handler)JSON.deserialize(JSON.serialize(data.get('data')), T);
-
-		map < string, object > result = new map < string, object > ();
-		try {
-			object res = handlerClass.execute(data);
-			result.put('success', true);
-			result.put('result', res);
-		} catch (Exception e) {
-			result.put('success', false);
-			result.put('errorMessage', e.getMessage());
-			system.debug(LoggingLevel.Error, e.getMessage());
-		}
+        if (isBatch == true) {
+			Database.Batchable<sObject> instance = (Database.Batchable<sObject>) JSON.deserialize(JSON.serialize(data.get('data')), Database.Batchable<sObject>.class);
+			id jobId = Database.executeBatch(instance, 200);
+			result.put('jobId', jobId);
+        } else {
+            string[] apexHelper = helperType.split('\\.');
+            string helperTypeClass = apexHelper[0];
+            infrastructure.addDebugLog('invokeApex', apexHelper);
+            
+            ApexClass[] A = [SELECT Id, NamespacePrefix FROM ApexClass WHERE Name =: helperTypeClass ORDER BY NamespacePrefix ASC NULLS FIRST LIMIT 1];
+            if (A.size() == 0) throw new InfrastructureException(null, 'Can\'t find class {1}'.replace('{1}', helperTypeClass) + ':' + helperType, exceptionType.CLASS_NOT_FOUND);
+            Type T = string.isEmpty(A[0].namespacePrefix) ? system.type.forName(null,helperType) : system.type.forName(A[0].namespacePrefix, helperType);
+            if (T == null) throw new InfrastructureException(null, ('Can\'t find class {1}').replace('{1}', helperType), exceptionType.CLASS_NOT_FOUND);
+            infrastructure.addDebugLog('invokeApex', T.toString());
+            //handler handlerClass = (infrastructure.handler) JSON.deserialize(JSON.serialize(data.get('data')), T);
+            //handler handlerClass = (infrastructure.handler) T.newInstance();
+    
+            /*
+                SALESFORCE BUG. helperTypeClass  must have API version 48 and not more!!! 
+            */
+            handler handlerClass = (infrastructure.handler)JSON.deserialize(JSON.serialize(data.get('data')), T);
+    
+            
+            try {
+                object res = handlerClass.execute(data);
+                result.put('success', true);
+                result.put('result', res);
+            } catch (Exception e) {
+                result.put('success', false);
+                result.put('errorMessage', e.getMessage());
+                system.debug(LoggingLevel.Error, e.getMessage());
+            }
+        }
 		return result;
     }
 
