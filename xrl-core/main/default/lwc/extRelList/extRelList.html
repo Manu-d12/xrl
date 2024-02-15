@@ -32,12 +32,18 @@
 						</div>
 						<div class="slds-m-left_xx-small forceListViewSettingsMenu">
 							<span if:true={config.listViewConfig}>
-								<span if:false={config._advanced.customSaveAction}>
+								<span if:false={config._advanced}>
 									<lightning-button-icon if:true={config.dataTableConfig._changedRecords} icon-name="utility:save"  variant="brand" alternative-text={config._LABELS.altTxt_save} title={changedRecords} data-id=":save" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
 									<lightning-button-icon if:true={config.dataTableConfig._changedRecords} icon-name="utility:undelete"  variant="brand" title={config._LABELS.altTxt_cancelRecordSave} data-id=":cancelRecordSave" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
 								</span>
-								<span if:true={config._advanced.customSaveAction}>
-									<lightning-button if:true={config.dataTableConfig._changedRecords} label={config._advanced.customSaveAction.label} icon-name={config._advanced.customSaveAction.icon}  variant={config._advanced.customSaveAction.variant} title={changedRecords} data-id=":customSave" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button>
+								<span if:true={config._advanced}>
+									<span if:false={config._advanced.customSaveAction}>
+										<lightning-button-icon if:true={config.dataTableConfig._changedRecords} icon-name="utility:save"  variant="brand" alternative-text={config._LABELS.altTxt_save} title={changedRecords} data-id=":save" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
+										<lightning-button-icon if:true={config.dataTableConfig._changedRecords} icon-name="utility:undelete"  variant="brand" title={config._LABELS.altTxt_cancelRecordSave} data-id=":cancelRecordSave" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button-icon>
+									</span>
+									<span if:true={config._advanced.customSaveAction}>
+										<lightning-button if:true={config.dataTableConfig._changedRecords} label={config._advanced.customSaveAction.label} icon-name={config._advanced.customSaveAction.icon}  variant={config._advanced.customSaveAction.variant} title={changedRecords} data-id=":customSave" onclick={handleEvent} class="slds-p-horizontal_xx-small"></lightning-button>
+									</span>
 								</span>
 							</span>
 							
