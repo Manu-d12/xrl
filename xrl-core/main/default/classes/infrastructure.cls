@@ -333,9 +333,9 @@ global with sharing class infrastructure {
 			};
 			if (item.listViewName__c == listViewName || string.isEmpty(listViewName) || (i == lst.size() - 1 && result.get('userConfig') == null)) {
 				view.put('isUserConfig', true);
-				result.put('userConfig', item.JSON__c);
+				result.put('userConfig', replaceLabels(item.JSON__c));
 			}
-			if (item.isAdminConfig__c) result.put('baseConfig', item.JSON__c);
+			if (item.isAdminConfig__c) result.put('baseConfig', replaceLabels(item.JSON__c));
 			listViews.add(view);
 		}
 		result.putAll(getOtherConfigInfo(isNeedDescribe,sObjApiName));
@@ -370,8 +370,8 @@ global with sharing class infrastructure {
 				'configType' => item.configType__c
 			};
 			view.put('isUserConfig', true);
-			result.put('userConfig', item.JSON__c);
-			if (item.isAdminConfig__c) result.put('baseConfig', item.JSON__c);
+			result.put('userConfig', replaceLabels(item.JSON__c));
+			if (item.isAdminConfig__c) result.put('baseConfig', replaceLabels(item.JSON__c));
 			listViews.add(view);
 		}
 		result.put('listViews', listViews);
@@ -402,8 +402,8 @@ global with sharing class infrastructure {
 			};
 			sObjApiNameFromView = item.sObjApiName__c;
 			view.put('isUserConfig', true);
-			result.put('userConfig', item.JSON__c);
-			if (item.isAdminConfig__c) result.put('baseConfig', item.JSON__c);
+			result.put('userConfig', replaceLabels(item.JSON__c));
+			if (item.isAdminConfig__c) result.put('baseConfig', replaceLabels(item.JSON__c));
 			listViews.add(view);
 		}
 		result.put('listViews', listViews);

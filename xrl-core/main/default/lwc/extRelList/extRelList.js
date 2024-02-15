@@ -371,7 +371,6 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}else{
 			await libs.remoteAction(this, 'query', {
 				isNeedDescribe: true,
-				parentObjFields : JSON.parse(this.config.dataTableConfig?.advanced)?.parentObjFields,
 				sObjApiName: this.config.sObjApiName,
 				relField: this.config.relField,
 				addCondition: libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name),

@@ -1013,6 +1013,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			//options callback
 			if(cItem?._advanced?.optionsCallback !== undefined && cItem?._advanced?.optionsCallback !== ""){ 
 				try{
+					if (typeof cItem._advanced.optionsCallback == 'string') cItem._advanced.optionsCallback = eval('(' + cItem._advanced.optionsCallback + ')');
 					cItem.options = await cItem._advanced.optionsCallback(this,libs,cItem,rec);
 				}catch(e){
 					this.config._errors = libs.formatCallbackErrorMessages(e,'field','Options callback');
@@ -1052,6 +1053,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					//options callback
 					if(el?._advanced?.optionsCallback !== undefined && el?._advanced?.optionsCallback !== ""){ 
 						try{
+							if (typeof el._advanced.optionsCallback == 'string') el._advanced.optionsCallback = eval('(' + el._advanced.optionsCallback + ')');
 							el.options = await el._advanced.optionsCallback(this,libs,el,record);
 							el._editOptions	= el.options;
 							el._isLookUpEdit = true;
