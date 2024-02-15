@@ -154,7 +154,7 @@ export default class customAction extends LightningElement {
             	                "name": "btn:async",
                 	            "label": "Async",
                     	        "variant": "neutral",
-                        	    "callback": "function(scope, libs, data) {\n    let event = new CustomEvent('action', {\n        detail: {\n            action: 'runOrchestratorAsync''\n        }\n    });\n    scope.dispatchEvent(event);\n}"
+                        	    "callback": "function(scope, libs, data) {\n    let event = new CustomEvent('action', {\n        detail: {\n            action: 'runOrchestratorAsync'\n        }\n    });\n    scope.dispatchEvent(event);\n}"
                             },
                             {
 	                            "name": "btn:sync",
