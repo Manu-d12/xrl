@@ -373,7 +373,7 @@ export default class Multiselect extends LightningElement {
         );
         this.config.searchResults = result;
     }
-    clearSearchResults() {
+    clearSearchResults(event) {
         setTimeout(() => {
             this.config.searchResults = false;
         }, 150);
