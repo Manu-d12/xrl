@@ -74,10 +74,14 @@ export default class customAction extends LightningElement {
         console.log('ASYNC');
         // Need invoke a class that will run a orchestrator in ASYNC mode
         libs.remoteAction(this, 'invokeApex', {
+			isBatch : true,
             isDebug: this.config.UI?.isDebug,
             helperType : this.config.apexAsyncClass,
+			operation : this.cfgName,
+			rootRecordId : this.urlParams.recordId,
+			SOQL : this.config.orchestrator.childSOQL;
             callback: ((nodeName, data) => {
-                
+				console.log('Async Invocation', data);
             })
         });
     }
@@ -115,7 +119,8 @@ export default class customAction extends LightningElement {
 
     getRecordsAndSend() {
         let objName = this.actionName.replace(/^(.*?)\..*?$/, "$1");
-        let SOQL = "SELECT Id, (SELECT Id FROM " + this.config.orchestrator.childObjApiName + ") FROM " + objName + " WHERE Id='" + this.urlParams.recordId + "'";
+        let SOQL = this.config.orchestrator.childSOQL;
+		//"SELECT Id, (SELECT Id FROM " + this.config.orchestrator.childObjApiName + ") FROM " + objName + " WHERE Id='" + this.urlParams.recordId + "'";
         if (this.config.UI) {
             let title = this.config.UI.loadRecordsLabel;
             this.template.querySelector('c-dialog').disableButtons(title, true);
@@ -125,7 +130,7 @@ export default class customAction extends LightningElement {
             SOQL: SOQL,
             callback: ((nodeName, data) => {
                 console.log('List of child Ids', data[nodeName]);
-                let relatedRecords = data[nodeName].records[0][this.config.orchestrator.childObjApiName];
+                let relatedRecords = data[nodeName].records;//[0][this.config.orchestrator.childObjApiName];
                 if (relatedRecords == undefined) this.handleEvent();
 
                 //chunking
