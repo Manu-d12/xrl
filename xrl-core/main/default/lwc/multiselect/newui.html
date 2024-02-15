@@ -5,12 +5,12 @@
           <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
             <lightning-input class="search" label={label} type="search" onchange={search} value={selectedValue} onclick={showOptionsForNewUI} onfocusout={clearSearchResults} oncommit={clearSearchResults}></lightning-input>
             <!-- Dropdown starts -->
-              <div if:true={config.searchResults} class="slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid slds-dropdown_left"
+              <div if:true={config.searchResults} class="slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_length-7 slds-dropdown_fluid slds-dropdown_left"
                     data-dropdown-element="" role="listbox" part="dropdown overlay" style={config.style}>
   
               <ul class="slds-listbox slds-listbox_vertical" role="presentation">
                 <li if:true={config.enableNewOption} data-value="#new_value" onclick={selectSearchResult} role="presentation" class="slds-listbox__item" style="background: aliceblue;">
-                  <div id="#new_value" class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small" role="option">
+                  <div id="#new_value" class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small liitem" role="option">
                       <span class="slds-media__figure slds-listbox__option-icon">
                         <span class="slds-icon_container slds-icon-utility-add slds-current-color">
                           <svg class="slds-icon slds-icon_x-small" aria-hidden="true">
@@ -18,8 +18,8 @@
                           </svg>
                         </span>
                       </span>
-                      <span class="slds-media__body">
-                          <span class="slds-truncate" title="New Option">
+                      <span class="slds-media__body liitem">
+                          <span class="slds-truncate liitem" title="New Option">
                               {config.newOptionLabel}
                           </span>
                       </span>
@@ -27,7 +27,7 @@
               </li>
                   <template for:each={config.searchResults} for:item="searchResult">
                       <li key={searchResult.value} data-value={searchResult.value} onclick={selectSearchResult} role="presentation" class="slds-listbox__item">
-                          <div id={searchResult.value} class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small" role="option">
+                          <div id={searchResult.value} class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small liitem" role="option">
                               <span if:true={searchResult.selected} class="slds-media__figure slds-listbox__option-icon">
                                   <span class="slds-icon_container slds-icon-utility-check slds-current-color">
                                     <svg class="slds-icon slds-icon_x-small" aria-hidden="true">
@@ -42,8 +42,8 @@
                                   </svg>
                                 </span>
                               </span>
-                              <span class="slds-media__body">
-                                  <span class="slds-truncate" title={searchResult.label}>
+                              <span class="slds-media__body liitem">
+                                  <span class="slds-truncate liitem" title={searchResult.label}>
                                       {searchResult.label}
                                   </span>
                               </span>

@@ -1034,8 +1034,6 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		} else {
 				let record = recId ===  null ? this.records[calculatedInd] : libs.findRecordWithChild(this.records, recId);
 				record._focus = colName;
-				//for multiselect to open on top or bottom
-				this.setMultiselectPosition(record.sl);
 				
 				if (this.config._inlineEdit !== undefined) {
 					record._isEditable = false;
@@ -1097,22 +1095,18 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		}
 	}
 	}
-	setMultiselectPosition(recordIndex){
-		let recordPositionOnPage = recordIndex % parseInt(this.config.pager.pageSize);
-		let midPoint = (parseInt(this.config.pager.pageSize)/2);
-		if(recordPositionOnPage !== 0 && recordPositionOnPage < (midPoint + 2)){
-			libs.getGlobalVar(this.cfg).openMultiselectAtBottom = true; 
-		}else{
-			libs.getGlobalVar(this.cfg).openMultiselectAtBottom = false; 
-		}
-		if ((this.config.pager.pageSize === "5" || this.config._recordsToShow.length <= 5) && libs.getGlobalVar(this.cfg).openMultiselectAtBottom) {
-			// Check if min-height property already exists
-			if (!this.config._tableStyle.includes("min-height")) {
-				// Add min-height property if it doesn't exist
-				//this.config._tableStyle += "min-height: 460px;";
-			}
-		}
-	}
+	// setMultiselectPosition(recordIndex){
+	// 	let recordPositionOnPage = recordIndex % parseInt(this.config.pager.pageSize);
+	// 	let midPoint = (parseInt(this.config.pager.pageSize)/2);
+	// 	if(recordPositionOnPage !== 0 && recordPositionOnPage < (midPoint + 2)){
+	// 		libs.getGlobalVar(this.cfg).openMultiselectAtBottom = true; 
+	// 	}else{
+	// 		libs.getGlobalVar(this.cfg).openMultiselectAtBottom = false; 
+	// 	}
+	// 	if ((this.config.pager.pageSize === "5" || this.config._recordsToShow.length <= 5) && libs.getGlobalVar(this.cfg).openMultiselectAtBottom) {
+	// 		// Check if min
+	// 	}
+	// }
 
 	handleDropDownEvents(event) {
 		//console.log('DD Event', event.detail);
