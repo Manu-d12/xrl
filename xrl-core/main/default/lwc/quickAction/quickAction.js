@@ -42,8 +42,8 @@ export default class customAction extends LightningElement {
                 let config = JSON.parse(libs.replaceLiteralsInStr(data[nodeName].cfg, this.cfgName));
                 config._timeStamp = data[nodeName].timeStamp;
                 this.config = config;
-                let isUI = this.isUIDefined(config);
-                if (isUI == false) {
+                this.config._isUI = this.isUIDefined(config);
+                if (this.config._isUI == false) {
                     this.getRecordsAndSend();
                 } else if (config.UI){
                     if (config.UI.initCallback) {
@@ -75,7 +75,7 @@ export default class customAction extends LightningElement {
         // Need invoke a class that will run a orchestrator in ASYNC mode
         libs.remoteAction(this, 'invokeApex', {
             isDebug: this.config.UI?.isDebug,
-            helperType : this.config.UI?.apexAsyncClass,
+            helperType : this.config.apexAsyncClass,
             callback: ((nodeName, data) => {
                 
             })
@@ -104,7 +104,7 @@ export default class customAction extends LightningElement {
                 console.log(nodeName, data);
                 let res = libs.orchestratorResult(data[nodeName]);
 
-                if (this.config.UI) {
+                if (this.config._isUI == true) {
                     let title = this.config.UI.processRecordsLabel.replace('{1}', libs.getGlobalVar('orchestratorRequestCount')).replace('{0}', res.totalRecords).replace('{2}', res.errorRecords);
                     this.template.querySelector('c-dialog').disableButtons(title, !data.isLastChunk);
 					this.dispatchEvent(new CloseActionScreenEvent());
