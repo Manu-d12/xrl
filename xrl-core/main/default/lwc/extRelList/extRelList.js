@@ -20,13 +20,15 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	@api isFullscreen;
 	@api flexipageRegionWidth;
 
-	@track config = {};
+	@track config = {
+		showDialog : false	
+	};
 	@track localConfig = {};
 	@track listViews = [];
 	LABELS = {};
 	allRecords = [];
 
-	@track showDialog = false;
+	//@track showDialog = false;
 	@track dialogCfg;
 
 	constructor() {
@@ -937,7 +939,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					],
 					data_id: "reqFeature:dialog"
 				};
-				this.showDialog = true;
+				this.config.showDialog = true;
 			}else{
 				const eventErr = new ShowToastEvent({
 					title: 'Error',
@@ -948,7 +950,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			}
 		}
 		if (val.startsWith('reqFeature:dialog')) {
-			if (event.detail.action === 'cancel') this.showDialog = false;
+			if (event.detail.action === 'cancel') this.config.showDialog = false;
 			else {
 				event.target.setLoading(true);
 				libs.remoteAction(this, 'requestFeature', {
@@ -960,7 +962,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 								variant: 'success'
 							});
 							this.dispatchEvent(toast);
-							this.showDialog = false;
+							this.config.showDialog = false;
 						} else {
 							const toast = new ShowToastEvent({
 								title: 'Error',
@@ -975,16 +977,16 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			this.handleStandardCallback('std:request_open');
 		}
 		if (val.startsWith('delete:dialog')) {
-			if (event.detail.action === 'cancel') this.showDialog = false;
+			if (event.detail.action === 'cancel') this.config.showDialog = false;
 			else {
-				this.showDialog = false;
+				this.config.showDialog = false;
 				this.prepareRecordsToDelete();
 				this.handleStandardCallback('std:delete');
 			}
 		}
 		//config delete
 		if (val.startsWith('deleteConfig:dialog')) {
-			if (event.detail.action === 'cancel') this.showDialog = false;
+			if (event.detail.action === 'cancel') this.config.showDialog = false;
 			else{
 				console.log('Deleting Config ',this.config.listView.id + ' ' + this.config.listView.label);
 				libs.remoteAction(this, 'deleteConfig', { 
@@ -1009,11 +1011,11 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 						}
 					} 
 				});
-				this.showDialog = false;
+				this.config.showDialog = false;
 			}
 		}
 		if (val.startsWith('action:')) {
-			if (event.detail.action === 'cancel') this.showDialog = false;
+			if (event.detail.action === 'cancel') this.config.showDialog = false;
 			else this.dispatchEvent(new CustomEvent("action", {detail : event.detail}));
 		}
 	}
@@ -1079,7 +1081,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			});
 			this.dispatchEvent(toast);
 		}
-		this.showDialog = false;
+		this.config.showDialog = false;
 		if(records.length < 1000){
 			this.config.records = libs.flattenRecordsWithChildren(this.config.records);
 			this.config.records = this.config.records.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
@@ -1329,7 +1331,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					],
 					data_id: "deleteConfig:dialog"
 				};
-				this.showDialog = true;
+				this.config.showDialog = true;
 			}else{
 				const evnt = new ShowToastEvent({
 					title: 'Error',
@@ -1730,7 +1732,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 						],
 						data_id: "delete:dialog"
 					};
-					this.showDialog = true;
+					this.config.showDialog = true;
 				}else{
 					const event = new ShowToastEvent({
 						title: 'Error',

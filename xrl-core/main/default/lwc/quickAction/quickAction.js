@@ -108,7 +108,7 @@ export default class customAction extends LightningElement {
                 console.log(nodeName, data);
                 let res = libs.orchestratorResult(data[nodeName]);
                 if (this.config.UI == true) {
-                    let title = this.config.orchestrator.processRecordsLabel.replace('{1}', libs.getGlobalVar('orchestratorRequestCount')).replace('{0}', res.totalRecords).replace('{2}', res.errorRecords);
+                    let title = this.config.orchestrator.processRecordsLabel.replace('{1}', libs.getGlobalVar('orchestratorRequest').length).replace('{0}', res.totalRecords).replace('{2}', res.errorRecords);
                     this.template.querySelector('c-dialog').disableButtons(title, !data.isLastChunk);
                 }
 				this.dispatchEvent(new CloseActionScreenEvent());
@@ -137,40 +137,39 @@ export default class customAction extends LightningElement {
                 let suggestedChunckSize = (10000 / 2 / executorsLength) - executorsLength;// *2 because we also need delete old records    
                 let chunkSize = this.config.orchestrator?.limits?.chunkSize ? this.config.orchestrator?.limits?.chunkSize : 200;
                 let asyncThreshold = this.config.orchestrator?.limits?.asyncThreshold ? this.config.orchestrator?.limits?.asyncThreshold : 10000;
-                libs.setGlobalVar('orchestratorRequestCount', relatedRecords.length);
+                libs.setGlobalVar('orchestratorRequest', relatedRecords);
                 libs.setGlobalVar('suggestedChunckSize', suggestedChunckSize);
                 libs.setGlobalVar('chunkSize', chunkSize);
                 if (relatedRecords.length > asyncThreshold) {
-                    //  need show dialog
-                    this.config.UI.isSpinner = false;
+                    this.config.isSpinner = false;
                     this.config.showConfirmation = true;
                     this.config.confirmationUI = {
                         "buttons": [
                             {
-                            "name": "cancel",
-                            "label": "Cancel",
-                            "variant": "neutral"
+	                            "name": "cancel",
+    	                        "label": "Cancel",
+        	                    "variant": "neutral"
                             },
                             {
-                            "name": "btn:async",
-                            "label": "Async",
-                            "variant": "neutral",
-                            "callback": "function(scope, libs, data) {\n    let event = new CustomEvent('action', {\n        detail: {\n            action: 'runOrchestratorAsync', relatedRecords: '" + relatedRecords + "'\n        }\n    });\n    scope.dispatchEvent(event);\n}"
+            	                "name": "btn:async",
+                	            "label": "Async",
+                    	        "variant": "neutral",
+                        	    "callback": "function(scope, libs, data) {\n    let event = new CustomEvent('action', {\n        detail: {\n            action: 'runOrchestratorAsync''\n        }\n    });\n    scope.dispatchEvent(event);\n}"
                             },
                             {
-                            "name": "btn:sync",
-                            "label": "Sync",
-                            "variant": "brand",
-                            "class": "slds-m-left_x-small",
-                            "callback": "function(scope, libs, data) {\n    let event = new CustomEvent('action', {\n        detail: {\n            action: 'runOrchestratorSync', relatedRecords: '" + relatedRecords + "'\n        }\n    });\n    scope.dispatchEvent(event);\n}"
+	                            "name": "btn:sync",
+    	                        "label": "Sync",
+        	                    "variant": "brand",
+            	                "class": "slds-m-left_x-small",
+                	            "callback": "function(scope, libs, data) {\n    let event = new CustomEvent('action', {\n        detail: {\n            action: 'runOrchestratorSync'\n        }\n    });\n    scope.dispatchEvent(event);\n}"
                             }
                         ],
+						"title": "Confirmation",
                         "contents": [
                             {
-                            "isMessage": true,
-                            "name": "runConfirm",
-                            "title": "Confirmation",
-                            "text": "What is the way you prefer to use?"
+	                            "isMessage": true,
+    	                        "name": "runConfirm",
+            	                "text": "What is the way you prefer to use?"
                             }
                         ]
                     }
@@ -193,8 +192,8 @@ export default class customAction extends LightningElement {
 
         let target = event?.detail?.action;
         if (target == 'getRecordsAndSend') this.getRecordsAndSend();
-        else if (target == 'runOrchestratorSync') this.runOrchestratorSync(event?.detail?.relatedRecords);
-        else if (target == 'runOrchestratorAsync') this.runOrchestratorAsync(event?.detail?.relatedRecords);
+        else if (target == 'runOrchestratorSync') this.runOrchestratorSync(libs.getGlobalVar('orchestratorRequest'));
+        else if (target == 'runOrchestratorAsync') this.runOrchestratorAsync(libs.getGlobalVar('orchestratorRequest'));
         else if(target == ':executeCallbackOnQuickAction'){
             let callback = eval('[' + event?.detail?.btn?.callback + ']')[0];
             let result = await callback(this, libs, event?.detail);
