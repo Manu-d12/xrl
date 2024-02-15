@@ -95,7 +95,7 @@ export default class dialog extends LightningElement {
                     return;
                 }
                 btn.callback = eval('[' + btn.callback + ']')[0];
-                let result = await btn.callback(this, libs, { action: cmd, data: this.config.result, closeDialog : closeDialog });
+                let result = await btn.callback(this, libs, { action: cmd, data: this.config.result, closeDialog : closeDialog }, btn);
                 console.log('RESULT', result);
             } else {
                 // we need to close a dialog

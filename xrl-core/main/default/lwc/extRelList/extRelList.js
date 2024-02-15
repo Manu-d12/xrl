@@ -1014,7 +1014,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			}
 		}
 		if (val.startsWith('action:')) {
-			this.dispatchEvent(new CustomEvent({detail : val}));
+			if (event.detail.action === 'cancel') this.showDialog = false;
+			else this.dispatchEvent(new CustomEvent("action", {detail : event.detail}));
 		}
 	}
 	async prepareRecordsToDelete(){
@@ -1214,7 +1215,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		this.config.errorList = [];
 		if (isCustom) {
 			let cbResult = eval('[' + this.config._advanced.customSaveAction.callback + ']')[0];
-			let res = cbResult(this, libs, changedItems);
+			let res = cbResult(this, libs, changedItems,this.config._advanced.customSaveAction);
 			console.log('cbResult', res);
 			return;
 		}
