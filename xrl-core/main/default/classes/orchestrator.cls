@@ -138,11 +138,11 @@ global with sharing class QuoteValidator {
             infrastructure.handler handlerClass = (infrastructure.handler) T.newInstance();
             infrastructure.validationResult handlerResult = (infrastructure.validationResult) handlerClass.execute(new map<string, object>{'initParams' => (map<string,object>) JSON.deserializeUntyped(JSON.serialize(orcReq))});
             if (handlerResult.code != infrastructure.validationResultCode.OK) {
+				string errorMessage = String.format(ePart.errorTemplate, vResult.dynamicValues);
+                insert this.prepareLogRecordWithError(operation, null, errorMessage, 'preCheck');
                 this.orcResp.responses.add(handlerResult);
                 return;
             }
-            //infrastructure.validationResult vResult = (infrastructure.validationResult) handlerResult
-            //if (handlerResult == )
         }
         this.mainLoop(operation);
         if (this.orcReq.isLastChunk == true) {
@@ -198,11 +198,7 @@ global with sharing class QuoteValidator {
                             if (vResult.code != infrastructure.validationResultCode.OK) {
                                 this.orcResp.invalidCount ++;
                                 string errorMessage = String.format(ePart.errorTemplate, vResult.dynamicValues);
-                                log__c l = this.prepareLogRecord(operation, obj);
-                                l.errorMessage__c = errorMessage.left(250);
-                                l.errCode__c = ePart.className;
-								if (errorMessage.length() > 255) l.info__c = errorMessage;
-                                logs.add(l);
+                                logs.add(this.prepareLogRecordWithError(operation, obj, errorMessage, ePart.className));
                             }
                         }
                         when INBOUNDVALIDATION {
@@ -210,11 +206,7 @@ global with sharing class QuoteValidator {
                             if (vResult.code != infrastructure.validationResultCode.OK) {
                                 this.orcResp.invalidCount ++;
                                 string errorMessage = String.format(ePart.errorTemplate, vResult.dynamicValues);
-                                log__c l = this.prepareLogRecord(operation, null);
-                                l.errorMessage__c = errorMessage.left(250);
-                                l.errCode__c = ePart.className;
-								if (errorMessage.length() > 255) l.info__c = errorMessage;
-                                logs.add(l);
+                                logs.add(this.prepareLogRecordWithError(operation, obj, errorMessage, ePart.className));
                             }
                         }
                         when CALCENGINE {
@@ -228,18 +220,14 @@ global with sharing class QuoteValidator {
                     }
                 } catch (Exception e) {
                     system.debug(LoggingLevel.Error, 'EXCEPTION:' + e.getMessage());
-                    log__c l = this.prepareLogRecord(operation, obj);
-                    l.errorMessage__c = ePart.className;
-                    l.errCode__c = 'EXCEPTION IN IMPLEMENTATION';
+                    log__c l = this.prepareLogRecordWithError(operation, obj, ePart.className, 'EXCEPTION IN IMPLEMENTATION');
                     l.info__c = 'EXCEPTION: ' + e.getMessage() + '\n\n STACK: ' + e.getStackTraceString();
                     logs.add(l);
                 }
             }
             if (infrastructure.debugLog!= null) {
 				infrastructure.addDebugLog('orchestrator:out', JSON.serialize(this.orcResp));
-                log__c l = this.prepareLogRecord(operation, null);
-                l.errorMessage__c = 'DEBUG';
-                l.errCode__c = 'DEBUG';
+                log__c l = this.prepareLogRecordWithError(operation, null, 'DEBUG','DEBUG');
 				string errMsg = JSON.serializePretty(infrastructure.debugLog);
                 l.info__c = errMsg.left(130995);
                 logs.add(l);
@@ -277,6 +265,15 @@ global with sharing class QuoteValidator {
             rootRecordName__c = this.config.rootRecordName
         );
     }
+
+    private log__c prepareLogRecordWithError(string operation, object relatedRecord, string errorMessage, string errCode) {
+		//string errorMessage = String.format(ePart.errorTemplate, vResult.dynamicValues);
+        log__c l = this.prepareLogRecord(operation, relatedRecord);
+        l.errorMessage__c = errorMessage.left(250);
+        l.errCode__c = errCode;
+		if (errorMessage.length() > 255) l.info__c = errorMessage;
+		return l;
+	}
     
     private void sendEmail(string operation) {
         if (this.config.isNeedSendEmail!= true) return;
