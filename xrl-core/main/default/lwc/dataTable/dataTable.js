@@ -1056,8 +1056,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						try{
 							if (typeof el._advanced.optionsCallback == 'string') el._advanced.optionsCallback = eval('(' + el._advanced.optionsCallback + ')');
 							el.options = await el._advanced.optionsCallback(this,libs,el,record);
-							el._editOptions	= el.options;
-							el._isLookUpEdit = true;
+							// el._editOptions	= el.options;
+							// el._isLookUpEdit = true;
 						}catch(e){
 							this.config._errors = libs.formatCallbackErrorMessages(e,'field','Options callback');
 						}
