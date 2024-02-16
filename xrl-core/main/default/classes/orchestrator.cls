@@ -138,7 +138,7 @@ global with sharing class QuoteValidator {
             infrastructure.handler handlerClass = (infrastructure.handler) T.newInstance();
             infrastructure.validationResult handlerResult = (infrastructure.validationResult) handlerClass.execute(new map<string, object>{'initParams' => (map<string,object>) JSON.deserializeUntyped(JSON.serialize(orcReq))});
             if (handlerResult.code != infrastructure.validationResultCode.OK) {
-				string errorMessage = String.format(ePart.errorTemplate, vResult.dynamicValues);
+				string errorMessage = this.config.orchestrator.preCheck.errorTemplate !=null ? String.format(this.config.orchestrator.preCheck.errorTemplate, handlerResult.dynamicValues) : 'Need provide orchestrator.preCheck.errorTemplate';
                 insert this.prepareLogRecordWithError(operation, null, errorMessage, 'preCheck');
                 this.orcResp.responses.add(handlerResult);
                 return;
