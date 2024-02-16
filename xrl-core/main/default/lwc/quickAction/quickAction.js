@@ -81,6 +81,7 @@ export default class customAction extends LightningElement {
 			rootRecordId : this.urlParams.recordId,
 			SOQL : this.config.orchestrator.childSOQL,
 			batchSize : libs.getGlobalVar('chunkSize'),
+			totalCount : libs.getGlobalVar('orchestratorRequest').length,
             callback: ((nodeName, data) => {
 				console.log('Async Invocation', data);
             })
