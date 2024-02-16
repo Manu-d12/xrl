@@ -297,7 +297,7 @@
 							<!-- <td scope="col" style="width: 2rem;" data-rowind={index}>
 								&nbsp;
 							</td> -->
-							<td for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="hIndex" key={hItem.Id} data-recid={dItem.Id} role="gridcell" data-rowind={index} data-rowid={dItem.Id} data-colname={hItem.fieldName} ondblclick={rowDblCallback} class={hItem._cellCss}>
+							<td for:each={config.colModel} if:false={hItem._hideFromDisplay} for:item="hItem" for:index="hIndex" key={hItem.Id} data-recid={dItem.Id} role="gridcell" data-rowind={index} data-rowid={dItem.Id} data-colname={hItem.fieldName} ondblclick={rowDblCallback} style={dItem._cellCss}>
 								<!-- Here _addSpace will be true because _addSpace is true only for the 0th column, so the tooltip will not show each for each column -->
 								<p if:true={hItem._addSpace}><span if:true={config._isShowRowCallbackTooltip} class="spnTooltip">
 										<strong>{config._rowCallbackTooltipText}</strong>
