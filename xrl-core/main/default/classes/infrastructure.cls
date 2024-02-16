@@ -1231,8 +1231,14 @@ global with sharing class infrastructure {
         map < string, object > result = new map < string, object > ();
         
         if (isBatch == true) {
-			Database.Batchable<sObject> instance = (Database.Batchable<sObject>) JSON.deserialize(JSON.serialize(data.get('data')), Database.Batchable<sObject>.class);
-			id jobId = Database.executeBatch(instance, 200);
+            integer batchSize = (integer) data.get('batchSize');
+			Type classType = Type.forName(null,helperType);
+
+			infrastructure.addDebugLog('invokeApex', helperType);
+
+			Database.Batchable<sObject> instance = (Database.Batchable<sObject>) JSON.deserialize(JSON.serialize(data), classType);
+			//Database.Batchable<sObject> instance = (Database.Batchable<sObject>) classType.newInstance();
+			id jobId = Database.executeBatch((Database.Batchable<sObject>)instance, batchSize == null ? 200 : batchSize);
 			result.put('jobId', jobId);
         } else {
             string[] apexHelper = helperType.split('\\.');

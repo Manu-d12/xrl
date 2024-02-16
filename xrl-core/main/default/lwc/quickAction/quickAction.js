@@ -80,6 +80,7 @@ export default class customAction extends LightningElement {
 			operation : this.cfgName,
 			rootRecordId : this.urlParams.recordId,
 			SOQL : this.config.orchestrator.childSOQL,
+			batchSize : libs.getGlobalVar('chunkSize'),
             callback: ((nodeName, data) => {
 				console.log('Async Invocation', data);
             })
