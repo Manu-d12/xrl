@@ -206,7 +206,7 @@ global with sharing class QuoteValidator {
                             if (vResult.code != infrastructure.validationResultCode.OK) {
                                 this.orcResp.invalidCount ++;
                                 string errorMessage = String.format(ePart.errorTemplate, vResult.dynamicValues);
-                                logs.add(this.prepareLogRecordWithError(operation, obj, errorMessage, ePart.className));
+                                logs.add(this.prepareLogRecordWithError(operation, null, errorMessage, ePart.className));
                             }
                         }
                         when CALCENGINE {
