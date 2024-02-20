@@ -944,6 +944,16 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		}
 		if(this.config.showStandardEdit && this.getSelectedRecords().length < 2){
 			let calculatedInd = this.hasGrouping ? this.records.findIndex(rec => rowId === rec.Id) : this.calcRowIndex(rowInd);
+			if (cItem._advanced?.isEditable) {
+				try {
+					if (typeof cItem._advanced.optionsCallback == 'string') cItem._advanced.isEditable = eval('(' + cItem._advanced.isEditable + ')');
+					let isEditable = await cItem._advanced.isEditable(this, libs, cItem, this.records[calculatedInd]);
+					if (isEditable == false) return;
+				} catch (e) {
+					this.config._errors = libs.formatCallbackErrorMessages(e, 'field', 'Options callback');
+				}
+
+			}
 			this.handleEventStandardEdit(this.records[calculatedInd].Id);
 			this.config._intervalId = setInterval(() => {
 				if(window.location.href === this.config._originalURL) {

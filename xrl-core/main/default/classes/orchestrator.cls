@@ -220,7 +220,7 @@ global with sharing class QuoteValidator {
                     }
                 } catch (Exception e) {
                     system.debug(LoggingLevel.Error, 'EXCEPTION:' + e.getMessage());
-                    log__c l = this.prepareLogRecordWithError(operation, obj, ePart.className, 'EXCEPTION IN IMPLEMENTATION');
+                    log__c l = this.prepareLogRecordWithError(operation, null, ePart.className, 'EXCEPTION IN IMPLEMENTATION');
                     l.info__c = 'EXCEPTION: ' + e.getMessage() + '\n\n STACK: ' + e.getStackTraceString();
                     logs.add(l);
                 }
