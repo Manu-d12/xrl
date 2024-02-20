@@ -618,6 +618,18 @@ export let libs = {
 						scope.dispatchEvent(event);
 					}
 				} else {
+					//this is to show the error incase there is any errors in the bulk operations
+					//incase we want to stop execution we need to check isExceptionInRemoteAction === true
+					if(result[cmd+'Result']?.countOfFailedRecords && result[cmd+'Result']?.countOfFailedRecords !== "0"){
+						let _labels = globalVars[Object.keys(globalVars)[0]]._LABELS;
+						const toast = new ShowToastEvent({
+							title: 'Error',
+							message: libs.formatStr('{0} ' + _labels.msg_itemsUpdateFailed,[result[cmd+'Result']?.countOfFailedRecords]) + result[cmd+'Result']?.listOfErrors.toString(),
+							variant: 'error'
+						});
+						scope.dispatchEvent(toast);
+						scope.config.isExceptionInRemoteAction = true;
+					}
 					if (typeof(params.callback) === 'function') {
 						result.isLastChunk = outParams.data?.isLastChunk;
 						params.callback.bind(scope)(cmd + 'Result', result);
