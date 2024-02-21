@@ -620,11 +620,11 @@ export let libs = {
 				} else {
 					//this is to show the error incase there is any errors in the bulk operations
 					//incase we want to stop execution we need to check isExceptionInRemoteAction === true
-					if(result[cmd+'Result']?.countOfFailedRecords && result[cmd+'Result']?.countOfFailedRecords !== "0"){
+					if(result[cmd+'Result']?.listOfErrors && result[cmd+'Result']?.listOfErrors.length > 0){
 						let _labels = globalVars[Object.keys(globalVars)[0]]._LABELS;
 						const toast = new ShowToastEvent({
 							title: 'Error',
-							message: libs.formatStr('{0} ' + _labels.msg_itemsUpdateFailed,[result[cmd+'Result']?.countOfFailedRecords]) + result[cmd+'Result']?.listOfErrors.toString(),
+							message: libs.formatStr('{0} ' + _labels.msg_itemsUpdateFailed,[result[cmd+'Result']?.listOfErrors.length]) + result[cmd+'Result']?.listOfErrors.toString(),
 							variant: 'error'
 						});
 						scope.dispatchEvent(toast);
