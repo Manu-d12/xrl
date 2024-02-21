@@ -216,7 +216,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		if((this.config.isRecordsDragDropEnabled === undefined || this.config.isRecordsDragDropEnabled === false) && (this.config.fieldToMapToIndex === undefined || this.config.fieldToMapToIndex === "")){
 			this.records.forEach((el,ind) =>{
 				el.sl = ind + 1;
-				el._cellCss += 'min-height:2rem';
+				if (!el._cellCss || !el._cellCss.includes('min-height')) {
+					el._cellCss = (el._cellCss || '') + 'min-height: 2rem;';
+				} 
 				try{
 					if(this.config._advanced?.showRowCallbackTooltipText) {
 						el._isShowRowCallbackTooltip = this.config._advanced?.showRowCallbackTooltipText(this,libs,el);
