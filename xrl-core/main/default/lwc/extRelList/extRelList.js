@@ -379,7 +379,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				orderBy: this.config.listViewConfig[0].orderBy,
 				fields: this.config.fields,
 				listViewName: this.config?.listView?.name,
-				callback: ((nodeName, data) => {
+				callback: ( async (nodeName, data) => {
 					console.log('length', data[nodeName].records);
 					this.config.inaccessibleFields= data[nodeName].removedFields;
 					this.config.query = data[nodeName].SOQL;
@@ -390,7 +390,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					if(this.config?._advanced?.afterloadTransformation !== undefined && this.config?._advanced?.afterloadTransformation !== ""){
 						try {
 							libs.getGlobalVar(this.name).originalRecords = JSON.parse(JSON.stringify(libs.getGlobalVar(this.name).records));
-							this.config.records = eval('(' + this.config?._advanced?.afterloadTransformation + ')')(this,libs, libs.getGlobalVar(this.name).records);
+							this.config.records = await eval('(' + this.config?._advanced?.afterloadTransformation + ')')(this,libs, libs.getGlobalVar(this.name).records);
 						} catch(e){
 							// console.log('EXCEPTION', err);
 							this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Load Transformation Callback');
@@ -409,10 +409,10 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 
 	}
-	afterLoadTransformation(records){
+	async afterLoadTransformation(records){
 		if(this.config?._advanced?.afterloadTransformation !== undefined && this.config?._advanced?.afterloadTransformation !== ""){
 			try {
-				records = eval('(' + this.config?._advanced?.afterloadTransformation + ')')(this,libs, records);
+				records = await eval('(' + this.config?._advanced?.afterloadTransformation + ')')(this,libs, records);
 			} catch(e){
 				// console.log('EXCEPTION', err);
 				this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Load Transformation Callback');
