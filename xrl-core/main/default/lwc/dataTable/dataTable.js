@@ -1055,6 +1055,17 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 						this.groupedRecords[indexes[0]].records[indexes[1]]._isEditable = false;
 					}
 				}
+				if (cItem._advanced?.isEditable) {
+					try {
+						if (typeof cItem._advanced.isEditable == 'string') cItem._advanced.isEditable = eval('(' + cItem._advanced.isEditable + ')');
+						let isEditable = await cItem._advanced.isEditable(this, libs, cItem, this.records[calculatedInd]);
+						if (isEditable == false) return;
+					} catch (e) {
+						this.config._errors = libs.formatCallbackErrorMessages(e, 'field', 'Options callback');
+					}
+
+				}
+
 				this.config._inlineEdit = record.Id;
 				if(libs.getGlobalVar(this.cfg).optionsForMultiselect === undefined){
 					libs.getGlobalVar(this.cfg).optionsForMultiselect = new Map();
