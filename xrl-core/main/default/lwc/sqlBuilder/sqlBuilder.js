@@ -413,7 +413,7 @@ export default class SqlBuilder extends LightningElement {
             console.log('sqlBuilder:conditions:orderingConditions', event.target.value);
             this.config.sqlBuilder.errorMessage= '';
             this.config.sqlBuilder.showError = false;
-            if(event.target.value == '' &&  this.config.dialog.listViewConfig.conditionMap.length > 0){
+            if(event.target.value == '' &&  this.config.sqlBuilder.conditions.length > 0){
                 const toast = new ShowToastEvent({
                     title: 'Error',
                     message: this.config._LABELS.msg_cannotKeepThisBlank,
