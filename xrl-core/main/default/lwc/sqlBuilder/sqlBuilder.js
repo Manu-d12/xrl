@@ -337,6 +337,7 @@ export default class SqlBuilder extends LightningElement {
             
             var regExp = new RegExp(' *?(OR|AND)*? *?' + index + ' *?(OR|AND)*? *?','gi');
             this.config.sqlBuilder.conditionOrdering = this.config.sqlBuilder.conditionOrdering.replace(regExp,'');
+            this.config.sqlBuilder.conditionOrdering = this.removeInvalidChars(this.config.sqlBuilder.conditionOrdering);
             console.log('DELETING condition', index, this.config.sqlBuilder.conditionOrdering);
             if(this.isStrAllowed(this.config.sqlBuilder.conditionOrdering.trim())){
                 this.config.sqlBuilder.conditionOrdering =this.config.sqlBuilder.conditionOrdering;
@@ -489,6 +490,10 @@ export default class SqlBuilder extends LightningElement {
     }
     get errorClass() {
         return this.config.sqlBuilder.showError ? 'slds-form-element slds-has-error' : 'slds-form-element';
+    }
+    removeInvalidChars(stringToMatch){
+        let regex = /\(\)/g; //Matching all the empty parenthesis like- ()
+        return stringToMatch.replace(regex,'');
     }
     closePicklist(){
         if(this.config.sqlBuilder.openConditionInput)
