@@ -1350,6 +1350,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				},
 			});
 		}
+		if(val === 'dialog:config_export'){
+			console.log('Export Config');
+		}
 		if (val === 'dialog:setFields') {
 			this.config.dialog.selectedFields = event.detail.value;
 

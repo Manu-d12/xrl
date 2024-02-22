@@ -250,6 +250,8 @@
 						onclick={config.dialog.handleHelpEvent} data-id="help:deleteView" data-url={config._LABELS.hlpUrl_deleteView}
 						class="placeTop" content={config._LABELS.tooltip_configDelete} alternative-text={config._LABELS.altTxt_hlpUrl}>
 					</lightning-helptext>
+					<!-- Export Config Button -->
+					<lightning-button if:false={config.dialog.saveAs} variant="primary" label="Export" title="Export" icon-name="utility:download" class="slds-m-left_x-small" data-id="dialog:config_export" onclick={config.dialog.handleEvent}></lightning-button>
 				</template>
 				<template if:true={config.buttons} for:each={config.buttons} for:item="btn" for:index="index">
 					<lightning-button key={btn.label} variant={btn.variant} label={btn.label} data-id={btn.dataId} icon-name={btn.iconName} onclick={config.callback} class="slds-m-around_small"></lightning-button>
