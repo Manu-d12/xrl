@@ -379,7 +379,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				orderBy: this.config.listViewConfig[0].orderBy,
 				fields: this.config.fields,
 				listViewName: this.config?.listView?.name,
-				callback: ((nodeName, data) => {
+				callback: (async (nodeName, data) => {
 					console.log('length', data[nodeName].records);
 					this.config.inaccessibleFields= data[nodeName].removedFields;
 					this.config.query = data[nodeName].SOQL;
@@ -387,19 +387,22 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					libs.getGlobalVar(this.name).records = data[nodeName].records.length > 0 ? data[nodeName].records : [];
 					libs.getGlobalVar(this.name).record = data[nodeName].record;
 
-					if(this.config?._advanced?.afterloadTransformation !== undefined && this.config?._advanced?.afterloadTransformation !== ""){
-						try {
-							libs.getGlobalVar(this.name).originalRecords = JSON.parse(JSON.stringify(libs.getGlobalVar(this.name).records));
-							this.config.records = eval('(' + this.config?._advanced?.afterloadTransformation + ')')(this,libs, libs.getGlobalVar(this.name).records);
-						} catch(e){
-							// console.log('EXCEPTION', err);
-							this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Load Transformation Callback');
-							return;
-						}
-					} else {
-						this.config.records = libs.getGlobalVar(this.name).records;
-					}
-					this.allRecords = this.config.records;
+					libs.getGlobalVar(this.name).originalRecords = JSON.parse(JSON.stringify(libs.getGlobalVar(this.name).records));
+
+					// if(this.config?._advanced?.afterloadTransformation !== undefined && this.config?._advanced?.afterloadTransformation !== ""){
+					// 	try {
+					// 		libs.getGlobalVar(this.name).originalRecords = JSON.parse(JSON.stringify(libs.getGlobalVar(this.name).records));
+					// 		this.config.records = eval('(' + this.config?._advanced?.afterloadTransformation + ')')(this,libs, libs.getGlobalVar(this.name).records);
+					// 	} catch(e){
+					// 		// console.log('EXCEPTION', err);
+					// 		this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Load Transformation Callback');
+					// 		return;
+					// 	}
+					// } else {
+					// 	this.config.records = libs.getGlobalVar(this.name).records;
+					// }
+					this.config.records = await this.afterLoadTransformation(libs.getGlobalVar(this.name).records);
+					this.allRecords = JSON.parse(JSON.stringify(this.config.records));
 					this.config.listViewConfig[0]._loadCfg = this.loadCfg.bind(this);
 					
 					console.log('loadRecords', libs.getGlobalVar(this.name));
@@ -409,10 +412,12 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 
 	}
-	afterLoadTransformation(records){
+	async afterLoadTransformation(records){
 		if(this.config?._advanced?.afterloadTransformation !== undefined && this.config?._advanced?.afterloadTransformation !== ""){
 			try {
-				records = eval('(' + this.config?._advanced?.afterloadTransformation + ')')(this,libs, records);
+				// records = eval('(' + this.config?._advanced?.afterloadTransformation + ')')(this,libs, records);
+				let callback = eval('(' + this.config?._advanced?.afterloadTransformation + ')');
+				records = await callback(this,libs, records);
 			} catch(e){
 				// console.log('EXCEPTION', err);
 				this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Load Transformation Callback');
@@ -468,7 +473,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 		console.log('All records fetched successfully', JSON.parse(JSON.stringify(this.config.listOfBulkRecords)));
 		libs.getGlobalVar(this.name).records = JSON.parse(JSON.stringify(this.config.listOfBulkRecords)).length > 0 ? JSON.parse(JSON.stringify(this.config.listOfBulkRecords)) : undefined;
-		this.config.records = JSON.parse(JSON.stringify(this.afterLoadTransformation(libs.getGlobalVar(this.name).records)));
+		this.config.records = JSON.parse(JSON.stringify(await this.afterLoadTransformation(libs.getGlobalVar(this.name).records)));
 		this.allRecords = this.config.records;
 		this.config.listViewConfig[0]._loadCfg = this.loadCfg.bind(this);
 		
@@ -1065,12 +1070,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 		this.config.isExceptionInRemoteAction = false;
 
-		// while(index < records.length){
-		// 	let chunk = records.slice(index,records[(parseInt(index)+parseInt(deleteChunk))] ? (parseInt(index)+parseInt(deleteChunk)) : (records.length));
-		// 	index += records[(parseInt(index)+parseInt(deleteChunk))] ? parseInt(deleteChunk) : (records.length);
-		// 	await this.deleteRecords(chunk);
-		// }
-
+		this.config.errorList = [];
 		await libs.splitRecordsIntoChunks(this,records,deleteChunk,this.deleteRecords);
 
 		if(this.config.isExceptionInRemoteAction === false){
@@ -1081,15 +1081,36 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			});
 			this.dispatchEvent(toast);
 		}
+		//if some records have been deleted but some have errors
+		if(this.config.errorList.length > 0 && this.config.errorList.length !== records.length){
+			const toast = new ShowToastEvent({
+				title: 'Success',
+				message: (records.length - this.config.errorList.length) + ' records deleted successfully',
+				variant: 'success'
+			});
+			this.dispatchEvent(toast);
+		}
 		this.config.showDialog = false;
+		const errorIds = [];
+		JSON.parse(JSON.stringify(this.config.errorList)).forEach((el) => {
+			errorIds.push(el.split(':')[0]); //getting the IDs of the records that caused the error
+		});
 		if(records.length < 1000){
 			this.config.records = libs.flattenRecordsWithChildren(this.config.records);
-			this.config.records = this.config.records.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
-			this.config.records = this.afterLoadTransformation(this.config.records);
+			this.config.records = this.config.records.filter(ar => {
+				if(errorIds.includes(ar.Id)) return true; 
+				else if(records.find(rm => (rm.Id === ar.Id)) !== undefined) return false;
+				return true; 
+			});
+			this.config.records = await this.afterLoadTransformation(this.config.records);
 			// //HYPER-243
 			this.allRecords = libs.flattenRecordsWithChildren(this.allRecords);
-			this.allRecords = this.allRecords.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
-			this.allRecords = this.afterLoadTransformation(this.allRecords);
+			this.allRecords = this.allRecords.filter(ar => {
+				if(errorIds.includes(ar.Id)) return true; 
+				else if(records.find(rm => (rm.Id === ar.Id)) !== undefined) return false;
+				return true; 
+			});
+			this.allRecords = await this.afterLoadTransformation(this.allRecords);
 			this.template.querySelector('c-Data-Table').updateView();
 			this.config.listViewConfig[0].rowChecked = false;
 		}else{
@@ -1101,33 +1122,15 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let chunk = chunkIn.map((item)=>{return {Id:item.Id}});
 		try{
 			const a = await libs.remoteAction(scope, 'delRecords', { records: chunk, 
-				sObjApiName: scope.config.sObjApiName
+				sObjApiName: scope.config.sObjApiName,
+				callback: ((nodename,data) => {
+					scope.config.errorList = scope.config.errorList.concat(data[nodename].listOfErrors);
+				})
 			});
 		} catch (error) {
 			console.log(error);
 		}
 	}
-	// flattenRecordsWithChildren(records) {
-	// 	const singleLevelRecords = [];
-	
-	// 	function flatten(record) {
-	// 		const { Id, childRecords } = record;
-	
-	// 		if (!singleLevelRecords.some(r => r.Id === Id)) {
-	// 			singleLevelRecords.push({ ...record, childRecords: [] });
-	
-	// 			if (childRecords) {
-	// 				childRecords.forEach(childRecord => flatten(childRecord));
-	// 			}
-	// 		}
-	// 	}
-	
-	// 	records.forEach(record => {
-	// 		flatten(record);
-	// 	});
-	
-	// 	return singleLevelRecords;
-	// }
 
 	mapSerialNumberField(records, field){
 		records.forEach(rec => {
@@ -1295,7 +1298,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 	}
 
-	handleEventDialog(event) {
+	async handleEventDialog(event) {
 		// let clModel = [];
 		// this.config.dialog.listViewConfig.forEach((el)=>{
 		// 	if(el.cmpName === 'dataTable') {
@@ -1348,6 +1351,23 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				attributes:{
 					"url": window.location.origin +"/lightning/r/extRelListConfig__c/"+ this.config.listView.id +"/recordShare"
 				},
+			});
+		}
+		if(val === 'dialog:config_export'){
+			let fields = ['ConfigType__c', 'Is_Active__c', 'isAdminConfig__c', 'JSON__c', 'listViewLabel__c', 'listViewName__c', 'loadIndex__c', 'Parent__c','sObjApiName__c','uniqKey__c'];
+			// Adding namespace to each field
+			let prefixedFields = fields.map(field => libs.getNameSpace() + field);
+
+			prefixedFields.push(libs.getNameSpace() +'Parent__r.'+ libs.getNameSpace() +'uniqKey__c');
+
+			let fieldsString = prefixedFields.join(', ');
+			await libs.remoteAction(this, 'customSoql', {
+				isNeedGetSObjName: true,
+				SOQL: "SELECT "+ fieldsString +" FROM "+ libs.getNameSpace() +"extRelListConfig__c WHERE "+ libs.getNameSpace() +"listViewName__c='" + this.config.listView.name + "'",
+				callback: ((nodeName, data1) => {
+					this.config.query = data1[nodeName]['SOQL'];
+					this.handleDownloadJSONFile(data1[nodeName]['records'],data1[nodeName]['records'][0][libs.getNameSpace() + 'listViewLabel__c'],libs.getNameSpace()+'extRelListConfig__c');
+				})
 			});
 		}
 		if (val === 'dialog:setFields') {
@@ -1979,9 +1999,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			
 		}
 	}
-	handleDownloadJSONFile(records,fileName) {
+	handleDownloadJSONFile(records,fileName,sObjApiName) {
         let data = JSON.stringify({
-			"sObjApiName" : this.config.sObjApiName,
+			"sObjApiName" : sObjApiName || this.config.sObjApiName,
 			"SOQL" : this.config.query,
 			"records" : records
 		  });
