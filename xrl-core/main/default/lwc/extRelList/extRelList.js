@@ -1679,6 +1679,8 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	}
 
 	handleEventActions(event, val) {
+		let action = this.config.actionsBar.actions.find(item => {return item.actionId == val})
+		
 		if (val.startsWith('std:export')) {
 			if(!this.isThereUnsavedRecords()){				
 				// HYPER-381
@@ -1714,7 +1716,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 							{
 								isMessage: true,
 								name: 'deleteConfirm',
-								text: this.config._LABELS.msg_deleteConfirm1 + ' ' + records.length + ' ' + this.config._LABELS.msg_deleteConfirm2
+								text: action._advanced?.confirmMessage ? action._advanced.confirmMessage : this.config._LABELS.msg_deleteConfirm1 + ' ' + records.length + ' ' + this.config._LABELS.msg_deleteConfirm2
 							}
 						],
 						buttons: [
