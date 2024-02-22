@@ -1065,12 +1065,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 		this.config.isExceptionInRemoteAction = false;
 
-		// while(index < records.length){
-		// 	let chunk = records.slice(index,records[(parseInt(index)+parseInt(deleteChunk))] ? (parseInt(index)+parseInt(deleteChunk)) : (records.length));
-		// 	index += records[(parseInt(index)+parseInt(deleteChunk))] ? parseInt(deleteChunk) : (records.length);
-		// 	await this.deleteRecords(chunk);
-		// }
-
+		this.config.errorList = [];
 		await libs.splitRecordsIntoChunks(this,records,deleteChunk,this.deleteRecords);
 
 		if(this.config.isExceptionInRemoteAction === false){
@@ -1081,14 +1076,35 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			});
 			this.dispatchEvent(toast);
 		}
+		//if some records have been deleted but some have errors
+		if(this.config.errorList.length > 0 && this.config.errorList.length !== records.length){
+			const toast = new ShowToastEvent({
+				title: 'Success',
+				message: (records.length - this.config.errorList.length) + ' records deleted successfully',
+				variant: 'success'
+			});
+			this.dispatchEvent(toast);
+		}
 		this.config.showDialog = false;
+		const errorIds = [];
+		JSON.parse(JSON.stringify(this.config.errorList)).forEach((el) => {
+			errorIds.push(el.split(':')[0]); //getting the IDs of the records that caused the error
+		});
 		if(records.length < 1000){
 			this.config.records = libs.flattenRecordsWithChildren(this.config.records);
-			this.config.records = this.config.records.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
+			this.config.records = this.config.records.filter(ar => {
+				if(errorIds.includes(ar.Id)) return true; 
+				else if(records.find(rm => (rm.Id === ar.Id)) !== undefined) return false;
+				return true; 
+			});
 			this.config.records = this.afterLoadTransformation(this.config.records);
 			// //HYPER-243
 			this.allRecords = libs.flattenRecordsWithChildren(this.allRecords);
-			this.allRecords = this.allRecords.filter(ar => !records.find(rm => (rm.Id === ar.Id) ));
+			this.allRecords = this.allRecords.filter(ar => {
+				if(errorIds.includes(ar.Id)) return true; 
+				else if(records.find(rm => (rm.Id === ar.Id)) !== undefined) return false;
+				return true; 
+			});
 			this.allRecords = this.afterLoadTransformation(this.allRecords);
 			this.template.querySelector('c-Data-Table').updateView();
 			this.config.listViewConfig[0].rowChecked = false;
@@ -1101,7 +1117,10 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		let chunk = chunkIn.map((item)=>{return {Id:item.Id}});
 		try{
 			const a = await libs.remoteAction(scope, 'delRecords', { records: chunk, 
-				sObjApiName: scope.config.sObjApiName
+				sObjApiName: scope.config.sObjApiName,
+				callback: ((nodename,data) => {
+					scope.config.errorList = scope.config.errorList.concat(data[nodename].listOfErrors);
+				})
 			});
 		} catch (error) {
 			console.log(error);
