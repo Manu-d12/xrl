@@ -1295,7 +1295,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 	}
 
-	handleEventDialog(event) {
+	async handleEventDialog(event) {
 		// let clModel = [];
 		// this.config.dialog.listViewConfig.forEach((el)=>{
 		// 	if(el.cmpName === 'dataTable') {
@@ -1351,7 +1351,21 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			});
 		}
 		if(val === 'dialog:config_export'){
-			console.log('Export Config');
+			let fields = ['ConfigType__c', 'Is_Active__c', 'isAdminConfig__c', 'JSON__c', 'listViewLabel__c', 'listViewName__c', 'loadIndex__c', 'Parent__c','sObjApiName__c','uniqKey__c'];
+			// Adding namespace to each field
+			let prefixedFields = fields.map(field => libs.getNameSpace() + field);
+
+			prefixedFields.push(libs.getNameSpace() +'Parent__r.'+ libs.getNameSpace() +'uniqKey__c');
+
+			let fieldsString = prefixedFields.join(', ');
+			await libs.remoteAction(this, 'customSoql', {
+				isNeedGetSObjName: true,
+				SOQL: "SELECT "+ fieldsString +" FROM "+ libs.getNameSpace() +"extRelListConfig__c WHERE "+ libs.getNameSpace() +"listViewName__c='" + this.config.listView.name + "'",
+				callback: ((nodeName, data1) => {
+					this.config.query = data1[nodeName]['SOQL'];
+					this.handleDownloadJSONFile(data1[nodeName]['records'],data1[nodeName]['records'][0][libs.getNameSpace() + 'listViewLabel__c'],libs.getNameSpace()+'extRelListConfig__c');
+				})
+			});
 		}
 		if (val === 'dialog:setFields') {
 			this.config.dialog.selectedFields = event.detail.value;
@@ -1980,9 +1994,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			
 		}
 	}
-	handleDownloadJSONFile(records,fileName) {
+	handleDownloadJSONFile(records,fileName,sObjApiName) {
         let data = JSON.stringify({
-			"sObjApiName" : this.config.sObjApiName,
+			"sObjApiName" : sObjApiName || this.config.sObjApiName,
 			"SOQL" : this.config.query,
 			"records" : records
 		  });
