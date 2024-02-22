@@ -35,14 +35,33 @@ export default class customAction extends LightningElement {
             recordId: this.urlParams.recordId
 
         });
+		this.recordId = this.urlParams.recordId;
 
-        libs.remoteAction(this, 'getMetaConfigByName', {
+        this.loadConfig();
+    }
+
+    async loadConfig() {
+        await libs.remoteAction(this, 'getMetaConfigByName', {
             cfgName: this.cfgName,
             callback: ((nodeName, data) => {
                 let config = JSON.parse(libs.replaceLiteralsInStr(data[nodeName].cfg, this.cfgName));
                 config._timeStamp = data[nodeName].timeStamp;
                 this.config = config;
                 this.config._isUI = this.isUIDefined(config);
+          		//Need to get a parent record if exist
+                if (this.urlParams.recordId) {
+                    let parentObjFields = this.config.orchestrator?.parentObjFields ? this.config.orchestrator?.parentObjFields : undefined;
+                    if (parentObjFields && Array.isArray(parentObjFields)) {
+                        this.config.record = libs.remoteAction(this, 'customSoql', {
+                            isNeedGetSObjName: true,
+                            SOQL: "SELECT " + parentObjFields.join(",") + " FROM {objName} WHERE Id='" + this.urlParams.recordId + "'",
+                            callback: ((nodeName, data1) => {
+                                this.config.record = data1[nodeName].records[0]; // providing a all needed fields from parent
+                            })
+                        });
+                    }
+                }
+
                 if (this.config._isUI == false) {
                     this.getRecordsAndSend();
                 } else if (config.UI){
@@ -82,6 +101,7 @@ export default class customAction extends LightningElement {
 			SOQL : this.config.orchestrator.childSOQL,
 			batchSize : libs.getGlobalVar('chunkSize'),
 			totalCount : libs.getGlobalVar('orchestratorRequest').length,
+			timeStamp: this.config._timeStamp,
             callback: ((nodeName, data) => {
 				console.log('Async Invocation', data);
             })

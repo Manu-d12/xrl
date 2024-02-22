@@ -384,7 +384,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					this.config.inaccessibleFields= data[nodeName].removedFields;
 					this.config.query = data[nodeName].SOQL;
 					
-					libs.getGlobalVar(this.name).records = data[nodeName].records.length > 0 ? data[nodeName].records : undefined;
+					libs.getGlobalVar(this.name).records = data[nodeName].records.length > 0 ? data[nodeName].records : [];
 					libs.getGlobalVar(this.name).record = data[nodeName].record;
 
 					if(this.config?._advanced?.afterloadTransformation !== undefined && this.config?._advanced?.afterloadTransformation !== ""){

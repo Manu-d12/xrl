@@ -138,7 +138,7 @@ global with sharing class QuoteValidator {
             infrastructure.handler handlerClass = (infrastructure.handler) T.newInstance();
             infrastructure.validationResult handlerResult = (infrastructure.validationResult) handlerClass.execute(new map<string, object>{'initParams' => (map<string,object>) JSON.deserializeUntyped(JSON.serialize(orcReq))});
             if (handlerResult.code != infrastructure.validationResultCode.OK) {
-				string errorMessage = String.format(ePart.errorTemplate, vResult.dynamicValues);
+				string errorMessage = this.config.orchestrator.preCheck.errorTemplate !=null ? String.format(this.config.orchestrator.preCheck.errorTemplate, handlerResult.dynamicValues) : 'Need provide orchestrator.preCheck.errorTemplate';
                 insert this.prepareLogRecordWithError(operation, null, errorMessage, 'preCheck');
                 this.orcResp.responses.add(handlerResult);
                 return;
@@ -206,7 +206,7 @@ global with sharing class QuoteValidator {
                             if (vResult.code != infrastructure.validationResultCode.OK) {
                                 this.orcResp.invalidCount ++;
                                 string errorMessage = String.format(ePart.errorTemplate, vResult.dynamicValues);
-                                logs.add(this.prepareLogRecordWithError(operation, obj, errorMessage, ePart.className));
+                                logs.add(this.prepareLogRecordWithError(operation, null, errorMessage, ePart.className));
                             }
                         }
                         when CALCENGINE {
@@ -220,7 +220,7 @@ global with sharing class QuoteValidator {
                     }
                 } catch (Exception e) {
                     system.debug(LoggingLevel.Error, 'EXCEPTION:' + e.getMessage());
-                    log__c l = this.prepareLogRecordWithError(operation, obj, ePart.className, 'EXCEPTION IN IMPLEMENTATION');
+                    log__c l = this.prepareLogRecordWithError(operation, null, ePart.className, 'EXCEPTION IN IMPLEMENTATION');
                     l.info__c = 'EXCEPTION: ' + e.getMessage() + '\n\n STACK: ' + e.getStackTraceString();
                     logs.add(l);
                 }
