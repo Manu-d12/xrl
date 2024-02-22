@@ -31,7 +31,8 @@ export default class ActionBar extends LightningElement {
                 let isActionVisibleByShowHideCallback = true;
                 if (_advanced?.actionShowHideCallback !== undefined && _advanced?.actionShowHideCallback !== ''){
                     let records = libs.getGlobalVar(this.actionscfg._cfgName)?.records;
-                    isActionVisibleByShowHideCallback = _advanced?.actionShowHideCallback(this,libs,records);
+					if (typeof _advanced?.actionShowHideCallback == 'string') _advanced.actionShowHideCallback = eval('(' + _advanced?.actionShowHideCallback + ')');
+                    isActionVisibleByShowHideCallback = _advanced.actionShowHideCallback(this,libs,records);
                     return isActionVisibleByShowHideCallback;
                 }
                 if (el.actionId === 'std:save' || el.actionId === 'std:discardChanges') {
