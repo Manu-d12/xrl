@@ -48,9 +48,11 @@ public class orchestrator {
 				this.sendEmail(operation);
 			} else {
                 //need return a UI callback or run apex class if defined
-                string successMessage = this.config.orchestrator.successTemplate !=null ? this.config.orchestrator.successTemplate : 'Need provide orchestrator.successTemplate';
-				insert this.prepareLogRecordWithError(operation, null, successMessage, 'SUCCESS');
-                this.orcResp.noErrorCallback = this.config.orchestrator.noErrorCallback;
+                if (config.isNeedSaveSuccess == true) {
+					insert this.prepareLogRecordWithError(operation, null, this.config.orchestrator.success.successTemplate, 'SUCCESS');    
+                }
+				// NEED improve this logic                
+                //this.orcResp.noErrorCallback = this.config.orchestrator.noErrorCallback;
             }
         }
 		if (this.orcReq.rootRecordId != null) { // need delete all old records only in case of firstChunk
@@ -218,6 +220,7 @@ public class orchestrator {
         public string rootRecordName;
         public string sObjApiName;
 
+        public boolean isNeedSaveSuccess;
         public boolean isNeedSendEmail;
         private boolean isNeedPrepareRelatedData = false;
                 
@@ -244,6 +247,7 @@ public class orchestrator {
             
             this.prepareData(executorType.ROOTVALIDATION, new id[]{orcReq.rootRecordId});
         	this.prepareData(executorType.VALIDATION, orcReq.relatedRecordIds);
+            this.isNeedSaveSuccess = orchestrator.success!=null && orchestrator.success.successTemplate!=null && orchestrator.success.isWriteSuccessToLog == true;
         }
         
         private void prepareData(executorType eType, Id[] relatedRecordIds) {
@@ -328,9 +332,10 @@ public class orchestrator {
     
     public class orchestratorConfigPart {
         public orchestratorEmailConfigPart email;
-        public noErrorCallbackPart noErrorCallback;
+        //public noErrorCallbackPart noErrorCallback;
         public executorConfigPart preCheck;
-        public string successTemplate;
+        public successConfigPart success;
+        //public string successTemplate;
     }
     
     public class orchestratorEmailConfigPart {
@@ -339,9 +344,15 @@ public class orchestrator {
         public string[] recipients;
     }
 
-    public class noErrorCallbackPart {
+    /*public class successConfigPart {
         public string UI;
         public string Apex;
+    }*/
+    
+    public class successConfigPart {
+        public boolean isWriteSuccessToLog;
+        public string successTemplate;
+        public string successCallback;
     }
     
     
@@ -380,14 +391,9 @@ public class orchestrator {
     
     
     public class orchestratorResponse {
-        @AuraEnabled
         public integer invalidCount = 0;
-        @AuraEnabled
         public integer recordsCount;
-        @AuraEnabled
         public List<object> responses = new List<Object>();
-        @AuraEnabled
-        public noErrorCallbackPart noErrorCallback;
     }
     
     private static string getNameField(string sObjApiName) {
