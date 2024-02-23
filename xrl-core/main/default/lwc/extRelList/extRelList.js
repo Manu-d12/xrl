@@ -385,24 +385,19 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 					this.config.query = data[nodeName].SOQL;
 					
 					libs.getGlobalVar(this.name).records = data[nodeName].records.length > 0 ? data[nodeName].records : [];
-					libs.getGlobalVar(this.name).record = data[nodeName].record;
-
-					libs.getGlobalVar(this.name).originalRecords = JSON.parse(JSON.stringify(libs.getGlobalVar(this.name).records));
-
-					// if(this.config?._advanced?.afterloadTransformation !== undefined && this.config?._advanced?.afterloadTransformation !== ""){
-					// 	try {
-					// 		libs.getGlobalVar(this.name).originalRecords = JSON.parse(JSON.stringify(libs.getGlobalVar(this.name).records));
-					// 		this.config.records = eval('(' + this.config?._advanced?.afterloadTransformation + ')')(this,libs, libs.getGlobalVar(this.name).records);
-					// 	} catch(e){
-					// 		// console.log('EXCEPTION', err);
-					// 		this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Load Transformation Callback');
-					// 		return;
-					// 	}
-					// } else {
-					// 	this.config.records = libs.getGlobalVar(this.name).records;
-					// }
-					this.config.records = await this.afterLoadTransformation(libs.getGlobalVar(this.name).records);
-					this.allRecords = JSON.parse(JSON.stringify(this.config.records));
+					libs.getGlobalVar(this.name).record = data[nodeName].record
+					if(this.config?._advanced?.afterloadTransformation !== undefined && this.config?._advanced?.afterloadTransformation !== ""){
+						try {
+							libs.getGlobalVar(this.name).originalRecords = JSON.parse(JSON.stringify(libs.getGlobalVar(this.name).records));
+							this.config.records = eval('(' + this.config?._advanced?.afterloadTransformation + ')')(this,libs, libs.getGlobalVar(this.name).records);
+						} catch(e){
+							// console.log('EXCEPTION', err);
+							this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Load Transformation Callback');
+							return;
+						}
+					} else {
+						this.config.records = libs.getGlobalVar(this.name).records;
+					}
 					this.config.listViewConfig[0]._loadCfg = this.loadCfg.bind(this);
 					
 					console.log('loadRecords', libs.getGlobalVar(this.name));
@@ -412,12 +407,10 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 
 	}
-	async afterLoadTransformation(records){
+	afterLoadTransformation(records){
 		if(this.config?._advanced?.afterloadTransformation !== undefined && this.config?._advanced?.afterloadTransformation !== ""){
 			try {
-				// records = eval('(' + this.config?._advanced?.afterloadTransformation + ')')(this,libs, records);
-				let callback = eval('(' + this.config?._advanced?.afterloadTransformation + ')');
-				records = await callback(this,libs, records);
+				records = eval('(' + this.config?._advanced?.afterloadTransformation + ')')(this,libs, records);
 			} catch(e){
 				// console.log('EXCEPTION', err);
 				this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Load Transformation Callback');
@@ -473,7 +466,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 		console.log('All records fetched successfully', JSON.parse(JSON.stringify(this.config.listOfBulkRecords)));
 		libs.getGlobalVar(this.name).records = JSON.parse(JSON.stringify(this.config.listOfBulkRecords)).length > 0 ? JSON.parse(JSON.stringify(this.config.listOfBulkRecords)) : undefined;
-		this.config.records = JSON.parse(JSON.stringify(await this.afterLoadTransformation(libs.getGlobalVar(this.name).records)));
+		this.config.records = JSON.parse(JSON.stringify(this.afterLoadTransformation(libs.getGlobalVar(this.name).records)));
 		this.allRecords = this.config.records;
 		this.config.listViewConfig[0]._loadCfg = this.loadCfg.bind(this);
 		
@@ -1102,7 +1095,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				else if(records.find(rm => (rm.Id === ar.Id)) !== undefined) return false;
 				return true; 
 			});
-			this.config.records = await this.afterLoadTransformation(this.config.records);
+			this.config.records = this.afterLoadTransformation(this.config.records);
 			// //HYPER-243
 			this.allRecords = libs.flattenRecordsWithChildren(this.allRecords);
 			this.allRecords = this.allRecords.filter(ar => {
@@ -1110,7 +1103,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				else if(records.find(rm => (rm.Id === ar.Id)) !== undefined) return false;
 				return true; 
 			});
-			this.allRecords = await this.afterLoadTransformation(this.allRecords);
+			this.allRecords = this.afterLoadTransformation(this.allRecords);
 			this.template.querySelector('c-Data-Table').updateView();
 			this.config.listViewConfig[0].rowChecked = false;
 		}else{
