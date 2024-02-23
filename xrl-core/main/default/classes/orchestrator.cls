@@ -1,112 +1,4 @@
 public class orchestrator {
-
-    /*  
-     * 1. Custom  metadata "Config"
-     * 2. Layout for custom metadata type
-     * 3. Infrastructure, orchestrator Apex, 
-     * New features - isDebug. We can collect and pub debug information to log file
-     * 
-     * Questions. How to send a records instead Ids for example for calculations?
-     * How we will treat exceptions in code?
-     * Validation redirect? How we will invokate, how we will redirect?
-     * 
-     * 
-     * 
-orchestrator.orchestratorRequest orcReq = new orchestrator.orchestratorRequest();
-orcReq.rootRecordId = '0015i000008dvp4AAA';
-orcReq.relatedRecordIds = new Id[]{'5005i00000Kiy8UAAR','5005i00000Kiy8VAAR'};
-orcReq.isFirstChunk = true;    
-orcReq.isLastChunk = true;
-new orchestrator('QuoteExportValidation',orcReq).getResults();
-
-{
-  "executors": [
-    {
-      "className": "QuoteValidator.Margin",
-      "isActive": true,
-      "isDebug" : true,
-      "typeOf": "ROOTVALIDATION",
-      "onFail": "warn",
-      "listOfFieldsToPass": ["Name"],
-      "errorTemplate" : "MarginValidation",
-      "additionalParams": {
-        "limits": {
-          "chunkSize": 500
-        }
-      }
-    },
-    {
-      "className": "QuoteItemIsNotSaasValidator"
-    },
-    {
-      "className": "QuoteAccountIsInUsValidator"
-    },
-    {
-      "className": "QuoteValidator.MasterItemMaterialIdValidator",
-      "isActive": true,
-      "errorTemplate" : "MarginValidation",
-      "typeOf": "VALIDATION",
-  "isDebug" : true,
-      "listOfFieldsToPass": [
-        "Account.Name", "CaseNumber"
-      ],
-      "additionalParams": {
-        "limits": {
-          "chunkSize": 500
-        }
-      }
-    }
-  ],
-  "orchestrator": {
-    "email": {
-      "isActive" : true,
-      "emailTemplate" : "SalesNewCustomerEmail",
-      "recipients" : ["${currentUser}","${ownerRootRecord}","wildervit@gmail.com"]
-    }
-  }
-}
-
-global with sharing class QuoteValidator {
-
-    global class Margin extends infrastructure.handler {
-		global override object execute(map < string, object > data) {
-			orchestrator.validationResult result = new orchestrator.validationResult();
-            result.code = orchestrator.validationResultCode.ERR;
-            result.dynamicValues = new object[]{6, 12};
-			return result;
-		}
-	}
-
-    global class MasterItemMaterialIdValidator extends infrastructure.handler {
-		global override object execute(map < string, object > data) {
-            case record = (case) data.get('record');
-        	account rootRecord = (account) data.get('rootRecord');
-            
-            infrastructure.addDebugLog('MasterItemMaterialIdValidator', rootRecord);
-            
-            orchestrator.validationResult result = new orchestrator.validationResult();
-            result.code = orchestrator.validationResultCode.ERR;
-            result.dynamicValues = new object[]{5, 11, rootRecord.Owner.Email};
-			return result;
-		}
-        
-        global override boolean isExecutable(map < string, object > data) {
-        	return true;
-        }
-	}
-    
-    
-}
-
-
-
-
-
-     * 
-     * 
-	*/ 
-    
-    // Parent transactionId
         
     private orchestratorConfig config;
     private orchestratorRequest orcReq;
@@ -122,7 +14,6 @@ global with sharing class QuoteValidator {
         if (operation ==  'TEST' && System.Test.isRunningTest()) {
             String json= '{\r\n  \"executors\": [\r\n    {\r\n      \"className\": \"QuoteValidator.Margin\",\r\n      \"isActive\": true,\r\n      \"isDebug\": false,\r\n      \"typeOf\": \"ROOTVALIDATION\",\r\n      \"onFail\": \"warn\",\r\n      \"listOfFieldsToPass\": [\r\n        \"Name\",\r\n        \"Rating\"\r\n      ],\r\n      \"errorTemplate\": \"MarginValidation\",\r\n      \"additionalParams\": {\r\n        \"limits\": {\r\n          \"chunkSize\": 500\r\n        }\r\n      }\r\n    },\r\n    {\r\n      \"className\": \"QuoteItemIsNotSaasValidator\",\r\n      \"isActive\": false,\r\n      \"typeOf\": \"CALCENGINE\",\r\n      \"additionalParams\": {\r\n        \"initialField\": \"\",\r\n        \"isRefresh\": \"\",\r\n        \"discMode\": \"\"\r\n      }\r\n    },\r\n    {\r\n      \"className\": \"QuoteAccountIsInUsValidator\",\r\n      \"typeOf\": \"CALCENGINE\"\r\n    },\r\n    {\r\n      \"className\": \"QuoteValidator.MasterItemMaterialIdValidator\",\r\n      \"isActive\": true,\r\n      \"errorTemplate\": \"MarginValidation\",\r\n      \"typeOf\": \"VALIDATION\",\r\n      \"isDebug\": false,\r\n      \"listOfFieldsToPass\": [\r\n        \"Account.Name\",\r\n        \"CaseNumber\",\r\n        \"Status\"\r\n      ]\r\n    }\r\n  ],\r\n  \"orchestrator\": {\r\n    \"noErrorCallback\": {\r\n      \"UI\": \"function(scope, libs) {}\",\r\n      \"Batch\": \"apex method\"\r\n    },\r\n    \"childObjApiName\": \"Cases\",\r\n    \"limits\": {\r\n      \"chunkSize\": 6000\r\n    },\r\n    \"email\": {\r\n      \"isActive\": true,\r\n      \"emailTemplate\": \"SalesNewCustomerEmail\",\r\n      \"recipients\": [\r\n        \"${currentUser}\",\r\n        \"${ownerRootRecord}\",\r\n        \"wildervit@gmail.com\"\r\n      ]\r\n    }\r\n  },\r\n  \"UI\": {\r\n    \"withoutHeader\": true,\r\n    \"title\": \"Quote Export\",\r\n    \"headerStyle\": \"slds-modal__header slds-theme_error\",\r\n    \"contents\": [\r\n      {\r\n        \"isMessage\": true,\r\n        \"name\": \"deleteConfirm\",\r\n        \"text\": \"this.config._LABELS.msg_deleteConfirm1 + + records.length +  + this.config._LABELS.msg_deleteConfirm2\"\r\n      }\r\n    ],\r\n    \"fields\": [\r\n      {\r\n        \"name\": \"template\",\r\n        \"isRequired\": true,\r\n        \"label\": \"template\",\r\n        \"variant\": \"neutral\",\r\n        \"placeholder\": \"Please choose a template\",\r\n        \"type\": \"combobox\",\r\n        \"onClick\": \"function(scope, libs, input) {\\n    let newData = {\\n        \\\"name\\\": \\\"template1\\\",\\n        \\\"label\\\": \\\"Template params\\\",\\n        \\\"variant\\\": \\\"neutral\\\",\\n        \\\"type\\\": \\\"section\\\",\\n        \\\"fields\\\": [{\\n            \\\"name\\\": \\\"template2\\\",\\n            \\\"label\\\": \\\"template2\\\",\\n            \\\"variant\\\": \\\"neutra2\\\",\\n            \\\"type\\\": \\\"checkbox\\\"\\n        }]\\n    };\\n    scope.prepareData(newData);\\n}\",\r\n        \"updateOptions\": \"function(scope, libs, input) {\\n    libs.remoteAction(scope, \\\"customSoql\\\", {\\n        SOQL: \\\"SELECT Id, Name from Account\\\",\\n        callback: ((nodeName, data) => {\\n            input.options = [];\\n            data[nodeName].records.forEach(item => {\\n                input.options.push({\\n                    \\\"value\\\": item.Id,\\n                    \\\"label\\\": item.Name,\\n                    originRecord : item\\n                })\\n            })\\n            input.isDisabled = false;\\n        }).bind(scope)\\n    })\\n\\n}\"\r\n      },\r\n      {\r\n        \"name\": \"incQuoteVersion\",\r\n        \"label\": \"Increase Quote Version\",\r\n        \"variant\": \"neutral\",\r\n        \"type\": \"combobox\",\r\n        \"options\": [\r\n          {\r\n            \"label\": \"\",\r\n            \"value\": \"\"\r\n          },\r\n          {\r\n            \"label\": \"No\",\r\n            \"value\": \"no\"\r\n          },\r\n          {\r\n            \"label\": \"Yes\",\r\n            \"value\": \"yes\"\r\n          }\r\n        ]\r\n      }\r\n    ],\r\n    \"buttons\": [\r\n      {\r\n        \"name\": \"cancel\",\r\n        \"label\": \"Cancel\",\r\n        \"variant\": \"neutral\"\r\n      },\r\n      {\r\n        \"name\": \"btn:Validate\",\r\n        \"label\": \"Validate\",\r\n        \"variant\": \"brand\",\r\n        \"class\": \"slds-m-left_x-small\"\r\n      }\r\n    ],\r\n    \"data_id\": \"validate:dialog\"\r\n  }\r\n}';
             config__mdt tst= new config__mdt(JSON__c=json);
-            //config__mdt tst = (config__mdt) JSON.deserialize('{"executors":[{"className":"QuoteValidator.Margin","isActive":true,"isDebug":false,"typeOf":"ROOTVALIDATION","onFail":"warn","listOfFieldsToPass":["Name","Rating"],"errorTemplate":"MarginValidation"},{"className":"QuoteValidator.MasterItemMaterialIdValidator","isActive":true,"errorTemplate":"MarginValidation","typeOf":"VALIDATION","isDebug":false,"listOfFieldsToPass":["Account.Name","CaseNumber","Status"]}],"orchestrator":{"noErrorCallback":{"UI":"function(scope, libs) {}","Batch":"apex method"},"childObjApiName":"Cases","limits":{"chunkSize":6000},"email":{"isActive":true,"emailTemplate":"SalesNewCustomerEmail","recipients":["${currentUser}","${ownerRootRecord}","wildervit@gmail.com"]}}}', config__mdt.class);
             cfg = new config__mdt[]{tst};
         } else {
             cfg = [SELECT Id, JSON__c FROM config__mdt WHERE DeveloperName = :operation];
@@ -140,6 +31,7 @@ global with sharing class QuoteValidator {
             if (handlerResult.code != infrastructure.validationResultCode.OK) {
 				string errorMessage = this.config.orchestrator.preCheck.errorTemplate !=null ? String.format(this.config.orchestrator.preCheck.errorTemplate, handlerResult.dynamicValues) : 'Need provide orchestrator.preCheck.errorTemplate';
                 insert this.prepareLogRecordWithError(operation, null, errorMessage, 'preCheck');
+
                 this.orcResp.responses.add(handlerResult);
                 return;
             }
@@ -152,9 +44,12 @@ global with sharing class QuoteValidator {
                 WHERE operation__c = :operation AND rootRecordId__c =:this.orcReq.rootRecordId AND errCode__c !='DEBUG' AND errCode__c !='EXCEPTION' AND CreatedDate >= :this.orcReq.timeStamp
 				LIMIT 10
             ]; // Need filterout EXCEPTIONS and DEBUG
-            if (errors.size() > 0) this.sendEmail(operation);
-            else {
+            if (errors.size() > 0) {
+				this.sendEmail(operation);
+			} else {
                 //need return a UI callback or run apex class if defined
+                string successMessage = this.config.orchestrator.successTemplate !=null ? this.config.orchestrator.successTemplate : 'Need provide orchestrator.successTemplate';
+				insert this.prepareLogRecordWithError(operation, null, successMessage, 'SUCCESS');
                 this.orcResp.noErrorCallback = this.config.orchestrator.noErrorCallback;
             }
         }
@@ -435,6 +330,7 @@ global with sharing class QuoteValidator {
         public orchestratorEmailConfigPart email;
         public noErrorCallbackPart noErrorCallback;
         public executorConfigPart preCheck;
+        public string successTemplate;
     }
     
     public class orchestratorEmailConfigPart {
