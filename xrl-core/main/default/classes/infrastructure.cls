@@ -1430,6 +1430,13 @@ global with sharing class infrastructure {
         result.dynamicValues = dynamicValues;
         return result;
     }
+    /* generate a error logUrl */
+    global static string generateErrorLogLink(map<string, object> inParams) {
+        string urlTemplate = '/lightning/n/XRL__EXRL?c__apiName=TG9nczo6WFJMX19sb2dfX2M6Og%3D%3D&c__name={0}&c__recordId={1}&c__operation={2}';
+        string recordId = (string) inParams.get('recordId');
+        string operation = (string) inParams.get('operation');
+        return  URL.getOrgDomainUrl() + string.format(urlTemplate, new string[]{'123', recordId, operation});
+    }
     
 
 	@deprecated    
