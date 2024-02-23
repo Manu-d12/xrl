@@ -41,8 +41,8 @@ public class orchestrator {
             log__c[] errors = [
                 SELECT ID 
                 FROM log__c 
-                WHERE operation__c = :operation AND rootRecordId__c =:this.orcReq.rootRecordId AND errCode__c !='DEBUG' AND errCode__c !='EXCEPTION' AND CreatedDate >= :this.orcReq.timeStamp
-				LIMIT 10
+                WHERE operation__c = :operation AND rootRecordId__c =:this.orcReq.rootRecordId AND errCode__c !='DEBUG' AND errCode__c !='EXCEPTION' AND errCode__c !='SUCCESS' AND CreatedDate >= :this.orcReq.timeStamp
+				LIMIT 5
             ]; // Need filterout EXCEPTIONS and DEBUG
             if (errors.size() > 0) {
 				this.sendEmail(operation);
