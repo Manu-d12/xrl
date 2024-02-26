@@ -1617,8 +1617,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 					this.config._errors = libs.formatCallbackErrorMessages(e,'table','After Edit Callback');
 				}
 			}
-			libs.getGlobalVar(this.cfg).records = this.records;
 		}
+		libs.getGlobalVar(this.cfg).records = this.records;
 		//console.log('Bulk Edit', getValue(this.config._bulkEdit.cItem, value), chBox.checked);
 		this.config._bulkEdit = undefined;
 
