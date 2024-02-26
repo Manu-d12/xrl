@@ -1044,7 +1044,6 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				chBoxLabel : libs.formatStr('Update {0} items', [this.getSelectedRecords().length]),
 				chBoxValue : false,
 				style: libs.formatStr("position:absolute;top:{0}px;left:{1}px", [(-table.offsetHeight + top - (this.config.pager.pagerTop === true ? 110 : 40)), left]),
-				_enableNewOption: cItem._advanced?.enableNewOption,
 				_newItemCreation: cItem._advanced?.newItemCreation,
 			}
 			//this.config._isBulkEdit = true;

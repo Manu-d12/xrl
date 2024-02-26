@@ -11,7 +11,7 @@
 				<!-- For SingleSelect/Picklist type -->
 				<c-multiselect multiselect={picklistType} listsize={config.dataTableCfg.displayOptionListSize} onselect={inlineEdit} 
 				options={col.options} selectedvalues={editValue} cfg={cfg} data-id={col.fieldName} usenewui=true newitemcreation={config._newItemCreation} 
-				enablenewoption={config._enableNewOption} onopennewdialog={passToDataTable} opennewindatatable=true col={col}></c-multiselect>
+				onopennewdialog={passToDataTable} opennewindatatable=true col={col}></c-multiselect>
 			</template>
 			<template if:false={col._isLookUpEdit}>
 				<lightning-input if:true={col.isEditableRegular} maxlength={col.length} type={col.type} field-level-help1={col.inlineHelpText} value={editValue} onchange={inlineEdit} data-id={col.fieldName} tabindex="0"></lightning-input>

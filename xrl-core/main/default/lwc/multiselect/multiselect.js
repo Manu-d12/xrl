@@ -19,7 +19,7 @@ export default class Multiselect extends LightningElement {
     @api buttonStyle;
     @api usenewui = false;
     //for new UI
-    @api enablenewoption = false;
+    @api enablenewoption = false; //deprecated
     @api newitemcreation;
     @api opennewindatatable = false;
     @track config = {selectedSearchResult : []};
@@ -66,7 +66,7 @@ export default class Multiselect extends LightningElement {
             this.config.options = this.options ? JSON.parse(JSON.stringify(this.options)) : [];
             this.config.sObjApiName = this.newitemcreation?.sObjApiName || 'Case';
             this.config.cfgName = this.cfg;
-            this.config.enableNewOption = this.enablenewoption;
+            this.config.enableNewOption = this.newitemcreation !== undefined;
             this.config.newOptionLabel = this.newitemcreation?.label || 'New Option';
             //this.config.selectedSearchResult = [];
 			if (typeof this.selectedvalues == 'string') this.selectedvalues = [this.selectedvalues];
