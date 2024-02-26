@@ -375,7 +375,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 				isNeedDescribe: true,
 				sObjApiName: this.config.sObjApiName,
 				relField: this.config.relField,
-				addCondition: libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name),
+				addCondition: this.modifyCondition(libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name)),
 				orderBy: this.config.listViewConfig[0].orderBy,
 				fields: this.config.fields,
 				listViewName: this.config?.listView?.name,
@@ -407,6 +407,17 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		}
 
 	}
+	modifyCondition(condition) {
+		if(this.config?._advanced?.modifyCondition !== undefined && this.config?._advanced?.modifyCondition !== ""){
+			try{
+				condition = eval('(' + this.config?._advanced?.modifyCondition + ')')(this,libs, condition);
+			}catch(e){
+				this.config._errors = libs.formatCallbackErrorMessages(e,'table','Modify Condition Callback');
+				return condition;
+			}
+		}
+		return condition;
+	}
 	afterLoadTransformation(records){
 		if(this.config?._advanced?.afterloadTransformation !== undefined && this.config?._advanced?.afterloadTransformation !== ""){
 			try {
@@ -422,7 +433,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 	async loadBulkData(){
 		let soqlRel = '';
 		if(this.config.relField !== undefined && this.config.relField !== ''){
-			soqlRel = " WHERE " + this.config.relField + "='" + this.recordId + "' " + libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name);
+			soqlRel = " WHERE " + this.config.relField + "='" + this.recordId + "' " + this.modifyCondition(libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name));
 		}
 		await libs.remoteAction(this, 'customSoql', {
 			isNeedDescribe: true,
@@ -439,9 +450,9 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 		this.config.listOfRecordIds = [];
 		this.config.fetchIdLimit = 49950;
 		for (let i = 1; i < ((parseInt(this.config.totalRecordsCount) / parseInt(this.config.fetchIdLimit)) + 1);i++) {
-			if(i === 1) await this.getBulkRecordsId(libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name),this.config.fetchIdLimit);
+			if(i === 1) await this.getBulkRecordsId(this.modifyCondition(libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name)),this.config.fetchIdLimit);
 			else{
-				await this.getBulkRecordsId(" AND Id > '" + this.config.listOfRecordIds[parseInt(this.config.listOfRecordIds.length)-1].Id+"' " + libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name),this.config.fetchIdLimit);
+				await this.getBulkRecordsId(" AND Id > '" + this.config.listOfRecordIds[parseInt(this.config.listOfRecordIds.length)-1].Id+"' " + this.modifyCondition(libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name)),this.config.fetchIdLimit);
 			}
 			console.log('Verifying loop', i);
 		}
@@ -459,7 +470,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 			});
 			startIndex = startIndex + parseInt(recordsIds.length);
 			endIndex = endIndex + parseInt(recordsIds.length);
-			let con = libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name);
+			let con = this.modifyCondition(libs.replaceLiteralsInStr(this.config.listViewConfig[0].addCondition,this.name));
 			let condition = " AND Id IN ('" + recordsIds.join("','") + "') " + (con !== undefined ? con : '');
 			// console.log('condition',condition, i);
 			await this.getBulkRecords(this.config.fields,this.config.sObjApiName,condition,this.config.listViewConfig[0].orderBy,this.config.loadChunkSize);
