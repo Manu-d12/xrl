@@ -1435,7 +1435,7 @@ global with sharing class infrastructure {
     global static string generateErrorLogLink(map<string, object> inParams) {
         string urlTemplate = '{0}/lightning/n/XRL__EXRL?c__apiName=TG9nczo6WFJMX19sb2dfX2M6Og%3D%3D&c__name={1}&c__recordId={2}&c__operation={3}';
         string recordId = (string) inParams.get('recordId');
-        string operation = (string) inParams.get('operation');
+        string operation = JSON.serialize(inParams.get('operation'));
         return string.format(urlTemplate, new string[]{URL.getOrgDomainUrl().toExternalForm(),'123', EncodingUtil.base64Encode(Blob.valueOf(recordId)), EncodingUtil.base64Encode(Blob.valueOf(operation))});
     }
     
