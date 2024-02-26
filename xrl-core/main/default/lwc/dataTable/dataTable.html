@@ -376,7 +376,7 @@
 						<!-- <lightning-combobox if:true={config._bulkEdit.picklist} placeholder={config._LABELS.lbl_chooseOperation} value={config._bulkEdit.value} data-id="origValue" options={config._bulkEdit.cItem.options} class="slds-p-horizontal_xx-small" style="width:100%"></lightning-combobox> -->
 						<c-multiselect if:true={config._bulkEdit.picklist} onselect={setValue} data-id="origValue"
 						options={config._bulkEdit.cItem.options} selectedvalues={config._bulkEdit.value} cfg={cfg} usenewui=true newitemcreation={config._bulkEdit._newItemCreation} 
-						onopennewdialog={passToDataTable} col={config._bulkEdit.cItem}></c-multiselect>
+						onopennewdialog={handleNewDialog} opennewindatatable=true col={config._bulkEdit.cItem}></c-multiselect>
 						<lightning-input if:true={config._bulkEdit.cItem.isEditableRegular} maxlength={config._bulkEdit.length} type={config._bulkEdit.type} value={config._bulkEdit.value} tabindex="0" data-id="origValue" style="width:100%"></lightning-input>
 						<lightning-textarea if:true={config._bulkEdit.cItem.isEditableTextArea} value={config._bulkEdit.value} data-id="origValue" tabindex="0"></lightning-textarea>
 						<lightning-input type="checkbox" if:true={config._bulkEdit.cItem.isEditableBool} checked={config._bulkEdit.value} data-id="origValue" label={config._bulkEdit.cItem.label} style="left:4px;"> </lightning-input>

@@ -1477,28 +1477,37 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		}
 	}
 	handleNewDialog(event){
-		if(event.target.getAttribute('data-id') === 'newItemDialog'){
-			if(event?.detail?.data){
-				//it means new option is created successfully
-				let col = this.config.colModel.find((colModel) => {
-					return colModel.fieldName === this.config._changedField;
-				});
-				if(col !== undefined) {
-					col.options.push(JSON.parse(JSON.stringify(event?.detail?.data)));
-				}
-				this.template.querySelectorAll('.edit').forEach(element => {
-					if (element.getAttribute('data-colname') === this.config._changedField) {
-						element.updateMultiselect(JSON.parse(JSON.stringify(event?.detail?.data)));
+		try{
+			if(event.target.getAttribute('data-id') === 'newItemDialog'){
+				if(event?.detail?.data){
+					//it means new option is created successfully
+					let col = this.config.colModel.find((colModel) => {
+						return colModel.fieldName === this.config._changedField;
+					});
+					if(col !== undefined) {
+						col.options.push(JSON.parse(JSON.stringify(event?.detail?.data)));
 					}
-				});
+					if(this.config._bulkEdit === undefined) {
+						this.template.querySelectorAll('.edit').forEach(element => {
+							if (element.getAttribute('data-colname') === this.config._changedField) {
+								element.updateMultiselect(JSON.parse(JSON.stringify(event?.detail?.data)));
+							}
+						});
+					}else{
+						let element = this.template.querySelector('c-multiselect');
+						element.handleEvent(JSON.parse(JSON.stringify(event?.detail?.data)));
+					}
+				}
+				this.config._showNewItemCreation = false;
+			}else{
+				this.config._sObjApiName = event.detail?.data?.data?.sObjApiName || event.detail?.data?.sObjApiName;
+				this.config._header = event.detail?.data?.data?.header || event.detail?.data?.header;
+				this.config._newItemCreation = event.detail?.data?.data || event.detail?.data;
+				this.config._changedField = event.detail?.data?.field || event.detail?.field;
+				this.config._showNewItemCreation = true;
 			}
-			this.config._showNewItemCreation = false;
-		}else{
-			this.config._sObjApiName = event.detail.data?.data.sObjApiName;
-			this.config._header = event.detail.data?.data?.header;
-			this.config._newItemCreation = event.detail.data?.data;
-			this.config._changedField = event.detail.data?.field;
-			this.config._showNewItemCreation = true;
+		}catch(e){
+			console.error('Error in handleNewDialog: ', e);
 		}
 	}
 	setNumPages(value) {
