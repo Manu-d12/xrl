@@ -65,6 +65,7 @@ export default class Multiselect extends LightningElement {
             //for New UI
             this.config.options = this.options ? JSON.parse(JSON.stringify(this.options)) : [];
             this.config.sObjApiName = this.newitemcreation?.sObjApiName || 'Case';
+            this.config.cfgName = this.cfg;
             this.config.enableNewOption = this.enablenewoption;
             this.config.newOptionLabel = this.newitemcreation?.label || 'New Option';
             //this.config.selectedSearchResult = [];

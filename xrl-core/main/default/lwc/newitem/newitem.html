@@ -14,7 +14,22 @@
                 <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
                     <div class="slds-grid slds-gutters">
                         <div class="slds-col slds-size_1-of-1">
-                            <lightning-record-form object-api-name={objectapiname} layout-type="Full" onsuccess={handleSuccess} onerror={handleError} oncancel={handleClose}></lightning-record-form>
+                            <!-- if no field are provide -->
+                            <lightning-record-form if:false={config.fields} object-api-name={objectapiname} layout-type="Full" onsuccess={handleSuccess} onerror={handleError} oncancel={handleClose}></lightning-record-form>
+                            <!-- if fields are provided -->
+                            <lightning-record-edit-form if:true={config.fields} object-api-name={objectapiname} onsuccess={handleSuccess} onerror={handleError}>
+                                <lightning-messages> </lightning-messages>
+                                <template for:each={config.fields} for:item="field">
+                                    <lightning-input-field field-name={field.fieldName} key={field.fieldName} value={field.value}> </lightning-input-field>
+                                </template>
+                                <!-- <lightning-input-field field-name="Name"> </lightning-input-field> -->
+                                <lightning-button
+                                    class="slds-m-top_small"
+                                    type="submit"
+                                    label="Save"
+                                >
+                                </lightning-button>
+                            </lightning-record-edit-form>
                         </div>
                     </div>
                 </div>
