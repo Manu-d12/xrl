@@ -7,12 +7,22 @@ export default class Newitem extends LightningElement {
     @api header;
     @api newitemcreation;
     @track isShowModal = false;
+    @api cfg;
+    @track config = {};
     connectedCallback(){
         if(this.objectapiname === undefined || this.objectapiname === null) { 
             console.log('Please provide object api name');
             return;
         }
         this.isShowModal = true;
+        this.config.fields = [];
+        if(this.newitemcreation?.fields){
+            for (const [key, value] of Object.entries(this.newitemcreation?.fields)) {
+                this.config.fields.push({fieldName: key, value: libs.replaceLiteralsInStr(value,this.cfg)});
+            }
+        }else{
+            this.config.fields = false;
+        }
     }
     handleClose(event){
         this.dispatchEvent(new CustomEvent('cancel', {

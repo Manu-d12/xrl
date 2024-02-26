@@ -1044,6 +1044,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 				chBoxLabel : libs.formatStr('Update {0} items', [this.getSelectedRecords().length]),
 				chBoxValue : false,
 				style: libs.formatStr("position:absolute;top:{0}px;left:{1}px", [(-table.offsetHeight + top - (this.config.pager.pagerTop === true ? 110 : 40)), left]),
+				_newItemCreation: cItem._advanced?.newItemCreation,
 			}
 			//this.config._isBulkEdit = true;
 		} else {
@@ -1541,7 +1542,9 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		}
 		//console.log(fieldName);
 	}
-
+	setValue(event){
+		this.config._selectedValue = event.detail.payload.values[0];
+	}
 	handleEventBulk() {
 		//HYPER-267
 		this.config.isSpinner = true;
@@ -1567,8 +1570,8 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 			origItem._cellCss = 'background-color:rgb(255,255,189);color:black;';
 			that.changeRecord(item.Id);
 		}
-		function getValue(cItem, v) {
-			return v[cItem.isEditableBool ? 'checked' : 'value'];
+		function getValue(that,cItem, v) {
+			return cItem.isEditableAsPicklist || cItem.type === 'reference' ? that.config._selectedValue : v[cItem.isEditableBool ? 'checked' : 'value'];
 		}
 
 		let describe = libs.getGlobalVar(this.cfg).describe[this.config._bulkEdit.cItem.fieldName];
@@ -1592,7 +1595,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		}
 		if (chBox.checked === false) {
 			//console.log('One item');
-			changeItem(this, this.records[this.config._bulkEdit.rowId], this.config._bulkEdit.cItem.fieldName, getValue(this.config._bulkEdit.cItem, value), refNode, refNodeValue);
+			changeItem(this, this.records[this.config._bulkEdit.rowId], this.config._bulkEdit.cItem.fieldName, getValue(this,this.config._bulkEdit.cItem, value), refNode, refNodeValue);
 			if(this.config?._advanced?.afterEditCallback !== undefined && this.config?._advanced?.afterEditCallback !== ""){
 				try{
 					await this.config?._advanced?.afterEditCallback(this,libs,[this.records[this.config._bulkEdit.rowId]]);
@@ -1604,7 +1607,7 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 		} else {
 			//console.log('More then One item');
 			this.getSelectedRecords().forEach((item) => {
-				changeItem(this, item, this.config._bulkEdit.cItem.fieldName, getValue(this.config._bulkEdit.cItem, value),refNode, refNodeValue);
+				changeItem(this, item, this.config._bulkEdit.cItem.fieldName, getValue(this,this.config._bulkEdit.cItem, value),refNode, refNodeValue);
 			});
 			if(this.config?._advanced?.afterEditCallback !== undefined && this.config?._advanced?.afterEditCallback !== ""){
 				try{
