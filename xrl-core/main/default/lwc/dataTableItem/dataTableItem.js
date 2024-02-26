@@ -37,9 +37,6 @@ export default class dataTableItem extends LightningElement {
 		if(this.col._advanced?.newItemCreation){
 			this.config._newItemCreation = this.col._advanced?.newItemCreation;
 		}
-		if(this.col._advanced?.enableNewOption){
-			this.config._enableNewOption = this.col._advanced?.enableNewOption;
-		}
 	}
 
 	@api

@@ -817,7 +817,7 @@ export let libs = {
 	},
 	replaceLiteralsInStr : function(str, name){
 		if (str === undefined) return str;
-		let GLOBALVARS = globalVars[name];
+		let GLOBALVARS = name ? globalVars[name] : globalVars;
 		let temp=str;
 		const regex = /%%.*?%%/g;
 		const regex2 = /(\w+)\s*='%%urlParam%%'/g;
