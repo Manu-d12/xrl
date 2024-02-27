@@ -31,6 +31,11 @@
                 <default>false</default>
                 <label>Comparison</label>
             </value>
+            <value>
+                <fullName>Application</fullName>
+                <default>false</default>
+                <label>Application</label>
+            </value>
         </valueSetDefinition>
     </valueSet>
 </CustomField>

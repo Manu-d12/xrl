@@ -936,12 +936,12 @@ export default class dataTable extends NavigationMixin(LightningElement) {
 
 		let cItem = this.getColItem(colName);
 		if (!cItem || !cItem._showEditableIcon) {
-			const toast = new ShowToastEvent({
+			/*const toast = new ShowToastEvent({
 				title: 'Error',
 				message: this.config._LABELS.msg_rowDblClickError,
 				variant: 'error'
 			});
-			this.dispatchEvent(toast);
+			this.dispatchEvent(toast);*/
 			return;
 		}
 		if(this.config.showStandardEdit && this.getSelectedRecords().length < 2){

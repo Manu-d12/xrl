@@ -319,7 +319,9 @@ global with sharing class infrastructure {
 
 		list < map < string, object >> listViews = new list < map < string, object >> {};
 		List<String> extIds = new List<String>();
-
+		if (listViewName!=null && listViewName.startsWith('app_')) {
+            configType = 'Application';
+        }
 		extRelListConfig__c[] lst = [SELECT Id, JSON__c, listViewName__c, listViewLabel__c, isAdminConfig__c, CreatedBy.Name FROM extRelListConfig__c WHERE sObjApiName__c =: sObjApiName AND relFieldApiName__c =: relField AND Is_Active__c = TRUE AND configType__c = :configType ORDER BY isAdminConfig__c DESC, listViewName__c ASC LIMIT 20];
 		for (integer i = 0; i < lst.size(); i++) {
 			extRelListConfig__c item = lst[i];

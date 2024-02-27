@@ -18,7 +18,7 @@ export default class Newitem extends LightningElement {
         this.config.fields = [];
         if(this.newitemcreation?.fields){
             for (const [key, value] of Object.entries(this.newitemcreation?.fields)) {
-                this.config.fields.push({fieldName: key, value: libs.replaceLiteralsInStr(value,this.cfg)});
+                this.config.fields.push({fieldName: key, required:value.required, disabled:value.disabled, value: libs.replaceLiteralsInStr(value.value,this.cfg)});
             }
         }else{
             this.config.fields = false;

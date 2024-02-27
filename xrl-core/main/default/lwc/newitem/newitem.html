@@ -20,7 +20,7 @@
                             <lightning-record-edit-form if:true={config.fields} object-api-name={objectapiname} onsuccess={handleSuccess} onerror={handleError}>
                                 <lightning-messages> </lightning-messages>
                                 <template for:each={config.fields} for:item="field">
-                                    <lightning-input-field field-name={field.fieldName} key={field.fieldName} value={field.value}> </lightning-input-field>
+                                    <lightning-input-field field-name={field.fieldName} key={field.fieldName} value={field.value} disabled={field.disabled} required={field.required}> </lightning-input-field>
                                 </template>
                                 <!-- <lightning-input-field field-name="Name"> </lightning-input-field> -->
                                 <lightning-button
