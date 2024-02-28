@@ -128,6 +128,14 @@ export default class customAction extends LightningElement {
             },
             callback: ((nodeName, data) => {
                 console.log(nodeName, data);
+                if (data[nodeName]?.successTemplate) {
+                    //show toast
+                    libs.showToast(this, {
+					title: 'Success',
+					message: data[nodeName]?.successTemplate,
+					variant: 'success'				
+                    });
+                }
                 let res = libs.orchestratorResult(data[nodeName]);
                 if (this.config.UI == true) {
                     let title = this.config.orchestrator.processRecordsLabel.replace('{1}', libs.getGlobalVar('orchestratorRequest').length).replace('{0}', res.totalRecords).replace('{2}', res.errorRecords);

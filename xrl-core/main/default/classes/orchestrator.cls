@@ -1,3 +1,4 @@
+@JsonAccess(deserializable='always' serializable='always')
 public class orchestrator {
         
     private orchestratorConfig config;
@@ -43,16 +44,23 @@ public class orchestrator {
                 FROM log__c 
                 WHERE operation__c = :operation AND rootRecordId__c =:this.orcReq.rootRecordId AND errCode__c !='DEBUG' AND errCode__c !='EXCEPTION' AND errCode__c !='SUCCESS' AND CreatedDate >= :this.orcReq.timeStamp
 				LIMIT 5
-            ]; // Need filterout EXCEPTIONS and DEBUG
+            ];
             if (errors.size() > 0) {
-				this.sendEmail(operation);
+				this.sendEmail(operation, false);
 			} else {
                 //need return a UI callback or run apex class if defined
                 if (config.isNeedSaveSuccess == true) {
-					insert this.prepareLogRecordWithError(operation, null, this.config.orchestrator.success.successTemplate, 'SUCCESS');    
+					insert this.prepareLogRecordWithError(operation, null, this.config.orchestrator.successResult.successTemplate, 'SUCCESS');    
                 }
-				// NEED improve this logic                
-                //this.orcResp.noErrorCallback = this.config.orchestrator.noErrorCallback;
+				// NEED improve this logic
+				this.sendEmail(operation, true);
+                this.orcResp.successTemplate = this.config.orchestrator.successResult.successTemplate;
+                    if (this.config.orchestrator.successResult.className != null) {
+            			Type T = type.forName(this.config.orchestrator.preCheck.className);
+                        if (T == null) throw new infrastructure.InfrastructureException(null, ('Can\'t find class {1}').replace('{1}', this.config.orchestrator.preCheck.className), infrastructure.exceptionType.CLASS_NOT_FOUND);
+                        infrastructure.handler handlerClass = (infrastructure.handler) T.newInstance();
+                        infrastructure.validationResult handlerResult = (infrastructure.validationResult) handlerClass.execute(new map<string, object>{'initParams' => (map<string,object>) JSON.deserializeUntyped(JSON.serialize(orcReq))});            
+                    }
             }
         }
 		if (this.orcReq.rootRecordId != null) { // need delete all old records only in case of firstChunk
@@ -172,7 +180,7 @@ public class orchestrator {
 		return l;
 	}
     
-    private void sendEmail(string operation) {
+    private void sendEmail(string operation, boolean isSuccess) {
         if (this.config.isNeedSendEmail!= true) return;
         // Need deside about email if we have an error in a table
         
@@ -247,7 +255,7 @@ public class orchestrator {
             
             this.prepareData(executorType.ROOTVALIDATION, new id[]{orcReq.rootRecordId});
         	this.prepareData(executorType.VALIDATION, orcReq.relatedRecordIds);
-            this.isNeedSaveSuccess = orchestrator.success!=null && orchestrator.success.successTemplate!=null && orchestrator.success.isWriteSuccessToLog == true;
+            this.isNeedSaveSuccess = orchestrator.successResult!=null && orchestrator.successResult.successTemplate!=null && orchestrator.successResult.isWriteSuccessToLog == true;
         }
         
         private void prepareData(executorType eType, Id[] relatedRecordIds) {
@@ -334,7 +342,7 @@ public class orchestrator {
         public orchestratorEmailConfigPart email;
         //public noErrorCallbackPart noErrorCallback;
         public executorConfigPart preCheck;
-        public successConfigPart success;
+        public successConfigPart successResult;
         //public string successTemplate;
     }
     
@@ -352,7 +360,7 @@ public class orchestrator {
     public class successConfigPart {
         public boolean isWriteSuccessToLog;
         public string successTemplate;
-        public string successCallback;
+        public string className;
     }
     
     
@@ -394,6 +402,7 @@ public class orchestrator {
         public integer invalidCount = 0;
         public integer recordsCount;
         public List<object> responses = new List<Object>();
+        public string successTemplate;
     }
     
     private static string getNameField(string sObjApiName) {
@@ -409,95 +418,6 @@ public class orchestrator {
     }
 	public static void fakeTest() {	
 		integer i=0;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
-		i++;
 		i++;
 		i++;
 		i++;
