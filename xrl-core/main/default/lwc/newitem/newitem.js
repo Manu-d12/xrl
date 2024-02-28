@@ -31,6 +31,22 @@ export default class Newitem extends LightningElement {
             }
         }));
     }
+    async handleSubmit(event) {
+        event.preventDefault();
+        let inputFields = JSON.parse(JSON.stringify(event.detail)).fields;
+
+        try{
+            let newItemCreation = JSON.parse(JSON.stringify(this.newitemcreation));
+            if(newItemCreation.beforeSaveCallback !== undefined && newItemCreation.beforeSaveCallback !== ''){
+                inputFields = await eval( '(' + newItemCreation.beforeSaveCallback + ')' )(this,libs,inputFields);
+            }
+        }catch(e){
+            console.log(e);
+        }
+
+        // Submit the form
+        this.template.querySelector('lightning-record-edit-form').submit(inputFields);
+    }
     async handleSuccess(event){
         const evt = new ShowToastEvent({
             title: 'Successfully created',
