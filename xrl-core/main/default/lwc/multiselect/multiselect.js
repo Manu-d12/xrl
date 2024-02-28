@@ -387,7 +387,12 @@ export default class Multiselect extends LightningElement {
         }
         // console.log('event received: ',JSON.parse(JSON.stringify(event.detail.data)));
         let newOption = event?.detail?.data ? JSON.parse(JSON.stringify(event.detail.data)) : JSON.parse(JSON.stringify(event));
-        this.config.options.push(newOption);
+        let isOptionAlreadyPresent = this.config.options.findIndex((option) => option.value === newOption.value);
+        if(isOptionAlreadyPresent > -1){
+            this.config.options[isOptionAlreadyPresent] = JSON.parse(JSON.stringify(newOption));
+        }else{
+            this.config.options.push(newOption);
+        }
         this.selectSearchResult({'currentTarget': { 'dataset': { 'value' : newOption.value }}});
         //dispatching event for the parent component
         this.dispatchEvent(new CustomEvent('newoptionadd', {
