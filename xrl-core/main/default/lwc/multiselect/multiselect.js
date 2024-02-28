@@ -79,6 +79,7 @@ export default class Multiselect extends LightningElement {
                     this.config.selectedSearchResult.push(option);
                 }
             });
+            window.addEventListener('scroll', this.clearSearchResults.bind(this));
         }else{
             //for old UI
             this.mSelectConfig.labels = libs.getGlobalVar(this.cfg)?._LABELS ?? {};
@@ -86,6 +87,10 @@ export default class Multiselect extends LightningElement {
             this.mSelectConfig.buttonStyle = this.buttonStyle || '';
             this.setSelect();
         }
+    }
+    disconnectedCallback() {
+        // Remove event listener
+        window.removeEventListener('scroll', this.clearSearchResults.bind(this));
     }
     renderedCallback(){
         if(!this.config.useNewUi){
