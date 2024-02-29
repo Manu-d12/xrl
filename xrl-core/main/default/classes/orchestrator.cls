@@ -30,9 +30,8 @@ public class orchestrator {
             infrastructure.handler handlerClass = (infrastructure.handler) T.newInstance();
             infrastructure.validationResult handlerResult = (infrastructure.validationResult) handlerClass.execute(new map<string, object>{'initParams' => (map<string,object>) JSON.deserializeUntyped(JSON.serialize(orcReq))});
             if (handlerResult.code != infrastructure.validationResultCode.OK) {
-				string errorMessage = this.config.orchestrator.preCheck.errorTemplate !=null ? String.format(this.config.orchestrator.preCheck.errorTemplate, handlerResult.dynamicValues) : 'Need provide orchestrator.preCheck.errorTemplate';
+				string errorMessage = this.config.orchestrator.preCheck.errorTemplate !=null ? String.format(System.Label.get('', this.config.orchestrator.preCheck.errorTemplate.replace('$Label.','')), handlerResult.dynamicValues) : 'Need provide orchestrator.preCheck.errorTemplate as $Label.customLabelName';
                 insert this.prepareLogRecordWithError(operation, null, errorMessage, 'preCheck');
-
                 this.orcResp.responses.add(handlerResult);
                 return;
             }
