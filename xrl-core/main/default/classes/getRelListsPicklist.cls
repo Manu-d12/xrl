@@ -41,11 +41,17 @@ global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickLi
 					string sObjApiName = string.valueOf(thisChild.getChildSObject());
 					string sObjField = string.valueOf(thisChild.getField());
 					string sObjLabel = gd.get(sObjApiName).getDescribe().getLabelPlural();
+					string namespace = '';
+					List<String> splitStr = sObjApiName.split('__');
+
+					if(splitStr.size() >= 2) {
+						namespace = '(' + splitStr[0] + ') ';
+					}
 					if(gd.get(sObjApiName).getDescribe().isQueryable()){
 						// picklistValues.addRow(
 						// 	new VisualEditor.DataRow(sObjLabel + ' ('+ sObjField +')', sObjLabel + '::' + sObjApiName + '::' + sObjField)
 						// );
-						ObjectCompareList.add(new ObjectCompare(sObjLabel + ' ('+ sObjField +')', sObjLabel + '::' + sObjApiName + '::' + sObjField));
+						ObjectCompareList.add(new ObjectCompare(sObjLabel + ' ('+ sObjField +')' + namespace, sObjLabel + '::' + sObjApiName + '::' + sObjField));
 						//only if the history object exists
 						if(gd.containsKey(sObjApiName + 'History') || gd.containsKey(sObjApiName.removeEnd('c') + 'History')){
 							SObjectType objToken = gd.get(sObjApiName);
@@ -55,14 +61,14 @@ global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickLi
 								// picklistValues.addRow(
 								// 	new VisualEditor.DataRow(sObjLabel+': History (' + sObjField +')', sObjLabel + ' History::' + sObjApiName + 'History::' + sObjApiName + '.' + sObjField)
 								// );
-								ObjectCompareList.add(new ObjectCompare(sObjLabel+': History (' + sObjField +')', sObjLabel + ' History::' + sObjApiName + 'History::' + sObjApiName + '.' + sObjField));
+								ObjectCompareList.add(new ObjectCompare(sObjLabel+': History (' + sObjField +')' + namespace, sObjLabel + ' History::' + sObjApiName + 'History::' + sObjApiName + '.' + sObjField));
 								//Example apiName- Account History::AccountHistory::AccountHistory.AccountId
 							}else if(objToken  != null && isCustom){
 								//for custom history objects
 								// picklistValues.addRow(
 								// 	new VisualEditor.DataRow(sObjLabel+': History', sObjLabel + ' History::' + sObjApiName.removeEnd('c') + 'History::' + 'Parent.' + sObjField)
 								// );
-								ObjectCompareList.add(new ObjectCompare(sObjLabel+': History', sObjLabel + ' History::' + sObjApiName.removeEnd('c') + 'History::' + 'Parent.' + sObjField));
+								ObjectCompareList.add(new ObjectCompare(sObjLabel+': History' + namespace, sObjLabel + ' History::' + sObjApiName.removeEnd('c') + 'History::' + 'Parent.' + sObjField));
 							}
 						}
 					}
@@ -73,8 +79,14 @@ global with sharing class getRelListsPicklist extends VisualEditor.DynamicPickLi
         for (Schema.SObjectType thisObj: gd.values()) {
             if (thisObj.getDescribe().isQueryable()) {
                 string sObjLabel = ((context.pageType == 'RecordPage') ? '>' : '') + thisObj.getDescribe().getLabelPlural();
-                string namespace = String.valueOf(thisObj).replace('^(.*?)__.*$','$1');
-                sObjLabel += namespace!='' &&  namespace.endsWith('__') ? '(' + namespace + ')' : '';
+                // string namespace = String.valueOf(thisObj).replace('^(.*?)__.*$','$1');
+				string namespace = '';
+				List<String> splitStr = String.valueOf(thisObj).split('__');
+
+				if(splitStr.size() >= 2) {
+					namespace = splitStr[0];
+				}
+                sObjLabel += namespace!='' ? ' (' + namespace + ')' : '';
                 // picklistValues.addRow(
                 //     new VisualEditor.DataRow(sObjLabel, String.valueOf(thisObj.getDescribe().getLabelPlural()) + '::' + String.valueOf(thisObj) + '::')
                 // );
