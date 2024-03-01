@@ -57,7 +57,7 @@ export default class dataTableItem extends LightningElement {
 		if (typeof(this.col._formatter) === 'function') {
 			try{
 				// eval(this.col._formatter);
-				val = this.col._formatter(row, this.col, val);
+				val = this.col._formatter(this.row, this.col, val);
 			}catch(e) {
 				// console.error(e);
 				val = libs.formatCallbackErrorMessages(e,'cell');
@@ -169,7 +169,7 @@ export default class dataTableItem extends LightningElement {
 			try {
 				//passing this.row instead of row as having a issue when fieldName is quote1.StrataVAR__Part_Number__c 
 				//the row value is coming as blank, need to investigate further, issue in libs.getLookupRow function
-				value += this.col._uStyle(row, this.col, val);
+				value += this.col._uStyle(this.row, this.col, val);
 			} catch(e) {
 				console.error(e.toString);
 				value = val;
