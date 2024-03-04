@@ -43,7 +43,7 @@ export default class customAction extends LightningElement {
     async loadConfig() {
         await libs.remoteAction(this, 'getMetaConfigByName', {
             cfgName: this.cfgName,
-            callback: ((nodeName, data) => {
+            callback: ( async (nodeName, data) => {
                 let config = JSON.parse(libs.replaceLiteralsInStr(data[nodeName].cfg, this.cfgName));
                 config._timeStamp = data[nodeName].timeStamp;
                 this.config = config;
@@ -67,8 +67,9 @@ export default class customAction extends LightningElement {
                 } else if (config.UI){
                     if (config.UI.initCallback) {
                         config.UI.initCallback = eval('[' + config.UI.initCallback + ']')[0];
-                        config.UI.initCallback(this, libs, config);
+                        await config.UI.initCallback(this, libs, config);
                     }
+                    this.config._showUI= true;
                 }
                 Promise.all([
                     loadStyle(this, resource + '/css/extRelList.css'),
