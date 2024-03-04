@@ -69,7 +69,7 @@ export default class customAction extends LightningElement {
                         config.UI.initCallback = eval('[' + config.UI.initCallback + ']')[0];
                         await config.UI.initCallback(this, libs, config);
                     }
-                    this.config.showUI= true;
+                    this.config._showUI= true;
                 }
                 Promise.all([
                     loadStyle(this, resource + '/css/extRelList.css'),

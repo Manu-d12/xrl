@@ -6,7 +6,7 @@
 			</div>
 		</lightning-card>
 	</div>-->
- 	<c-dialog if:true={config.showUI} data-id="maindialog" cfg={config.UI} onaction={handleEvent}></c-dialog>
+ 	<c-dialog if:true={config._showUI} data-id="maindialog" cfg={config.UI} onaction={handleEvent}></c-dialog>
 	<c-dialog if:true={config.showConfirmation} data-id="confirmationdialog" cfg={config.confirmationUI} onaction={handleEvent}></c-dialog>
 	<c-layout if:true={config.layout} data-id="layout" config-id={config.layout.configId} onaction={handleEvent}></c-layout>
 
