@@ -25,16 +25,24 @@ public class orchestrator {
         infrastructure.addDebugLog('orchestrator:in', this.orcReq);
         // Need run precheck
         if (this.config.orchestrator.preCheck !=null && this.config.orchestrator.preCheck.isActive == true && this.config.orchestrator.preCheck.className!=null) {
-            Type T = type.forName(this.config.orchestrator.preCheck.className);
-			if (T == null) throw new infrastructure.InfrastructureException(null, ('Can\'t find class {1}').replace('{1}', this.config.orchestrator.preCheck.className), infrastructure.exceptionType.CLASS_NOT_FOUND);
-            infrastructure.handler handlerClass = (infrastructure.handler) T.newInstance();
-            infrastructure.validationResult handlerResult = (infrastructure.validationResult) handlerClass.execute(new map<string, object>{'initParams' => (map<string,object>) JSON.deserializeUntyped(JSON.serialize(orcReq))});
-            if (handlerResult.code != infrastructure.validationResultCode.OK) {
-				string errorMessage = this.config.orchestrator.preCheck.errorTemplate !=null ? String.format(System.Label.get('', this.config.orchestrator.preCheck.errorTemplate.replace('$Label.','')), handlerResult.dynamicValues) : 'Need provide orchestrator.preCheck.errorTemplate as $Label.customLabelName';
-                insert this.prepareLogRecordWithError(operation, null, errorMessage, 'preCheck');
-                this.orcResp.responses.add(handlerResult);
-                return;
-            }
+			try {
+	            Type T = type.forName(this.config.orchestrator.preCheck.className);
+				if (T == null) throw new infrastructure.InfrastructureException(null, ('Can\'t find class {1}').replace('{1}', this.config.orchestrator.preCheck.className), infrastructure.exceptionType.CLASS_NOT_FOUND);
+        	    infrastructure.handler handlerClass = (infrastructure.handler) T.newInstance();
+    	        infrastructure.validationResult handlerResult = (infrastructure.validationResult) handlerClass.execute(new map<string, object>{'initParams' => (map<string,object>) JSON.deserializeUntyped(JSON.serialize(orcReq))});
+	            if (handlerResult.code != infrastructure.validationResultCode.OK) {
+					string errorMessage = this.config.orchestrator.preCheck.errorTemplate !=null ? String.format(System.Label.get('', this.config.orchestrator.preCheck.errorTemplate.replace('$Label.','')), handlerResult.dynamicValues) : 'Need provide orchestrator.preCheck.errorTemplate as $Label.customLabelName';
+            	    insert this.prepareLogRecordWithError(operation, null, errorMessage, 'preCheck');
+        	        this.orcResp.responses.add(handlerResult);
+    	            return;
+	            }
+			} catch (exception  e) {
+                log__c l = this.prepareLogRecordWithError(operation, null, 'DEBUG','EXCEPTION IN PRECHECK');
+				string errMsg = JSON.serializePretty(infrastructure.debugLog);
+                l.info__c = errMsg.left(130995);
+                insert l;
+				return;
+			}
         }
         this.mainLoop(operation);
         if (this.orcReq.isLastChunk == true) {
@@ -85,7 +93,7 @@ public class orchestrator {
             Type T = type.forName(ePart.className);
 			if (T == null) throw new infrastructure.InfrastructureException(null, ('Can\'t find class {1}').replace('{1}', ePart.className), infrastructure.exceptionType.CLASS_NOT_FOUND);
 			//infrastructure.handler handlerClass = (infrastructure.handler) T.newInstance();
-            infrastructure.handler handlerClass = (infrastructure.handler)JSON.deserialize(JSON.serialize(innerData), T);
+            infrastructure.handler handlerClass = (infrastructure.handler)JSON.deserialize(JSON.serialize(innerData, false), T);
             if (handlerClass.isExecutable(new  map<string, object>{'rootRecord' => this.config.rootRecord}) != true) continue;
             
 			//set global debug flag
@@ -281,6 +289,7 @@ public class orchestrator {
             
             SOQL += ' WHERE Id IN :relatedRecordIds';
             system.debug(LoggingLevel.Error, 'SOQL ' + SOQL);
+	        infrastructure.addDebugLog('orchestrator:prepareData', SOQL);            
             sObject[] records = database.query(SOQL);
             if (eType == executorType.ROOTVALIDATION) {
             	this.rootRecordName = records != null && records.size() > 0 ? (string) records[0].get(getNameField(this.SObjAPIName)) : 'link';
@@ -289,7 +298,7 @@ public class orchestrator {
             if (eType == executorType.VALIDATION) {
                 relatedData = records;
             }
-            
+	        infrastructure.addDebugLog('orchestrator:prepareData', records);
         }
         
         public string[] prepareEmailRecipients(sObject rootRecord, string additionalEmails) {
