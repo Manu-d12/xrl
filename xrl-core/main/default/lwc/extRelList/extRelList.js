@@ -1366,7 +1366,7 @@ export default class extRelList extends NavigationMixin(LightningElement) {
 
 			let fieldsString = prefixedFields.join(', ');
 			await libs.remoteAction(this, 'customSoql', {
-				isNeedGetSObjName: true,
+				isNeedGetSObjName: false,
 				SOQL: "SELECT "+ fieldsString +" FROM "+ libs.getNameSpace() +"extRelListConfig__c WHERE "+ libs.getNameSpace() +"listViewName__c='" + this.config.listView.name + "'",
 				callback: ((nodeName, data1) => {
 					this.config.query = data1[nodeName]['SOQL'];

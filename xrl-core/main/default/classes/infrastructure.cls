@@ -285,7 +285,7 @@ global with sharing class infrastructure {
 		boolean isNeedDescribe = true;
         boolean isNeedGetSObjName = data.get('isNeedGetSObjName') == true;
 		map < string, object > result = new map < string, object > ();
-        if (isNeedGetSObjName == true) {
+        if (isNeedGetSObjName == true && recordId!=null) {
             SOQL = SOQL.replace('{objName}', recordId.getSObjectType().toString());
         }
 		result.put('SOQL', SOQL);
