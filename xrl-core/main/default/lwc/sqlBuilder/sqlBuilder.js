@@ -795,128 +795,259 @@ export default class SqlBuilder extends LightningElement {
             }
         }
     }
-    isStrAllowed(expression) {
-        const validChars = [' ', 'AND', 'OR', '(', ')', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '#'];
-        const stack = [];
-        let i = 0, operationIndex=0;
+     
+    //Old Implementation....
+    // isStrAllowed(expression) {
+    //     const validChars = [' ', 'AND', 'OR', '(', ')', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '#'];
+    //     const stack = [];
+    //     let i = 0, operationIndex=0;
 
-        let isCondition= false;
-        let isOpeartion =false;
-        let indexInsideAnbracket= 0;
-        const indexSet = new Set();
-        const operationMap =new Map();
-        let operations=0;
-        let isOropearation =false;
-        this.config.sqlBuilder.conditions.forEach((con) =>{
-            indexSet.add(con.index);
-        });
+    //     let isCondition= false;
+    //     let isOpeartion =false;
+    //     let indexInsideAnbracket= 0;
+    //     const indexSet = new Set();
+    //     const operationMap =new Map();
+    //     let operations=0;
+    //     let isOropearation =false;
+    //     this.config.sqlBuilder.conditions.forEach((con) =>{
+    //         indexSet.add(con.index);
+    //     });
     
-        while (i < expression.length) {
-            const char = expression[i];
+    //     while (i < expression.length) {
+    //         const char = expression[i];
     
-            if (char === '(') {
-                stack.push(char);
-                operationMap.set(operationIndex++ ,{"isOropearation" : isOropearation, "operations" : operations});
-                operations= 0;
-                isOropearation= false;
-            } else if (char === ')') {
-                if(expression[i-1] === '('){
-                    console.log('Invalid expression parentheses');
-                    this.config.sqlBuilder.errorMessage= 'Invalid expression parentheses';
-                    return false;
-                }
-                if (stack.length === 0) {
-                    console.log('Invalid expression: Mismatched parentheses');
-                    this.config.sqlBuilder.errorMessage= 'Invalid expression: Mismatched parentheses';
-                    return false;
-                }
+    //         if (char === '(') {
+    //             stack.push(char);
+    //             operationMap.set(operationIndex++ ,{"isOropearation" : isOropearation, "operations" : operations});
+    //             operations= 0;
+    //             isOropearation= false;
+    //         } else if (char === ')') {
+    //             if(expression[i-1] === '('){
+    //                 console.log('Invalid expression parentheses');
+    //                 this.config.sqlBuilder.errorMessage= 'Invalid expression parentheses';
+    //                 return false;
+    //             }
+    //             if (stack.length === 0) {
+    //                 console.log('Invalid expression: Mismatched parentheses');
+    //                 this.config.sqlBuilder.errorMessage= 'Invalid expression: Mismatched parentheses';
+    //                 return false;
+    //             }
 
-                if(indexInsideAnbracket < 1 || ((operations < 1) || (operations < 1 && isOropearation === false))){
-                    console.log('Not Valid expression Inside parentheses');
-                    this.config.sqlBuilder.errorMessage= 'Not Valid expression Inside parentheses';
-                    return false;
-                }
-                stack.pop();
-                indexInsideAnbracket= 0;
-                if(operationIndex-1 >=0){
-                    operationIndex--;
-                    let operation=operationMap.get(operationIndex);
-                    isOropearation= operation["isOropearation"];
-                    operations= operation["operations"];
-                }
-            } else if (!validChars.includes(char)) {
-                let j = i;
-                while (j < expression.length && expression[j] !== ' ') {
-                    j++;
-                }
-                const word = expression.substring(i, j);
-                if (!validChars.includes(word)) {
-                    console.log(`Invalid character: "${word}"`);
-                    this.config.sqlBuilder.errorMessage= `Invalid character: "${word}"`;
-                    return false;
-                }
+    //             if(indexInsideAnbracket < 1 || ((operations < 1) || (operations < 1 && isOropearation === false))){
+    //                 console.log('Not Valid expression Inside parentheses');
+    //                 this.config.sqlBuilder.errorMessage= 'Not Valid expression Inside parentheses';
+    //                 return false;
+    //             }
+    //             stack.pop();
+    //             indexInsideAnbracket= 0;
+    //             if(operationIndex-1 >=0){
+    //                 operationIndex--;
+    //                 let operation=operationMap.get(operationIndex);
+    //                 isOropearation= operation["isOropearation"];
+    //                 operations= operation["operations"];
+    //             }
+    //         } else if (!validChars.includes(char)) {
+    //             let j = i;
+    //             while (j < expression.length && expression[j] !== ' ') {
+    //                 j++;
+    //             }
+    //             const word = expression.substring(i, j);
+    //             if (!validChars.includes(word)) {
+    //                 console.log(`Invalid character: "${word}"`);
+    //                 this.config.sqlBuilder.errorMessage= `Invalid character: "${word}"`;
+    //                 return false;
+    //             }
 
-                if(i === 0 || i === expression.length-2 || i === expression.length-3 ){
-                    console.log('Invalid OR or AND opeartions');
-                    this.config.sqlBuilder.errorMessage= 'Invalid OR or AND opeartions';
-                    return false;
-                }
+    //             if(i === 0 || i === expression.length-2 || i === expression.length-3 ){
+    //                 console.log('Invalid OR or AND opeartions');
+    //                 this.config.sqlBuilder.errorMessage= 'Invalid OR or AND opeartions';
+    //                 return false;
+    //             }
 
-                if(isOpeartion){
-                    console.log('Invalid OR or AND opeartions');
-                    this.config.sqlBuilder.errorMessage= 'Invalid OR or AND opeartions';
-                    return false;
-                }
+    //             if(isOpeartion){
+    //                 console.log('Invalid OR or AND opeartions');
+    //                 this.config.sqlBuilder.errorMessage= 'Invalid OR or AND opeartions';
+    //                 return false;
+    //             }
                 
-                if(word === "AND"){
-                    operations++;
-                }else if(word === "OR"){
-                    isOropearation= true;
-                }
-                i = j - 1;
-                isOpeartion= true;
-                isCondition= false;
-            } else if (char === '#') {
-                if (i === expression.length - 1 || !(/[0-9]/.test(expression[i+1]))) {
-                    console.log('Invalid expression: "#" must be followed by a number');
-                    this.config.sqlBuilder.errorMessage= 'Invalid expression: "#" must be followed by a number';
-                    return false;
-                }else if(isCondition){
-                    console.log('Invalid OR or AND opeartions');
-                    this.config.sqlBuilder.errorMessage= 'Invalid OR or AND opeartions';
-                    return false;
-                }
+    //             if(word === "AND"){
+    //                 operations++;
+    //             }else if(word === "OR"){
+    //                 isOropearation= true;
+    //             }
+    //             i = j - 1;
+    //             isOpeartion= true;
+    //             isCondition= false;
+    //         } else if (char === '#') {
+    //             if (i === expression.length - 1 || !(/[0-9]/.test(expression[i+1]))) {
+    //                 console.log('Invalid expression: "#" must be followed by a number');
+    //                 this.config.sqlBuilder.errorMessage= 'Invalid expression: "#" must be followed by a number';
+    //                 return false;
+    //             }else if(isCondition){
+    //                 console.log('Invalid OR or AND opeartions');
+    //                 this.config.sqlBuilder.errorMessage= 'Invalid OR or AND opeartions';
+    //                 return false;
+    //             }
 
-                if(indexSet.has('#'+expression[i+1])){
-                    indexSet.delete('#'+expression[i+1]);
-                }
-                isCondition= true;
-                isOpeartion= false;
-                indexInsideAnbracket++;
-            }
+    //             if(indexSet.has('#'+expression[i+1])){
+    //                 indexSet.delete('#'+expression[i+1]);
+    //             }
+    //             isCondition= true;
+    //             isOpeartion= false;
+    //             indexInsideAnbracket++;
+    //         }
     
-            if(operations > 0 && isOropearation === true){
-                console.log('Invalid OR or AND opeartions');
-                this.config.sqlBuilder.errorMessage= 'Invalid OR or AND opeartions';
+    //         if(operations > 0 && isOropearation === true){
+    //             console.log('Invalid OR or AND opeartions');
+    //             this.config.sqlBuilder.errorMessage= 'Invalid OR or AND opeartions';
+    //             return false;
+    //         }
+    //         i++;
+    //     }
+
+    //     if(indexSet.size > 0){
+    //         console.log('Invalid Applied condition');
+    //         this.config.sqlBuilder.errorMessage= 'Invalid Applied condition';
+    //         return false;
+    //     }
+    
+    //     if (stack.length !== 0) {
+    //         console.log('Invalid expression: Mismatched parentheses');
+    //         this.config.sqlBuilder.errorMessage= 'Invalid expression: Mismatched parentheses';
+    //         return false;
+    //     }
+    
+    //     console.log('Valid expression');
+    //     return true;
+    // }      
+    
+    // New Implementation
+    // Issues with Old implementations. having issues with some of the test cases.....
+    // Old Implementation:: having issues with some of the test cases.....
+    // (#1 OR #2) AND #3 --> wrong result
+    // (#1 OR #2) AND ((#3 AND #4) AND #5) --> wrong result
+    // (#1) AND #2 --> wrong result.
+    isStrAllowed(e) {
+        let noSpaceExpression = e.replace(/\s/g, '');
+        console.log('noSpaceExpression: ' + noSpaceExpression);
+        if (noSpaceExpression.length < 2) {
+            console.log('Invalid Syntax');
+            return;
+        }
+        noSpaceExpression = '(' + noSpaceExpression + ')';
+        console.log('noSpaceExpression: ' + noSpaceExpression);
+        let st = [];  //stack...
+        let i = 0;
+        let isOperand = false;
+        let message;
+        while (i < noSpaceExpression.length) {
+            const ch = noSpaceExpression[i];
+            if (ch == '(') {
+                st.push(ch);
+            } else if (ch == ')') {
+                if (st.length == 0) {
+                    console.log('Invalid Parenthesis Matching (not find opening bracket)');
+                    this.config.sqlBuilder.errorMessage = 'Invalid expression parentheses';
+                    return false;
+                } else {
+                    let idx = 0;
+                    let isValidPattern = true;
+                    let isOR = false;
+                    let isAND = false;
+                    message = 'Not Valid expression';
+                    console.log(st);
+                    while (st.length != 0 && st[st.length - 1] != '(') {
+                        let val = st.pop();
+                        if (idx % 2 == 0) {
+                            if (val == 'OR' || val == 'AND') {
+                                isValidPattern = false;
+                                break;
+                            }
+                        } else {
+                            if (val[0] == '#') {
+                                isValidPattern = false;
+                                break;
+                            } else if (val == 'OR') {
+                                isOR = true;
+                            } else {
+                                isAND = true;
+                            }
+                        }
+                        if (isAND && isOR) {
+                            isValidPattern = false;
+                            message = "Both AND OR cannot be without precedences..."
+                            break;
+                        }
+                        idx++;
+                    }
+                    if (isValidPattern == false) {
+                        console.log(message);
+                        this.config.sqlBuilder.errorMessage = message;
+                        return false;
+                    }
+                    st.pop();
+                    if (st.length != 0) {
+                        st.push('#d');
+                    }
+                }
+            } else if (ch == '#') {
+                const nch = (i + 1) == noSpaceExpression.length ? '@' : noSpaceExpression[++i];
+                if (!(nch >= '1' && nch <= '9')) {
+                    console.log('# must be followed by Integer Number');
+                    this.config.sqlBuilder.errorMessage = '# must be followed by Integer Number';
+                    return false;
+                }
+                st.push(ch + nch);
+                isOperand = true;
+            } else if (ch == 'A' || ch == 'O') {
+                if (ch == 'A') {
+                    const fnch = (i + 1) == noSpaceExpression.length ? '@' : noSpaceExpression[++i];
+                    const snch = (i + 1) == noSpaceExpression.length ? '@' : noSpaceExpression[++i];
+                    let str = 'A' + fnch + snch;
+                    if (str === "AND") {
+                        st.push(str);
+                    } else {
+                        message = `Invalid character: "${noSpaceExpression.substring(i - 2, Math.min(noSpaceExpression.length, i - 2 + 4))}"...`;
+                        console.log(message);
+                        this.config.sqlBuilder.errorMessage = message;
+                        return false;
+                    }
+                } else {
+                    const fnch = (i + 1) == noSpaceExpression.length ? '@' : noSpaceExpression[++i];
+                    let str = 'O' + fnch;
+                    if (str === "OR") {
+                        st.push(str);
+                    } else {
+                        message = `Invalid character: "${noSpaceExpression.substring(i - 1, Math.min(noSpaceExpression.length, i - 1 + 4))}"...`;
+                        console.log(message);
+                        this.config.sqlBuilder.errorMessage = message;
+                        return false;
+                    }
+                }
+            } else {
+                message = `Invalid character: "${noSpaceExpression.substring(i, Math.min(noSpaceExpression.length, i + 4))}"...`;
+                console.log(message);
+                this.config.sqlBuilder.errorMessage = message;
                 return false;
             }
-            i++;
+            ++i;
         }
-
-        if(indexSet.size > 0){
-            console.log('Invalid Applied condition');
-            this.config.sqlBuilder.errorMessage= 'Invalid Applied condition';
+        if (isOperand == false) {
+            message = "No field Selected..";
+            console.log(message);
+            this.config.sqlBuilder.errorMessage = message;
             return false;
         }
-    
-        if (stack.length !== 0) {
-            console.log('Invalid expression: Mismatched parentheses');
-            this.config.sqlBuilder.errorMessage= 'Invalid expression: Mismatched parentheses';
+        else if (st.length == 0) {
+            message = "Valid Expression";
+            console.log(message);
+            this.config.sqlBuilder.errorMessage = message;
+            return true;
+        } else {
+            message = 'Invalid expression: Mismatched parentheses';
+            console.log(message);
+            this.config.sqlBuilder.errorMessage = message;
             return false;
         }
-    
-        console.log('Valid expression');
-        return true;
-    }      
-    
+    }
 }
