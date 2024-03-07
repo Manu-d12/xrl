@@ -931,8 +931,9 @@ export default class SqlBuilder extends LightningElement {
         let noSpaceExpression = e.replace(/\s/g, '');
         console.log('noSpaceExpression: ' + noSpaceExpression);
         if (noSpaceExpression.length < 2) {
-            console.log('Invalid Syntax');
-            return;
+            message = "minimum expression length must be 2";
+            this.config.sqlBuilder.errorMessage = message;
+            return false;
         }
         noSpaceExpression = '(' + noSpaceExpression + ')';
         console.log('noSpaceExpression: ' + noSpaceExpression);
@@ -946,8 +947,8 @@ export default class SqlBuilder extends LightningElement {
                 st.push(ch);
             } else if (ch == ')') {
                 if (st.length == 0) {
-                    console.log('Invalid Parenthesis Matching (not find opening bracket)');
-                    this.config.sqlBuilder.errorMessage = 'Invalid expression parentheses';
+                    message = 'Invalid Parenthesis Matching (not find opening bracket)';
+                    this.config.sqlBuilder.errorMessage = message;
                     return false;
                 } else {
                     let idx = 0;
@@ -993,8 +994,8 @@ export default class SqlBuilder extends LightningElement {
             } else if (ch == '#') {
                 const nch = (i + 1) == noSpaceExpression.length ? '@' : noSpaceExpression[++i];
                 if (!(nch >= '1' && nch <= '9')) {
-                    console.log('# must be followed by Integer Number');
-                    this.config.sqlBuilder.errorMessage = '# must be followed by Integer Number';
+                    message = '# must be followed by Integer Number';
+                    this.config.sqlBuilder.errorMessage = message;
                     return false;
                 }
                 st.push(ch + nch);
