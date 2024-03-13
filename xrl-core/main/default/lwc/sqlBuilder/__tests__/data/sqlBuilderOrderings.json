@@ -1,0 +1,25 @@
+[
+    [
+        {
+            "field": {
+                "label": "Phone",
+                "fieldName": "SuppliedPhone",
+                "css": "slds-item",
+                "type": "string",
+                "updateable": true,
+                "isNameField": false,
+                "relationshipName": null,
+                "filterable": true,
+                "sortable": true,
+                "nillable": true,
+                "helpText": "SuppliedPhone (string)",
+                "isEditableRegular": true,
+                "isFilterable": true,
+                "isSortable": true,
+                "index": 50
+            },
+            "emptyField": "NULLS FIRST",
+            "sortOrder": "ASC"
+        }
+    ]
+]

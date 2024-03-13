@@ -1,0 +1,78 @@
+[
+    [],
+    [
+        {
+            "label": "Account ",
+            "fieldName": "AccountId"
+        },
+        {
+            "label": "Account Description",
+            "fieldName": "Account.Description"
+        },
+        {
+            "label": "Account Fax",
+            "fieldName": "Account.Fax"
+        },
+        {
+            "label": "Account ID",
+            "fieldName": "Account.Id"
+        },
+        {
+            "label": "Account Name",
+            "fieldName": "Account.Name"
+        },
+        {
+            "label": "Shipping City",
+            "fieldName": "Account.ShippingCity"
+        }
+    ],
+    [
+        {
+            "fieldName": "Id"
+        },
+        {
+            "label": "Case Number",
+            "fieldName": "CaseNumber"
+        },
+        {
+            "label": "Case Origin",
+            "fieldName": "Origin"
+        }
+    ],
+    [
+        {
+            "fieldName": "Id"
+        }
+    ],
+    [
+        {
+            "fieldName": "Id"
+        },
+        {
+            "label": "Case Reason",
+            "fieldName": "Reason"
+        },
+        {
+            "label": "Case Source ",
+            "fieldName": "SourceId"
+        },
+        {
+            "label": "Case Type",
+            "fieldName": "Type"
+        }
+    ],
+    [
+        {
+            "fieldName": "Id"
+        }
+    ],
+    [
+        {
+            "fieldName": "Id"
+        },
+        {
+            "label": "Case Reason",
+            "fieldName": "Reason"
+        } 
+    ]
+]

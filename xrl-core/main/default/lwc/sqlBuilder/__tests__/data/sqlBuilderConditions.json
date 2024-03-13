@@ -1,0 +1,348 @@
+[
+    [],
+    [
+        {
+            "field": "Account.Origin",
+            "fieldType": "picklist",
+            "fieldOptions": [
+                {
+                    "label": "--None--",
+                    "value": "NONE"
+                },
+                {
+                    "label": "Phone",
+                    "value": "Phone"
+                },
+                {
+                    "label": "Email",
+                    "value": "Email"
+                },
+                {
+                    "label": "Web",
+                    "value": "Web"
+                }
+            ],
+            "operator": {
+                "label": "Is equal",
+                "value": "eq"
+            },
+            "valueRange": false,
+            "_formattedValue": "'Email'",
+            "value": "'Email'",
+            "key": null,
+            "index": "#1"
+        }
+    ],
+    [
+        {
+            "field": "Type",
+            "fieldType": "picklist",
+            "fieldOptions": [
+                {
+                    "label": "--None--",
+                    "value": "NONE"
+                },
+                {
+                    "label": "Mechanical",
+                    "value": "Mechanical"
+                },
+                {
+                    "label": "Electrical",
+                    "value": "Electrical"
+                },
+                {
+                    "label": "Electronic",
+                    "value": "Electronic"
+                },
+                {
+                    "label": "Structural",
+                    "value": "Structural"
+                },
+                {
+                    "label": "Other",
+                    "value": "Other"
+                }
+            ],
+            "operator": {
+                "label": "Is equal",
+                "value": "eq"
+            },
+            "valueRange": false,
+            "_formattedValue": "'Mechanical'",
+            "value": "'Mechanical'",
+            "key": null,
+            "index": "#1"
+        }
+    ],
+    [
+        {
+            "field": "Type",
+            "fieldType": "picklist",
+            "fieldOptions": [
+                {
+                    "label": "--None--",
+                    "value": "NONE"
+                },
+                {
+                    "label": "Mechanical",
+                    "value": "Mechanical"
+                },
+                {
+                    "label": "Electrical",
+                    "value": "Electrical"
+                },
+                {
+                    "label": "Electronic",
+                    "value": "Electronic"
+                },
+                {
+                    "label": "Structural",
+                    "value": "Structural"
+                },
+                {
+                    "label": "Other",
+                    "value": "Other"
+                }
+            ],
+            "operator": {
+                "label": "Is equal",
+                "value": "eq"
+            },
+            "valueRange": false,
+            "_formattedValue": "'Mechanical'",
+            "value": "'Mechanical'",
+            "key": null,
+            "index": "#1"
+        }
+    ],
+    [
+        {
+            "field": "Origin",
+            "fieldType": "picklist",
+            "fieldOptions": [
+                {
+                    "label": "--None--",
+                    "value": "NONE"
+                },
+                {
+                    "label": "Phone",
+                    "value": "Phone"
+                },
+                {
+                    "label": "Email",
+                    "value": "Email"
+                },
+                {
+                    "label": "Web",
+                    "value": "Web"
+                }
+            ],
+            "operator": {
+                "label": "Is equal",
+                "value": "eq"
+            },
+            "valueRange": false,
+            "value": "'Phone'",
+            "key": null,
+            "index": "#1",
+            "_formattedValue": "'Phone'"
+        },
+        {
+            "field": "CaseNumber",
+            "fieldType": "string",
+            "operator": {
+                "label": "Is equal",
+                "value": "eq"
+            },
+            "valueRange": false,
+            "_formattedValue": "123",
+            "value": "123",
+            "key": null,
+            "index": "#2"
+        }
+    ],
+    [
+        {
+            "field": "Origin",
+            "fieldType": "picklist",
+            "fieldOptions": [
+                {
+                    "label": "--None--",
+                    "value": "NONE"
+                },
+                {
+                    "label": "Phone",
+                    "value": "Phone"
+                },
+                {
+                    "label": "Email",
+                    "value": "Email"
+                },
+                {
+                    "label": "Web",
+                    "value": "Web"
+                }
+            ],
+            "operator": {
+                "label": "Is equal",
+                "value": "eq"
+            },
+            "valueRange": false,
+            "value": "'Phone'",
+            "key": null,
+            "index": "#1",
+            "_formattedValue": "'Phone'"
+        },
+        {
+            "field": "CaseNumber",
+            "fieldType": "string",
+            "operator": {
+                "label": "Is equal",
+                "value": "eq"
+            },
+            "valueRange": false,
+            "_formattedValue": "123",
+            "value": "123",
+            "key": null,
+            "index": "#2"
+        },
+        {
+            "field": "Source.SuppliedCompany",
+            "fieldType": "string",
+            "operator": {
+                "label": "Is equal",
+                "value": "eq"
+            },
+            "valueRange": false,
+            "_formattedValue": "StrataVAR",
+            "value": "StrataVAR",
+            "key": null,
+            "index": "#3"
+        }
+    ],
+    [
+        {
+            "field": "Origin",
+            "fieldType": "picklist",
+            "fieldOptions": [
+                {
+                    "label": "--None--",
+                    "value": "NONE"
+                },
+                {
+                    "label": "Phone",
+                    "value": "Phone"
+                },
+                {
+                    "label": "Email",
+                    "value": "Email"
+                },
+                {
+                    "label": "Web",
+                    "value": "Web"
+                }
+            ],
+            "operator": {
+                "label": "Is equal",
+                "value": "eq"
+            },
+            "valueRange": false,
+            "value": "'Phone'",
+            "key": null,
+            "index": "#1",
+            "_formattedValue": "'Phone'"
+        },
+        {
+            "field": "CaseNumber",
+            "fieldType": "string",
+            "operator": {
+                "label": "Is equal",
+                "value": "eq"
+            },
+            "valueRange": false,
+            "value": "123",
+            "key": null,
+            "index": "#2",
+            "_formattedValue": "123"
+        },
+        {
+            "field": "Source.SuppliedCompany",
+            "fieldType": "string",
+            "operator": {
+                "label": "Is equal",
+                "value": "eq"
+            },
+            "valueRange": false,
+            "value": "StrataVAR",
+            "key": null,
+            "index": "#3",
+            "_formattedValue": "StrataVAR"
+        },
+        {
+            "field": "Priority",
+            "fieldType": "picklist",
+            "fieldOptions": [
+                {
+                    "label": "--None--",
+                    "value": "NONE"
+                },
+                {
+                    "label": "High",
+                    "value": "High"
+                },
+                {
+                    "label": "Medium",
+                    "value": "Medium"
+                },
+                {
+                    "label": "Low",
+                    "value": "Low"
+                }
+            ],
+            "operator": {
+                "label": "Is equal",
+                "value": "eq"
+            },
+            "valueRange": false,
+            "_formattedValue": "'High'",
+            "value": "'High'",
+            "key": null,
+            "index": "#4"
+        },
+        {
+            "field": "Status",
+            "fieldType": "picklist",
+            "fieldOptions": [
+                {
+                    "label": "--None--",
+                    "value": "NONE"
+                },
+                {
+                    "label": "New",
+                    "value": "New"
+                },
+                {
+                    "label": "Working",
+                    "value": "Working"
+                },
+                {
+                    "label": "Escalated",
+                    "value": "Escalated"
+                },
+                {
+                    "label": "Closed",
+                    "value": "Closed"
+                }
+            ],
+            "operator": {
+                "label": "Is equal",
+                "value": "eq"
+            },
+            "valueRange": false,
+            "_formattedValue": "'Working'",
+            "value": "'Working'",
+            "key": null,
+            "index": "#5"
+        }
+    ]
+]
